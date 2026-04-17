@@ -1,0 +1,263 @@
+.new-user-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  color: #111111;
+}
+
+.back-button {
+  min-width: 170px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background-color: #50b2df; /* mismo que "Nuevo" */
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.back-button:hover {
+  opacity: 0.95;
+}
+
+.new-user-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.panel {
+  background-color: #efefef;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.panel-title {
+  margin: 0 0 22px;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1d73f3;
+}
+
+.new-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333333;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  background-color: #fafafa;
+  padding: 0 14px;
+  box-sizing: border-box;
+  font-family: "Outfit", sans-serif;
+  font-size: 15px;
+  color: #555555;
+  outline: none;
+}
+
+.form-group input::placeholder,
+.form-group select {
+  color: #a5a5a5;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 46px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #8a8a8a;
+  font-size: 21px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primary-button {
+  min-width: 160px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background-color: #1d73f3;
+  color: #ffffff;
+  font-family: "Outfit", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  opacity: 0.95;
+}
+
+.request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.request-card {
+  background-color: #fafafa;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.request-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.request-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.request-role {
+  font-size: 14px;
+  color: #7c7c7c;
+}
+
+.request-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.request-info span {
+  font-size: 14px;
+  color: #555555;
+}
+
+.request-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.secondary-button,
+.accept-button,
+.deny-button {
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 18px;
+  font-family: "Outfit", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.secondary-button {
+  background-color: #e8eef8;
+  color: #3a6cc6;
+}
+
+.accept-button {
+  background-color: #1d73f3;
+  color: #ffffff;
+}
+
+.deny-button {
+  background-color: #f51665;
+  color: #ffffff;
+}
+
+.empty-requests {
+  background-color: #fafafa;
+  border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  color: #8a8a8a;
+  font-size: 15px;
+}
+
+@media screen and (max-width: 1050px) {
+  .new-user-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+  }
+
+  .primary-button {
+    width: 100%;
+  }
+}
