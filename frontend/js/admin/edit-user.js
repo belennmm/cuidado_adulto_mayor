@@ -10,6 +10,11 @@ const phone = document.getElementById("phone")
 const birthdate = document.getElementById("birthdate")
 const status = document.getElementById("status")
 
+const openDeleteModal = document.getElementById("openDeleteModal")
+const closeDeleteModal = document.getElementById("closeDeleteModal")
+const confirmDeleteUser = document.getElementById("confirmDeleteUser")
+const deleteModal = document.getElementById("deleteModal")
+
 const usersData = [
   {
     id: 1,
@@ -85,14 +90,14 @@ const userId = Number(params.get("id"))
 const selectedUser = usersData.find((user) => user.id === userId)
 
 if (selectedUser) {
-  userType.value = selectedUser.role
-  username.value = selectedUser.name
-  email.value = selectedUser.email
-  locationInput.value = selectedUser.location
-  phone.value = selectedUser.phone
-  birthdate.value = selectedUser.birthdate
-  status.value = selectedUser.status
-  passwordInput.value = selectedUser.password
+  userType.value = selectedUser.role || ""
+  username.value = selectedUser.name || ""
+  email.value = selectedUser.email || ""
+  locationInput.value = selectedUser.location || ""
+  phone.value = selectedUser.phone || ""
+  birthdate.value = selectedUser.birthdate || ""
+  status.value = selectedUser.status || ""
+  passwordInput.value = selectedUser.password || ""
 }
 
 if (togglePassword && passwordInput) {
@@ -111,6 +116,33 @@ if (togglePassword && passwordInput) {
 if (editUserForm) {
   editUserForm.addEventListener("submit", (event) => {
     event.preventDefault()
-    alert("Aquí después poder guardar.")
+    alert("Aquí después podrás guardar los cambios del usuario")
+  })
+}
+
+if (openDeleteModal && deleteModal) {
+  openDeleteModal.addEventListener("click", () => {
+    deleteModal.classList.add("active")
+  })
+}
+
+if (closeDeleteModal && deleteModal) {
+  closeDeleteModal.addEventListener("click", () => {
+    deleteModal.classList.remove("active")
+  })
+}
+
+if (deleteModal) {
+  deleteModal.addEventListener("click", (event) => {
+    if (event.target === deleteModal) {
+      deleteModal.classList.remove("active")
+    }
+  })
+}
+
+if (confirmDeleteUser) {
+  confirmDeleteUser.addEventListener("click", () => {
+    alert("Usuario eliminado")
+    window.location.href = "./users.html"
   })
 }
