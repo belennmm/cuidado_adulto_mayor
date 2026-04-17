@@ -1,0 +1,265 @@
+.dashboard-title {
+  margin: 0 0 26px;
+  font-size: 26px;
+  font-weight: 500;
+  color: #111111;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.stats-panel {
+  background-color: #f1f1f1;
+  border-radius: 16px;
+  padding: 18px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.stat-card {
+  background: linear-gradient(180deg, #6aa3ef 0%, #5d99ea 100%);
+  border-radius: 24px;
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.35;
+  max-width: 120px;
+}
+
+.routines-panel {
+  background-color: #f1f1f1;
+  border-radius: 16px;
+  padding: 18px 22px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.panel-title {
+  font-size: 22px;
+  font-weight: 500;
+  color: #1d73f3;
+  margin-bottom: 18px;
+}
+
+.routine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.routine-item {
+  background-color: #fafafa;
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.routine-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: #2578e8;
+}
+
+.routine-content {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 0.8fr;
+  gap: 18px;
+}
+
+.routine-line-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.routine-line {
+  height: 10px;
+  border-radius: 999px;
+  background-color: #dddddd;
+}
+
+.routine-line.short {
+  width: 55%;
+}
+
+.routine-line.medium {
+  width: 75%;
+}
+
+.routine-line.long {
+  width: 95%;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.view-all-button {
+  min-width: 96px;
+  height: 28px;
+  padding: 0 16px;
+  border-radius: 9px;
+  background-color: #1d73f3;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 500;
+}
+
+.dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.side-card {
+  background-color: #f8f8f8;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.side-card-header {
+  height: 62px;
+  background-color: #50b2df;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.side-card-header i {
+  font-size: 28px;
+}
+
+.medicine-card {
+  padding-bottom: 24px;
+}
+
+.medicine-number {
+  text-align: center;
+  font-size: 42px;
+  font-weight: 500;
+  color: #50b2df;
+  margin-top: 26px;
+}
+
+.medicine-text {
+  margin: 18px 24px 0;
+  text-align: center;
+  font-size: 16px;
+  color: #50b2df;
+  line-height: 1.4;
+}
+
+.report-card {
+  padding-bottom: 14px;
+}
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 24px 18px 0;
+}
+
+.report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  color: #50b2df;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+@media screen and (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-right {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .dashboard-right .side-card {
+    flex: 1;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .stats-panel {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .routine-content {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-right {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .stats-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-item {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-avatar {
+    display: none;
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+  }
+
+  .panel-title {
+    font-size: 18px;
+  }
+}

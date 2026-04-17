@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin</title>
+
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
+    <link rel="stylesheet" href="../../css/admin/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-top"></div>
+
+        <nav class="sidebar-nav">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
+            <i class="bx bxs-home"></i>
+          </a>
+
+          <a href="./dashboard.html" class="nav-icon active" data-label="Dashboard">
+            <i class="bx bxs-dashboard"></i>
+          </a>
+
+          <a href="./users.html" class="nav-icon" data-label="Usuarios">
+            <i class="bx bxs-user"></i>
+          </a>
+
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
+            <i class="bx bxs-time"></i>
+          </a>
+
+          <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
+            <i class="bx bxs-id-card"></i>
+          </a>
+
+          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+            <i class="bx bxs-error"></i>
+          </a>
+
+          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+            <i class="bx bxs-star"></i>
+          </a>
+
+          <a href="./settings.html" class="nav-icon" data-label="Configuración">
+            <i class="bx bxs-cog"></i>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
+            <i class="bx bx-user-circle"></i>
+          </a>
+
+          <a href="../../index.html" class="nav-icon" data-label="Cerrar sesión">
+            <i class="bx bx-log-out"></i>
+          </a>
+        </div>
+      </aside>
+
+      <main class="admin-main">
+        <div class="admin-topbar"></div>
+
+        <section class="page-shell">
+          <h1 class="dashboard-title">Dashboard</h1>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-left">
+              <section class="stats-panel">
+                <div class="stat-card">
+                  <div class="stat-number" id="olderAdultsCount">15</div>
+                  <div class="stat-label">Adultos Mayores</div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-number" id="caregiversCount">8</div>
+                  <div class="stat-label">Cuidadores Profesionales</div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-number" id="incidentsCount">2</div>
+                  <div class="stat-label">Incidentes del día</div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-number" id="requestsCount">5</div>
+                  <div class="stat-label">Solicitudes</div>
+                </div>
+              </section>
+
+              <section class="routines-panel">
+                <div class="panel-title">Últimos Cambios en Rutinas</div>
+
+                <div class="routine-list" id="routineList"></div>
+
+                <div class="panel-footer">
+                  <a href="./routines.html" class="view-all-button">Ver todos</a>
+                </div>
+              </section>
+            </div>
+
+            <div class="dashboard-right">
+              <section class="side-card medicine-card">
+                <div class="side-card-header">
+                  <span>Medicamentos</span>
+                  <i class="bx bx-briefcase-alt-2"></i>
+                </div>
+                <div class="medicine-number" id="medicineCount">7</div>
+                <p class="medicine-text">No se ha administrado hoy</p>
+              </section>
+
+              <section class="side-card report-card">
+                <div class="side-card-header">
+                  <span>REPORTE</span>
+                  <i class="bx bx-clipboard"></i>
+                </div>
+
+                <div class="report-list">
+                  <div class="report-row">
+                    <span>Entradas tarde</span>
+                    <span id="lateEntriesCount">1</span>
+                  </div>
+
+                  <div class="report-row">
+                    <span>Ausencias</span>
+                    <span id="absencesCount">0</span>
+                  </div>
+
+                  <div class="report-row">
+                    <span>Solicitud Vacaciones</span>
+                    <span id="vacationsCount">3</span>
+                  </div>
+
+                  <div class="report-row">
+                    <span>Cambios solicitados</span>
+                    <span id="changesCount">1</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/admin/dashboard.js"></script>
+  </body>
+</html>
