@@ -26,6 +26,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inria Sans:wght@700&display=swap"
     />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   </head>
   <body>
     <div class="login-form">
@@ -39,12 +40,12 @@
               <h2 class="dont-have-account">¿No tienes cuenta?</h2>
               <div class="solicitar-cuenta">
                 <button
-                  class="solicitar-cuenta2"
-                  type="submit"
-                  id="solicitarCuentaText"
-                >
-                  Solicitar Cuenta
-                </button>
+                    class="solicitar-cuenta2"
+                    type="button"
+                    id="solicitarCuentaText"
+                    >
+                    Solicitar Cuenta
+                    </button>
               </div>
             </div>
           </div>
@@ -55,7 +56,7 @@
             <div class="rectangle-group">
               <div class="frame-item"></div>
               <div class="user-wrapper">
-                <img class="user-icon" alt="" src="./public/User@2x.png" />
+                <i class='bx bx-user input-icon'></i>
               </div>
               <input
                 class="ingrese-usuario"
@@ -66,25 +67,28 @@
           </div>
           <div class="frame-container">
             <div class="usuario-wrapper">
-              <div class="contrasea">Contraseña</div>
+                <div class="contrasea">Contraseña</div>
             </div>
+
             <div class="rectangle-container">
-              <div class="frame-item"></div>
-              <div class="lock-icon-container-parent">
+                <div class="lock-icon-container-parent">
                 <div class="lock-icon-container">
-                  <img class="lock-icon" alt="" src="./public/Lock@2x.png" />
+                    <i class='bx bx-lock-alt input-icon'></i>
                 </div>
+
                 <input
-                  class="ingrese-contrasea"
-                  placeholder="Ingrese Contraseña"
-                  type="text"
+                    class="ingrese-contrasea"
+                    placeholder="Ingrese Contraseña"
+                    type="password"
+                    id="passwordInput"
                 />
-              </div>
-              <div class="password-visibility-button">
-                <img class="hide-icon" alt="" src="./public/Hide@2x.png" />
-              </div>
+                </div>
+
+                <div class="password-visibility-button">
+                <i class='bx bx-hide input-icon small-icon' id="togglePassword"></i>
+                </div>
             </div>
-          </div>
+            </div>
           <div class="login-button-wrapper">
             <button class="login-button" type="submit" id="loginButton1">
               <div class="login-button-child"></div>
@@ -95,71 +99,17 @@
         <section class="canvas-parent">
           <div class="canvas"></div>
           <div class="close-option-icons">
-            <img
-              class="minus-icon"
-              loading="lazy"
-              alt=""
-              src="./public/Minus@2x.png"
-            />
-
-            <div class="close-background-wrapper">
-              <button class="close-background"></button>
-            </div>
-            <img
-              class="minus-icon"
-              loading="lazy"
-              alt=""
-              src="./public/Multiply@2x.png"
-            />
+            
           </div>
           <div class="user-type-buttons-wrapper">
             <div class="user-type-buttons">
-              <button
-                class="user-type-button-labels"
-                id="userTypeButtonLabels2"
-              >
-                <b class="cuidador-profesional">Cuidador Profesional</b>
-              </button>
-              <button
-                class="user-type-button-labels2"
-                id="userTypeButtonLabels3"
-              >
-                <b class="cuidador-profesional">Cuidador Familiar</b>
-              </button>
+            
             </div>
           </div>
         </section>
       </main>
     </div>
 
-    <script>
-      var solicitarCuentaText = document.getElementById("solicitarCuentaText");
-      if (solicitarCuentaText) {
-        solicitarCuentaText.addEventListener("click", function (e) {
-       
-        });
-      }
-      
-      var loginButton1 = document.getElementById("loginButton1");
-      if (loginButton1) {
-        loginButton1.addEventListener("click", function (e) {
-     
-        });
-      }
-      
-      var userTypeButtonLabels2 = document.getElementById("userTypeButtonLabels2");
-      if (userTypeButtonLabels2) {
-        userTypeButtonLabels2.addEventListener("click", function (e) {
-         
-        });
-      }
-      
-      var userTypeButtonLabels3 = document.getElementById("userTypeButtonLabels3");
-      if (userTypeButtonLabels3) {
-        userTypeButtonLabels3.addEventListener("click", function (e) {
-       
-        });
-      }
-      </script>
+   <script src="./js/index.js"></script>
   </body>
 </html>
