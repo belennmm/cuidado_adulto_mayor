@@ -166,6 +166,19 @@ body {
   --Others-White: #fff;
   --Shades-of-Blue-Blue-96: #ebf3ff;
 
+    --color-aliceblue: #ebf3ff;
+
+  --color-gainsboro-100: #e4e4e7;
+  --color-gainsboro-200: #ddd;
+  --color-gainsboro-300: #d8d8d8;
+  --color-gray-100: #fdfdfd;
+  --color-gray-200: #fcfcfc;
+
+  --color-white: #fff;
+  --color-whitesmoke-100: #f9f9f9;
+  --color-whitesmoke-200: #f3f3f3;
+  --color-whitesmoke-300: #f0f0f0;
+
 
   --gap-4: 4px;
   --gap-6: 6px;
