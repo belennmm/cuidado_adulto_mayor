@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Usuario</title>
+
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
+    <link rel="stylesheet" href="../../css/admin/edit-user.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-top"></div>
+
+        <nav class="sidebar-nav">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
+            <i class="bx bxs-home"></i>
+          </a>
+
+          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+            <i class="bx bxs-dashboard"></i>
+          </a>
+
+          <a href="./users.html" class="nav-icon active" data-label="Usuarios">
+            <i class="bx bxs-user"></i>
+          </a>
+
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
+            <i class="bx bxs-time"></i>
+          </a>
+
+          <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
+            <i class="bx bxs-id-card"></i>
+          </a>
+
+          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+            <i class="bx bxs-error"></i>
+          </a>
+
+          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+            <i class="bx bxs-star"></i>
+          </a>
+
+          <a href="./settings.html" class="nav-icon" data-label="Configuración">
+            <i class="bx bxs-cog"></i>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
+            <i class="bx bx-user-circle"></i>
+          </a>
+
+          <a href="../../index.html" class="nav-icon" data-label="Cerrar sesión">
+            <i class="bx bx-log-out"></i>
+          </a>
+        </div>
+      </aside>
+
+      <main class="admin-main">
+        <div class="admin-topbar"></div>
+
+        <section class="page-shell edit-user-page">
+          <div class="page-header">
+            <h1 class="page-title">Editar Usuario</h1>
+            <a href="./users.html" class="back-button">Volver a Usuarios</a>
+          </div>
+
+          <section class="panel form-panel">
+            <h2 class="panel-title">Información del usuario</h2>
+
+            <form class="edit-user-form" id="editUserForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="userType">Tipo de usuario</label>
+                  <select id="userType" name="userType">
+                    <option value="">Seleccione tipo de usuario</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Cuidador Profesional">Cuidador Profesional</option>
+                    <option value="Cuidador Familiar">Cuidador Familiar</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="username">Nombre de usuario</label>
+                  <input type="text" id="username" name="username" placeholder="Ingrese nombre de usuario" />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Correo electrónico</label>
+                  <input type="email" id="email" name="email" placeholder="Ingrese correo electrónico" />
+                </div>
+
+                <div class="form-group">
+                  <label for="location">Locación</label>
+                  <input type="text" id="location" name="location" placeholder="Ingrese locación" />
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">Número de teléfono</label>
+                  <input type="tel" id="phone" name="phone" placeholder="Ingrese número de teléfono" />
+                </div>
+
+                <div class="form-group">
+                  <label for="birthdate">Fecha de nacimiento</label>
+                  <input type="date" id="birthdate" name="birthdate" />
+                </div>
+
+                <div class="form-group">
+                  <label for="status">Estado</label>
+                  <select id="status" name="status">
+                    <option value="Activo">Activo</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Inactivo">Inactivo</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="password">Contraseña</label>
+                  <div class="password-input-wrap">
+                    <input type="password" id="password" name="password" placeholder="Ingrese contraseña" />
+                    <button type="button" class="toggle-password" id="togglePassword">
+                      <i class="bx bx-hide"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="primary-button">Guardar cambios</button>
+              </div>
+            </form>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/admin/edit-user.js"></script>
+  </body>
+</html>
