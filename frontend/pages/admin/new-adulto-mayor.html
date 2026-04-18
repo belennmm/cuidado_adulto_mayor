@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Adulto Mayor</title>
+
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
+    <link rel="stylesheet" href="../../css/admin/new-adulto-mayor.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-top"></div>
+
+        <nav class="sidebar-nav">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
+            <i class="bx bxs-home"></i>
+          </a>
+
+          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+            <i class="bx bxs-dashboard"></i>
+          </a>
+
+          <a href="./users.html" class="nav-icon" data-label="Usuarios">
+            <i class="bx bxs-user"></i>
+          </a>
+
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
+            <i class="bx bxs-time"></i>
+          </a>
+
+          <a href="./adultos-mayores.html" class="nav-icon active" data-label="Adultos mayores">
+            <i class="bx bxs-id-card"></i>
+          </a>
+
+          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+            <i class="bx bxs-error"></i>
+          </a>
+
+          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+            <i class="bx bxs-star"></i>
+          </a>
+
+          <a href="./settings.html" class="nav-icon" data-label="Configuración">
+            <i class="bx bxs-cog"></i>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
+            <i class="bx bx-user-circle"></i>
+          </a>
+
+          <a href="../../index.html" class="nav-icon" data-label="Cerrar sesión">
+            <i class="bx bx-log-out"></i>
+          </a>
+        </div>
+      </aside>
+
+      <main class="admin-main">
+        <div class="admin-topbar"></div>
+
+        <section class="page-shell new-older-adult-page">
+          <div class="page-header">
+            <h1 class="page-title">Nuevo Adulto Mayor</h1>
+            <a href="./adultos-mayores.html" class="back-button">Volver a Adultos Mayores</a>
+          </div>
+
+          <section class="panel form-panel">
+            <h2 class="panel-title">Registrar adulto mayor</h2>
+
+            <form class="new-older-adult-form" id="newOlderAdultForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fullName">Nombre completo</label>
+                  <input type="text" id="fullName" name="fullName" placeholder="Ingrese nombre completo" />
+                </div>
+
+                <div class="form-group">
+                  <label for="age">Edad</label>
+                  <input type="number" id="age" name="age" placeholder="Ingrese edad" />
+                </div>
+
+                <div class="form-group">
+                  <label for="birthdate">Fecha de nacimiento</label>
+                  <input type="date" id="birthdate" name="birthdate" />
+                </div>
+
+                <div class="form-group">
+                  <label for="gender">Género</label>
+                  <select id="gender" name="gender">
+                    <option value="">Seleccione género</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="room">Habitación</label>
+                  <input type="text" id="room" name="room" placeholder="Ingrese habitación" />
+                </div>
+
+                <div class="form-group">
+                  <label for="status">Estado</label>
+                  <select id="status" name="status">
+                    <option value="">Seleccione estado</option>
+                    <option value="Estable">Estable</option>
+                    <option value="Atención">Atención</option>
+                    <option value="Crítico">Crítico</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="caregiverFamily">Cuidador Familiar</label>
+                  <select id="caregiverFamily" name="caregiverFamily">
+                    <option value="">Seleccione cuidador familiar</option>
+                    <option value="Laura Rodríguez">Laura Rodríguez</option>
+                    <option value="José Pérez">José Pérez</option>
+                    <option value="Marta Gómez">Marta Gómez</option>
+                    <option value="Ana López">Ana López</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="contactName">Contacto de emergencia</label>
+                  <input type="text" id="contactName" name="contactName" placeholder="Ingrese contacto de emergencia" />
+                </div>
+
+                <div class="form-group">
+                  <label for="contactPhone">Teléfono de emergencia</label>
+                  <input type="tel" id="contactPhone" name="contactPhone" placeholder="Ingrese teléfono de emergencia" />
+                </div>
+
+                <div class="form-group">
+                  <label for="allergies">Alergias</label>
+                  <input type="text" id="allergies" name="allergies" placeholder="Ingrese alergias" />
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="medicalHistory">Historial médico</label>
+                  <textarea id="medicalHistory" name="medicalHistory" placeholder="Ingrese historial médico"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="notes">Observaciones</label>
+                  <textarea id="notes" name="notes" placeholder="Ingrese observaciones"></textarea>
+                </div>
+              </div>
+
+              <div class="section-divider">
+                <span>Medicinas asociadas</span>
+              </div>
+
+              <div class="medicines-list" id="medicinesList"></div>
+
+              <div class="medicine-add-wrapper">
+                <button type="button" class="secondary-button" id="addMedicineButton">
+                  Agregar medicina
+                </button>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="primary-button">Crear adulto mayor</button>
+              </div>
+            </form>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="../../js/admin/new-adulto-mayor.js"></script>
+  </body>
+</html>
