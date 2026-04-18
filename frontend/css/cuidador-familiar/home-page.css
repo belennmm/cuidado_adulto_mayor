@@ -1,0 +1,89 @@
+.hero {
+  position: relative;
+  min-height: calc(100vh - 70px);
+  border-radius: 0;
+  overflow: hidden;
+  background-image: url("../../assets/images/admin-home-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(33, 56, 52, 0.28);
+  backdrop-filter: blur(4px);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 56px 54px;
+  color: #ffffff;
+}
+
+.hero-title {
+  margin: 0 0 28px;
+  font-size: 62px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.hero-message {
+  margin: 0 0 160px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.5;
+  max-width: 760px;
+}
+
+.dashboard-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 152px;
+  height: 42px;
+  padding: 0 24px;
+  border-radius: 24px;
+  background: linear-gradient(90deg, #4d8dff 0%, #6d97ff 100%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow: 0 12px 24px rgba(43, 108, 255, 0.28);
+}
+
+.dashboard-button:hover {
+  opacity: 0.95;
+}
+
+@media screen and (max-width: 900px) {
+  .hero-content {
+    padding: 40px 32px;
+  }
+
+  .hero-title {
+    font-size: 46px;
+  }
+
+  .hero-message {
+    font-size: 20px;
+    margin-bottom: 120px;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .hero {
+    min-height: 70vh;
+  }
+
+  .hero-title {
+    font-size: 38px;
+  }
+
+  .hero-message {
+    font-size: 18px;
+    margin-bottom: 90px;
+  }
+}
