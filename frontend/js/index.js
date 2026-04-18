@@ -4,70 +4,75 @@ const togglePassword = document.getElementById("togglePassword")
 const loginForm = document.querySelector(".rectangle-parent")
 const usernameInput = document.querySelector(".ingrese-usuario")
 
+const API_URL = "http://127.0.0.1:8080/api"
+
 const roleRedirects = {
-  admin: "./pages/admin/home-page.html",
-  cuidador_profesional: "./pages/cuidador-profesional/home-page.html",
-  cuidador_familiar: "./pages/cuidador-familiar/home-page.html"
+    admin: "./pages/admin/home-page.html",
+    cuidador_profesional: "./pages/cuidador-profesional/home-page.html",
+    cuidador_familiar: "./pages/cuidador-familiar/home-page.html"
 }
 
 function redirectByRole(role) {
-  const destination = roleRedirects[role]
-
-  if (destination) {
-    window.location.href = destination
-    return
-  }
-
-  alert("No se encontró acceso para este tipo de usuario")
-}
-
-function getMockRoleByUsername(username) {
-  const normalizedUsername = username.trim().toLowerCase()
-
-  const mockUsers = {
-    admin: "admin",
-    profesional: "cuidador_profesional",
-    familiar: "cuidador_familiar"
-  }
-
-  return mockUsers[normalizedUsername] || null
+    const destination = roleRedirects[role]
+    if (destination) {
+        window.location.href = destination
+        return
+    }
+    alert("No se encontró acceso para este tipo de usuario")
 }
 
 if (solicitarCuentaText) {
-  solicitarCuentaText.addEventListener("click", function () {
-    window.location.href = "./pages/register.html"
-  })
+    solicitarCuentaText.addEventListener("click", function() {
+        window.location.href = "./pages/register.html"
+    })
 }
 
 if (togglePassword && passwordInput) {
-  togglePassword.addEventListener("click", function () {
-    const isPassword = passwordInput.type === "password"
-
-    passwordInput.type = isPassword ? "text" : "password"
-    togglePassword.classList.toggle("bx-hide")
-    togglePassword.classList.toggle("bx-show")
-  })
+    togglePassword.addEventListener("click", function() {
+        const isPassword = passwordInput.type === "password"
+        passwordInput.type = isPassword ? "text" : "password"
+        togglePassword.classList.toggle("bx-hide")
+        togglePassword.classList.toggle("bx-show")
+    })
 }
 
 if (loginForm) {
-  loginForm.addEventListener("submit", function (event) {
-    event.preventDefault()
+    loginForm.addEventListener("submit", async function(event) {
+        event.preventDefault()
 
-    const username = usernameInput ? usernameInput.value : ""
-    const password = passwordInput ? passwordInput.value : ""
+        const email = usernameInput ? usernameInput.value.trim() : ""
+        const password = passwordInput ? passwordInput.value.trim() : ""
 
-    if (!username || !password) {
-      alert("Completa usuario y contraseña")
-      return
-    }
+        if (!email || !password) {
+            alert("Completa usuario y contraseña")
+            return
+        }
 
-    const mockRole = getMockRoleByUsername(username)
+        try {
+            const response = await fetch(`${API_URL}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            })
 
-    if (!mockRole) {
-      alert("Usuario no reconocido")
-      return
-    }
+            const data = await response.json()
 
-    redirectByRole(mockRole)
-  })
+            if (!response.ok) {
+                alert(data.message || "Credenciales inválidas")
+                return
+            }
+
+            localStorage.setItem("token", data.token)
+            localStorage.setItem("user", JSON.stringify(data.user))
+
+            redirectByRole("admin")
+
+        } catch (error) {
+            console.error("Error al conectar con el servidor:", error)
+            alert("No se pudo conectar con el servidor.")
+        }
+    })
 }
