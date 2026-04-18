@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/home-page.css" />
+    <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
@@ -49,14 +50,33 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="../../index.html" class="nav-icon" data-label="Cerrar sesión">
-            <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
+                  <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
 
       
     </div>
+
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal-box">
+        <h3 class="logout-modal-title">Cerrar sesión</h3>
+        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+
+        <div class="logout-modal-actions">
+          <button type="button" class="logout-cancel-button" id="cancelLogout">
+            Cancelar
+          </button>
+          <button type="button" class="logout-confirm-button" id="confirmLogout">
+            Aceptar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  
+    <script src="../../js/logout-modal.js"></script>
 
     
   </body>
