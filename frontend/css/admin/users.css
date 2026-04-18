@@ -81,7 +81,7 @@
 
 .users-table-head {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1.5fr 1fr 0.8fr 120px;
+  grid-template-columns: 1.2fr 1fr 1.35fr 1fr 0.8fr 120px;
   gap: 12px;
   padding: 0 16px 12px;
   font-size: 14px;
@@ -97,7 +97,7 @@
 
 .user-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1.5fr 1fr 0.8fr 120px;
+  grid-template-columns: 1.2fr 1fr 1.35fr 1fr 0.8fr 120px;
   gap: 12px;
   align-items: center;
   background-color: #fafafa;
@@ -178,10 +178,30 @@
   font-size: 15px;
 }
 
+.users-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+.users-table-card {
+  background-color: #efefef;
+  border-radius: 18px;
+  padding: 18px 14px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.users-table-head,
+.user-row {
+  min-width: 0;
+}
+
 @media screen and (max-width: 1100px) {
   .users-table-head,
   .user-row {
-    grid-template-columns: 1.2fr 1fr 1.3fr 1fr 0.9fr 110px;
+    grid-template-columns: 1.15fr 1fr 1.2fr 0.95fr 0.85fr 110px;
   }
 }
 
