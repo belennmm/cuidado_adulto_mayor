@@ -54,6 +54,8 @@ form.addEventListener("submit", async(e) => {
     }
 })
 
+
+
 const goToLogin = document.getElementById("goToLoginButton")
 
 if (goToLogin) {
