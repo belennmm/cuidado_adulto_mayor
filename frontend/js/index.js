@@ -9,7 +9,9 @@ const API_URL = "http://127.0.0.1:8080/api"
 const roleRedirects = {
     admin: "./pages/admin/home-page.html",
     cuidador_profesional: "./pages/cuidador-profesional/home-page.html",
-    cuidador_familiar: "./pages/cuidador-familiar/home-page.html"
+    cuidador_familiar: "./pages/cuidador-familiar/home-page.html",
+    profesional: "./pages/cuidador-profesional/home-page.html",
+    familiar: "./pages/cuidador-familiar/home-page.html"
 }
 
 function redirectByRole(role) {
@@ -68,7 +70,7 @@ if (loginForm) {
             localStorage.setItem("token", data.token)
             localStorage.setItem("user", JSON.stringify(data.user))
 
-            redirectByRole("admin")
+            redirectByRole(data.user?.role || "familiar")
 
         } catch (error) {
             console.error("Error al conectar con el servidor:", error)
