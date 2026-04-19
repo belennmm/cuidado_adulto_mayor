@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -9,137 +10,118 @@
     <link rel="stylesheet" href="../css/global.css" />
     <link rel="stylesheet" href="../css/register.css" />
 
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-  </head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
 
-  <body>
+<body>
     <div class="register-form-b">
-      <div class="background"></div>
+        <div class="background"></div>
 
-      <main class="register-form">
-        <form class="register">
-          <div class="call-to-action">
-            <h1 class="iniciemos">Iniciemos</h1>
+        <main class="register-form">
+            <form class="register">
+                <div class="call-to-action">
+                    <h1 class="iniciemos">Iniciemos</h1>
 
-            <div class="account-prompt">
-              <h2 class="ya-tienes-cuenta">¿Ya tienes cuenta?</h2>
+                    <div class="account-prompt">
+                        <h2 class="ya-tienes-cuenta">¿Ya tienes cuenta?</h2>
 
-              <button
-                class="inicia-sesin"
-                type="button"
-                id="goToLoginButton"
-              >
+                        <button class="inicia-sesin" type="button" id="goToLoginButton">
                 Inicia Sesión
               </button>
-            </div>
-          </div>
+                    </div>
+                </div>
 
-          <div class="form-group">
-            <label class="field-label" for="username">Nombre de usuario</label>
-            <div class="input-box">
-              <i class="bx bx-user input-icon"></i>
-              <input
-                id="username"
-                class="text-input"
-                type="text"
-                placeholder="Nombre de usuario"
-              />
-            </div>
-          </div>
+                <!-- NOMBRE -->
+                <div class="form-group">
+                    <label class="field-label" for="username">Nombre</label>
+                    <div class="input-box">
+                        <i class="bx bx-user input-icon"></i>
+                        <input id="username" class="text-input" type="text" placeholder="Nombre" />
+                    </div>
+                </div>
 
-          <div class="form-group">
-            <label class="field-label" for="userType">Tipo de usuario</label>
-            <div class="input-box">
-              <i class="bx bx-briefcase-alt-2 input-icon"></i>
-              <select id="userType" class="text-input select-input">
+                <!-- EMAIL (NUEVO) -->
+                <div class="form-group">
+                    <label class="field-label" for="email">Correo electrónico</label>
+                    <div class="input-box">
+                        <i class="bx bx-envelope input-icon"></i>
+                        <input id="email" class="text-input" type="email" placeholder="Correo electrónico" />
+                    </div>
+                </div>
+
+                <!-- TIPO USUARIO -->
+                <div class="form-group">
+                    <label class="field-label" for="userType">Tipo de usuario</label>
+                    <div class="input-box">
+                        <i class="bx bx-briefcase-alt-2 input-icon"></i>
+                        <select id="userType" class="text-input select-input">
                 <option value="">Seleccione tipo de usuario</option>
                 <option value="profesional">Cuidador profesional</option>
                 <option value="familiar">Cuidador familiar</option>
                 <option value="admin">Administrador</option>
               </select>
-            </div>
-          </div>
+                    </div>
+                </div>
 
-          <div class="form-group">
-            <label class="field-label" for="location">Locación</label>
-            <div class="input-box">
-              <i class="bx bx-map input-icon"></i>
-              <select id="location" class="text-input select-input">
+                <!-- LOCACIÓN -->
+                <div class="form-group">
+                    <label class="field-label" for="location">Locación</label>
+                    <div class="input-box">
+                        <i class="bx bx-map input-icon"></i>
+                        <select id="location" class="text-input select-input">
                 <option value="">Seleccione locación</option>
                 <option value="guatemala">Guatemala</option>
                 <option value="mixco">Mixco</option>
                 <option value="villa-nueva">Villa Nueva</option>
               </select>
-            </div>
-          </div>
+                    </div>
+                </div>
 
-          <div class="double-row">
-            <div class="form-group half">
-              <label class="field-label" for="birthdate">Fecha de Nacimiento</label>
-              <div class="input-box">
-                <i class="bx bx-calendar input-icon"></i>
-                <input
-                  id="birthdate"
-                  class="text-input"
-                  type="text"
-                  placeholder="xx-xx-xxxx"
-                />
-              </div>
-            </div>
+                <!-- FECHA + TEL -->
+                <div class="double-row">
+                    <div class="form-group half">
+                        <label class="field-label" for="birthdate">Fecha de Nacimiento</label>
+                        <div class="input-box">
+                            <i class="bx bx-calendar input-icon"></i>
+                            <input id="birthdate" class="text-input" type="text" placeholder="xx-xx-xxxx" />
+                        </div>
+                    </div>
 
-            <div class="form-group half">
-              <label class="field-label" for="phone">Número de teléfono</label>
-              <div class="input-box">
-                <i class="bx bx-phone input-icon"></i>
-                <input
-                  id="phone"
-                  class="text-input"
-                  type="tel"
-                  placeholder="Número de teléfono"
-                />
-              </div>
-            </div>
-          </div>
+                    <div class="form-group half">
+                        <label class="field-label" for="phone">Número de teléfono</label>
+                        <div class="input-box">
+                            <i class="bx bx-phone input-icon"></i>
+                            <input id="phone" class="text-input" type="tel" placeholder="Número de teléfono" />
+                        </div>
+                    </div>
+                </div>
 
-          <div class="form-group">
-            <label class="field-label" for="password">Contraseña</label>
-            <div class="input-box password-box">
-              <i class="bx bx-lock-alt input-icon"></i>
-              <input
-                id="password"
-                class="text-input"
-                type="password"
-                placeholder="Ingrese Contraseña (10-32 caracteres)"
-              />
-              <button
-                type="button"
-                class="toggle-password"
-                id="togglePassword"
-                aria-label="Mostrar u ocultar contraseña"
-              >
+                <!-- PASSWORD -->
+                <div class="form-group">
+                    <label class="field-label" for="password">Contraseña</label>
+                    <div class="input-box password-box">
+                        <i class="bx bx-lock-alt input-icon"></i>
+                        <input id="password" class="text-input" type="password" placeholder="Ingrese Contraseña" />
+                        <button type="button" class="toggle-password" id="togglePassword">
                 <i class="bx bx-hide input-icon small-icon"></i>
               </button>
-            </div>
-          </div>
+                    </div>
+                </div>
 
-          <div class="sign-up-action">
-            <button class="sign-up-button" type="submit">
+                <!-- BOTÓN -->
+                <div class="sign-up-action">
+                    <button class="sign-up-button" type="submit">
               Solicitar Acceso
             </button>
-          </div>
-        </form>
+                </div>
+            </form>
 
-        <section class="right-panel"></section>
-      </main>
+            <section class="right-panel"></section>
+        </main>
     </div>
 
     <script src="../js/register.js"></script>
-  </body>
+</body>
+
 </html>
