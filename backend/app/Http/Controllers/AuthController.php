@@ -33,6 +33,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'role' => $user->role,
             ]
         ]);
     }
@@ -43,12 +44,20 @@ class AuthController extends Controller
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users',
         'password' => 'required|min:8',
+        'role' => 'nullable|string|max:255',
+        'location' => 'nullable|string|max:255',
+        'phone' => 'nullable|string|max:255',
+        'birthdate' => 'nullable|date',
     ]);
 
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+        'role' => $request->role ?: 'familiar',
+        'location' => $request->location,
+        'phone' => $request->phone,
+        'birthdate' => $request->birthdate,
     ]);
 
     $token = $user->createToken('API Token')->plainTextToken;
@@ -60,6 +69,7 @@ class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'role' => $user->role,
         ]
     ], 201);
 }
