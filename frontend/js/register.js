@@ -53,3 +53,11 @@ form.addEventListener("submit", async(e) => {
         alert("No se pudo conectar con el servidor")
     }
 })
+
+const goToLogin = document.getElementById("goToLoginButton")
+
+if (goToLogin) {
+    goToLogin.addEventListener("click", () => {
+        window.location.href = "../index.html"
+    })
+}
