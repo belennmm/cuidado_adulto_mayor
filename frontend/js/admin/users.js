@@ -1,61 +1,116 @@
 const userSearchInput = document.getElementById("userSearchInput")
 const usersTableBody = document.getElementById("usersTableBody")
 
-const usersData = [
-  {
-    id: 1,
-    name: "Ana López",
-    role: "Administrador",
-    email: "ana.lopez@correo.com",
-    phone: "4567-1234",
-    status: "Activo"
-  },
-  {
-    id: 2,
-    name: "Carlos Méndez",
-    role: "Cuidador Profesional",
-    email: "carlos.mendez@correo.com",
-    phone: "4987-1122",
-    status: "Activo"
-  },
-  {
-    id: 3,
-    name: "Sofía Ramírez",
-    role: "Cuidador Familiar",
-    email: "sofia.ramirez@correo.com",
-    phone: "5123-8844",
-    status: "Pendiente"
-  },
-  {
-    id: 4,
-    name: "María Castillo",
-    role: "Cuidador Profesional",
-    email: "maria.castillo@correo.com",
-    phone: "5344-1098",
-    status: "Activo"
-  },
-  {
-    id: 5,
-    name: "José Pérez",
-    role: "Administrador",
-    email: "jose.perez@correo.com",
-    phone: "4777-6611",
-    status: "Inactivo"
-  },
-  {
-    id: 6,
-    name: "Lucía Herrera",
-    role: "Cuidador Familiar",
-    email: "lucia.herrera@correo.com",
-    phone: "5890-7766",
-    status: "Activo"
+const API_URL = "http://127.0.0.1:8080/api"
+
+let usersData = []
+
+function getToken() {
+  return localStorage.getItem("token")
+}
+
+function getCurrentUser() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null")
+  } catch (error) {
+    return null
   }
-]
+}
+
+function isCurrentUserAdmin() {
+  return getCurrentUser()?.role === "admin" && Boolean(getToken())
+}
+
+function isApproved(value) {
+  return value === true || value === 1 || value === "1" || value === "true" || value === "t"
+}
+
+function getRoleLabel(role) {
+  const labels = {
+    admin: "Administrador",
+    profesional: "Cuidador Profesional",
+    familiar: "Cuidador Familiar",
+    cuidador_profesional: "Cuidador Profesional",
+    cuidador_familiar: "Cuidador Familiar"
+  }
+
+  return labels[role] || role || "Sin rol"
+}
+
+function getStatus(user) {
+  if (user.role === "admin") return "Activo"
+  return isApproved(user.is_approved) ? "Activo" : "Pendiente"
+}
 
 function getStatusClass(status) {
   if (status === "Activo") return "status-active"
   if (status === "Pendiente") return "status-pending"
   return "status-inactive"
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;")
+}
+
+async function loadUsers() {
+  try {
+    const response = await fetch(`${API_URL}/users`, {
+      headers: {
+        "Accept": "application/json"
+      }
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudieron cargar los usuarios.")
+    }
+
+    usersData = data.users || []
+    renderUsers(usersData)
+  } catch (error) {
+    usersTableBody.innerHTML = `
+      <div class="empty-state">
+        ${escapeHtml(error.message)}
+      </div>
+    `
+  }
+}
+
+async function approveUser(userId) {
+  const token = getToken()
+
+  if (!isCurrentUserAdmin()) {
+    alert("Inicia sesion como administrador para aprobar usuarios.")
+    return
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/admin/users/${userId}/approve`, {
+      method: "PATCH",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudo aprobar el usuario.")
+    }
+
+    alert(data.message || "Usuario aprobado correctamente.")
+    await loadUsers()
+  } catch (error) {
+    alert(error.message)
+  }
 }
 
 function renderUsers(list) {
@@ -71,45 +126,53 @@ function renderUsers(list) {
   }
 
   list.forEach((user) => {
+    const status = getStatus(user)
     const row = document.createElement("article")
     row.className = "user-row"
+
+    const actionButton = status === "Pendiente"
+      ? `<button class="approve-button" data-id="${user.id}">Aprobar</button>`
+      : `<button class="edit-button" data-id="${user.id}">Editar</button>`
 
     row.innerHTML = `
       <div class="user-cell user-name" data-label="Nombre">
         <div class="user-avatar"></div>
-        <span>${user.name}</span>
+        <span>${escapeHtml(user.name)}</span>
       </div>
 
       <div class="user-cell" data-label="Rol">
-        ${user.role}
+        ${escapeHtml(getRoleLabel(user.role))}
       </div>
 
       <div class="user-cell" data-label="Correo">
-        ${user.email}
+        ${escapeHtml(user.email)}
       </div>
 
-      <div class="user-cell" data-label="Teléfono">
-        ${user.phone}
+      <div class="user-cell" data-label="Telefono">
+        ${escapeHtml(user.phone || "Sin telefono")}
       </div>
 
       <div class="user-cell" data-label="Estado">
-        <span class="status-badge ${getStatusClass(user.status)}">${user.status}</span>
+        <span class="status-badge ${getStatusClass(status)}">${status}</span>
       </div>
 
-      <div class="user-cell" data-label="Acción">
-        <button class="edit-button" data-id="${user.id}">Editar</button>
+      <div class="user-cell" data-label="Accion">
+        ${actionButton}
       </div>
     `
 
     usersTableBody.appendChild(row)
   })
 
-  const editButtons = document.querySelectorAll(".edit-button")
-
-  editButtons.forEach((button) => {
+  document.querySelectorAll(".approve-button").forEach((button) => {
     button.addEventListener("click", () => {
-      const userId = button.dataset.id
-      window.location.href = `./edit-user.html?id=${userId}`
+      approveUser(button.dataset.id)
+    })
+  })
+
+  document.querySelectorAll(".edit-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      window.location.href = `./edit-user.html?id=${button.dataset.id}`
     })
   })
 }
@@ -118,12 +181,14 @@ function filterUsers() {
   const searchValue = userSearchInput.value.trim().toLowerCase()
 
   const filteredUsers = usersData.filter((user) => {
+    const status = getStatus(user)
+
     return (
-      user.name.toLowerCase().includes(searchValue) ||
-      user.role.toLowerCase().includes(searchValue) ||
-      user.email.toLowerCase().includes(searchValue) ||
-      user.phone.toLowerCase().includes(searchValue) ||
-      user.status.toLowerCase().includes(searchValue)
+      String(user.name || "").toLowerCase().includes(searchValue) ||
+      getRoleLabel(user.role).toLowerCase().includes(searchValue) ||
+      String(user.email || "").toLowerCase().includes(searchValue) ||
+      String(user.phone || "").toLowerCase().includes(searchValue) ||
+      status.toLowerCase().includes(searchValue)
     )
   })
 
@@ -134,4 +199,4 @@ if (userSearchInput) {
   userSearchInput.addEventListener("input", filterUsers)
 }
 
-renderUsers(usersData)
+loadUsers()

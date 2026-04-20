@@ -399,6 +399,14 @@
 .user-type-button-labels:hover {
   background-color: var(--color-dodgerblue);
 }
+
+.login-message {
+  min-height: 24px;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  color: #b3261e;
+}
 .user-type-button-labels2 {
   align-self: stretch;
 }

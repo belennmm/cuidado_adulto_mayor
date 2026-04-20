@@ -1,9 +1,36 @@
 const form = document.querySelector(".register")
+const registerMessage = document.getElementById("registerMessage")
 
 const API_URL = "http://127.0.0.1:8080/api"
 
+function showMessage(message, isError = false) {
+    if (registerMessage) {
+        registerMessage.textContent = message
+        registerMessage.classList.toggle("error", isError)
+    }
+
+    alert(message)
+}
+
+function getErrorMessage(data, fallback) {
+    if (data?.message) return data.message
+
+    if (data?.errors) {
+        const firstError = Object.values(data.errors).flat()[0]
+        if (firstError) return firstError
+    }
+
+    return fallback
+}
+
+function clearSession() {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+}
+
 form.addEventListener("submit", async(e) => {
     e.preventDefault()
+    clearSession()
 
     const name = document.getElementById("username").value.trim()
     const email = document.getElementById("email").value.trim()
@@ -14,7 +41,12 @@ form.addEventListener("submit", async(e) => {
     const birthdate = document.getElementById("birthdate").value
 
     if (!name || !email || !password) {
-        alert("Completa los campos obligatorios")
+        showMessage("Completa los campos obligatorios", true)
+        return
+    }
+
+    if (!role) {
+        showMessage("Selecciona el tipo de usuario", true)
         return
     }
 
@@ -39,18 +71,22 @@ form.addEventListener("submit", async(e) => {
         const data = await response.json()
 
         if (!response.ok) {
+            clearSession()
             console.log(data)
-            alert(data.message || "Error al registrar")
+            showMessage(getErrorMessage(data, "Error al registrar"), true)
             return
         }
 
-        alert("Usuario registrado correctamente")
+        clearSession()
+        showMessage(data.message || "Registro enviado. Un administrador debe aprobar tu cuenta antes de iniciar sesion.")
 
-        window.location.href = "../index.html"
+        setTimeout(() => {
+            window.location.href = "../index.html"
+        }, 2500)
 
     } catch (error) {
         console.error(error)
-        alert("No se pudo conectar con el servidor")
+        showMessage("No se pudo conectar con el servidor", true)
     }
 })
 

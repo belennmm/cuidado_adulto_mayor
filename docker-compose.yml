@@ -1,0 +1,89 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    container_name: cuidado_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_NAME: "Cuidado Adulto Mayor"
+      APP_ENV: local
+      APP_KEY: base64:IhexPh7kbw4GKKdoMBKAiFXr3T973qlKTai2wGx5VxQ=
+      APP_DEBUG: "true"
+      APP_URL: http://127.0.0.1:8080
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: cuidado_adulto_mayor
+      DB_USERNAME: cuidado_user
+      DB_PASSWORD: cuidado_password
+      DB_SSLMODE: disable
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      SESSION_DRIVER: database
+      SANCTUM_STATEFUL_DOMAINS: localhost,localhost:3000,localhost:8080,127.0.0.1,127.0.0.1:3000,127.0.0.1:8080
+    ports:
+      - "8080:80"
+    volumes:
+      - backend_storage:/var/www/html/storage
+      - backend_cache:/var/www/html/bootstrap/cache
+    networks:
+      - cuidado_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    container_name: cuidado_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - cuidado_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: cuidado_postgres
+    environment:
+      POSTGRES_DB: cuidado_adulto_mayor
+      POSTGRES_USER: cuidado_user
+      POSTGRES_PASSWORD: cuidado_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cuidado_user -d cuidado_adulto_mayor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cuidado_network
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: cuidado_pgadmin
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - cuidado_network
+
+networks:
+  cuidado_network:
+    driver: bridge
+
+volumes:
+  backend_storage:
+  backend_cache:
+  postgres_data:
+  pgadmin_data:

@@ -3,8 +3,22 @@ const passwordInput = document.getElementById("passwordInput")
 const togglePassword = document.getElementById("togglePassword")
 const loginForm = document.querySelector(".rectangle-parent")
 const usernameInput = document.querySelector(".ingrese-usuario")
+const loginMessage = document.getElementById("loginMessage")
 
 const API_URL = "http://127.0.0.1:8080/api"
+
+function showLoginMessage(message) {
+    if (loginMessage) {
+        loginMessage.textContent = message
+    }
+
+    alert(message)
+}
+
+function clearSession() {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+}
 
 const roleRedirects = {
     admin: "./pages/admin/home-page.html",
@@ -41,12 +55,13 @@ if (togglePassword && passwordInput) {
 if (loginForm) {
     loginForm.addEventListener("submit", async function(event) {
         event.preventDefault()
+        clearSession()
 
         const email = usernameInput ? usernameInput.value.trim() : ""
         const password = passwordInput ? passwordInput.value.trim() : ""
 
         if (!email || !password) {
-            alert("Completa usuario y contraseña")
+            showLoginMessage("Completa usuario y contraseña")
             return
         }
 
@@ -63,7 +78,8 @@ if (loginForm) {
             const data = await response.json()
 
             if (!response.ok) {
-                alert(data.message || "Credenciales inválidas")
+                clearSession()
+                showLoginMessage(data.message || "Credenciales inválidas")
                 return
             }
 
@@ -74,7 +90,8 @@ if (loginForm) {
 
         } catch (error) {
             console.error("Error al conectar con el servidor:", error)
-            alert("No se pudo conectar con el servidor.")
+            clearSession()
+            showLoginMessage("No se pudo conectar con el servidor.")
         }
     })
 }
