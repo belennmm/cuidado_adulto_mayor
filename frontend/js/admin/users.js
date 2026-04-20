@@ -9,18 +9,6 @@ function getToken() {
   return localStorage.getItem("token")
 }
 
-function getCurrentUser() {
-  try {
-    return JSON.parse(localStorage.getItem("user") || "null")
-  } catch (error) {
-    return null
-  }
-}
-
-function isCurrentUserAdmin() {
-  return getCurrentUser()?.role === "admin" && Boolean(getToken())
-}
-
 function isApproved(value) {
   return value === true || value === 1 || value === "1" || value === "true" || value === "t"
 }
@@ -85,8 +73,8 @@ async function loadUsers() {
 async function approveUser(userId) {
   const token = getToken()
 
-  if (!isCurrentUserAdmin()) {
-    alert("Inicia sesion como administrador para aprobar usuarios.")
+  if (!token) {
+    alert("Inicia sesion para aprobar usuarios.")
     return
   }
 

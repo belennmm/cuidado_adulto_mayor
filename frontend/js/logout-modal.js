@@ -28,6 +28,8 @@ if (logoutModal) {
 
 if (confirmLogout) {
   confirmLogout.addEventListener("click", () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
     window.location.href = "../../index.html"
   })
 }
