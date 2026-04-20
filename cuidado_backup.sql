@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict n94zCN93I9ZlfIRCRdzWgi6pcSdPWMHgttsg01dXPaI58pkfp7HJwzMRwTVhFgc
+\restrict tKXmLbtyh1WQ2vcPFtztmdIsuHWTUP5GHETTe36TJSiTOFufIZMNiDRYbthw8Qi
 
 -- Dumped from database version 16.13
 -- Dumped by pg_dump version 16.13
@@ -688,6 +688,7 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 7	App\\Models\\User	6	API Token	66efab2049899c07dc8a7c89f3f585d11793928e1014649cda2d361d0e76627a	["*"]	\N	\N	2026-04-20 05:27:52	2026-04-20 05:27:52
 8	App\\Models\\User	1	API Token	d5033e1c95ba4cc546fe6375b1ab1b6e87e4a29751fe444fcd715dd445a79733	["*"]	2026-04-20 05:30:34	\N	2026-04-20 05:30:31	2026-04-20 05:30:34
 9	App\\Models\\User	7	API Token	1a45de661d3e8e47b9e2c1f7e5ac61ccc4a601f810eee9163e18039dc2c3e42f	["*"]	\N	\N	2026-04-20 05:30:39	2026-04-20 05:30:39
+10	App\\Models\\User	1	API Token	02086140723d6c9f8b176c9ab465cd5658287422fc7e2cd7594735a7cb66ca86	["*"]	\N	\N	2026-04-20 07:47:50	2026-04-20 07:47:50
 \.
 
 
@@ -712,6 +713,7 @@ COPY public.registro_cumplimiento (id_actividad, iduser, fecha_cumplimiento, est
 --
 
 COPY public.sessions (id, user_id, ip_address, user_agent, payload, last_activity) FROM stdin;
+dQTzArEMbnHkRgo2YebyibrJo2LFZITg2LKrDY1x	\N	172.19.0.1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0	YTozOntzOjY6Il90b2tlbiI7czo0MDoiWWhFOGFkSG5DaWgxV3RqMmRwUERadG1ReHUxOTBLN215Y3A1SE1IcCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=	1776670914
 \.
 
 
@@ -784,7 +786,7 @@ SELECT pg_catalog.setval('public.migrations_id_seq', 7, true);
 -- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cuidado_user
 --
 
-SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 9, true);
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 10, true);
 
 
 --
@@ -1086,5 +1088,5 @@ ALTER TABLE ONLY public.registro_cumplimiento
 -- PostgreSQL database dump complete
 --
 
-\unrestrict n94zCN93I9ZlfIRCRdzWgi6pcSdPWMHgttsg01dXPaI58pkfp7HJwzMRwTVhFgc
+\unrestrict tKXmLbtyh1WQ2vcPFtztmdIsuHWTUP5GHETTe36TJSiTOFufIZMNiDRYbthw8Qi
 

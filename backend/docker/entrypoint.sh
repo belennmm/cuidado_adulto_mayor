@@ -6,6 +6,6 @@ if [ -z "$APP_KEY" ]; then
 fi
 
 php artisan config:clear
-php artisan migrate --force --seed
+php artisan migrate --force
 
 exec apache2-foreground

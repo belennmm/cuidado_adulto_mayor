@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-profesional/professional-layout.css" />
-    <link rel="stylesheet" href="../../css/cuidador-profesional/home-page.css" />
+    <link rel="stylesheet" href="../../css/incidents.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -24,7 +24,7 @@
         <div class="sidebar-top"></div>
 
         <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
             <i class="bx bxs-home"></i>
           </a>
 
@@ -44,7 +44,7 @@
             <i class="bx bxs-star"></i>
           </a>
 
-          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+          <a href="./incidents.html" class="nav-icon active" data-label="Incidentes">
             <i class="bx bxs-error"></i>
           </a>
         </nav>
@@ -59,8 +59,23 @@
           </a>
         </div>
       </aside>
+      <main class="main-content">
+        <section class="incidents-page">
+          <div class="incidents-header">
+            <div>
+              <h1 class="incidents-title">Incidentes del dia</h1>
+              <div class="incidents-date" id="incidentsDate">Hoy</div>
+            </div>
 
-  
+            <div class="incidents-counter">
+              <i class="bx bxs-error"></i>
+              <span id="incidentsCount">0</span>
+            </div>
+          </div>
+
+          <section class="incidents-list" id="incidentsList"></section>
+        </section>
+      </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
@@ -81,6 +96,7 @@
 
   
     <script src="../../js/logout-modal.js"></script>
+    <script src="../../js/incidents.js"></script>
 
   
   </body>

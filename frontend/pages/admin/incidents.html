@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
-    <link rel="stylesheet" href="../../css/admin/placeholder.css" />
+    <link rel="stylesheet" href="../../css/incidents.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -33,13 +33,13 @@
           <a href="./users.html" class="nav-icon" data-label="Usuarios">
             <i class="bx bxs-user"></i>
           </a>
-          <a href="./shifts.html" class="nav-icon active" data-label="Turnos">
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
             <i class="bx bxs-time"></i>
           </a>
           <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
             <i class="bx bxs-id-card"></i>
           </a>
-          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+          <a href="./incidents.html" class="nav-icon active" data-label="Incidentes">
             <i class="bx bxs-error"></i>
           </a>
           <a href="./routines.html" class="nav-icon" data-label="Rutinas">
@@ -64,7 +64,21 @@
       <main class="admin-main">
         <div class="admin-topbar"></div>
 
-       
+        <section class="page-shell incidents-page">
+          <div class="incidents-header">
+            <div>
+              <h1 class="incidents-title">Incidentes del dia</h1>
+              <div class="incidents-date" id="incidentsDate">Hoy</div>
+            </div>
+
+            <div class="incidents-counter">
+              <i class="bx bxs-error"></i>
+              <span id="incidentsCount">0</span>
+            </div>
+          </div>
+
+          <section class="incidents-list" id="incidentsList"></section>
+        </section>
       </main>
     </div>
 
@@ -86,6 +100,7 @@
 
   
     <script src="../../js/logout-modal.js"></script>
+    <script src="../../js/incidents.js"></script>
 
   </body>
 </html>
