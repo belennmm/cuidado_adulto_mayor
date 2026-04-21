@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OlderAdult extends Model
 {
@@ -37,5 +38,22 @@ class OlderAdult extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function medications(): HasMany
+    {
+        return $this->hasMany(OlderAdultMedication::class)
+            ->where('is_active', true)
+            ->orderBy('created_at');
+    }
+
+    public function medicationAssignments(): HasMany
+    {
+        return $this->hasMany(OlderAdultMedication::class)->orderBy('created_at');
+    }
+
+    public function medicationAdministrations(): HasMany
+    {
+        return $this->hasMany(MedicationAdministration::class)->orderByDesc('administration_date');
     }
 }

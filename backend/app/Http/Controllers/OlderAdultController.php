@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Medication;
 use App\Models\OlderAdult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OlderAdultController extends Controller
 {
     public function show(OlderAdult $olderAdult): JsonResponse
     {
+        $olderAdult->load('medicationAssignments.medication');
+
         return response()->json([
             'older_adult' => $this->formatOlderAdult($olderAdult),
         ]);
@@ -28,11 +32,17 @@ class OlderAdultController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate($this->rules());
+        $medications = $data['medications'] ?? [];
+        unset($data['medications']);
 
         $data['status'] = $data['status'] ?? 'Estable';
         $data['created_by'] = $request->user()->id;
 
-        $olderAdult = OlderAdult::create($data);
+        $olderAdult = DB::transaction(function () use ($data, $medications) {
+            $olderAdult = OlderAdult::create($data);
+            $this->syncMedications($olderAdult, $medications);
+            return $olderAdult->load('medicationAssignments.medication');
+        });
 
         return response()->json([
             'message' => 'Adulto mayor creado correctamente.',
@@ -43,10 +53,16 @@ class OlderAdultController extends Controller
     public function update(Request $request, OlderAdult $olderAdult): JsonResponse
     {
         $data = $request->validate($this->rules());
+        $medications = $data['medications'] ?? [];
+        unset($data['medications']);
         $data['status'] = $data['status'] ?? 'Estable';
 
-        $olderAdult->update($data);
-        $olderAdult->refresh();
+        DB::transaction(function () use ($olderAdult, $data, $medications) {
+            $olderAdult->update($data);
+            $this->syncMedications($olderAdult, $medications);
+        });
+
+        $olderAdult->refresh()->load('medicationAssignments.medication');
 
         return response()->json([
             'message' => 'Adulto mayor actualizado correctamente.',
@@ -78,6 +94,13 @@ class OlderAdultController extends Controller
             'allergies' => 'nullable|string|max:255',
             'medical_history' => 'nullable|string',
             'notes' => 'nullable|string',
+            'medications' => 'nullable|array',
+            'medications.*.name' => 'required|string|max:255',
+            'medications.*.dosage' => 'nullable|string|max:255',
+            'medications.*.schedule' => 'nullable|string|max:255',
+            'medications.*.days' => 'nullable|array',
+            'medications.*.days.*' => 'string|max:50',
+            'medications.*.notes' => 'nullable|string',
         ];
     }
 
@@ -97,7 +120,64 @@ class OlderAdultController extends Controller
             'allergies' => $olderAdult->allergies,
             'medical_history' => $olderAdult->medical_history,
             'notes' => $olderAdult->notes,
+            'medications' => $olderAdult->relationLoaded('medicationAssignments')
+                ? $olderAdult->medicationAssignments->map(fn ($assignment) => [
+                    'id' => $assignment->id,
+                    'medication_id' => $assignment->medication_id,
+                    'name' => $assignment->medication?->name,
+                    'dosage' => $assignment->dosage,
+                    'schedule' => $assignment->schedule,
+                    'days' => $assignment->days ?? [],
+                    'notes' => $assignment->notes,
+                    'is_active' => $assignment->is_active,
+                ])->values()->all()
+                : [],
             'created_at' => $olderAdult->created_at?->toISOString(),
         ];
+    }
+
+    private function syncMedications(OlderAdult $olderAdult, array $medications): void
+    {
+        $olderAdult->medicationAssignments()->delete();
+
+        foreach ($medications as $medicationData) {
+            $name = trim((string) ($medicationData['name'] ?? ''));
+
+            if ($name === '') {
+                continue;
+            }
+
+            $medication = Medication::firstOrCreate(
+                ['name' => $name],
+                ['is_active' => true]
+            );
+
+            $olderAdult->medicationAssignments()->create([
+                'medication_id' => $medication->id,
+                'dosage' => $this->nullableString($medicationData['dosage'] ?? null),
+                'schedule' => $this->nullableString($medicationData['schedule'] ?? null),
+                'days' => $this->normalizeDays($medicationData['days'] ?? []),
+                'notes' => $this->nullableString($medicationData['notes'] ?? null),
+                'is_active' => true,
+            ]);
+        }
+    }
+
+    private function normalizeDays(mixed $days): array
+    {
+        if (!is_array($days)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(function ($day) {
+            $value = trim((string) $day);
+            return $value !== '' ? $value : null;
+        }, $days)));
+    }
+
+    private function nullableString(mixed $value): ?string
+    {
+        $stringValue = trim((string) ($value ?? ''));
+        return $stringValue !== '' ? $stringValue : null;
     }
 }
