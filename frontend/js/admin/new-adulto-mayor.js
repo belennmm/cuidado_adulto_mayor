@@ -57,6 +57,17 @@ function addMedicineCard(medicine = null) {
       </div>
 
       <div class="form-group">
+        <label for="medicineDosage${medicineCount}">Dosis</label>
+        <input
+          type="text"
+          id="medicineDosage${medicineCount}"
+          name="medicineDosage${medicineCount}"
+          placeholder="Ej. 1 pastilla"
+          value="${medicine?.dosage || ""}"
+        />
+      </div>
+
+      <div class="form-group">
         <label for="medicineSchedule${medicineCount}">Horario</label>
         <input
           type="text"
@@ -65,6 +76,15 @@ function addMedicineCard(medicine = null) {
           placeholder="Ej. 8:00 AM, 2:00 PM"
           value="${medicine?.schedule || ""}"
         />
+      </div>
+
+      <div class="form-group full-width">
+        <label for="medicineNotes${medicineCount}">Notas</label>
+        <textarea
+          id="medicineNotes${medicineCount}"
+          name="medicineNotes${medicineCount}"
+          placeholder="Indicaciones adicionales"
+        >${medicine?.notes || ""}</textarea>
       </div>
     </div>
 
@@ -93,6 +113,31 @@ function getValue(formData, key) {
   return typeof value === "string" && value.trim() !== "" ? value.trim() : null
 }
 
+function getMedicineCardsPayload() {
+  return Array.from(document.querySelectorAll(".medicine-card"))
+    .map((card) => {
+      const index = card.dataset.index
+      const name = document.getElementById(`medicineName${index}`)?.value.trim() || ""
+      const dosage = document.getElementById(`medicineDosage${index}`)?.value.trim() || ""
+      const schedule = document.getElementById(`medicineSchedule${index}`)?.value.trim() || ""
+      const notes = document.getElementById(`medicineNotes${index}`)?.value.trim() || ""
+      const days = Array.from(card.querySelectorAll(`input[name="medicineDays${index}"]:checked`)).map((input) => input.value)
+
+      if (!name) {
+        return null
+      }
+
+      return {
+        name,
+        dosage: dosage || null,
+        schedule: schedule || null,
+        days,
+        notes: notes || null,
+      }
+    })
+    .filter(Boolean)
+}
+
 function buildPayload(formData) {
   return {
     full_name: getValue(formData, "fullName"),
@@ -108,6 +153,7 @@ function buildPayload(formData) {
     allergies: getValue(formData, "allergies"),
     medical_history: getValue(formData, "medicalHistory"),
     notes: getValue(formData, "notes"),
+    medications: getMedicineCardsPayload(),
   }
 }
 
