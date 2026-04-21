@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/users', [AdminUserController::class, 'index']);
+    Route::get('/professional-caregivers', [AdminUserController::class, 'professionalCaregivers']);
     Route::patch('/users/{user}/approve', [AdminUserController::class, 'approve']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);

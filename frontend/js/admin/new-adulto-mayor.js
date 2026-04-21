@@ -1,6 +1,7 @@
 const newOlderAdultForm = document.getElementById("newOlderAdultForm")
 const medicinesList = document.getElementById("medicinesList")
 const addMedicineButton = document.getElementById("addMedicineButton")
+const professionalCaregiver = document.getElementById("professionalCaregiver")
 
 const API_URL = "http://127.0.0.1:8080/api"
 let medicineCount = 0
@@ -101,11 +102,47 @@ function buildPayload(formData) {
     room: getValue(formData, "room"),
     status: getValue(formData, "status"),
     caregiver_family: getValue(formData, "caregiverFamily"),
+    professional_caregiver_id: getValue(formData, "professionalCaregiver"),
     emergency_contact_name: getValue(formData, "contactName"),
     emergency_contact_phone: getValue(formData, "contactPhone"),
     allergies: getValue(formData, "allergies"),
     medical_history: getValue(formData, "medicalHistory"),
     notes: getValue(formData, "notes"),
+  }
+}
+
+async function loadProfessionalCaregivers() {
+  if (!professionalCaregiver) return
+
+  const token = getToken()
+
+  if (!token) return
+
+  try {
+    const response = await fetch(`${API_URL}/admin/professional-caregivers`, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudieron cargar los cuidadores profesionales.")
+    }
+
+    professionalCaregiver.innerHTML = '<option value="">Seleccione cuidador profesional</option>'
+
+    ;(data.users || []).forEach((user) => {
+      const option = document.createElement("option")
+      option.value = String(user.id)
+      option.textContent = user.name
+      professionalCaregiver.appendChild(option)
+    })
+  } catch (error) {
+    professionalCaregiver.innerHTML = '<option value="">No se pudieron cargar los cuidadores</option>'
   }
 }
 
@@ -177,3 +214,5 @@ if (addMedicineButton) {
 if (medicinesList) {
   addMedicineCard()
 }
+
+loadProfessionalCaregivers()

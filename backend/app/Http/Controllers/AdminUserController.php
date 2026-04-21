@@ -17,6 +17,18 @@ class AdminUserController extends Controller
         return response()->json(['users' => $users]);
     }
 
+    public function professionalCaregivers(): JsonResponse
+    {
+        $users = User::query()
+            ->select('id', 'name', 'email', 'role', 'is_approved')
+            ->where('role', 'profesional')
+            ->where('is_approved', true)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['users' => $users]);
+    }
+
     public function approve(User $user): JsonResponse
     {
         $user->update(['is_approved' => true]);

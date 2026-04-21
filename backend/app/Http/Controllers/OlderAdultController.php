@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OlderAdult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OlderAdultController extends Controller
 {
@@ -73,6 +74,13 @@ class OlderAdultController extends Controller
             'room' => 'nullable|string|max:255',
             'status' => 'nullable|string|max:255',
             'caregiver_family' => 'nullable|string|max:255',
+            'professional_caregiver_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where(fn ($query) => $query
+                    ->where('role', 'profesional')
+                    ->where('is_approved', true)),
+            ],
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:255',
             'allergies' => 'nullable|string|max:255',
@@ -92,6 +100,8 @@ class OlderAdultController extends Controller
             'room' => $olderAdult->room,
             'status' => $olderAdult->status,
             'caregiver_family' => $olderAdult->caregiver_family,
+            'professional_caregiver_id' => $olderAdult->professional_caregiver_id,
+            'professional_caregiver_name' => $olderAdult->professionalCaregiver?->name,
             'emergency_contact_name' => $olderAdult->emergency_contact_name,
             'emergency_contact_phone' => $olderAdult->emergency_contact_phone,
             'allergies' => $olderAdult->allergies,

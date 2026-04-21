@@ -18,6 +18,7 @@ class OlderAdult extends Model
         'room',
         'status',
         'caregiver_family',
+        'professional_caregiver_id',
         'emergency_contact_name',
         'emergency_contact_phone',
         'allergies',
@@ -37,5 +38,10 @@ class OlderAdult extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function professionalCaregiver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'professional_caregiver_id');
     }
 }
