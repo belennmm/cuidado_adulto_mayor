@@ -1,72 +1,77 @@
 const olderAdultSearchInput = document.getElementById("olderAdultSearchInput")
 const olderAdultsTableBody = document.getElementById("olderAdultsTableBody")
 
-const olderAdultsData = [
-  {
-    id: 1,
-    name: "Elena Rodríguez",
-    age: 78,
-    caregiver: "Carlos Méndez",
-    room: "A-101",
-    status: "Estable"
-  },
-  {
-    id: 2,
-    name: "Miguel Herrera",
-    age: 81,
-    caregiver: "María Castillo",
-    room: "B-204",
-    status: "Atención"
-  },
-  {
-    id: 3,
-    name: "Rosa Pérez",
-    age: 74,
-    caregiver: "Lucía Herrera",
-    room: "A-115",
-    status: "Estable"
-  },
-  {
-    id: 4,
-    name: "Jorge Ramírez",
-    age: 85,
-    caregiver: "Carlos Méndez",
-    room: "C-302",
-    status: "Crítico"
-  },
-  {
-    id: 5,
-    name: "Marta López",
-    age: 79,
-    caregiver: "Sofía Ramírez",
-    room: "B-210",
-    status: "Atención"
-  },
-  {
-    id: 6,
-    name: "Ricardo Gómez",
-    age: 83,
-    caregiver: "María Castillo",
-    room: "A-122",
-    status: "Estable"
-  }
-]
+const API_URL = "http://127.0.0.1:8080/api"
+
+let olderAdultsData = []
+
+function getToken() {
+  return localStorage.getItem("token")
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;")
+}
 
 function getStatusClass(status) {
-  if (status === "Estable") return "status-stable"
-  if (status === "Atención") return "status-attention"
+  const normalizedStatus = String(status || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+
+  if (normalizedStatus === "estable") return "status-stable"
+  if (normalizedStatus === "atencion") return "status-attention"
   return "status-critical"
+}
+
+async function loadOlderAdults() {
+  const token = getToken()
+
+  if (!token) {
+    renderEmpty("Inicia sesion como administrador para ver adultos mayores.")
+    return
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/admin/older-adults`, {
+      cache: "no-store",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudieron cargar los adultos mayores.")
+    }
+
+    olderAdultsData = data.older_adults || []
+    renderOlderAdults(olderAdultsData)
+  } catch (error) {
+    renderEmpty(error.message)
+  }
+}
+
+function renderEmpty(message) {
+  olderAdultsTableBody.innerHTML = `
+    <div class="empty-state">
+      ${escapeHtml(message)}
+    </div>
+  `
 }
 
 function renderOlderAdults(list) {
   olderAdultsTableBody.innerHTML = ""
 
   if (!list.length) {
-    olderAdultsTableBody.innerHTML = `
-      <div class="empty-state">
-        No se encontraron adultos mayores.
-      </div>
-    `
+    renderEmpty("No se encontraron adultos mayores.")
     return
   }
 
@@ -77,26 +82,26 @@ function renderOlderAdults(list) {
     row.innerHTML = `
       <div class="older-adult-cell older-adult-name" data-label="Nombre">
         <div class="older-adult-avatar"></div>
-        <span>${olderAdult.name}</span>
+        <span>${escapeHtml(olderAdult.full_name)}</span>
       </div>
 
       <div class="older-adult-cell" data-label="Edad">
-        ${olderAdult.age}
+        ${escapeHtml(olderAdult.age || "Sin edad")}
       </div>
 
       <div class="older-adult-cell" data-label="Encargado">
-        ${olderAdult.caregiver}
+        ${escapeHtml(olderAdult.caregiver_family || "Sin encargado")}
       </div>
 
-      <div class="older-adult-cell" data-label="Habitación">
-        ${olderAdult.room}
+      <div class="older-adult-cell" data-label="Habitacion">
+        ${escapeHtml(olderAdult.room || "Sin habitacion")}
       </div>
 
       <div class="older-adult-cell" data-label="Estado">
-        <span class="status-badge ${getStatusClass(olderAdult.status)}">${olderAdult.status}</span>
+        <span class="status-badge ${getStatusClass(olderAdult.status)}">${escapeHtml(olderAdult.status || "Estable")}</span>
       </div>
 
-      <div class="older-adult-cell" data-label="Acción">
+      <div class="older-adult-cell" data-label="Accion">
         <button class="edit-button" data-id="${olderAdult.id}">Editar</button>
       </div>
     `
@@ -119,11 +124,11 @@ function filterOlderAdults() {
 
   const filteredOlderAdults = olderAdultsData.filter((olderAdult) => {
     return (
-      olderAdult.name.toLowerCase().includes(searchValue) ||
-      String(olderAdult.age).includes(searchValue) ||
-      olderAdult.caregiver.toLowerCase().includes(searchValue) ||
-      olderAdult.room.toLowerCase().includes(searchValue) ||
-      olderAdult.status.toLowerCase().includes(searchValue)
+      String(olderAdult.full_name || "").toLowerCase().includes(searchValue) ||
+      String(olderAdult.age || "").includes(searchValue) ||
+      String(olderAdult.caregiver_family || "").toLowerCase().includes(searchValue) ||
+      String(olderAdult.room || "").toLowerCase().includes(searchValue) ||
+      String(olderAdult.status || "").toLowerCase().includes(searchValue)
     )
   })
 
@@ -134,4 +139,4 @@ if (olderAdultSearchInput) {
   olderAdultSearchInput.addEventListener("input", filterOlderAdults)
 }
 
-renderOlderAdults(olderAdultsData)
+loadOlderAdults()

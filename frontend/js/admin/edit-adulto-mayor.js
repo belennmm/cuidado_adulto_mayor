@@ -21,169 +21,21 @@ const closeDeleteModal = document.getElementById("closeDeleteModal")
 const confirmDeleteOlderAdult = document.getElementById("confirmDeleteOlderAdult")
 const deleteModal = document.getElementById("deleteModal")
 
-const caregiverFamilyOptions = [
-  "Laura Rodríguez",
-  "José Pérez",
-  "Marta Gómez",
-  "Ana López"
-]
+const API_URL = "http://127.0.0.1:8080/api"
 
-const olderAdultsData = [
-  {
-    id: 1,
-    fullName: "Elena Rodríguez",
-    age: 78,
-    birthdate: "1946-03-12",
-    gender: "Femenino",
-    room: "A-101",
-    status: "Estable",
-    caregiverFamily: "Laura Rodríguez",
-    contactName: "Laura Rodríguez",
-    contactPhone: "4455-1200",
-    allergies: "Penicilina",
-    medicalHistory: "Hipertensión controlada. Antecedente de cirugía de cadera.",
-    notes: "Requiere supervisión en la mañana",
-    medicines: [
-      {
-        name: "Losartán",
-        schedule: "8:00 AM",
-        days: ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
-      },
-      {
-        name: "Calcio",
-        schedule: "2:00 PM",
-        days: ["lunes", "miercoles", "viernes"]
-      }
-    ]
-  },
-  {
-    id: 2,
-    fullName: "Miguel Herrera",
-    age: 81,
-    birthdate: "1943-07-01",
-    gender: "Masculino",
-    room: "B-204",
-    status: "Atención",
-    caregiverFamily: "José Pérez",
-    contactName: "Luis Herrera",
-    contactPhone: "5544-8801",
-    allergies: "Ninguna",
-    medicalHistory: "Diabetes tipo 2. Control frecuente de presión.",
-    notes: "Control frecuente de presión",
-    medicines: [
-      {
-        name: "Metformina",
-        schedule: "7:00 AM, 7:00 PM",
-        days: ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
-      }
-    ]
-  },
-  {
-    id: 3,
-    fullName: "Rosa Pérez",
-    age: 74,
-    birthdate: "1950-10-18",
-    gender: "Femenino",
-    room: "A-115",
-    status: "Estable",
-    caregiverFamily: "Marta Gómez",
-    contactName: "Marta Pérez",
-    contactPhone: "5123-9911",
-    allergies: "Mariscos",
-    medicalHistory: "Antecedente de artritis.",
-    notes: "Dieta suave",
-    medicines: [
-      {
-        name: "Ibuprofeno",
-        schedule: "9:00 AM",
-        days: ["martes", "jueves", "sabado"]
-      }
-    ]
-  },
-  {
-    id: 4,
-    fullName: "Jorge Ramírez",
-    age: 85,
-    birthdate: "1939-01-22",
-    gender: "Masculino",
-    room: "C-302",
-    status: "Crítico",
-    caregiverFamily: "Ana López",
-    contactName: "Andrea Ramírez",
-    contactPhone: "4778-3301",
-    allergies: "Polvo",
-    medicalHistory: "Insuficiencia cardíaca. Monitoreo constante.",
-    notes: "Monitoreo constante",
-    medicines: [
-      {
-        name: "Furosemida",
-        schedule: "8:00 AM",
-        days: ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
-      },
-      {
-        name: "Aspirina",
-        schedule: "1:00 PM",
-        days: ["lunes", "martes", "miercoles", "jueves", "viernes"]
-      }
-    ]
-  },
-  {
-    id: 5,
-    fullName: "Marta López",
-    age: 79,
-    birthdate: "1945-06-30",
-    gender: "Femenino",
-    room: "B-210",
-    status: "Atención",
-    caregiverFamily: "Laura Rodríguez",
-    contactName: "José López",
-    contactPhone: "5667-1212",
-    allergies: "Lácteos",
-    medicalHistory: "Problemas de movilidad y osteoporosis.",
-    notes: "Ayuda para movilización",
-    medicines: [
-      {
-        name: "Vitamina D",
-        schedule: "10:00 AM",
-        days: ["lunes", "miercoles", "viernes"]
-      }
-    ]
-  },
-  {
-    id: 6,
-    fullName: "Ricardo Gómez",
-    age: 83,
-    birthdate: "1941-09-05",
-    gender: "Masculino",
-    room: "A-122",
-    status: "Estable",
-    caregiverFamily: "José Pérez",
-    contactName: "Claudia Gómez",
-    contactPhone: "5990-8800",
-    allergies: "Ninguna",
-    medicalHistory: "Sin complicaciones recientes.",
-    notes: "Rutina estable",
-    medicines: [
-      {
-        name: "Omeprazol",
-        schedule: "8:00 AM",
-        days: ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
-      }
-    ]
-  }
-]
-
+const params = new URLSearchParams(window.location.search)
+const olderAdultId = params.get("id")
 let medicineCount = 0
 
 function createDayOptions(index, selectedDays = []) {
   const days = [
     { value: "lunes", label: "Lunes" },
     { value: "martes", label: "Martes" },
-    { value: "miercoles", label: "Miércoles" },
+    { value: "miercoles", label: "Miercoles" },
     { value: "jueves", label: "Jueves" },
     { value: "viernes", label: "Viernes" },
-    { value: "sabado", label: "Sábado" },
-    { value: "domingo", label: "Domingo" }
+    { value: "sabado", label: "Sabado" },
+    { value: "domingo", label: "Domingo" },
   ]
 
   return days
@@ -199,6 +51,8 @@ function createDayOptions(index, selectedDays = []) {
 }
 
 function addMedicineCard(medicine = null) {
+  if (!medicinesList) return
+
   medicineCount += 1
 
   const card = document.createElement("div")
@@ -236,7 +90,7 @@ function addMedicineCard(medicine = null) {
     </div>
 
     <div class="days-group">
-      <label>Días de administración</label>
+      <label>Dias de administracion</label>
       <div class="days-options">
         ${createDayOptions(medicineCount, medicine?.days || [])}
       </div>
@@ -251,39 +105,140 @@ function addMedicineCard(medicine = null) {
   medicinesList.appendChild(card)
 }
 
-const params = new URLSearchParams(window.location.search)
-const olderAdultId = Number(params.get("id"))
+function getToken() {
+  return localStorage.getItem("token")
+}
 
-const selectedOlderAdult = olderAdultsData.find((olderAdult) => olderAdult.id === olderAdultId)
+function getValue(input) {
+  return input && typeof input.value === "string" && input.value.trim() !== "" ? input.value.trim() : null
+}
 
-if (selectedOlderAdult) {
-  fullName.value = selectedOlderAdult.fullName || ""
-  age.value = selectedOlderAdult.age || ""
-  birthdate.value = selectedOlderAdult.birthdate || ""
-  gender.value = selectedOlderAdult.gender || ""
-  room.value = selectedOlderAdult.room || ""
-  status.value = selectedOlderAdult.status || ""
-  caregiverFamily.value = selectedOlderAdult.caregiverFamily || ""
-  contactName.value = selectedOlderAdult.contactName || ""
-  contactPhone.value = selectedOlderAdult.contactPhone || ""
-  allergies.value = selectedOlderAdult.allergies || ""
-  medicalHistory.value = selectedOlderAdult.medicalHistory || ""
-  notes.value = selectedOlderAdult.notes || ""
+function buildPayload() {
+  return {
+    full_name: getValue(fullName),
+    age: getValue(age),
+    birthdate: getValue(birthdate),
+    gender: getValue(gender),
+    room: getValue(room),
+    status: getValue(status),
+    caregiver_family: getValue(caregiverFamily),
+    emergency_contact_name: getValue(contactName),
+    emergency_contact_phone: getValue(contactPhone),
+    allergies: getValue(allergies),
+    medical_history: getValue(medicalHistory),
+    notes: getValue(notes),
+  }
+}
 
-  medicinesList.innerHTML = ""
-  selectedOlderAdult.medicines.forEach((medicine) => addMedicineCard(medicine))
-} else {
-  addMedicineCard()
+async function apiRequest(path, options = {}) {
+  const token = getToken()
+
+  if (!token) {
+    throw new Error("Inicia sesion como administrador para gestionar adultos mayores.")
+  }
+
+  const response = await fetch(`${API_URL}${path}`, {
+    cache: "no-store",
+    ...options,
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {}),
+    },
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const validationErrors = data.errors ? Object.values(data.errors).flat().join("\n") : null
+    throw new Error(validationErrors || data.message || "No se pudo completar la operacion.")
+  }
+
+  return data
+}
+
+function fillForm(olderAdult) {
+  fullName.value = olderAdult.full_name || ""
+  age.value = olderAdult.age || ""
+  birthdate.value = olderAdult.birthdate || ""
+  gender.value = olderAdult.gender || ""
+  room.value = olderAdult.room || ""
+  status.value = olderAdult.status || ""
+  caregiverFamily.value = olderAdult.caregiver_family || ""
+  contactName.value = olderAdult.emergency_contact_name || ""
+  contactPhone.value = olderAdult.emergency_contact_phone || ""
+  allergies.value = olderAdult.allergies || ""
+  medicalHistory.value = olderAdult.medical_history || ""
+  notes.value = olderAdult.notes || ""
+}
+
+async function loadOlderAdult() {
+  if (!olderAdultId) {
+    alert("No se encontro el adulto mayor a editar.")
+    window.location.href = "./adultos-mayores.html"
+    return
+  }
+
+  try {
+    const data = await apiRequest(`/admin/older-adults/${olderAdultId}`)
+    fillForm(data.older_adult || {})
+  } catch (error) {
+    alert(error.message)
+    window.location.href = "./adultos-mayores.html"
+  }
+}
+
+async function updateOlderAdult() {
+  const payload = buildPayload()
+
+  if (!payload.full_name) {
+    throw new Error("Ingresa el nombre completo del adulto mayor.")
+  }
+
+  return apiRequest(`/admin/older-adults/${olderAdultId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  })
+}
+
+async function deleteOlderAdult() {
+  return apiRequest(`/admin/older-adults/${olderAdultId}`, {
+    method: "DELETE",
+  })
 }
 
 if (addMedicineButton) {
   addMedicineButton.addEventListener("click", () => addMedicineCard())
 }
 
+if (medicinesList) {
+  addMedicineCard()
+}
+
 if (editOlderAdultForm) {
-  editOlderAdultForm.addEventListener("submit", (event) => {
+  editOlderAdultForm.addEventListener("submit", async (event) => {
     event.preventDefault()
-    alert("Se guardaron los cambios del adulto mayor.")
+
+    const submitButton = editOlderAdultForm.querySelector(".primary-button")
+
+    try {
+      if (submitButton) {
+        submitButton.disabled = true
+        submitButton.textContent = "Guardando..."
+      }
+
+      const data = await updateOlderAdult()
+      alert(data.message || "Se guardaron los cambios del adulto mayor.")
+      window.location.href = "./adultos-mayores.html"
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false
+        submitButton.textContent = "Guardar cambios"
+      }
+    }
   })
 }
 
@@ -308,8 +263,20 @@ if (deleteModal) {
 }
 
 if (confirmDeleteOlderAdult) {
-  confirmDeleteOlderAdult.addEventListener("click", () => {
-    alert("Adulto mayor eliminado")
-    window.location.href = "./adultos-mayores.html"
+  confirmDeleteOlderAdult.addEventListener("click", async () => {
+    try {
+      confirmDeleteOlderAdult.disabled = true
+      confirmDeleteOlderAdult.textContent = "Eliminando..."
+
+      const data = await deleteOlderAdult()
+      alert(data.message || "Adulto mayor eliminado correctamente.")
+      window.location.href = "./adultos-mayores.html"
+    } catch (error) {
+      alert(error.message)
+      confirmDeleteOlderAdult.disabled = false
+      confirmDeleteOlderAdult.textContent = "Si, eliminar"
+    }
   })
 }
+
+loadOlderAdult()

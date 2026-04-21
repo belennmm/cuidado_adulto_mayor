@@ -2,24 +2,25 @@ const newOlderAdultForm = document.getElementById("newOlderAdultForm")
 const medicinesList = document.getElementById("medicinesList")
 const addMedicineButton = document.getElementById("addMedicineButton")
 
+const API_URL = "http://127.0.0.1:8080/api"
 let medicineCount = 0
 
-function createDayOptions(index) {
+function createDayOptions(index, selectedDays = []) {
   const days = [
     { value: "lunes", label: "Lunes" },
     { value: "martes", label: "Martes" },
-    { value: "miercoles", label: "Miércoles" },
+    { value: "miercoles", label: "Miercoles" },
     { value: "jueves", label: "Jueves" },
     { value: "viernes", label: "Viernes" },
-    { value: "sabado", label: "Sábado" },
-    { value: "domingo", label: "Domingo" }
+    { value: "sabado", label: "Sabado" },
+    { value: "domingo", label: "Domingo" },
   ]
 
   return days
     .map(
       (day) => `
         <label class="day-option">
-          <input type="checkbox" name="medicineDays${index}" value="${day.value}" />
+          <input type="checkbox" name="medicineDays${index}" value="${day.value}" ${selectedDays.includes(day.value) ? "checked" : ""} />
           <span>${day.label}</span>
         </label>
       `
@@ -27,7 +28,9 @@ function createDayOptions(index) {
     .join("")
 }
 
-function addMedicineCard() {
+function addMedicineCard(medicine = null) {
+  if (!medicinesList) return
+
   medicineCount += 1
 
   const card = document.createElement("div")
@@ -48,6 +51,7 @@ function addMedicineCard() {
           id="medicineName${medicineCount}"
           name="medicineName${medicineCount}"
           placeholder="Ingrese nombre de medicina"
+          value="${medicine?.name || ""}"
         />
       </div>
 
@@ -58,14 +62,15 @@ function addMedicineCard() {
           id="medicineSchedule${medicineCount}"
           name="medicineSchedule${medicineCount}"
           placeholder="Ej. 8:00 AM, 2:00 PM"
+          value="${medicine?.schedule || ""}"
         />
       </div>
     </div>
 
     <div class="days-group">
-      <label>Días de administración</label>
+      <label>Dias de administracion</label>
       <div class="days-options">
-        ${createDayOptions(medicineCount)}
+        ${createDayOptions(medicineCount, medicine?.days || [])}
       </div>
     </div>
   `
@@ -78,15 +83,97 @@ function addMedicineCard() {
   medicinesList.appendChild(card)
 }
 
-if (addMedicineButton) {
-  addMedicineButton.addEventListener("click", addMedicineCard)
+function getToken() {
+  return localStorage.getItem("token")
+}
+
+function getValue(formData, key) {
+  const value = formData.get(key)
+  return typeof value === "string" && value.trim() !== "" ? value.trim() : null
+}
+
+function buildPayload(formData) {
+  return {
+    full_name: getValue(formData, "fullName"),
+    age: getValue(formData, "age"),
+    birthdate: getValue(formData, "birthdate"),
+    gender: getValue(formData, "gender"),
+    room: getValue(formData, "room"),
+    status: getValue(formData, "status"),
+    caregiver_family: getValue(formData, "caregiverFamily"),
+    emergency_contact_name: getValue(formData, "contactName"),
+    emergency_contact_phone: getValue(formData, "contactPhone"),
+    allergies: getValue(formData, "allergies"),
+    medical_history: getValue(formData, "medicalHistory"),
+    notes: getValue(formData, "notes"),
+  }
+}
+
+async function createOlderAdult(payload) {
+  const token = getToken()
+
+  if (!token) {
+    throw new Error("Inicia sesion como administrador para crear adultos mayores.")
+  }
+
+  const response = await fetch(`${API_URL}/admin/older-adults`, {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    const validationErrors = data.errors ? Object.values(data.errors).flat().join("\n") : null
+    throw new Error(validationErrors || data.message || "No se pudo crear el adulto mayor.")
+  }
+
+  return data
 }
 
 if (newOlderAdultForm) {
-  newOlderAdultForm.addEventListener("submit", (event) => {
+  newOlderAdultForm.addEventListener("submit", async (event) => {
     event.preventDefault()
-    alert("se ha creado el adulto mayor con su información y medicinas asociadas")
+
+    const submitButton = newOlderAdultForm.querySelector(".primary-button")
+    const formData = new FormData(newOlderAdultForm)
+    const payload = buildPayload(formData)
+
+    if (!payload.full_name) {
+      alert("Ingresa el nombre completo del adulto mayor.")
+      return
+    }
+
+    try {
+      if (submitButton) {
+        submitButton.disabled = true
+        submitButton.textContent = "Creando..."
+      }
+
+      const data = await createOlderAdult(payload)
+      alert(data.message || "Adulto mayor creado correctamente.")
+      window.location.href = "./adultos-mayores.html"
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false
+        submitButton.textContent = "Crear adulto mayor"
+      }
+    }
   })
 }
 
-addMedicineCard()
+if (addMedicineButton) {
+  addMedicineButton.addEventListener("click", () => addMedicineCard())
+}
+
+if (medicinesList) {
+  addMedicineCard()
+}
