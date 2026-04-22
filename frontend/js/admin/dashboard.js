@@ -57,6 +57,10 @@ async function loadDashboardSummary() {
       throw new Error(data.message || "No se pudo cargar el dashboard.")
     }
 
+    if (olderAdultsCount) {
+      olderAdultsCount.textContent = data.stats?.older_adults ?? dashboardData.stats.olderAdults
+    }
+
     if (medicineCount) {
       medicineCount.textContent = data.medications?.pending_today ?? dashboardData.medicines.pendingToday
     }

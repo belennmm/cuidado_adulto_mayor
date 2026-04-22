@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MedicationAdministration;
+use App\Models\OlderAdult;
 use App\Models\OlderAdultMedication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -38,6 +39,9 @@ class AdminDashboardController extends Controller
 
         return response()->json([
             'date' => $today->toDateString(),
+            'stats' => [
+                'older_adults' => OlderAdult::query()->count(),
+            ],
             'medications' => [
                 'due_today' => $dueTodayAssignmentIds->count(),
                 'administered_today' => $administeredTodayAssignmentIds->count(),
