@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IncidentController;
@@ -10,6 +11,7 @@ Route::get('/ping', function () {
     return response()->json(['ok' => true]);
 });
 
+Route::get('/dashboard-summary', [AdminDashboardController::class, 'summary']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -20,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard-summary', [AdminDashboardController::class, 'summary']);
     Route::get('/users', [AdminUserController::class, 'index']);
     Route::get('/professional-caregivers', [AdminUserController::class, 'professionalCaregivers']);
     Route::patch('/users/{user}/approve', [AdminUserController::class, 'approve']);

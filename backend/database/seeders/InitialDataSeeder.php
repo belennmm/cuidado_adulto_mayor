@@ -17,6 +17,7 @@ class InitialDataSeeder extends Seeder
     {
         $users = $this->seedUsers();
         $olderAdults = $this->seedOlderAdults($users['admin']);
+        $this->assignProfessionalCaregivers($olderAdults, $users);
         $this->seedMedications($olderAdults, $users);
         $this->seedIncidents($users);
     }
@@ -180,6 +181,28 @@ class InitialDataSeeder extends Seeder
         return $savedOlderAdults;
     }
 
+    private function assignProfessionalCaregivers(array $olderAdults, array $users): void
+    {
+        $assignments = [
+            'Rosa Martinez' => $users['professional_1']->id,
+            'Miguel Herrera' => $users['professional_1']->id,
+            'Elena Castillo' => $users['professional_2']->id,
+            'Carlos Ramirez' => $users['professional_2']->id,
+        ];
+
+        foreach ($assignments as $olderAdultName => $caregiverId) {
+            $olderAdult = $olderAdults[$olderAdultName] ?? null;
+
+            if (!$olderAdult) {
+                continue;
+            }
+
+            $olderAdult->update([
+                'professional_caregiver_id' => $caregiverId,
+            ]);
+        }
+    }
+
     private function seedMedications(array $olderAdults, array $users): void
     {
         $catalog = [
@@ -274,6 +297,63 @@ class InitialDataSeeder extends Seeder
                     ]
                 );
             }
+        }
+
+        $scheduledLogs = [
+            [
+                'older_adult' => 'Rosa Martinez',
+                'medication' => 'Losartan',
+                'administration_type' => 'scheduled',
+                'dosage' => '1 tableta',
+                'administration_date' => Carbon::today()->toDateString(),
+                'administration_time' => '08:10:00',
+                'notes' => 'Administracion registrada manualmente para dashboard.',
+                'recorded_by' => $users['professional_1']->id,
+            ],
+            [
+                'older_adult' => 'Miguel Herrera',
+                'medication' => 'Metformina',
+                'administration_type' => 'scheduled',
+                'dosage' => '1 tableta',
+                'administration_date' => Carbon::today()->toDateString(),
+                'administration_time' => '08:05:00',
+                'notes' => 'Administracion registrada manualmente para dashboard.',
+                'recorded_by' => $users['professional_1']->id,
+            ],
+        ];
+
+        foreach ($scheduledLogs as $log) {
+            $olderAdult = $olderAdults[$log['older_adult']] ?? null;
+            $medication = Medication::where('name', $log['medication'])->first();
+
+            if (!$olderAdult || !$medication) {
+                continue;
+            }
+
+            $assignment = OlderAdultMedication::query()
+                ->where('older_adult_id', $olderAdult->id)
+                ->where('medication_id', $medication->id)
+                ->first();
+
+            if (!$assignment) {
+                continue;
+            }
+
+            MedicationAdministration::updateOrCreate(
+                [
+                    'older_adult_id' => $olderAdult->id,
+                    'older_adult_medication_id' => $assignment->id,
+                    'medication_id' => $medication->id,
+                    'administration_type' => $log['administration_type'],
+                    'administration_date' => $log['administration_date'],
+                    'administration_time' => $log['administration_time'],
+                ],
+                [
+                    'dosage' => $log['dosage'],
+                    'notes' => $log['notes'],
+                    'recorded_by' => $log['recorded_by'],
+                ]
+            );
         }
 
         $additionalLogs = [
