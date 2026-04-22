@@ -5,7 +5,7 @@ const loginForm = document.querySelector(".rectangle-parent")
 const usernameInput = document.querySelector(".ingrese-usuario")
 const loginMessage = document.getElementById("loginMessage")
 
-const API_URL = "http://127.0.0.1:8080/api"
+const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function showLoginMessage(message) {
     if (loginMessage) {

@@ -2,7 +2,7 @@ const incidentsList = document.getElementById("incidentsList")
 const incidentsDate = document.getElementById("incidentsDate")
 const incidentsCount = document.getElementById("incidentsCount")
 
-const API_URL = "http://127.0.0.1:8080/api"
+const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function getToken() {
   return localStorage.getItem("token")

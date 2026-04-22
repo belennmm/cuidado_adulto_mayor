@@ -1,7 +1,7 @@
 const olderAdultSearchInput = document.getElementById("olderAdultSearchInput")
 const olderAdultsTableBody = document.getElementById("olderAdultsTableBody")
 
-const API_URL = "http://127.0.0.1:8080/api"
+const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 let olderAdultsData = []
 

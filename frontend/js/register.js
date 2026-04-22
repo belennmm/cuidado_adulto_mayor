@@ -1,7 +1,7 @@
 const form = document.querySelector(".register")
 const registerMessage = document.getElementById("registerMessage")
 
-const API_URL = "http://127.0.0.1:8080/api"
+const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function showMessage(message, isError = false) {
     if (registerMessage) {
