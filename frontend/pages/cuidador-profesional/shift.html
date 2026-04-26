@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Turno Cuidador Profesional</title>
@@ -9,79 +10,95 @@
     <link rel="stylesheet" href="../../css/cuidador-profesional/professional-layout.css" />
     <link rel="stylesheet" href="../../css/cuidador-profesional/home-page.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
-    />
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+
+<body>
     <div class="professional-home">
-      <aside class="sidebar">
-        <div class="sidebar-top"></div>
+        <aside class="sidebar">
+            <div class="sidebar-top"></div>
 
-        <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
+            <nav class="sidebar-nav">
+                <a href="./home-page.html" class="nav-icon" data-label="Inicio">
+                    <i class="bx bxs-home"></i>
+                </a>
 
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
-            <i class="bx bxs-dashboard"></i>
-          </a>
+                <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+                    <i class="bx bxs-dashboard"></i>
+                </a>
 
-          <a href="./shift.html" class="nav-icon" data-label="Turnos">
-            <i class="bx bxs-time"></i>
-          </a>
+                <a href="./shift.html" class="nav-icon active" data-label="Turnos">
+                    <i class="bx bxs-time"></i>
+                </a>
 
-          <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
-            <i class="bx bxs-id-card"></i>
-          </a>
+                <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
+                    <i class="bx bxs-id-card"></i>
+                </a>
 
-          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
-            <i class="bx bxs-star"></i>
-          </a>
+                <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+                    <i class="bx bxs-star"></i>
+                </a>
 
-          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
-            <i class="bx bxs-error"></i>
-          </a>
-        </nav>
+                <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+                    <i class="bx bxs-error"></i>
+                </a>
+            </nav>
 
-        <div class="sidebar-bottom">
-          <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
-            <i class="bx bx-user-circle"></i>
-          </a>
+            <div class="sidebar-bottom">
+                <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
+                    <i class="bx bx-user-circle"></i>
+                </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
-          </a>
-        </div>
-      </aside>
+                <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
+                    <i class="bx bx-log-out"></i>
+                </a>
+            </div>
+        </aside>
 
-  
+        <main class="main-content">
+            <section style="padding-left: 36px;">
+                <h1 style="margin: 0 0 8px; font-size: 36px; font-weight: 700; color: #0a112f;">
+                    Turnos
+                </h1>
+                <p style="margin: 0 0 18px; color: #70707a;">
+                    AcÃ¡ podÃ©s ver tus turnos asignados.
+                </p>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    <a href="./dashboard.html" class="dashboard-button">Ir al dashboard</a>
+                    <a href="./incidents.html" class="dashboard-button">Ver incidentes</a>
+                </div>
+
+                <div style="margin-top: 18px; padding: 16px; border-radius: 12px; background: #ffffff; border: 1px solid #e4e4e7;">
+                    <p style="margin: 0; color: #70707a;">
+                        Pendiente: conectar esta vista al backend para listar turnos reales.
+                    </p>
+                </div>
+            </section>
+        </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
-      <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <div class="logout-modal-box">
+            <h3 class="logout-modal-title">Cerrar sesión</h3>
+            <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
 
-        <div class="logout-modal-actions">
-          <button type="button" class="logout-cancel-button" id="cancelLogout">
+            <div class="logout-modal-actions">
+                <button type="button" class="logout-cancel-button" id="cancelLogout">
             Cancelar
           </button>
-          <button type="button" class="logout-confirm-button" id="confirmLogout">
+                <button type="button" class="logout-confirm-button" id="confirmLogout">
             Aceptar
           </button>
+            </div>
         </div>
-      </div>
     </div>
 
-  
+
     <script src="../../js/logout-modal.js"></script>
 
-  
-  </body>
+
+</body>
+
 </html>
