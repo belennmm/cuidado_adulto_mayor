@@ -10,4 +10,12 @@ fi
 php artisan optimize:clear
 php artisan migrate --force
 
+if [ "$RUN_SEEDERS" = "true" ]; then
+    php artisan db:seed --force
+elif [ "$RUN_SEEDERS" = "fresh" ]; then
+    if php -r 'require "vendor/autoload.php"; $app = require "bootstrap/app.php"; $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); exit(\App\Models\User::query()->exists() ? 1 : 0);'; then
+        php artisan db:seed --force
+    fi
+fi
+
 exec apache2-foreground

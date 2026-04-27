@@ -4,29 +4,31 @@ services:
       context: ./backend
       dockerfile: dockerfile
     container_name: cuidado_backend
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      APP_NAME: "Cuidado Adulto Mayor"
-      APP_ENV: local
-      APP_KEY: base64:IhexPh7kbw4GKKdoMBKAiFXr3T973qlKTai2wGx5VxQ=
-      APP_DEBUG: "true"
-      APP_URL: http://3.141.244.224/index.html
-      APP_TIMEZONE: America/Guatemala
+      APP_NAME: "${APP_NAME:-Cuidado Adulto Mayor}"
+      APP_ENV: "${APP_ENV:-local}"
+      APP_KEY: "${APP_KEY:-base64:IhexPh7kbw4GKKdoMBKAiFXr3T973qlKTai2wGx5VxQ=}"
+      APP_DEBUG: "${APP_DEBUG:-true}"
+      APP_URL: "${APP_URL:-http://localhost:8080}"
+      APP_TIMEZONE: "${APP_TIMEZONE:-America/Guatemala}"
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_DATABASE: cuidado_adulto_mayor
-      DB_USERNAME: cuidado_user
-      DB_PASSWORD: cuidado_password
-      DB_SSLMODE: disable
+      DB_DATABASE: "${POSTGRES_DB:-cuidado_adulto_mayor}"
+      DB_USERNAME: "${POSTGRES_USER:-cuidado_user}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-cuidado_password}"
+      DB_SSLMODE: "${DB_SSLMODE:-disable}"
       CACHE_STORE: file
       QUEUE_CONNECTION: database
       SESSION_DRIVER: database
-      SANCTUM_STATEFUL_DOMAINS: localhost,localhost:3000,localhost:8080,127.0.0.1,127.0.0.1:3000,127.0.0.1:8080
+      RUN_SEEDERS: "${RUN_SEEDERS:-fresh}"
+      SANCTUM_STATEFUL_DOMAINS: "${SANCTUM_STATEFUL_DOMAINS:-localhost,localhost:3000,localhost:8080,127.0.0.1,127.0.0.1:3000,127.0.0.1:8080}"
     ports:
-      - "8080:80"
+      - "${BACKEND_PORT:-8080}:80"
     volumes:
       - backend_storage:/var/www/html/storage
       - backend_cache:/var/www/html/bootstrap/cache
@@ -38,26 +40,28 @@ services:
       context: ./frontend
       dockerfile: dockerfile
     container_name: cuidado_frontend
+    restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - "3000:80"
+      - "${FRONTEND_PORT:-3000}:80"
     networks:
       - cuidado_network
 
   postgres:
     image: postgres:16-alpine
     container_name: cuidado_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: cuidado_adulto_mayor
-      POSTGRES_USER: cuidado_user
-      POSTGRES_PASSWORD: cuidado_password
+      POSTGRES_DB: "${POSTGRES_DB:-cuidado_adulto_mayor}"
+      POSTGRES_USER: "${POSTGRES_USER:-cuidado_user}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-cuidado_password}"
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cuidado_user -d cuidado_adulto_mayor"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,13 +71,14 @@ services:
   pgadmin:
     image: dpage/pgadmin4:8
     container_name: cuidado_pgadmin
+    restart: unless-stopped
     depends_on:
       - postgres
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL:-admin@example.com}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD:-admin}"
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
