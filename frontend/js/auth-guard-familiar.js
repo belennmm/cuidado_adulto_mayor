@@ -20,10 +20,10 @@
 
     const roleRedirects = {
       admin: "../admin/home-page.html",
-      cuidador_profesional: "./home-page.html",
-      cuidador_familiar: "../cuidador-familiar/home-page.html",
-      profesional: "./home-page.html",
-      familiar: "../cuidador-familiar/home-page.html",
+      cuidador_profesional: "../cuidador-profesional/home-page.html",
+      cuidador_familiar: "./home-page.html",
+      profesional: "../cuidador-profesional/home-page.html",
+      familiar: "./home-page.html",
     }
 
     const destination = roleRedirects[normalized]
@@ -49,9 +49,8 @@
     }
 
     const role = String(user.role || "").trim().toLowerCase()
-    if (role !== "profesional" && role !== "cuidador_profesional") {
+    if (role !== "familiar" && role !== "cuidador_familiar") {
       redirectByRole(role)
     }
   })
 })()
-
