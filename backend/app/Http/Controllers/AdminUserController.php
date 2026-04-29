@@ -38,4 +38,19 @@ class AdminUserController extends Controller
             'user' => $user->only('id', 'name', 'email', 'role', 'is_approved'),
         ]);
     }
+
+    public function reject(User $user): JsonResponse
+    {
+        if ($user->role === 'admin' || (bool) $user->is_approved) {
+            return response()->json([
+                'message' => 'Solo se pueden rechazar solicitudes pendientes.',
+            ], 422);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Solicitud rechazada correctamente.',
+        ]);
+    }
 }
