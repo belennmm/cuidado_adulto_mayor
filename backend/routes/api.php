@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard-summary', [AdminDashboardController::class, 'summary']);
     Route::get('/users', [AdminUserController::class, 'index']);
+    Route::post('/users', [AdminUserController::class, 'store']);
     Route::get('/professional-caregivers', [AdminUserController::class, 'professionalCaregivers']);
     Route::get('/users/{user}', [AdminUserController::class, 'show']);
     Route::put('/users/{user}', [AdminUserController::class, 'update']);

@@ -32,6 +32,30 @@ class AdminUserController extends Controller
         return response()->json(['users' => $users]);
     }
 
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', Rule::in(['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'])],
+            'location' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'birthdate' => ['nullable', 'date'],
+        ]);
+
+        $validated['role'] = $this->normalizeRole($validated['role']);
+        $validated['password'] = Hash::make($validated['password']);
+        $validated['is_approved'] = true;
+
+        $user = User::create($validated);
+
+        return response()->json([
+            'message' => 'Usuario creado correctamente.',
+            'user' => $user->only('id', 'name', 'email', 'role', 'is_approved', 'location', 'phone', 'birthdate'),
+        ], 201);
+    }
+
     public function show(User $user): JsonResponse
     {
         return response()->json([
