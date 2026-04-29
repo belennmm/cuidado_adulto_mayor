@@ -15,89 +15,172 @@ const closeDeleteModal = document.getElementById("closeDeleteModal")
 const confirmDeleteUser = document.getElementById("confirmDeleteUser")
 const deleteModal = document.getElementById("deleteModal")
 
-const usersData = [
-  {
-    id: 1,
-    name: "Ana López",
-    role: "Administrador",
-    email: "ana.lopez@correo.com",
-    phone: "4567-1234",
-    status: "Activo",
-    location: "Guatemala",
-    birthdate: "1995-04-12",
-    password: "admin12345"
-  },
-  {
-    id: 2,
-    name: "Carlos Méndez",
-    role: "Cuidador Profesional",
-    email: "carlos.mendez@correo.com",
-    phone: "4987-1122",
-    status: "Activo",
-    location: "Mixco",
-    birthdate: "1992-08-21",
-    password: "carlos12345"
-  },
-  {
-    id: 3,
-    name: "Sofía Ramírez",
-    role: "Cuidador Familiar",
-    email: "sofia.ramirez@correo.com",
-    phone: "5123-8844",
-    status: "Pendiente",
-    location: "Villa Nueva",
-    birthdate: "1998-11-03",
-    password: "sofia12345"
-  },
-  {
-    id: 4,
-    name: "María Castillo",
-    role: "Cuidador Profesional",
-    email: "maria.castillo@correo.com",
-    phone: "5344-1098",
-    status: "Activo",
-    location: "Antigua Guatemala",
-    birthdate: "1991-02-14",
-    password: "maria12345"
-  },
-  {
-    id: 5,
-    name: "José Pérez",
-    role: "Administrador",
-    email: "jose.perez@correo.com",
-    phone: "4777-6611",
-    status: "Inactivo",
-    location: "Guatemala",
-    birthdate: "1989-09-27",
-    password: "jose12345"
-  },
-  {
-    id: 6,
-    name: "Lucía Herrera",
-    role: "Cuidador Familiar",
-    email: "lucia.herrera@correo.com",
-    phone: "5890-7766",
-    status: "Activo",
-    location: "Santa Catarina Pinula",
-    birthdate: "1997-06-18",
-    password: "lucia12345"
-  }
-]
-
+const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 const params = new URLSearchParams(window.location.search)
-const userId = Number(params.get("id"))
+const userId = params.get("id")
 
-const selectedUser = usersData.find((user) => user.id === userId)
+function getToken() {
+  return localStorage.getItem("token")
+}
 
-if (selectedUser) {
-  userType.value = selectedUser.role || ""
-  username.value = selectedUser.name || ""
-  email.value = selectedUser.email || ""
-  locationInput.value = selectedUser.location || ""
-  phone.value = selectedUser.phone || ""
-  birthdate.value = selectedUser.birthdate || ""
-  status.value = selectedUser.status || ""
-  passwordInput.value = selectedUser.password || ""
+function isApproved(value) {
+  return value === true || value === 1 || value === "1" || value === "true" || value === "t"
+}
+
+function getErrorMessage(data, fallback) {
+  if (data?.message) return data.message
+
+  if (data?.errors) {
+    const firstError = Object.values(data.errors).flat()[0]
+    if (firstError) return firstError
+  }
+
+  return fallback
+}
+
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options)
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(getErrorMessage(data, "No se pudo completar la solicitud."))
+  }
+
+  return data
+}
+
+function getAuthHeaders(includeJson = false) {
+  const headers = {
+    "Accept": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+  }
+
+  if (includeJson) {
+    headers["Content-Type"] = "application/json"
+  }
+
+  return headers
+}
+
+function setFormDisabled(disabled) {
+  editUserForm?.querySelectorAll("input, select, button").forEach((element) => {
+    element.disabled = disabled
+  })
+}
+
+function formatDate(value) {
+  if (!value) return ""
+  return String(value).slice(0, 10)
+}
+
+function fillForm(user) {
+  userType.value = user.role || ""
+  username.value = user.name || ""
+  email.value = user.email || ""
+  locationInput.value = user.location || ""
+  phone.value = user.phone || ""
+  birthdate.value = formatDate(user.birthdate)
+  status.value = user.role === "admin" || isApproved(user.is_approved) ? "Activo" : "Pendiente"
+  passwordInput.value = ""
+
+  if (user.role === "admin") {
+    status.value = "Activo"
+    status.disabled = true
+  }
+}
+
+async function loadUser() {
+  if (!userId) {
+    alert("No se encontro el usuario a editar.")
+    window.location.href = "./users.html"
+    return
+  }
+
+  if (!getToken()) {
+    alert("Inicia sesion como administrador para editar usuarios.")
+    window.location.href = "../../index.html"
+    return
+  }
+
+  setFormDisabled(true)
+
+  try {
+    const data = await fetchJson(`${API_URL}/admin/users/${userId}`, {
+      headers: getAuthHeaders()
+    })
+
+    fillForm(data.user)
+  } catch (error) {
+    alert(error.message)
+    window.location.href = "./users.html"
+  } finally {
+    setFormDisabled(false)
+
+    if (userType.value === "admin") {
+      status.disabled = true
+    }
+  }
+}
+
+async function saveUser() {
+  const payload = {
+    name: username.value.trim(),
+    email: email.value.trim(),
+    role: userType.value,
+    is_approved: status.value === "Activo",
+    location: locationInput.value.trim() || null,
+    phone: phone.value.trim() || null,
+    birthdate: birthdate.value || null
+  }
+
+  const password = passwordInput.value.trim()
+
+  if (password) {
+    payload.password = password
+  }
+
+  if (!payload.name || !payload.email || !payload.role) {
+    alert("Completa nombre, correo y tipo de usuario.")
+    return
+  }
+
+  setFormDisabled(true)
+
+  try {
+    const data = await fetchJson(`${API_URL}/admin/users/${userId}`, {
+      method: "PUT",
+      headers: getAuthHeaders(true),
+      body: JSON.stringify(payload)
+    })
+
+    alert(data.message || "Usuario actualizado correctamente.")
+    window.location.href = "./users.html"
+  } catch (error) {
+    alert(error.message)
+  } finally {
+    setFormDisabled(false)
+
+    if (userType.value === "admin") {
+      status.disabled = true
+    }
+  }
+}
+
+async function deleteUser() {
+  setFormDisabled(true)
+
+  try {
+    const data = await fetchJson(`${API_URL}/admin/users/${userId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders()
+    })
+
+    alert(data.message || "Usuario eliminado correctamente.")
+    window.location.href = "./users.html"
+  } catch (error) {
+    alert(error.message)
+    setFormDisabled(false)
+  }
 }
 
 if (togglePassword && passwordInput) {
@@ -113,10 +196,21 @@ if (togglePassword && passwordInput) {
   })
 }
 
+if (userType && status) {
+  userType.addEventListener("change", () => {
+    const isAdmin = userType.value === "admin"
+    status.disabled = isAdmin
+
+    if (isAdmin) {
+      status.value = "Activo"
+    }
+  })
+}
+
 if (editUserForm) {
   editUserForm.addEventListener("submit", (event) => {
     event.preventDefault()
-    alert("Aquí después podrás guardar los cambios del usuario")
+    saveUser()
   })
 }
 
@@ -142,7 +236,8 @@ if (deleteModal) {
 
 if (confirmDeleteUser) {
   confirmDeleteUser.addEventListener("click", () => {
-    alert("Usuario eliminado")
-    window.location.href = "./users.html"
+    deleteUser()
   })
 }
+
+loadUser()

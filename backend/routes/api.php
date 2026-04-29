@@ -25,8 +25,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/dashboard-summary', [AdminDashboardController::class, 'summary']);
     Route::get('/users', [AdminUserController::class, 'index']);
     Route::get('/professional-caregivers', [AdminUserController::class, 'professionalCaregivers']);
+    Route::get('/users/{user}', [AdminUserController::class, 'show']);
+    Route::put('/users/{user}', [AdminUserController::class, 'update']);
     Route::patch('/users/{user}/approve', [AdminUserController::class, 'approve']);
     Route::delete('/users/{user}/reject', [AdminUserController::class, 'reject']);
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);

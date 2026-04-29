@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
-    <link rel="stylesheet" href="../../css/admin/edit-user.css" />}
+    <link rel="stylesheet" href="../../css/admin/edit-user.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
 
     <link
@@ -87,9 +87,9 @@
                   <label for="userType">Tipo de usuario</label>
                   <select id="userType" name="userType">
                     <option value="">Seleccione tipo de usuario</option>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Cuidador Profesional">Cuidador Profesional</option>
-                    <option value="Cuidador Familiar">Cuidador Familiar</option>
+                    <option value="admin">Administrador</option>
+                    <option value="profesional">Cuidador Profesional</option>
+                    <option value="familiar">Cuidador Familiar</option>
                   </select>
                 </div>
 
@@ -143,7 +143,6 @@
                   <select id="status" name="status">
                     <option value="Activo">Activo</option>
                     <option value="Pendiente">Pendiente</option>
-                    <option value="Inactivo">Inactivo</option>
                   </select>
                 </div>
 
@@ -154,7 +153,7 @@
                       type="password"
                       id="password"
                       name="password"
-                      placeholder="Ingrese contraseña"
+                      placeholder="Dejar en blanco para no cambiar"
                     />
                     <button type="button" class="toggle-password" id="togglePassword">
                       <i class="bx bx-hide"></i>
