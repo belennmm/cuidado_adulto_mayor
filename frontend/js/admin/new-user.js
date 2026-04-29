@@ -2,6 +2,12 @@ const togglePassword = document.getElementById("togglePassword")
 const passwordInput = document.getElementById("password")
 const requestList = document.getElementById("requestList")
 const newUserForm = document.getElementById("newUserForm")
+const userType = document.getElementById("userType")
+const username = document.getElementById("username")
+const email = document.getElementById("email")
+const locationInput = document.getElementById("location")
+const phone = document.getElementById("phone")
+const birthdate = document.getElementById("birthdate")
 
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
@@ -25,6 +31,15 @@ function getRoleLabel(role) {
   }
 
   return labels[role] || role || "Sin rol"
+}
+
+function normalizeRole(role) {
+  const roles = {
+    "cuidador-profesional": "cuidador_profesional",
+    "cuidador-familiar": "cuidador_familiar"
+  }
+
+  return roles[role] || role
 }
 
 function escapeHtml(value) {
@@ -66,6 +81,79 @@ async function fetchJson(url, options = {}) {
   }
 
   return data
+}
+
+function getAuthHeaders(includeJson = false) {
+  const headers = {
+    "Accept": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+  }
+
+  if (includeJson) {
+    headers["Content-Type"] = "application/json"
+  }
+
+  return headers
+}
+
+function setFormDisabled(disabled) {
+  newUserForm?.querySelectorAll("input, select, button").forEach((element) => {
+    element.disabled = disabled
+  })
+}
+
+function clearForm() {
+  newUserForm?.reset()
+  passwordInput.type = "password"
+
+  const icon = togglePassword?.querySelector("i")
+  if (icon) {
+    icon.classList.add("bx-hide")
+    icon.classList.remove("bx-show")
+  }
+}
+
+async function createUser() {
+  const token = getToken()
+
+  if (!token) {
+    alert("Inicia sesion como administrador para crear usuarios.")
+    window.location.href = "../../index.html"
+    return
+  }
+
+  const payload = {
+    name: username.value.trim(),
+    email: email.value.trim(),
+    password: passwordInput.value.trim(),
+    role: normalizeRole(userType.value),
+    location: locationInput.value.trim() || null,
+    phone: phone.value.trim() || null,
+    birthdate: birthdate.value || null
+  }
+
+  if (!payload.name || !payload.email || !payload.password || !payload.role) {
+    alert("Completa tipo de usuario, nombre, correo y contrasena.")
+    return
+  }
+
+  setFormDisabled(true)
+
+  try {
+    const data = await fetchJson(`${API_URL}/admin/users`, {
+      method: "POST",
+      headers: getAuthHeaders(true),
+      body: JSON.stringify(payload)
+    })
+
+    alert(data.message || "Usuario creado correctamente.")
+    clearForm()
+    await loadPendingRequests()
+  } catch (error) {
+    alert(error.message)
+  } finally {
+    setFormDisabled(false)
+  }
 }
 
 async function loadPendingRequests() {
@@ -231,7 +319,7 @@ if (requestList) {
 if (newUserForm) {
   newUserForm.addEventListener("submit", (event) => {
     event.preventDefault()
-    alert("Aqui despues conectaras la creacion del usuario con la base de datos")
+    createUser()
   })
 }
 
