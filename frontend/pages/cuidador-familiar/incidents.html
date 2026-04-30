@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
-    <link rel="stylesheet" href="../../css/incidents.css" />
+    <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -25,10 +25,6 @@
 
         <nav class="sidebar-nav">
           <a href="./home-page.html" class="nav-icon" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
-
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
             <i class="bx bxs-dashboard"></i>
           </a>
 
@@ -40,7 +36,7 @@
             <i class="bx bxs-star"></i>
           </a>
 
-          <a href="./incidents.html" class="nav-icon active" data-label="Incidentes">
+          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
             <i class="bx bxs-error"></i>
           </a>
         </nav>
@@ -50,34 +46,50 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
+            <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
+
       <main class="main-content">
-        <section class="incidents-page">
-          <div class="incidents-header">
-            <div>
-              <h1 class="incidents-title">Incidentes del dia</h1>
-              <div class="incidents-date" id="incidentsDate">Hoy</div>
+        <section class="incidents-prototype family-page">
+          <div class="family-shell incidents-shell">
+            <div class="incident-last-row">
+              <div class="incident-avatar"></div>
+              <div>
+                <strong id="lastIncidentStatus">Resuelto</strong>
+                <span id="lastIncidentAdult">Sin incidentes</span>
+              </div>
+              <div>
+                <strong>Dia</strong>
+                <span id="lastIncidentDate">16/07/2025</span>
+              </div>
+              <button type="button" class="incident-detail-link" id="incidentDetailButton">
+                Ver Detalles
+              </button>
             </div>
 
-            <div class="incidents-counter">
-              <i class="bx bxs-error"></i>
-              <span id="incidentsCount">0</span>
-            </div>
+            <h1 class="prototype-title incidents-prototype-title">Incidentes</h1>
+
+            <h2 class="incidents-today-title">Hoy</h2>
+            <section class="incidents-prototype-list" id="incidentsList">
+              <div class="incidents-empty-prototype">No se encuentran incidentes</div>
+            </section>
+
+            <a href="./home-page.html" class="prototype-back incidents-back">
+              <i class="bx bx-chevron-left"></i>
+              Atras
+            </a>
           </div>
-
-          <section class="incidents-list" id="incidentsList"></section>
         </section>
       </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesi&oacute;n</h3>
+        <p class="logout-modal-text">&iquest;Seguro que deseas cerrar sesi&oacute;n?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -90,12 +102,10 @@
       </div>
     </div>
 
-  
     <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-familiar.js"></script>
     <script src="../../js/sidebar-active.js"></script>
-    <script src="../../js/incidents.js"></script>
-
-    
+    <script src="../../js/cuidador-familiar/family-api.js"></script>
+    <script src="../../js/cuidador-familiar/incidents.js"></script>
   </body>
 </html>

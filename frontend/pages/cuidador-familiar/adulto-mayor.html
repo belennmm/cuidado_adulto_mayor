@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
-    <link rel="stylesheet" href="../../css/cuidador-familiar/home-page.css" />
+    <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -24,11 +24,7 @@
         <div class="sidebar-top"></div>
 
         <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
-
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
             <i class="bx bxs-dashboard"></i>
           </a>
 
@@ -50,20 +46,77 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
+            <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
 
-      
-    </div>
+      <main class="main-content">
+        <section class="adult-prototype family-page">
+          <div class="family-shell">
+            <h1 class="adult-screen-name" id="adultScreenName">Adulto mayor</h1>
 
+            <div class="adult-prototype-grid">
+              <article class="prototype-card adult-details-card">
+                <h2 class="prototype-title">Detalles</h2>
+
+                <div class="adult-field-list">
+                  <label>
+                    <span>Nombre</span>
+                    <input class="prototype-field" id="adultNameField" type="text" readonly />
+                  </label>
+
+                  <label>
+                    <span>Edad</span>
+                    <input class="prototype-field" id="adultAgeField" type="text" readonly />
+                  </label>
+
+                  <label>
+                    <span>Notas</span>
+                    <textarea class="prototype-textarea" id="adultNotesField" readonly></textarea>
+                  </label>
+
+                  <label>
+                    <span>Numero de Emergencia</span>
+                    <input class="prototype-field" id="adultEmergencyField" type="text" readonly />
+                  </label>
+                </div>
+
+                <button class="prototype-button request-change-button" id="requestChangeButton" type="button">
+                  Solicitar Cambio
+                </button>
+              </article>
+
+              <article class="prototype-card adult-clinical-card">
+                <h2 class="prototype-title">Historial Medico</h2>
+                <details class="prototype-collapse" open>
+                  <summary>
+                    <span id="adultHistorySummary">Ver historial registrado</span>
+                    <i class="bx bx-chevron-down"></i>
+                  </summary>
+                  <p id="adultHistoryText">Cargando historial medico...</p>
+                </details>
+
+                <h2 class="prototype-title medicine-title">Medicinas</h2>
+                <details class="prototype-collapse" open>
+                  <summary>
+                    <span id="adultMedicineSummary">Ver medicamentos activos</span>
+                    <i class="bx bx-chevron-down"></i>
+                  </summary>
+                  <div class="medicine-summary-list" id="adultMedicineList"></div>
+                </details>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesi&oacute;n</h3>
+        <p class="logout-modal-text">&iquest;Seguro que deseas cerrar sesi&oacute;n?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -76,10 +129,10 @@
       </div>
     </div>
 
-  
     <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-familiar.js"></script>
     <script src="../../js/sidebar-active.js"></script>
-    
+    <script src="../../js/cuidador-familiar/family-api.js"></script>
+    <script src="../../js/cuidador-familiar/adulto-mayor.js"></script>
   </body>
 </html>

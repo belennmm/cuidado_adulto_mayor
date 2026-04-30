@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
-    <link rel="stylesheet" href="../../css/cuidador-familiar/home-page.css" />
+    <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -24,11 +24,7 @@
         <div class="sidebar-top"></div>
 
         <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
-
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
             <i class="bx bxs-dashboard"></i>
           </a>
 
@@ -50,19 +46,73 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
+            <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
 
-      
+      <main class="main-content">
+        <section class="routine-prototype">
+          <aside class="routine-blue-panel">
+            <h1>Rutina:<br /><span id="routineResidentName">Adulto mayor</span></h1>
+            <a href="./adulto-mayor.html" class="prototype-back">
+              <i class="bx bx-chevron-left"></i>
+              Atras
+            </a>
+          </aside>
+
+          <section class="routine-detail-panel">
+            <div class="routine-form-row">
+              <label>
+                <span>Nombre Adulto Mayor</span>
+                <input class="prototype-field" id="routineAdultName" type="text" readonly />
+              </label>
+
+              <label class="routine-date-field">
+                <span>Dia</span>
+                <input class="prototype-field" id="routineDateInput" type="text" readonly />
+              </label>
+            </div>
+
+            <h2 class="prototype-title routine-section-title">Historial de actividades</h2>
+            <div class="activity-history-card" id="activityHistoryList"></div>
+
+            <div class="routine-bottom-grid">
+              <section>
+                <h2 class="prototype-title">Medicinas</h2>
+                <div class="medicine-table-card">
+                  <table class="medicine-table">
+                    <thead>
+                      <tr>
+                        <th>Medicina</th>
+                        <th>Horario</th>
+                        <th>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody id="routineMedicineTableBody"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="routine-notes-panel">
+                <label>
+                  <span>Notas</span>
+                  <textarea class="prototype-textarea" id="routineNotes" readonly></textarea>
+                </label>
+
+                <a href="./adulto-mayor.html" class="review-link">Revisar</a>
+              </section>
+            </div>
+          </section>
+        </section>
+      </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesi&oacute;n</h3>
+        <p class="logout-modal-text">&iquest;Seguro que deseas cerrar sesi&oacute;n?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -75,11 +125,10 @@
       </div>
     </div>
 
-  
     <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-familiar.js"></script>
     <script src="../../js/sidebar-active.js"></script>
-
-    
+    <script src="../../js/cuidador-familiar/family-api.js"></script>
+    <script src="../../js/cuidador-familiar/routine.js"></script>
   </body>
 </html>

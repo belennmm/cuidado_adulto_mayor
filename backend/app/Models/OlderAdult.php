@@ -19,6 +19,7 @@ class OlderAdult extends Model
         'room',
         'status',
         'caregiver_family',
+        'family_caregiver_id',
         'professional_caregiver_id',
         'emergency_contact_name',
         'emergency_contact_phone',
@@ -44,6 +45,11 @@ class OlderAdult extends Model
     public function professionalCaregiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'professional_caregiver_id');
+    }
+
+    public function familyCaregiver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'family_caregiver_id');
     }
 
     public function medications(): HasMany

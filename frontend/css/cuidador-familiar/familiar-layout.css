@@ -1,7 +1,9 @@
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: "Outfit", sans-serif;
-  background-color: #f3f3f3;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 a {
@@ -11,21 +13,23 @@ a {
 .familiar-home {
   min-height: 100vh;
   display: flex;
-  background-color: #f3f3f3;
+  background: #ffffff;
 }
 
 .sidebar {
   width: 84px;
-  background-color: #ffffff;
+  min-height: 100vh;
+  background: #f8f8f8;
+  border-right: 1px solid #eeeeee;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid #ececec;
+  flex-shrink: 0;
 }
 
 .sidebar-top {
   height: 42px;
-  background-color: #f8f8f8;
+  background: #f1f1f1;
 }
 
 .sidebar-nav,
@@ -33,17 +37,17 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
 }
 
 .sidebar-nav {
+  gap: 22px;
   padding-top: 18px;
   margin-bottom: auto;
 }
 
 .sidebar-bottom {
-  padding-bottom: 28px;
   gap: 18px;
+  padding-bottom: 28px;
 }
 
 .nav-icon {
@@ -53,36 +57,43 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1678f3;
+  color: #1d7cf2;
   font-size: 24px;
   transition: 0.2s ease;
 }
 
-.nav-icon:hover {
-  background-color: #eef5ff;
+.nav-icon:hover,
+.nav-icon:focus-visible {
+  background: rgba(29, 124, 242, 0.1);
+  outline: none;
 }
 
 .nav-icon.active {
-  background-color: #eef5ff;
+  color: #ffffff;
+  background: #1d7cf2;
+  box-shadow: 0 8px 16px rgba(29, 124, 242, 0.25);
 }
 
 .main-content {
   flex: 1;
-  padding: 40px 36px 30px 0;
+  min-width: 0;
   box-sizing: border-box;
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 760px) {
   .familiar-home {
     flex-direction: column;
   }
 
   .sidebar {
     width: 100%;
-    height: auto;
+    min-height: auto;
     border-right: none;
-    border-bottom: 1px solid #ececec;
-    padding: 12px 0;
+    border-bottom: 1px solid #eeeeee;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 12px;
+    box-sizing: border-box;
   }
 
   .sidebar-top {
@@ -93,10 +104,19 @@ a {
   .sidebar-bottom {
     flex-direction: row;
     justify-content: center;
+    gap: 10px;
     padding: 0;
   }
 
-  .main-content {
-    padding: 16px;
+  .sidebar-nav {
+    margin-bottom: 0;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .nav-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 24px;
   }
 }

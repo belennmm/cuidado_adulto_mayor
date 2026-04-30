@@ -1,6 +1,7 @@
 const newOlderAdultForm = document.getElementById("newOlderAdultForm")
 const medicinesList = document.getElementById("medicinesList")
 const addMedicineButton = document.getElementById("addMedicineButton")
+const caregiverFamily = document.getElementById("caregiverFamily")
 const professionalCaregiver = document.getElementById("professionalCaregiver")
 
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
@@ -146,7 +147,7 @@ function buildPayload(formData) {
     gender: getValue(formData, "gender"),
     room: getValue(formData, "room"),
     status: getValue(formData, "status"),
-    caregiver_family: getValue(formData, "caregiverFamily"),
+    family_caregiver_id: getValue(formData, "caregiverFamily"),
     professional_caregiver_id: getValue(formData, "professionalCaregiver"),
     emergency_contact_name: getValue(formData, "contactName"),
     emergency_contact_phone: getValue(formData, "contactPhone"),
@@ -154,6 +155,41 @@ function buildPayload(formData) {
     medical_history: getValue(formData, "medicalHistory"),
     notes: getValue(formData, "notes"),
     medications: getMedicineCardsPayload(),
+  }
+}
+
+async function loadFamilyCaregivers() {
+  if (!caregiverFamily) return
+
+  const token = getToken()
+
+  if (!token) return
+
+  try {
+    const response = await fetch(`${API_URL}/admin/family-caregivers`, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudieron cargar los cuidadores familiares.")
+    }
+
+    caregiverFamily.innerHTML = '<option value="">Seleccione cuidador familiar</option>'
+
+    ;(data.users || []).forEach((user) => {
+      const option = document.createElement("option")
+      option.value = String(user.id)
+      option.textContent = user.name
+      caregiverFamily.appendChild(option)
+    })
+  } catch (error) {
+    caregiverFamily.innerHTML = '<option value="">No se pudieron cargar los cuidadores</option>'
   }
 }
 
@@ -261,4 +297,5 @@ if (medicinesList) {
   addMedicineCard()
 }
 
+loadFamilyCaregivers()
 loadProfessionalCaregivers()

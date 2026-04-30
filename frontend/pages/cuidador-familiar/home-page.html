@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home Page Cuidador Familiar</title>
+    <title>Inicio Cuidador Familiar</title>
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
+    <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-pages.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/home-page.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
@@ -24,11 +25,7 @@
         <div class="sidebar-top"></div>
 
         <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
-
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
             <i class="bx bxs-dashboard"></i>
           </a>
 
@@ -50,25 +47,23 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
+            <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
 
       <main class="main-content">
-        <section class="hero">
-          <div class="hero-overlay"></div>
-
-          <div class="hero-content">
-            <h1 class="hero-title">Bienvenido</h1>
-            <p class="hero-message">
-              <span id="familiarMessageText">
-                Cuidar a quienes una vez nos cuidaron es uno de los mayores honores.
-              </span>
+        <section class="family-home-hero">
+          <div class="family-home-content">
+            <h1 class="family-home-title">Bienvenido</h1>
+            <p class="family-home-message" id="familiarMessageText">
+              Cuidar a quienes una vez nos cuidaron es uno de los mayores honores.
             </p>
 
-            <a href="./dashboard.html" class="dashboard-button">Ver eventos</a>
+            <div class="family-home-actions">
+              <a href="./incidents.html" class="family-events-button">Ver eventos</a>
+            </div>
           </div>
         </section>
       </main>
@@ -76,8 +71,8 @@
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesi&oacute;n</h3>
+        <p class="logout-modal-text">&iquest;Seguro que deseas cerrar sesi&oacute;n?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -90,12 +85,9 @@
       </div>
     </div>
 
-  
     <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-familiar.js"></script>
     <script src="../../js/sidebar-active.js"></script>
-
-
     <script src="../../js/cuidador-familiar/home-page.js"></script>
   </body>
 </html>

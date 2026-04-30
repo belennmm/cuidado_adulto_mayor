@@ -1,9 +1,7 @@
-const familiarMessageText = document.getElementById("familiarMessageText")
+(() => {
+  const message = document.getElementById("familiarMessageText")
 
-const familiarHomeData = {
-  message: "Cuidar a quienes una vez nos cuidaron es uno de los mayores honores."
-}
-
-if (familiarMessageText) {
-  familiarMessageText.textContent = familiarHomeData.message
-}
+  if (message) {
+    message.textContent = "Cuidar a quienes una vez nos cuidaron es uno de los mayores honores."
+  }
+})()

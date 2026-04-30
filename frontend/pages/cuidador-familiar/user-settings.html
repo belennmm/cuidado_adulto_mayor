@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configuración de Usuario Cuidador Familiar</title>
+    <title>Perfil Cuidador Familiar</title>
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
-    <link rel="stylesheet" href="../../css/cuidador-familiar/home-page.css" />
+    <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -24,11 +24,7 @@
         <div class="sidebar-top"></div>
 
         <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
-
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
             <i class="bx bxs-dashboard"></i>
           </a>
 
@@ -50,19 +46,124 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
+            <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
 
-      
+      <main class="main-content">
+        <section class="family-page">
+          <header class="family-page-header">
+            <div>
+              <p class="family-eyebrow">Cuenta</p>
+              <h1 class="family-title">Perfil familiar</h1>
+              <p class="family-subtitle">
+                Mantiene tus datos de contacto actualizados para que el equipo pueda ubicarte rapido.
+              </p>
+            </div>
+          </header>
+
+          <div class="profile-layout">
+            <aside class="profile-card profile-summary">
+              <span class="profile-avatar"><i class="bx bxs-user"></i></span>
+              <h2 id="profileName">Cuidador familiar</h2>
+              <p id="profileRole">Cuidador familiar</p>
+              <span id="profileEmail">correo@ejemplo.com</span>
+            </aside>
+
+            <form class="profile-card settings-form" id="familySettingsForm">
+              <div>
+                <h2 class="card-title">Informacion personal</h2>
+                <p class="card-subtitle">Estos datos se guardan en tu perfil de acceso.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fullName">Nombre completo</label>
+                  <input type="text" id="fullName" name="name" placeholder="Nombre completo" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Correo electronico</label>
+                  <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">Telefono</label>
+                  <input type="tel" id="phone" name="phone" placeholder="Telefono de contacto" />
+                </div>
+
+                <div class="form-group">
+                  <label for="location">Ubicacion</label>
+                  <input type="text" id="location" name="location" placeholder="Ciudad o zona" />
+                </div>
+
+                <div class="form-group">
+                  <label for="birthdate">Fecha de nacimiento</label>
+                  <input type="date" id="birthdate" name="birthdate" />
+                </div>
+
+                <div class="form-group">
+                  <label for="role">Rol</label>
+                  <input type="text" id="role" name="role" readonly />
+                </div>
+              </div>
+
+              <div>
+                <h2 class="card-title">Seguridad</h2>
+                <p class="card-subtitle">Deja estos campos vacios si no deseas cambiar tu contrasena.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="currentPassword">Contrasena actual</label>
+                  <div class="password-input-wrap">
+                    <input type="password" id="currentPassword" name="current_password" placeholder="Contrasena actual" />
+                    <button type="button" class="toggle-password" data-target="currentPassword">
+                      <i class="bx bx-hide"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="newPassword">Nueva contrasena</label>
+                  <div class="password-input-wrap">
+                    <input type="password" id="newPassword" name="new_password" placeholder="Minimo 8 caracteres" />
+                    <button type="button" class="toggle-password" data-target="newPassword">
+                      <i class="bx bx-hide"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="confirmPassword">Confirmar contrasena</label>
+                  <div class="password-input-wrap">
+                    <input type="password" id="confirmPassword" name="new_password_confirmation" placeholder="Confirmar contrasena" />
+                    <button type="button" class="toggle-password" data-target="confirmPassword">
+                      <i class="bx bx-hide"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <span class="form-message" id="settingsMessage"></span>
+                <button type="submit" class="save-button">
+                  <i class="bx bxs-save"></i>
+                  Guardar cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesi&oacute;n</h3>
+        <p class="logout-modal-text">&iquest;Seguro que deseas cerrar sesi&oacute;n?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -75,11 +176,10 @@
       </div>
     </div>
 
-  
     <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-familiar.js"></script>
     <script src="../../js/sidebar-active.js"></script>
-
-    
+    <script src="../../js/cuidador-familiar/family-api.js"></script>
+    <script src="../../js/cuidador-familiar/user-settings.js"></script>
   </body>
 </html>

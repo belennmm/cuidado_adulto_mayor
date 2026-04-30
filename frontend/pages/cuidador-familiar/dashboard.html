@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-layout.css" />
-    <link rel="stylesheet" href="../../css/cuidador-familiar/home-page.css" />
+    <link rel="stylesheet" href="../../css/cuidador-familiar/familiar-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -24,11 +24,7 @@
         <div class="sidebar-top"></div>
 
         <nav class="sidebar-nav">
-          <a href="./home-page.html" class="nav-icon active" data-label="Inicio">
-            <i class="bx bxs-home"></i>
-          </a>
-
-          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
             <i class="bx bxs-dashboard"></i>
           </a>
 
@@ -50,19 +46,141 @@
             <i class="bx bx-user-circle"></i>
           </a>
 
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
-                  <i class="bx bx-log-out"></i>
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
+            <i class="bx bx-log-out"></i>
           </a>
         </div>
       </aside>
 
-      
+      <main class="main-content">
+        <section class="family-page">
+          <header class="family-page-header">
+            <div>
+              <p class="family-eyebrow">Seguimiento diario</p>
+              <h1 class="family-title">Dashboard familiar</h1>
+              <p class="family-subtitle">
+                Una lectura rapida de pendientes, estados de salud e incidentes para actuar con calma.
+              </p>
+            </div>
+            <div class="family-date-pill">
+              <i class="bx bx-calendar"></i>
+              <span id="dashboardDate">Hoy</span>
+            </div>
+          </header>
+
+          <section class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-card-top">
+                <span class="stat-number" id="dashboardAdultsCount">0</span>
+                <span class="stat-icon blue"><i class="bx bxs-id-card"></i></span>
+              </div>
+              <span class="stat-label">Adultos mayores asignados</span>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-card-top">
+                <span class="stat-number" id="dashboardMedsCount">0</span>
+                <span class="stat-icon teal"><i class="bx bxs-capsule"></i></span>
+              </div>
+              <span class="stat-label">Medicamentos para hoy</span>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-card-top">
+                <span class="stat-number" id="dashboardPendingCount">0</span>
+                <span class="stat-icon amber"><i class="bx bxs-alarm"></i></span>
+              </div>
+              <span class="stat-label">Pendientes de administrar</span>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-card-top">
+                <span class="stat-number" id="dashboardIncidentsCount">0</span>
+                <span class="stat-icon red"><i class="bx bxs-error"></i></span>
+              </div>
+              <span class="stat-label">Incidentes del dia</span>
+            </article>
+          </section>
+
+          <section class="dashboard-grid">
+            <div class="stack">
+              <article class="family-card">
+                <div class="card-header">
+                  <div>
+                    <h2 class="card-title">Rutina inmediata</h2>
+                    <p class="card-subtitle">Medicamentos programados para hoy.</p>
+                  </div>
+                  <a href="./routine.html" class="secondary-action">
+                    <i class="bx bxs-star"></i>
+                    Rutina
+                  </a>
+                </div>
+                <div class="mini-list" id="dashboardRoutineList"></div>
+              </article>
+
+              <article class="family-card">
+                <div class="card-header">
+                  <div>
+                    <h2 class="card-title">Incidentes recientes</h2>
+                    <p class="card-subtitle">Alertas registradas hoy para tus familiares.</p>
+                  </div>
+                  <a href="./incidents.html" class="secondary-action">
+                    <i class="bx bxs-error"></i>
+                    Incidentes
+                  </a>
+                </div>
+                <div class="incident-preview-list" id="dashboardIncidentsList"></div>
+              </article>
+            </div>
+
+            <aside class="stack">
+              <article class="family-card">
+                <div class="card-header">
+                  <div>
+                    <h2 class="card-title">Estado de residentes</h2>
+                    <p class="card-subtitle">Distribucion actual de tus adultos asignados.</p>
+                  </div>
+                </div>
+
+                <div class="home-status-list">
+                  <div class="home-status-item">
+                    <span class="home-status-number" id="dashboardStableCount">0</span>
+                    <span class="home-status-label">Estables</span>
+                  </div>
+                  <div class="home-status-item">
+                    <span class="home-status-number" id="dashboardAttentionCount">0</span>
+                    <span class="home-status-label">Atencion</span>
+                  </div>
+                  <div class="home-status-item">
+                    <span class="home-status-number" id="dashboardCriticalCount">0</span>
+                    <span class="home-status-label">Criticos</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="family-card">
+                <div class="card-header">
+                  <div>
+                    <h2 class="card-title">Adultos asignados</h2>
+                    <p class="card-subtitle">Acceso directo a informacion personal y medica.</p>
+                  </div>
+                  <a href="./adulto-mayor.html" class="secondary-action">
+                    <i class="bx bxs-id-card"></i>
+                    Ver
+                  </a>
+                </div>
+                <div class="mini-list" id="dashboardAdultsList"></div>
+              </article>
+            </aside>
+          </section>
+        </section>
+      </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesi&oacute;n</h3>
+        <p class="logout-modal-text">&iquest;Seguro que deseas cerrar sesi&oacute;n?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -75,12 +193,10 @@
       </div>
     </div>
 
-  
     <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-familiar.js"></script>
     <script src="../../js/sidebar-active.js"></script>
-
-
-    
+    <script src="../../js/cuidador-familiar/family-api.js"></script>
+    <script src="../../js/cuidador-familiar/dashboard.js"></script>
   </body>
 </html>

@@ -16,7 +16,7 @@ class InitialDataSeeder extends Seeder
     public function run(): void
     {
         $users = $this->seedUsers();
-        $olderAdults = $this->seedOlderAdults($users['admin']);
+        $olderAdults = $this->seedOlderAdults($users['admin'], $users);
         $this->assignProfessionalCaregivers($olderAdults, $users);
         $this->seedMedications($olderAdults, $users);
         $this->seedIncidents($users);
@@ -102,7 +102,7 @@ class InitialDataSeeder extends Seeder
         return $users;
     }
 
-    private function seedOlderAdults(User $admin): array
+    private function seedOlderAdults(User $admin, array $users): array
     {
         $olderAdults = [
             [
@@ -113,6 +113,7 @@ class InitialDataSeeder extends Seeder
                 'room' => 'A-101',
                 'status' => 'Estable',
                 'caregiver_family' => 'Laura Rodriguez',
+                'family_caregiver_id' => $users['family_1']->id,
                 'emergency_contact_name' => 'Carolina Martinez',
                 'emergency_contact_phone' => '5555-2101',
                 'allergies' => 'Penicilina',
@@ -127,7 +128,8 @@ class InitialDataSeeder extends Seeder
                 'gender' => 'Masculino',
                 'room' => 'B-204',
                 'status' => 'Atencion',
-                'caregiver_family' => 'Jose Perez',
+                'caregiver_family' => null,
+                'family_caregiver_id' => null,
                 'emergency_contact_name' => 'Lucia Herrera',
                 'emergency_contact_phone' => '5555-2102',
                 'allergies' => 'Ninguna registrada',
@@ -143,6 +145,7 @@ class InitialDataSeeder extends Seeder
                 'room' => 'C-305',
                 'status' => 'Critico',
                 'caregiver_family' => 'Ana Lopez',
+                'family_caregiver_id' => $users['family_3']->id,
                 'emergency_contact_name' => 'Sofia Castillo',
                 'emergency_contact_phone' => '5555-2103',
                 'allergies' => 'Mariscos',
@@ -158,6 +161,7 @@ class InitialDataSeeder extends Seeder
                 'room' => 'A-103',
                 'status' => 'Estable',
                 'caregiver_family' => 'Laura Rodriguez',
+                'family_caregiver_id' => $users['family_1']->id,
                 'emergency_contact_name' => 'Pablo Ramirez',
                 'emergency_contact_phone' => '5555-2104',
                 'allergies' => 'Sulfas',

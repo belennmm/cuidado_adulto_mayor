@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FamilyCareController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\OlderAdultController;
 
@@ -18,7 +19,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/users', [AdminUserController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::put('/me', [AuthController::class, 'updateMe']);
     Route::get('/incidents/today', [IncidentController::class, 'today']);
+
+    Route::prefix('family')->group(function () {
+        Route::get('/overview', [FamilyCareController::class, 'overview']);
+        Route::get('/older-adults', [FamilyCareController::class, 'olderAdults']);
+        Route::get('/routine', [FamilyCareController::class, 'routine']);
+        Route::get('/routines', [FamilyCareController::class, 'routine']);
+    });
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
@@ -26,6 +36,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/users', [AdminUserController::class, 'index']);
     Route::post('/users', [AdminUserController::class, 'store']);
     Route::get('/professional-caregivers', [AdminUserController::class, 'professionalCaregivers']);
+    Route::get('/family-caregivers', [AdminUserController::class, 'familyCaregivers']);
     Route::get('/users/{user}', [AdminUserController::class, 'show']);
     Route::put('/users/{user}', [AdminUserController::class, 'update']);
     Route::patch('/users/{user}/approve', [AdminUserController::class, 'approve']);

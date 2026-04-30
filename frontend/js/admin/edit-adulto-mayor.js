@@ -167,7 +167,7 @@ function buildPayload() {
     gender: getValue(gender),
     room: getValue(room),
     status: getValue(status),
-    caregiver_family: getValue(caregiverFamily),
+    family_caregiver_id: getValue(caregiverFamily),
     professional_caregiver_id: getValue(professionalCaregiver),
     emergency_contact_name: getValue(contactName),
     emergency_contact_phone: getValue(contactPhone),
@@ -213,7 +213,7 @@ function fillForm(olderAdult) {
   gender.value = olderAdult.gender || ""
   room.value = olderAdult.room || ""
   status.value = olderAdult.status || ""
-  caregiverFamily.value = olderAdult.caregiver_family || ""
+  caregiverFamily.value = olderAdult.family_caregiver_id ? String(olderAdult.family_caregiver_id) : ""
   if (professionalCaregiver) {
     professionalCaregiver.value = olderAdult.professional_caregiver_id ? String(olderAdult.professional_caregiver_id) : ""
   }
@@ -232,6 +232,44 @@ function fillForm(olderAdult) {
     } else {
       addMedicineCard()
     }
+  }
+}
+
+async function loadFamilyCaregivers(selectedId = null) {
+  if (!caregiverFamily) return
+
+  const token = getToken()
+
+  if (!token) return
+
+  try {
+    const response = await fetch(`${API_URL}/admin/family-caregivers`, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudieron cargar los cuidadores familiares.")
+    }
+
+    caregiverFamily.innerHTML = '<option value="">Seleccione cuidador familiar</option>'
+
+    ;(data.users || []).forEach((user) => {
+      const option = document.createElement("option")
+      option.value = String(user.id)
+      option.textContent = user.name
+      if (selectedId && String(user.id) === String(selectedId)) {
+        option.selected = true
+      }
+      caregiverFamily.appendChild(option)
+    })
+  } catch (error) {
+    caregiverFamily.innerHTML = '<option value="">No se pudieron cargar los cuidadores</option>'
   }
 }
 
@@ -282,7 +320,10 @@ async function loadOlderAdult() {
 
   try {
     const data = await apiRequest(`/admin/older-adults/${olderAdultId}`)
-    await loadProfessionalCaregivers(data.older_adult?.professional_caregiver_id)
+    await Promise.all([
+      loadFamilyCaregivers(data.older_adult?.family_caregiver_id),
+      loadProfessionalCaregivers(data.older_adult?.professional_caregiver_id),
+    ])
     fillForm(data.older_adult || {})
   } catch (error) {
     alert(error.message)
@@ -318,6 +359,7 @@ if (medicinesList) {
 }
 
 if (!olderAdultId) {
+  loadFamilyCaregivers()
   loadProfessionalCaregivers()
 }
 
