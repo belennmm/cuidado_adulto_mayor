@@ -238,3 +238,30 @@
     max-width: 160px;
   }
 }
+
+@media screen and (max-width: 700px) {
+  .users-header,
+  .users-toolbar {
+    align-items: stretch;
+  }
+
+  .search-box,
+  .new-user-button {
+    width: 100%;
+    max-width: none;
+  }
+
+  .users-table-card {
+    padding: 14px 10px;
+  }
+
+  .user-row {
+    padding: 14px;
+  }
+
+  .approve-button,
+  .edit-button {
+    max-width: none;
+    width: 100%;
+  }
+}

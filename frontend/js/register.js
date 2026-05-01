@@ -1,5 +1,8 @@
 const form = document.querySelector(".register")
 const registerMessage = document.getElementById("registerMessage")
+const passwordInput = document.getElementById("password")
+const togglePassword = document.getElementById("togglePassword")
+const togglePasswordIcon = togglePassword ? togglePassword.querySelector("i") : null
 
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
@@ -96,5 +99,17 @@ const goToLogin = document.getElementById("goToLoginButton")
 if (goToLogin) {
     goToLogin.addEventListener("click", () => {
         window.location.href = "../index.html"
+    })
+}
+
+if (togglePassword && passwordInput) {
+    togglePassword.addEventListener("click", () => {
+        const isPassword = passwordInput.type === "password"
+        passwordInput.type = isPassword ? "text" : "password"
+
+        if (togglePasswordIcon) {
+            togglePasswordIcon.classList.toggle("bx-hide", !isPassword)
+            togglePasswordIcon.classList.toggle("bx-show", isPassword)
+        }
     })
 }

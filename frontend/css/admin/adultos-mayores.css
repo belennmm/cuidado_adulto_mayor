@@ -208,3 +208,29 @@
     max-width: 160px;
   }
 }
+
+@media screen and (max-width: 700px) {
+  .older-adults-header,
+  .older-adults-toolbar {
+    align-items: stretch;
+  }
+
+  .search-box,
+  .new-older-adult-button {
+    width: 100%;
+    max-width: none;
+  }
+
+  .older-adults-table-card {
+    padding: 14px 10px;
+  }
+
+  .older-adult-row {
+    padding: 14px;
+  }
+
+  .edit-button {
+    max-width: none;
+    width: 100%;
+  }
+}

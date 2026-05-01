@@ -241,6 +241,10 @@
 }
 
 @media screen and (max-width: 700px) {
+  .page-header {
+    align-items: flex-start;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
   }
@@ -249,7 +253,15 @@
     justify-content: stretch;
   }
 
-  .primary-button {
+  .primary-button,
+  .delete-button {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .panel,
+  .modal-box {
+    padding: 18px 16px;
   }
 }

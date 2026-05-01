@@ -1,0 +1,36 @@
+.placeholder-shell {
+  padding: 24px;
+}
+
+.placeholder-card {
+  width: min(100%, 840px);
+  margin: 24px auto 0;
+  background-color: #efefef;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.placeholder-title {
+  margin: 0 0 10px;
+  color: #1d73f3;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.placeholder-text {
+  margin: 0;
+  color: #666666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@media screen and (max-width: 768px) {
+  .placeholder-shell {
+    padding: 18px 16px;
+  }
+
+  .placeholder-card {
+    padding: 22px 18px;
+  }
+}

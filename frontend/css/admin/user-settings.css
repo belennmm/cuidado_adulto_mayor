@@ -197,3 +197,19 @@
     width: 100%;
   }
 }
+
+@media screen and (max-width: 520px) {
+  .settings-card {
+    padding: 18px 16px;
+  }
+
+  .profile-avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 34px;
+  }
+
+  .profile-summary-text h2 {
+    font-size: 22px;
+  }
+}

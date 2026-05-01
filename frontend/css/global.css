@@ -3,6 +3,43 @@ body {
   line-height: normal;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
 :root {
  
   --color-black: #000;
@@ -359,4 +396,162 @@ body {
 
   --left-76: 76px;
   --top-0: 0px;
+}
+
+@media screen and (max-width: 1024px) {
+  .page-shell,
+  .family-page,
+  .routine-detail-panel {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .page-header,
+  .users-header,
+  .older-adults-header,
+  .users-toolbar,
+  .older-adults-toolbar,
+  .incidents-header,
+  .family-page-header,
+  .card-header,
+  .profile-summary,
+  .form-actions,
+  .modal-actions,
+  .logout-modal-actions {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .users-title,
+  .older-adults-title,
+  .dashboard-title,
+  .page-title,
+  .incidents-title,
+  .family-title,
+  .adult-screen-name {
+    font-size: clamp(1.75rem, 2vw, 2.15rem);
+  }
+
+  .panel,
+  .settings-card,
+  .users-table-card,
+  .older-adults-table-card,
+  .incident-card,
+  .family-card,
+  .prototype-card,
+  .activity-history-card,
+  .medicine-table-card,
+  .logout-modal-box,
+  .modal-box {
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .page-shell,
+  .family-page,
+  .routine-detail-panel {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .page-header,
+  .users-header,
+  .older-adults-header,
+  .users-toolbar,
+  .older-adults-toolbar,
+  .incidents-header,
+  .family-page-header {
+    align-items: stretch;
+  }
+
+  .users-toolbar > *,
+  .older-adults-toolbar > *,
+  .page-header > *:not(:first-child),
+  .incidents-header > *:not(:first-child) {
+    width: 100%;
+  }
+
+  .search-box,
+  .search-box input,
+  .new-user-button,
+  .new-older-adult-button,
+  .primary-button,
+  .secondary-button,
+  .approve-button,
+  .edit-button,
+  .delete-button,
+  .view-all-button,
+  .back-button,
+  .prototype-button,
+  .primary-action,
+  .secondary-action,
+  .filter-button,
+  .save-button,
+  .dashboard-button,
+  .family-events-button,
+  .request-change-button {
+    max-width: 100%;
+  }
+
+  .form-actions > *,
+  .modal-actions > *,
+  .logout-modal-actions > * {
+    flex: 1 1 180px;
+  }
+
+  .logout-modal-box,
+  .modal-box {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .page-shell,
+  .family-page,
+  .routine-detail-panel {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .users-title,
+  .older-adults-title,
+  .dashboard-title,
+  .page-title,
+  .incidents-title,
+  .family-title,
+  .adult-screen-name {
+    font-size: 1.5rem;
+  }
+
+  .panel-title,
+  .section-title,
+  .prototype-title {
+    font-size: 1.25rem;
+  }
+
+  .panel,
+  .settings-card,
+  .users-table-card,
+  .older-adults-table-card,
+  .incident-card,
+  .family-card,
+  .prototype-card,
+  .activity-history-card,
+  .medicine-table-card,
+  .logout-modal-box,
+  .modal-box {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .logout-modal-actions > *,
+  .modal-actions > *,
+  .form-actions > * {
+    flex-basis: 100%;
+  }
 }

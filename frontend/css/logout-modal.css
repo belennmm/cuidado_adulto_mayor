@@ -72,3 +72,27 @@
 .logout-confirm-button:hover {
   opacity: 0.95;
 }
+
+@media screen and (max-width: 560px) {
+  .logout-modal-overlay {
+    padding: 14px;
+  }
+
+  .logout-modal-box {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .logout-modal-title {
+    font-size: 21px;
+  }
+
+  .logout-modal-actions {
+    flex-direction: column;
+  }
+
+  .logout-cancel-button,
+  .logout-confirm-button {
+    width: 100%;
+  }
+}

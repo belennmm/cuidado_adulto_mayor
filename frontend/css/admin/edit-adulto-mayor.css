@@ -344,6 +344,11 @@
   .medicine-grid {
     grid-template-columns: 1fr;
   }
+
+  .medicine-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 @media screen and (max-width: 700px) {
@@ -358,5 +363,21 @@
 
   .section-divider {
     font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .panel,
+  .medicine-card,
+  .modal-box {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .secondary-button,
+  .remove-medicine-button,
+  .primary-button,
+  .delete-button {
+    width: 100%;
   }
 }

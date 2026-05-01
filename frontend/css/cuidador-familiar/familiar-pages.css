@@ -937,4 +937,36 @@
     width: 100%;
     min-width: 0;
   }
+
+  .family-page {
+    padding: 20px 12px;
+  }
+
+  .family-subtitle,
+  .incident-description,
+  .incident-detail,
+  .prototype-textarea,
+  .medicine-table {
+    font-size: 15px;
+  }
+
+  .family-date-pill,
+  .summary-pill,
+  .primary-action,
+  .secondary-action,
+  .filter-button,
+  .save-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .activity-history-list,
+  .activity-history-card,
+  .medicine-table-card,
+  .incident-prototype-card,
+  .incidents-empty-prototype,
+  .empty-card {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
