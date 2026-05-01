@@ -19,6 +19,15 @@ const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/a
 const params = new URLSearchParams(window.location.search)
 const userId = params.get("id")
 
+function navigateTo(url) {
+  if (window.navigateWithLoading) {
+    window.navigateWithLoading(url)
+    return
+  }
+
+  window.location.assign(url)
+}
+
 function getToken() {
   return localStorage.getItem("token")
 }
@@ -92,13 +101,13 @@ function fillForm(user) {
 async function loadUser() {
   if (!userId) {
     alert("No se encontro el usuario a editar.")
-    window.location.href = "./users.html"
+    navigateTo("./users.html")
     return
   }
 
   if (!getToken()) {
     alert("Inicia sesion como administrador para editar usuarios.")
-    window.location.href = "../../index.html"
+    navigateTo("../../index.html")
     return
   }
 
@@ -112,7 +121,7 @@ async function loadUser() {
     fillForm(data.user)
   } catch (error) {
     alert(error.message)
-    window.location.href = "./users.html"
+    navigateTo("./users.html")
   } finally {
     setFormDisabled(false)
 
@@ -154,7 +163,7 @@ async function saveUser() {
     })
 
     alert(data.message || "Usuario actualizado correctamente.")
-    window.location.href = "./users.html"
+    navigateTo("./users.html")
   } catch (error) {
     alert(error.message)
   } finally {
@@ -176,7 +185,7 @@ async function deleteUser() {
     })
 
     alert(data.message || "Usuario eliminado correctamente.")
-    window.location.href = "./users.html"
+    navigateTo("./users.html")
   } catch (error) {
     alert(error.message)
     setFormDisabled(false)

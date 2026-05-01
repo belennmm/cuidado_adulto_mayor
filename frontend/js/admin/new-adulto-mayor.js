@@ -7,6 +7,15 @@ const professionalCaregiver = document.getElementById("professionalCaregiver")
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 let medicineCount = 0
 
+function navigateTo(url) {
+  if (window.navigateWithLoading) {
+    window.navigateWithLoading(url)
+    return
+  }
+
+  window.location.assign(url)
+}
+
 function createDayOptions(index, selectedDays = []) {
   const days = [
     { value: "lunes", label: "Lunes" },
@@ -277,7 +286,7 @@ if (newOlderAdultForm) {
 
       const data = await createOlderAdult(payload)
       alert(data.message || "Adulto mayor creado correctamente.")
-      window.location.href = "./adultos-mayores.html"
+      navigateTo("./adultos-mayores.html")
     } catch (error) {
       alert(error.message)
     } finally {

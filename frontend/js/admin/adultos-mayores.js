@@ -114,7 +114,14 @@ function renderOlderAdults(list) {
   editButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const olderAdultId = button.dataset.id
-      window.location.href = `./edit-adulto-mayor.html?id=${olderAdultId}`
+      const destination = `./edit-adulto-mayor.html?id=${olderAdultId}`
+
+      if (window.navigateWithLoading) {
+        window.navigateWithLoading(destination)
+        return
+      }
+
+      window.location.assign(destination)
     })
   })
 }

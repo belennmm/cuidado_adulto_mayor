@@ -11,8 +11,6 @@ function showLoginMessage(message) {
     if (loginMessage) {
         loginMessage.textContent = message
     }
-
-    alert(message)
 }
 
 function clearSession() {
@@ -31,7 +29,12 @@ const roleRedirects = {
 function redirectByRole(role) {
     const destination = roleRedirects[role]
     if (destination) {
-        window.location.href = destination
+        if (window.navigateWithLoading) {
+            window.navigateWithLoading(destination)
+            return
+        }
+
+        window.location.assign(destination)
         return
     }
     alert("No se encontró acceso para este tipo de usuario")
@@ -39,7 +42,12 @@ function redirectByRole(role) {
 
 if (solicitarCuentaText) {
     solicitarCuentaText.addEventListener("click", function() {
-        window.location.href = "./pages/register.html"
+        if (window.navigateWithLoading) {
+            window.navigateWithLoading("./pages/register.html")
+            return
+        }
+
+        window.location.assign("./pages/register.html")
     })
 }
 

@@ -12,7 +12,12 @@
   }
 
   function redirectToLogin() {
-    window.location.href = "../../index.html"
+    if (window.navigateWithLoading) {
+      window.navigateWithLoading("../../index.html")
+      return
+    }
+
+    window.location.assign("../../index.html")
   }
 
   function redirectByRole(role) {
@@ -28,7 +33,12 @@
 
     const destination = roleRedirects[normalized]
     if (destination) {
-      window.location.href = destination
+      if (window.navigateWithLoading) {
+        window.navigateWithLoading(destination)
+        return
+      }
+
+      window.location.assign(destination)
       return
     }
 

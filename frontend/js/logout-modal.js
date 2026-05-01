@@ -30,6 +30,11 @@ if (confirmLogout) {
   confirmLogout.addEventListener("click", () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
-    window.location.href = "../../index.html"
+    if (window.navigateWithLoading) {
+      window.navigateWithLoading("../../index.html")
+      return
+    }
+
+    window.location.assign("../../index.html")
   })
 }

@@ -28,6 +28,15 @@ const params = new URLSearchParams(window.location.search)
 const olderAdultId = params.get("id")
 let medicineCount = 0
 
+function navigateTo(url) {
+  if (window.navigateWithLoading) {
+    window.navigateWithLoading(url)
+    return
+  }
+
+  window.location.assign(url)
+}
+
 function createDayOptions(index, selectedDays = []) {
   const days = [
     { value: "lunes", label: "Lunes" },
@@ -314,7 +323,7 @@ async function loadProfessionalCaregivers(selectedId = null) {
 async function loadOlderAdult() {
   if (!olderAdultId) {
     alert("No se encontro el adulto mayor a editar.")
-    window.location.href = "./adultos-mayores.html"
+    navigateTo("./adultos-mayores.html")
     return
   }
 
@@ -327,7 +336,7 @@ async function loadOlderAdult() {
     fillForm(data.older_adult || {})
   } catch (error) {
     alert(error.message)
-    window.location.href = "./adultos-mayores.html"
+    navigateTo("./adultos-mayores.html")
   }
 }
 
@@ -377,7 +386,7 @@ if (editOlderAdultForm) {
 
       const data = await updateOlderAdult()
       alert(data.message || "Se guardaron los cambios del adulto mayor.")
-      window.location.href = "./adultos-mayores.html"
+      navigateTo("./adultos-mayores.html")
     } catch (error) {
       alert(error.message)
     } finally {
@@ -417,7 +426,7 @@ if (confirmDeleteOlderAdult) {
 
       const data = await deleteOlderAdult()
       alert(data.message || "Adulto mayor eliminado correctamente.")
-      window.location.href = "./adultos-mayores.html"
+      navigateTo("./adultos-mayores.html")
     } catch (error) {
       alert(error.message)
       confirmDeleteOlderAdult.disabled = false

@@ -160,7 +160,14 @@ function renderUsers(list) {
 
   document.querySelectorAll(".edit-button").forEach((button) => {
     button.addEventListener("click", () => {
-      window.location.href = `./edit-user.html?id=${button.dataset.id}`
+      const destination = `./edit-user.html?id=${button.dataset.id}`
+
+      if (window.navigateWithLoading) {
+        window.navigateWithLoading(destination)
+        return
+      }
+
+      window.location.assign(destination)
     })
   })
 }

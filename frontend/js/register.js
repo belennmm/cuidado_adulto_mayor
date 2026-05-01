@@ -11,8 +11,6 @@ function showMessage(message, isError = false) {
         registerMessage.textContent = message
         registerMessage.classList.toggle("error", isError)
     }
-
-    alert(message)
 }
 
 function getErrorMessage(data, fallback) {
@@ -29,6 +27,15 @@ function getErrorMessage(data, fallback) {
 function clearSession() {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
+}
+
+function navigateTo(url) {
+    if (window.navigateWithLoading) {
+        window.navigateWithLoading(url)
+        return
+    }
+
+    window.location.assign(url)
 }
 
 form.addEventListener("submit", async(e) => {
@@ -84,7 +91,7 @@ form.addEventListener("submit", async(e) => {
         showMessage(data.message || "Registro enviado. Un administrador debe aprobar tu cuenta antes de iniciar sesion.")
 
         setTimeout(() => {
-            window.location.href = "../index.html"
+            navigateTo("../index.html")
         }, 2500)
 
     } catch (error) {
@@ -98,7 +105,7 @@ const goToLogin = document.getElementById("goToLoginButton")
 
 if (goToLogin) {
     goToLogin.addEventListener("click", () => {
-        window.location.href = "../index.html"
+        navigateTo("../index.html")
     })
 }
 

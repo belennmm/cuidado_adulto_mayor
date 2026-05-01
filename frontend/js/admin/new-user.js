@@ -13,6 +13,15 @@ const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/a
 
 let pendingRequests = []
 
+function navigateTo(url) {
+  if (window.navigateWithLoading) {
+    window.navigateWithLoading(url)
+    return
+  }
+
+  window.location.assign(url)
+}
+
 function getToken() {
   return localStorage.getItem("token")
 }
@@ -118,7 +127,7 @@ async function createUser() {
 
   if (!token) {
     alert("Inicia sesion como administrador para crear usuarios.")
-    window.location.href = "../../index.html"
+    navigateTo("../../index.html")
     return
   }
 
