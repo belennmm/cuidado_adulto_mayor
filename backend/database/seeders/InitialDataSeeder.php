@@ -37,6 +37,18 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1998-05-16',
                 ]
             ),
+            'admin_2' => User::updateOrCreate(
+                ['email' => 'mon231497@uvg.edu.gt'],
+                [
+                    'name' => 'Mon Admin',
+                    'password' => 'admin123',
+                    'role' => 'admin',
+                    'is_approved' => true,
+                    'location' => 'Guatemala',
+                    'phone' => '5555-0107',
+                    'birthdate' => '1999-04-23',
+                ]
+            ),
             'professional_1' => User::updateOrCreate(
                 ['email' => 'maria.gonzalez@organizate.com'],
                 [
