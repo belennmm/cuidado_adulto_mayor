@@ -199,7 +199,11 @@ class FamilyCareController extends Controller
     private function assignedOlderAdults(User $user)
     {
         return OlderAdult::query()
-            ->with(['medicationAssignments.medication', 'familyCaregiver:id,name,email', 'professionalCaregiver:id,name,email'])
+            ->with([
+                'medicationAssignments.medication',
+                'familyCaregiver:id,name,email,phone,location',
+                'professionalCaregiver:id,name,email,phone,location',
+            ])
             ->where(function ($query) use ($user) {
                 $query
                     ->where('family_caregiver_id', $user->id)
@@ -264,8 +268,8 @@ class FamilyCareController extends Controller
         $query = Incident::query()
             ->with([
                 'reporter:id,name,email',
-                'olderAdult.familyCaregiver:id,name,email',
-                'olderAdult.professionalCaregiver:id,name,email',
+                'olderAdult.familyCaregiver:id,name,email,phone,location',
+                'olderAdult.professionalCaregiver:id,name,email,phone,location',
                 'olderAdult.medicationAssignments.medication',
             ])
             ->where(function ($incidentQuery) use ($adultIds, $adultNames) {
@@ -346,7 +350,10 @@ class FamilyCareController extends Controller
             'status' => $olderAdult->status,
             'family_caregiver_id' => $olderAdult->family_caregiver_id,
             'family_caregiver_name' => $olderAdult->familyCaregiver?->name ?? $olderAdult->caregiver_family,
+            'family_caregiver' => $this->formatCaregiver($olderAdult->familyCaregiver),
+            'professional_caregiver_id' => $olderAdult->professional_caregiver_id,
             'professional_caregiver_name' => $olderAdult->professionalCaregiver?->name,
+            'professional_caregiver' => $this->formatCaregiver($olderAdult->professionalCaregiver),
             'medications_count' => $olderAdult->medicationAssignments
                 ->where('is_active', true)
                 ->count(),
@@ -365,20 +372,41 @@ class FamilyCareController extends Controller
             'allergies' => $olderAdult->allergies,
             'medical_history' => $olderAdult->medical_history,
             'notes' => $olderAdult->notes,
+            'created_at' => $olderAdult->created_at?->toISOString(),
+            'updated_at' => $olderAdult->updated_at?->toISOString(),
             'medications' => $olderAdult->medicationAssignments
                 ->filter(fn ($assignment) => (bool) $assignment->is_active)
                 ->map(fn ($assignment) => [
                     'id' => $assignment->id,
+                    'medication_id' => $assignment->medication_id,
                     'name' => $assignment->medication?->name,
                     'dosage' => $assignment->dosage,
                     'schedule' => $assignment->schedule,
                     'days' => $assignment->days ?? [],
                     'notes' => $assignment->notes,
+                    'start_date' => $assignment->start_date?->toDateString(),
+                    'end_date' => $assignment->end_date?->toDateString(),
+                    'is_active' => $assignment->is_active,
                     'due_today' => $this->isDueToday($assignment->days, $today),
                     'administered_today' => $administeredMap->has($assignment->id),
                     'administered_time' => $administeredMap->get($assignment->id),
                 ])
                 ->values(),
+        ];
+    }
+
+    private function formatCaregiver(?User $caregiver): ?array
+    {
+        if (!$caregiver) {
+            return null;
+        }
+
+        return [
+            'id' => $caregiver->id,
+            'name' => $caregiver->name,
+            'email' => $caregiver->email,
+            'phone' => $caregiver->phone,
+            'location' => $caregiver->location,
         ];
     }
 

@@ -29,14 +29,20 @@ class FamilyCareEndpointsTest extends TestCase
 
         $family = User::factory()->create([
             'name' => 'Laura Rodriguez',
+            'email' => 'laura.rodriguez@example.com',
             'role' => 'familiar',
             'is_approved' => true,
+            'phone' => '5555-0104',
+            'location' => 'Villa Nueva',
         ]);
 
         $professional = User::factory()->create([
             'name' => 'Maria Gonzalez',
+            'email' => 'maria.gonzalez@example.com',
             'role' => 'profesional',
             'is_approved' => true,
+            'phone' => '5555-0102',
+            'location' => 'Zona 10',
         ]);
 
         $assignedAdult = OlderAdult::create([
@@ -114,9 +120,17 @@ class FamilyCareEndpointsTest extends TestCase
             'is_approved' => true,
         ]);
 
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+        ]);
+
         Sanctum::actingAs($admin);
 
         $this->getJson('/api/family/overview')
+            ->assertForbidden();
+
+        $this->getJson("/api/family/older-adults/{$olderAdult->id}")
             ->assertForbidden();
 
         $this->getJson('/api/family/routines')
@@ -151,14 +165,20 @@ class FamilyCareEndpointsTest extends TestCase
 
         $family = User::factory()->create([
             'name' => 'Laura Rodriguez',
+            'email' => 'laura.rodriguez@example.com',
             'role' => 'familiar',
             'is_approved' => true,
+            'phone' => '5555-0104',
+            'location' => 'Villa Nueva',
         ]);
 
         $professional = User::factory()->create([
             'name' => 'Maria Gonzalez',
+            'email' => 'maria.gonzalez@example.com',
             'role' => 'profesional',
             'is_approved' => true,
+            'phone' => '5555-0102',
+            'location' => 'Zona 10',
         ]);
 
         $assignedAdult = OlderAdult::create([
@@ -283,8 +303,11 @@ class FamilyCareEndpointsTest extends TestCase
 
         $family = User::factory()->create([
             'name' => 'Laura Rodriguez',
+            'email' => 'laura.rodriguez@example.com',
             'role' => 'familiar',
             'is_approved' => true,
+            'phone' => '5555-0104',
+            'location' => 'Villa Nueva',
         ]);
 
         $otherFamily = User::factory()->create([
@@ -295,8 +318,11 @@ class FamilyCareEndpointsTest extends TestCase
 
         $professional = User::factory()->create([
             'name' => 'Maria Gonzalez',
+            'email' => 'maria.gonzalez@example.com',
             'role' => 'profesional',
             'is_approved' => true,
+            'phone' => '5555-0102',
+            'location' => 'Zona 10',
         ]);
 
         $assignedAdult = OlderAdult::create([
@@ -337,6 +363,7 @@ class FamilyCareEndpointsTest extends TestCase
             'schedule' => '8:00 AM',
             'days' => ['viernes'],
             'notes' => 'Despues del desayuno.',
+            'start_date' => '2026-04-01',
             'is_active' => true,
         ]);
 
@@ -358,9 +385,18 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertOk()
             ->assertJsonPath('older_adult.id', $assignedAdult->id)
             ->assertJsonPath('older_adult.full_name', 'Rosa Martinez')
+            ->assertJsonPath('older_adult.family_caregiver.id', $family->id)
+            ->assertJsonPath('older_adult.family_caregiver.email', 'laura.rodriguez@example.com')
+            ->assertJsonPath('older_adult.family_caregiver.phone', '5555-0104')
+            ->assertJsonPath('older_adult.professional_caregiver_id', $professional->id)
+            ->assertJsonPath('older_adult.professional_caregiver.name', 'Maria Gonzalez')
+            ->assertJsonPath('older_adult.professional_caregiver.location', 'Zona 10')
             ->assertJsonPath('older_adult.emergency_contact_name', 'Carolina Martinez')
             ->assertJsonPath('older_adult.medical_history', 'Hipertension controlada.')
+            ->assertJsonPath('older_adult.medications.0.medication_id', $medication->id)
             ->assertJsonPath('older_adult.medications.0.name', 'Losartan')
+            ->assertJsonPath('older_adult.medications.0.start_date', '2026-04-01')
+            ->assertJsonPath('older_adult.medications.0.is_active', true)
             ->assertJsonPath('older_adult.incidents_count', 1)
             ->assertJsonPath('older_adult.incidents.0.title', 'Revision de presion')
             ->assertJsonPath('older_adult.incidents.0.older_adult.id', $assignedAdult->id)
