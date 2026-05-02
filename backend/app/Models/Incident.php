@@ -14,6 +14,7 @@ class Incident extends Model
         'title',
         'description',
         'adult_name',
+        'older_adult_id',
         'severity',
         'status',
         'incident_date',
@@ -31,5 +32,10 @@ class Incident extends Model
     public function reporter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reported_by');
+    }
+
+    public function olderAdult(): BelongsTo
+    {
+        return $this->belongsTo(OlderAdult::class);
     }
 }

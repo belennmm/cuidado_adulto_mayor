@@ -68,12 +68,40 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function routine(Request $request): JsonResponse
+    public function olderAdult(Request $request, OlderAdult $olderAdult): JsonResponse
     {
         $this->ensureFamilyUser($request);
 
         $today = $this->today();
-        $olderAdults = $this->assignedOlderAdults($request->user())->get();
+        $assignedOlderAdult = $this->assignedOlderAdultOrFail($request->user(), $olderAdult->id);
+        $olderAdults = collect([$assignedOlderAdult]);
+        $administeredMap = $this->administeredMedicationMap(
+            $this->medicationAssignmentIds($olderAdults),
+            $today
+        );
+        $incidents = $this->incidentsForOlderAdults($olderAdults);
+
+        return response()->json([
+            'date' => $today->toDateString(),
+            'older_adult' => [
+                ...$this->formatOlderAdultDetail($assignedOlderAdult, $today, $administeredMap),
+                'incidents_count' => $incidents->count(),
+                'last_incident' => $incidents->first(),
+                'incidents' => $incidents,
+            ],
+        ]);
+    }
+
+    public function routine(Request $request): JsonResponse
+    {
+        $this->ensureFamilyUser($request);
+
+        $data = $request->validate([
+            'older_adult_id' => 'nullable|integer',
+        ]);
+
+        $today = $this->today();
+        $olderAdults = $this->olderAdultsForFamilyRequest($request, $data['older_adult_id'] ?? null);
         $routine = $this->buildRoutine($olderAdults, $today, false);
         $todayRoutine = $routine->where('due_today', true);
 
@@ -96,16 +124,75 @@ class FamilyCareController extends Controller
         ]);
     }
 
+    public function incidents(Request $request): JsonResponse
+    {
+        $this->ensureFamilyUser($request);
+
+        $data = $request->validate([
+            'date' => 'nullable|date_format:Y-m-d',
+            'older_adult_id' => 'nullable|integer',
+        ]);
+
+        $date = isset($data['date'])
+            ? Carbon::createFromFormat('Y-m-d', $data['date'], config('app.timezone'))->startOfDay()
+            : $this->today();
+
+        $olderAdults = $this->olderAdultsForFamilyRequest($request, $data['older_adult_id'] ?? null);
+        $incidents = $this->incidentsForOlderAdults($olderAdults, $date);
+
+        return response()->json([
+            'date' => $date->toDateString(),
+            'summary' => [
+                'total' => $incidents->count(),
+                'open' => $incidents
+                    ->filter(fn (array $incident) => !in_array($this->normalizeText($incident['status']), ['cerrado', 'resuelto'], true))
+                    ->count(),
+                'resolved' => $incidents
+                    ->filter(fn (array $incident) => in_array($this->normalizeText($incident['status']), ['cerrado', 'resuelto'], true))
+                    ->count(),
+            ],
+            'older_adults' => $olderAdults
+                ->map(fn (OlderAdult $olderAdult) => $this->formatOlderAdultSummary($olderAdult))
+                ->values(),
+            'incidents' => $incidents,
+        ]);
+    }
+
     private function ensureFamilyUser(Request $request): void
     {
-        $role = $this->normalizeText($request->user()?->role);
+        $user = $request->user();
+        $role = $this->normalizeText($user?->role);
 
-        if ($role === 'familiar' || $role === 'cuidador_familiar') {
+        if (($role === 'familiar' || $role === 'cuidador_familiar') && (bool) $user?->is_approved) {
             return;
         }
 
         abort(response()->json([
             'message' => 'Esta informacion solo esta disponible para cuidadores familiares.',
+        ], 403));
+    }
+
+    private function olderAdultsForFamilyRequest(Request $request, mixed $olderAdultId = null): Collection
+    {
+        if ($olderAdultId !== null && $olderAdultId !== '') {
+            return collect([$this->assignedOlderAdultOrFail($request->user(), (int) $olderAdultId)]);
+        }
+
+        return $this->assignedOlderAdults($request->user())->get();
+    }
+
+    private function assignedOlderAdultOrFail(User $user, int $olderAdultId): OlderAdult
+    {
+        $olderAdult = $this->assignedOlderAdults($user)
+            ->whereKey($olderAdultId)
+            ->first();
+
+        if ($olderAdult) {
+            return $olderAdult;
+        }
+
+        abort(response()->json([
+            'message' => 'No tienes acceso a la informacion de este adulto mayor.',
         ], 403));
     }
 
@@ -162,32 +249,76 @@ class FamilyCareController extends Controller
 
     private function todayIncidents(Collection $olderAdults, Carbon $today): Collection
     {
+        return $this->incidentsForOlderAdults($olderAdults, $today);
+    }
+
+    private function incidentsForOlderAdults(Collection $olderAdults, ?Carbon $date = null): Collection
+    {
+        $adultIds = $olderAdults->pluck('id')->filter()->values();
         $adultNames = $olderAdults->pluck('full_name')->filter()->values();
 
-        if ($adultNames->isEmpty()) {
+        if ($adultIds->isEmpty() && $adultNames->isEmpty()) {
             return collect();
         }
 
-        return Incident::query()
-            ->with('reporter:id,name,email')
-            ->whereDate('incident_date', $today->toDateString())
-            ->whereIn('adult_name', $adultNames)
+        $query = Incident::query()
+            ->with([
+                'reporter:id,name,email',
+                'olderAdult.familyCaregiver:id,name,email',
+                'olderAdult.professionalCaregiver:id,name,email',
+                'olderAdult.medicationAssignments.medication',
+            ])
+            ->where(function ($incidentQuery) use ($adultIds, $adultNames) {
+                $incidentQuery->whereIn('older_adult_id', $adultIds);
+
+                if ($adultNames->isNotEmpty()) {
+                    $incidentQuery->orWhere(function ($legacyQuery) use ($adultNames) {
+                        $legacyQuery
+                            ->whereNull('older_adult_id')
+                            ->whereIn('adult_name', $adultNames);
+                    });
+                }
+            });
+
+        if ($date) {
+            $query->whereDate('incident_date', $date->toDateString());
+        }
+
+        return $query
+            ->orderByDesc('incident_date')
             ->orderByRaw('incident_time IS NULL')
-            ->orderBy('incident_time')
+            ->orderByDesc('incident_time')
             ->orderByDesc('created_at')
             ->get()
-            ->map(fn (Incident $incident) => [
-                'id' => $incident->id,
-                'title' => $incident->title,
-                'description' => $incident->description,
-                'adult_name' => $incident->adult_name,
-                'severity' => $incident->severity,
-                'status' => $incident->status,
-                'incident_date' => $incident->incident_date?->toDateString(),
-                'incident_time' => $incident->incident_time,
-                'reported_by' => $incident->reporter?->name,
-            ])
+            ->map(fn (Incident $incident) => $this->formatIncident($incident, $olderAdults))
             ->values();
+    }
+
+    private function formatIncident(Incident $incident, Collection $olderAdults): array
+    {
+        $olderAdult = $incident->olderAdult
+            ?? $olderAdults->first(
+                fn (OlderAdult $adult) => $this->normalizeText($adult->full_name) === $this->normalizeText($incident->adult_name)
+            );
+
+        return [
+            'id' => $incident->id,
+            'title' => $incident->title,
+            'description' => $incident->description,
+            'adult_name' => $incident->adult_name ?? $olderAdult?->full_name,
+            'older_adult_id' => $incident->older_adult_id ?? $olderAdult?->id,
+            'severity' => $incident->severity,
+            'status' => $incident->status,
+            'incident_date' => $incident->incident_date?->toDateString(),
+            'incident_time' => $incident->incident_time,
+            'reported_by' => $incident->reporter?->name,
+            'reporter' => $incident->reporter ? [
+                'id' => $incident->reporter->id,
+                'name' => $incident->reporter->name,
+                'email' => $incident->reporter->email,
+            ] : null,
+            'older_adult' => $olderAdult ? $this->formatOlderAdultSummary($olderAdult) : null,
+        ];
     }
 
     private function statusSummary(Collection $olderAdults): array

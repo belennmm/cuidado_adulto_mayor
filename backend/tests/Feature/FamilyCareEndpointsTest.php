@@ -121,6 +121,28 @@ class FamilyCareEndpointsTest extends TestCase
 
         $this->getJson('/api/family/routines')
             ->assertForbidden();
+
+        $this->getJson('/api/family/incidents')
+            ->assertForbidden();
+    }
+
+    public function test_pending_family_user_cannot_open_family_endpoints(): void
+    {
+        $family = User::factory()->create([
+            'role' => 'familiar',
+            'is_approved' => false,
+        ]);
+
+        Sanctum::actingAs($family);
+
+        $this->getJson('/api/family/routines')
+            ->assertForbidden();
+
+        $this->getJson('/api/family/incidents')
+            ->assertForbidden();
+
+        $this->getJson('/api/incidents/today')
+            ->assertForbidden();
     }
 
     public function test_family_routines_endpoint_returns_only_assigned_adult_routines(): void
@@ -196,6 +218,239 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertJsonPath('routine.0.medication_name', 'Losartan')
             ->assertJsonMissing(['older_adult_name' => 'Miguel Herrera'])
             ->assertJsonMissing(['medication_name' => 'Metformina']);
+    }
+
+    public function test_family_routines_endpoint_validates_requested_adult_belongs_to_family(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-04-30 09:00:00'));
+
+        $family = User::factory()->create([
+            'name' => 'Laura Rodriguez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $otherFamily = User::factory()->create([
+            'name' => 'Ana Lopez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $assignedAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
+            'created_by' => $family->id,
+        ]);
+
+        $otherAdult = OlderAdult::create([
+            'full_name' => 'Elena Castillo',
+            'status' => 'Critico',
+            'caregiver_family' => 'Ana Lopez',
+            'family_caregiver_id' => $otherFamily->id,
+            'created_by' => $otherFamily->id,
+        ]);
+
+        $medication = Medication::create([
+            'name' => 'Losartan',
+            'is_active' => true,
+        ]);
+
+        OlderAdultMedication::create([
+            'older_adult_id' => $assignedAdult->id,
+            'medication_id' => $medication->id,
+            'dosage' => '1 tableta',
+            'schedule' => '8:00 AM',
+            'days' => ['jueves'],
+            'is_active' => true,
+        ]);
+
+        Sanctum::actingAs($family);
+
+        $this->getJson("/api/family/routines?older_adult_id={$assignedAdult->id}")
+            ->assertOk()
+            ->assertJsonPath('summary.total', 1)
+            ->assertJsonPath('routine.0.older_adult_id', $assignedAdult->id);
+
+        $this->getJson("/api/family/routines?older_adult_id={$otherAdult->id}")
+            ->assertForbidden();
+    }
+
+    public function test_family_can_get_complete_assigned_older_adult_info_with_incidents(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-01 10:00:00'));
+
+        $family = User::factory()->create([
+            'name' => 'Laura Rodriguez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $otherFamily = User::factory()->create([
+            'name' => 'Ana Lopez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'name' => 'Maria Gonzalez',
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $assignedAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'age' => 81,
+            'birthdate' => '1944-02-12',
+            'gender' => 'Femenino',
+            'room' => 'A-101',
+            'status' => 'Estable',
+            'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
+            'professional_caregiver_id' => $professional->id,
+            'emergency_contact_name' => 'Carolina Martinez',
+            'emergency_contact_phone' => '5555-2101',
+            'allergies' => 'Penicilina',
+            'medical_history' => 'Hipertension controlada.',
+            'notes' => 'Requiere apoyo para desplazamientos largos.',
+            'created_by' => $professional->id,
+        ]);
+
+        $otherAdult = OlderAdult::create([
+            'full_name' => 'Elena Castillo',
+            'status' => 'Critico',
+            'caregiver_family' => 'Ana Lopez',
+            'family_caregiver_id' => $otherFamily->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $medication = Medication::create([
+            'name' => 'Losartan',
+            'is_active' => true,
+        ]);
+
+        OlderAdultMedication::create([
+            'older_adult_id' => $assignedAdult->id,
+            'medication_id' => $medication->id,
+            'dosage' => '1 tableta',
+            'schedule' => '8:00 AM',
+            'days' => ['viernes'],
+            'notes' => 'Despues del desayuno.',
+            'is_active' => true,
+        ]);
+
+        Incident::create([
+            'title' => 'Revision de presion',
+            'description' => 'Se notifico lectura elevada.',
+            'adult_name' => 'Rosa Martinez',
+            'older_adult_id' => $assignedAdult->id,
+            'severity' => 'media',
+            'status' => 'abierto',
+            'incident_date' => Carbon::today()->toDateString(),
+            'incident_time' => '08:30:00',
+            'reported_by' => $professional->id,
+        ]);
+
+        Sanctum::actingAs($family);
+
+        $this->getJson("/api/family/older-adults/{$assignedAdult->id}")
+            ->assertOk()
+            ->assertJsonPath('older_adult.id', $assignedAdult->id)
+            ->assertJsonPath('older_adult.full_name', 'Rosa Martinez')
+            ->assertJsonPath('older_adult.emergency_contact_name', 'Carolina Martinez')
+            ->assertJsonPath('older_adult.medical_history', 'Hipertension controlada.')
+            ->assertJsonPath('older_adult.medications.0.name', 'Losartan')
+            ->assertJsonPath('older_adult.incidents_count', 1)
+            ->assertJsonPath('older_adult.incidents.0.title', 'Revision de presion')
+            ->assertJsonPath('older_adult.incidents.0.older_adult.id', $assignedAdult->id)
+            ->assertJsonPath('older_adult.incidents.0.reporter.name', 'Maria Gonzalez');
+
+        $this->getJson("/api/family/older-adults/{$otherAdult->id}")
+            ->assertForbidden();
+    }
+
+    public function test_family_incidents_endpoint_returns_only_assigned_complete_incidents(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-01 10:00:00'));
+
+        $family = User::factory()->create([
+            'name' => 'Laura Rodriguez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $otherFamily = User::factory()->create([
+            'name' => 'Ana Lopez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'name' => 'Maria Gonzalez',
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $assignedAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'age' => 81,
+            'room' => 'A-101',
+            'status' => 'Estable',
+            'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $otherAdult = OlderAdult::create([
+            'full_name' => 'Elena Castillo',
+            'age' => 88,
+            'room' => 'C-305',
+            'status' => 'Critico',
+            'caregiver_family' => 'Ana Lopez',
+            'family_caregiver_id' => $otherFamily->id,
+            'created_by' => $professional->id,
+        ]);
+
+        Incident::create([
+            'title' => 'Revision de presion',
+            'description' => 'Se notifico lectura elevada.',
+            'adult_name' => 'Rosa Martinez',
+            'older_adult_id' => $assignedAdult->id,
+            'severity' => 'media',
+            'status' => 'abierto',
+            'incident_date' => Carbon::today()->toDateString(),
+            'incident_time' => '08:30:00',
+            'reported_by' => $professional->id,
+        ]);
+
+        Incident::create([
+            'title' => 'Molestia respiratoria',
+            'description' => 'Se monitoreo saturacion.',
+            'adult_name' => 'Elena Castillo',
+            'older_adult_id' => $otherAdult->id,
+            'severity' => 'alta',
+            'status' => 'abierto',
+            'incident_date' => Carbon::today()->toDateString(),
+            'incident_time' => '09:30:00',
+            'reported_by' => $professional->id,
+        ]);
+
+        Sanctum::actingAs($family);
+
+        $this->getJson('/api/family/incidents?date=2026-05-01')
+            ->assertOk()
+            ->assertJsonPath('summary.total', 1)
+            ->assertJsonPath('summary.open', 1)
+            ->assertJsonPath('incidents.0.title', 'Revision de presion')
+            ->assertJsonPath('incidents.0.older_adult.id', $assignedAdult->id)
+            ->assertJsonPath('incidents.0.older_adult.full_name', 'Rosa Martinez')
+            ->assertJsonPath('incidents.0.reporter.name', 'Maria Gonzalez')
+            ->assertJsonMissing(['title' => 'Molestia respiratoria']);
+
+        $this->getJson("/api/family/incidents?date=2026-05-01&older_adult_id={$otherAdult->id}")
+            ->assertForbidden();
     }
 
     public function test_admin_assigns_older_adult_to_real_approved_family_caregiver(): void

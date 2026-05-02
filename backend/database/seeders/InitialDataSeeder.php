@@ -19,7 +19,7 @@ class InitialDataSeeder extends Seeder
         $olderAdults = $this->seedOlderAdults($users['admin'], $users);
         $this->assignProfessionalCaregivers($olderAdults, $users);
         $this->seedMedications($olderAdults, $users);
-        $this->seedIncidents($users);
+        $this->seedIncidents($users, $olderAdults);
     }
 
     private function seedUsers(): array
@@ -420,7 +420,7 @@ class InitialDataSeeder extends Seeder
         }
     }
 
-    private function seedIncidents(array $users): void
+    private function seedIncidents(array $users, array $olderAdults): void
     {
         $today = Carbon::today()->toDateString();
         $yesterday = Carbon::yesterday()->toDateString();
@@ -430,6 +430,7 @@ class InitialDataSeeder extends Seeder
                 'title' => 'Control de glucosa fuera de rango',
                 'description' => 'Se detecto una lectura elevada antes del almuerzo y se notifico al equipo.',
                 'adult_name' => 'Miguel Herrera',
+                'older_adult_id' => $olderAdults['Miguel Herrera']->id ?? null,
                 'severity' => 'alta',
                 'status' => 'en seguimiento',
                 'incident_date' => $today,
@@ -440,6 +441,7 @@ class InitialDataSeeder extends Seeder
                 'title' => 'Molestia respiratoria nocturna',
                 'description' => 'Se apoyo con oxigenacion y monitoreo hasta estabilizar signos.',
                 'adult_name' => 'Elena Castillo',
+                'older_adult_id' => $olderAdults['Elena Castillo']->id ?? null,
                 'severity' => 'alta',
                 'status' => 'abierto',
                 'incident_date' => $today,
@@ -450,6 +452,7 @@ class InitialDataSeeder extends Seeder
                 'title' => 'Caida leve sin lesion',
                 'description' => 'El residente perdio el equilibrio al levantarse. No presenta lesion visible.',
                 'adult_name' => 'Carlos Ramirez',
+                'older_adult_id' => $olderAdults['Carlos Ramirez']->id ?? null,
                 'severity' => 'media',
                 'status' => 'cerrado',
                 'incident_date' => $yesterday,
