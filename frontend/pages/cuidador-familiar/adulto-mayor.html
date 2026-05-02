@@ -57,6 +57,11 @@
           <div class="family-shell">
             <h1 class="adult-screen-name" id="adultScreenName">Adulto mayor</h1>
 
+            <label class="adult-selector" id="adultSelectorWrapper" hidden>
+              <span>Seleccionar adulto mayor</span>
+              <select id="adultSelector" class="prototype-field"></select>
+            </label>
+
             <div class="adult-prototype-grid">
               <article class="prototype-card adult-details-card">
                 <h2 class="prototype-title">Detalles</h2>
@@ -70,6 +75,16 @@
                   <label>
                     <span>Edad</span>
                     <input class="prototype-field" id="adultAgeField" type="text" readonly />
+                  </label>
+
+                  <label>
+                    <span>Estado</span>
+                    <input class="prototype-field" id="adultStatusField" type="text" readonly />
+                  </label>
+
+                  <label>
+                    <span>Habitacion</span>
+                    <input class="prototype-field" id="adultRoomField" type="text" readonly />
                   </label>
 
                   <label>

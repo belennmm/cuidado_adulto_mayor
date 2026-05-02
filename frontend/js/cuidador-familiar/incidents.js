@@ -1,10 +1,6 @@
 (() => {
   const api = window.FamilyCare
-  const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
-
-  function getToken() {
-    return localStorage.getItem("token")
-  }
+  let selectedIncident = null
 
   function formatShortDate(value) {
     if (!value) return "Sin fecha"
@@ -18,13 +14,39 @@
     element.textContent = value || ""
   }
 
+  function getIncidentAdultName(incident) {
+    return incident?.older_adult?.full_name || incident?.adult_name || "Adulto mayor"
+  }
+
+  function getReporterName(incident) {
+    return incident?.reporter?.name || incident?.reported_by || "Sin reportero"
+  }
+
+  function formatIncidentDetail(incident) {
+    if (!incident) return "No hay incidente seleccionado."
+
+    return [
+      `Incidente: ${incident.title || "Incidente"}`,
+      `Adulto mayor: ${getIncidentAdultName(incident)}`,
+      `Estado: ${incident.status || "abierto"}`,
+      `Severidad: ${incident.severity || "media"}`,
+      `Fecha: ${formatShortDate(incident.incident_date)}`,
+      `Hora: ${api.formatTime(incident.incident_time)}`,
+      `Reportado por: ${getReporterName(incident)}`,
+      `Detalle: ${incident.description || "Sin descripcion registrada."}`,
+    ].join("\n")
+  }
+
   function renderEmpty(message = "No se encuentran incidentes") {
     const list = document.getElementById("incidentsList")
     if (!list) return
+    renderLastIncident(null)
     list.innerHTML = `<div class="incidents-empty-prototype">${api.escapeHtml(message)}</div>`
   }
 
   function renderLastIncident(incident) {
+    selectedIncident = incident || null
+
     if (!incident) {
       setText("lastIncidentStatus", "Resuelto")
       setText("lastIncidentAdult", "Sin incidentes")
@@ -33,7 +55,7 @@
     }
 
     setText("lastIncidentStatus", incident.status || "Registrado")
-    setText("lastIncidentAdult", incident.adult_name || "Adulto mayor")
+    setText("lastIncidentAdult", getIncidentAdultName(incident))
     setText("lastIncidentDate", formatShortDate(incident.incident_date))
   }
 
@@ -49,36 +71,36 @@
     }
 
     list.innerHTML = incidents.map((incident) => `
-      <article class="incident-prototype-card">
+      <article class="incident-prototype-card" data-incident-id="${api.escapeHtml(incident.id)}" role="button" tabindex="0">
         <h2>${api.escapeHtml(incident.title || "Incidente")}</h2>
         <p>${api.escapeHtml(incident.description || "Sin descripcion registrada.")}</p>
-        <p>${api.escapeHtml(incident.adult_name || "Adulto mayor")} | ${api.escapeHtml(incident.status || "abierto")}</p>
+        <p>
+          ${api.escapeHtml(getIncidentAdultName(incident))} |
+          ${api.escapeHtml(incident.status || "abierto")} |
+          ${api.escapeHtml(incident.severity || "media")} |
+          ${api.escapeHtml(api.formatTime(incident.incident_time))}
+        </p>
+        <p>Reportado por: ${api.escapeHtml(getReporterName(incident))}</p>
       </article>
     `).join("")
+
+    list.querySelectorAll(".incident-prototype-card").forEach((card) => {
+      const incident = incidents.find((item) => String(item.id) === card.dataset.incidentId)
+      if (!incident) return
+
+      const selectIncident = () => renderLastIncident(incident)
+      card.addEventListener("click", selectIncident)
+      card.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return
+        event.preventDefault()
+        selectIncident()
+      })
+    })
   }
 
   async function loadIncidents() {
-    const token = getToken()
-    if (!token) {
-      renderEmpty("Inicia sesion para ver incidentes")
-      return
-    }
-
     try {
-      const response = await fetch(`${API_URL}/incidents/today`, {
-        cache: "no-store",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "No se pudieron cargar los incidentes.")
-      }
-
+      const data = await api.fetchJson("/family/incidents")
       renderIncidents(data.incidents || [])
     } catch (error) {
       renderEmpty(error.message)
@@ -87,7 +109,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("incidentDetailButton")?.addEventListener("click", () => {
-      alert("Detalle de incidente disponible cuando exista un registro del dia.")
+      alert(formatIncidentDetail(selectedIncident))
     })
 
     loadIncidents()

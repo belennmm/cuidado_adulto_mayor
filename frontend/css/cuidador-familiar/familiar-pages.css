@@ -475,6 +475,30 @@
   font-weight: 400;
 }
 
+.adult-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(100%, 420px);
+  margin: -14px 0 28px;
+  color: #111111;
+  font-size: 17px;
+}
+
+.adult-selector[hidden] {
+  display: none;
+}
+
+.adult-selector select {
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: var(--family-field);
+  padding: 0 14px;
+  color: #111827;
+  font: inherit;
+}
+
 .adult-prototype-grid {
   display: grid;
   grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);
@@ -556,6 +580,10 @@
   padding: 16px 18px;
   font-size: 17px;
   line-height: 1.45;
+}
+
+.prototype-collapse p {
+  white-space: pre-line;
 }
 
 .medicine-title {
@@ -840,6 +868,12 @@
   flex-direction: column;
   font-size: 18px;
   gap: 8px;
+  cursor: pointer;
+}
+
+.incident-prototype-card:focus-visible {
+  outline: 3px solid rgba(33, 122, 240, 0.35);
+  outline-offset: 3px;
 }
 
 .incident-prototype-card h2 {
