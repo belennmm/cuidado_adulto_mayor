@@ -61,7 +61,10 @@
                 <div class="incidents-header">
                     <div>
                         <h1 class="incidents-title">Incidentes del dia</h1>
-                        <div class="incidents-date" id="incidentsDate">Hoy</div>
+                        <div class="incidents-date-row">
+                            <div class="incidents-date" id="incidentsDate">Hoy</div>
+                            <input type="date" class="incidents-date-input" id="incidentsDateInput" aria-label="Seleccionar fecha" />
+                        </div>
                     </div>
 
                     <div class="incidents-counter">
@@ -98,8 +101,8 @@
     </div>
 
 
-  <script src="../../js/app-loading.js"></script>
-  <script src="../../js/logout-modal.js"></script>
+    <script src="../../js/app-loading.js"></script>
+    <script src="../../js/logout-modal.js"></script>
     <script src="../../js/auth-guard-profesional.js"></script>
     <script src="../../js/sidebar-active.js"></script>
     <script src="../../js/incidents.js"></script>
