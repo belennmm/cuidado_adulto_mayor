@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CaregiverScheduleController;
 use App\Http\Controllers\FamilyCareController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\OlderAdultController;
@@ -23,6 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/me', [AuthController::class, 'updateMe']);
     Route::get('/incidents', [IncidentController::class, 'index']);
     Route::get('/incidents/today', [IncidentController::class, 'today']);
+
+    Route::post('/schedules', [CaregiverScheduleController::class, 'store']);
+    Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update']);
 
     Route::prefix('family')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
