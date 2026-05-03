@@ -11,10 +11,31 @@ use Illuminate\Support\Str;
 
 class IncidentController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'date' => ['nullable', 'date_format:Y-m-d'],
+        ]);
+
+        $timezone = (string) config('app.timezone');
+
+        $date = isset($validated['date'])
+            ? Carbon::createFromFormat('Y-m-d', $validated['date'], $timezone)->startOfDay()->toDateString()
+            : Carbon::now($timezone)->startOfDay()->toDateString();
+
+        return $this->respondWithIncidentsForDate($request, $date);
+    }
+
     public function today(Request $request): JsonResponse
     {
-        $date = Carbon::now(config('app.timezone'))->startOfDay()->toDateString();
+        $timezone = (string) config('app.timezone');
+        $date = Carbon::now($timezone)->startOfDay()->toDateString();
 
+        return $this->respondWithIncidentsForDate($request, $date);
+    }
+
+    private function respondWithIncidentsForDate(Request $request, string $date): JsonResponse
+    {
         $query = Incident::query()
             ->with([
                 'reporter:id,name,email',

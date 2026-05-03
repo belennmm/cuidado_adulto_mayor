@@ -21,6 +21,7 @@ Route::get('/users', [AdminUserController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me', [AuthController::class, 'updateMe']);
+    Route::get('/incidents', [IncidentController::class, 'index']);
     Route::get('/incidents/today', [IncidentController::class, 'today']);
 
     Route::prefix('family')->group(function () {
