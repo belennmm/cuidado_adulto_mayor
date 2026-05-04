@@ -159,5 +159,86 @@ class CaregiverScheduleEndpointsTest extends TestCase
             'end_time' => '17:00',
         ])->assertForbidden();
     }
-}
 
+    public function test_admin_can_assign_schedule_to_professional(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $this->postJson('/api/admin/schedules', [
+            'user_id' => $professional->id,
+            'day_of_week' => 1,
+            'start_time' => '07:00',
+            'end_time' => '15:00',
+            'notes' => 'Turno asignado por administracion',
+        ])
+            ->assertCreated()
+            ->assertJsonPath('schedule.user_id', $professional->id)
+            ->assertJsonPath('schedule.user.id', $professional->id)
+            ->assertJsonPath('schedule.start_time', '07:00:00')
+            ->assertJsonPath('schedule.end_time', '15:00:00');
+
+        $this->assertDatabaseHas('caregiver_schedules', [
+            'user_id' => $professional->id,
+            'day_of_week' => 1,
+        ]);
+    }
+
+    public function test_admin_can_list_assigned_schedules(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        CaregiverSchedule::create([
+            'user_id' => $professional->id,
+            'day_of_week' => 2,
+            'start_time' => '10:00:00',
+            'end_time' => '18:00:00',
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $this->getJson('/api/admin/schedules')
+            ->assertOk()
+            ->assertJsonPath('schedules.0.user_id', $professional->id)
+            ->assertJsonPath('schedules.0.user.name', $professional->name);
+    }
+
+    public function test_admin_cannot_assign_schedule_to_pending_professional(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => false,
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $this->postJson('/api/admin/schedules', [
+            'user_id' => $professional->id,
+            'day_of_week' => 1,
+            'start_time' => '07:00',
+            'end_time' => '15:00',
+        ])->assertUnprocessable();
+    }
+}

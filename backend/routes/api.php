@@ -49,6 +49,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::patch('/users/{user}/approve', [AdminUserController::class, 'approve']);
     Route::delete('/users/{user}/reject', [AdminUserController::class, 'reject']);
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
+    Route::get('/schedules', [CaregiverScheduleController::class, 'adminIndex']);
+    Route::post('/schedules', [CaregiverScheduleController::class, 'adminStore']);
+    Route::delete('/schedules/{schedule}', [CaregiverScheduleController::class, 'destroy']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);
