@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
-    <link rel="stylesheet" href="../../css/admin/placeholder.css" />
+    <link rel="stylesheet" href="../../css/admin/shifts.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -64,7 +64,71 @@
       <main class="admin-main">
         <div class="admin-topbar"></div>
 
-        
+        <section class="page-shell shifts-page">
+          <div class="shifts-header">
+            <div>
+              <h1 class="shifts-title">Turnos</h1>
+              <p class="shifts-subtitle">Asignacion semanal para cuidadores profesionales.</p>
+            </div>
+          </div>
+
+          <section class="shift-panel">
+            <form class="shift-form" id="shiftForm">
+              <div class="form-field">
+                <label for="caregiverSelect">Cuidador</label>
+                <select id="caregiverSelect" required>
+                  <option value="">Seleccionar cuidador</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="daySelect">Dia</label>
+                <select id="daySelect" required>
+                  <option value="1">Lunes</option>
+                  <option value="2">Martes</option>
+                  <option value="3">Miercoles</option>
+                  <option value="4">Jueves</option>
+                  <option value="5">Viernes</option>
+                  <option value="6">Sabado</option>
+                  <option value="0">Domingo</option>
+                </select>
+              </div>
+
+              <div class="form-field compact-field">
+                <label for="startTime">Inicio</label>
+                <input type="time" id="startTime" required />
+              </div>
+
+              <div class="form-field compact-field">
+                <label for="endTime">Fin</label>
+                <input type="time" id="endTime" required />
+              </div>
+
+              <div class="form-field notes-field">
+                <label for="shiftNotes">Notas</label>
+                <input type="text" id="shiftNotes" maxlength="255" placeholder="Opcional" />
+              </div>
+
+              <button type="submit" class="assign-shift-button">
+                Asignar
+              </button>
+            </form>
+
+            <p class="form-message" id="shiftMessage" aria-live="polite"></p>
+          </section>
+
+          <section class="shifts-table-card">
+            <div class="shifts-table-head">
+              <span>Cuidador</span>
+              <span>Dia</span>
+              <span>Horario</span>
+              <span>Notas</span>
+              <span>Accion</span>
+            </div>
+
+            <div class="shifts-table-body" id="shiftsTableBody"></div>
+          </section>
+        </section>
       </main>
     </div>
 
@@ -87,6 +151,7 @@
   
   <script src="../../js/app-loading.js"></script>
   <script src="../../js/logout-modal.js"></script>
+  <script src="../../js/admin/shifts.js"></script>
 
 
   </body>
