@@ -27,7 +27,7 @@ function setSearchDate(date) {
 }
 
 function escapeHtml(value) {
-    return String(value ? ? "")
+    return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -133,7 +133,7 @@ async function loadTodayIncidents() {
     }
 
     try {
-        const selectedDate = incidentsDateInput ? .value || getSearchDate()
+        const selectedDate = incidentsDateInput?.value || getSearchDate()
         const url = new URL(`${API_URL}/incidents`)
         if (selectedDate) {
             url.searchParams.set("date", selectedDate)
