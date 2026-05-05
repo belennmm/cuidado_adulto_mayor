@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-profesional/professional-layout.css" />
     <link rel="stylesheet" href="../../css/cuidador-profesional/home-page.css" />
+    <link rel="stylesheet" href="../../css/cuidador-profesional/professional-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
@@ -57,19 +58,34 @@
         </aside>
 
         <main class="main-content">
-            <section style="padding-left: 36px;">
-                <h1 style="margin: 0 0 8px; font-size: 36px; font-weight: 700; color: #0a112f;">
-                    Dashboard
-                </h1>
-                <p style="margin: 0 0 18px; color: #70707a;">
-                    Accesos rÃ¡pidos del cuidador profesional.
-                </p>
+            <section class="professional-page">
+                <h1>Dashboard</h1>
+                <p>Resumen de hoy: <span id="professionalDashboardDate">Hoy</span></p>
 
-                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                <div class="professional-actions">
                     <a href="./shift.html" class="dashboard-button">Ver turnos</a>
                     <a href="./adultos-mayores.html" class="dashboard-button">Adultos mayores</a>
                     <a href="./routines.html" class="dashboard-button">Rutinas</a>
                     <a href="./incidents.html" class="dashboard-button">Incidentes</a>
+                </div>
+
+                <section class="professional-metrics" id="professionalMetrics"></section>
+
+                <div class="professional-grid">
+                    <section class="professional-panel">
+                        <h2>Adultos asignados</h2>
+                        <div class="professional-list" id="professionalAdultsPreview"></div>
+                    </section>
+
+                    <section class="professional-panel">
+                        <h2>Medicinas de hoy</h2>
+                        <div class="professional-list" id="professionalRoutinePreview"></div>
+                    </section>
+
+                    <section class="professional-panel">
+                        <h2>Incidentes de hoy</h2>
+                        <div class="professional-list" id="professionalIncidentsPreview"></div>
+                    </section>
                 </div>
             </section>
         </main>
@@ -97,6 +113,8 @@
 
     <script src="../../js/auth-guard-profesional.js"></script>
     <script src="../../js/sidebar-active.js"></script>
+    <script src="../../js/cuidador-profesional/professional-api.js"></script>
+    <script src="../../js/cuidador-profesional/dashboard.js"></script>
 
 </body>
 

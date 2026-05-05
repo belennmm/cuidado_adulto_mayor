@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/cuidador-profesional/professional-layout.css" />
     <link rel="stylesheet" href="../../css/cuidador-profesional/home-page.css" />
+    <link rel="stylesheet" href="../../css/cuidador-profesional/professional-pages.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
@@ -57,24 +58,16 @@
         </aside>
 
         <main class="main-content">
-            <section style="padding-left: 36px;">
-                <h1 style="margin: 0 0 8px; font-size: 36px; font-weight: 700; color: #0a112f;">
-                    Turnos
-                </h1>
-                <p style="margin: 0 0 18px; color: #70707a;">
-                    AcÃ¡ podÃ©s ver tus turnos asignados.
-                </p>
+            <section class="professional-page">
+                <h1>Turnos</h1>
+                <p>Aca podes ver tus turnos asignados.</p>
 
-                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                <div class="professional-actions">
                     <a href="./dashboard.html" class="dashboard-button">Ir al dashboard</a>
                     <a href="./incidents.html" class="dashboard-button">Ver incidentes</a>
                 </div>
 
-                <div style="margin-top: 18px; padding: 16px; border-radius: 12px; background: #ffffff; border: 1px solid #e4e4e7;">
-                    <p style="margin: 0; color: #70707a;">
-                        Pendiente: conectar esta vista al backend para listar turnos reales.
-                    </p>
-                </div>
+                <div class="professional-list" id="professionalSchedulesList"></div>
             </section>
         </main>
     </div>
@@ -101,6 +94,8 @@
 
     <script src="../../js/auth-guard-profesional.js"></script>
     <script src="../../js/sidebar-active.js"></script>
+    <script src="../../js/cuidador-profesional/professional-api.js"></script>
+    <script src="../../js/cuidador-profesional/shift.js"></script>
 
 </body>
 

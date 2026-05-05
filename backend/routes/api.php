@@ -9,6 +9,7 @@ use App\Http\Controllers\FamilyCareController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MedicationAdministrationController;
 use App\Http\Controllers\OlderAdultController;
+use App\Http\Controllers\ProfessionalCareController;
 
 Route::get('/ping', function () {
     return response()->json(['ok' => true]);
@@ -38,6 +39,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/incidents', [FamilyCareController::class, 'incidents']);
         Route::get('/routine', [FamilyCareController::class, 'routine']);
         Route::get('/routines', [FamilyCareController::class, 'routine']);
+    });
+
+    Route::prefix('professional')->group(function () {
+        Route::get('/overview', [ProfessionalCareController::class, 'overview']);
+        Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
+        Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
+        Route::get('/routines', [ProfessionalCareController::class, 'routine']);
+        Route::get('/schedules', [ProfessionalCareController::class, 'schedules']);
     });
 });
 
