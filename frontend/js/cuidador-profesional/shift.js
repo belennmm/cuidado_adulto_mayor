@@ -65,6 +65,36 @@
     `
   }
 
+  function statusLabel(status) {
+    if (status === "approved") return "Aprobada"
+    if (status === "rejected") return "Rechazada"
+    return "Pendiente"
+  }
+
+  function statusClass(status) {
+    if (status === "approved") return "badge-success"
+    if (status === "rejected") return "severity-high"
+    return "badge-warning"
+  }
+
+  function formatDate(value) {
+    if (!value) return "Sin fecha"
+    const [year, month, day] = value.split("-")
+    return `${day}/${month}/${year}`
+  }
+
+  function renderVacationRequest(request) {
+    return `
+      <article class="vacation-row">
+        <div>
+          <h3>${api.escapeHtml(formatDate(request.start_date))} - ${api.escapeHtml(formatDate(request.end_date))}</h3>
+          <p>${api.escapeHtml(request.reason)}</p>
+        </div>
+        <span class="badge ${statusClass(request.status)}">${api.escapeHtml(statusLabel(request.status))}</span>
+      </article>
+    `
+  }
+
   async function loadSchedules() {
     const list = document.getElementById("professionalSchedulesList")
     if (!list) return
@@ -74,6 +104,20 @@
       list.innerHTML = data.schedules?.length
         ? data.schedules.map(renderSchedule).join("")
         : api.renderEmpty("No tienes turnos asignados por ahora.")
+    } catch (error) {
+      list.innerHTML = api.renderEmpty(error.message)
+    }
+  }
+
+  async function loadVacationRequests() {
+    const list = document.getElementById("vacationRequestsList")
+    if (!list) return
+
+    try {
+      const data = await api.fetchJson("/professional/vacation-requests")
+      list.innerHTML = data.vacation_requests?.length
+        ? data.vacation_requests.map(renderVacationRequest).join("")
+        : api.renderEmpty("No has enviado solicitudes de vacaciones.")
     } catch (error) {
       list.innerHTML = api.renderEmpty(error.message)
     }
@@ -113,7 +157,42 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadSchedules)
+  async function submitVacationRequest(event) {
+    event.preventDefault()
+
+    const form = event.currentTarget
+    const message = document.getElementById("vacationMessage")
+    message.textContent = ""
+    message.classList.remove("is-error")
+
+    try {
+      const data = await api.fetchJson("/professional/vacation-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          start_date: document.getElementById("vacationStartDate").value,
+          end_date: document.getElementById("vacationEndDate").value,
+          reason: document.getElementById("vacationReason").value.trim(),
+        }),
+      })
+
+      message.textContent = data.message || "Solicitud enviada correctamente."
+      form.reset()
+      await loadVacationRequests()
+    } catch (error) {
+      message.textContent = error.message
+      message.classList.add("is-error")
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadSchedules()
+    loadVacationRequests()
+
+    const vacationForm = document.getElementById("vacationForm")
+    if (vacationForm) {
+      vacationForm.addEventListener("submit", submitVacationRequest)
+    }
+  })
   document.addEventListener("click", (event) => {
     const toggle = event.target.closest(".schedule-change-toggle")
     if (toggle) {

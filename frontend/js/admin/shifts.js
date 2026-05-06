@@ -6,6 +6,7 @@ const shiftNotesInput = document.getElementById("shiftNotes")
 const shiftForm = document.getElementById("shiftForm")
 const shiftMessage = document.getElementById("shiftMessage")
 const shiftsTableBody = document.getElementById("shiftsTableBody")
+const vacationsTableBody = document.getElementById("vacationsTableBody")
 
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
@@ -21,6 +22,7 @@ const DAY_LABELS = {
 
 let caregiversData = []
 let schedulesData = []
+let vacationsData = []
 
 function getToken() {
   return localStorage.getItem("token")
@@ -52,6 +54,18 @@ function setMessage(message, isError = false) {
 
 function normalizeTime(value) {
   return String(value || "").slice(0, 5)
+}
+
+function formatDate(value) {
+  if (!value) return "Sin fecha"
+  const [year, month, day] = value.split("-")
+  return `${day}/${month}/${year}`
+}
+
+function statusLabel(status) {
+  if (status === "approved") return "Aprobada"
+  if (status === "rejected") return "Rechazada"
+  return "Pendiente"
 }
 
 function formatTimeRange(schedule) {
@@ -88,6 +102,12 @@ async function loadSchedules() {
   renderSchedules()
 }
 
+async function loadVacations() {
+  const data = await fetchJson(`${API_URL}/admin/vacation-requests`)
+  vacationsData = data.vacation_requests || []
+  renderVacations()
+}
+
 function renderCaregiverOptions() {
   caregiverSelect.innerHTML = `<option value="">Seleccionar cuidador</option>`
 
@@ -104,6 +124,70 @@ function renderCaregiverOptions() {
     option.textContent = "No hay cuidadores aprobados"
     caregiverSelect.appendChild(option)
   }
+}
+
+function renderVacations() {
+  if (!vacationsTableBody) return
+  vacationsTableBody.innerHTML = ""
+
+  if (!vacationsData.length) {
+    vacationsTableBody.innerHTML = `
+      <div class="empty-state">
+        Todavia no hay solicitudes de vacaciones.
+      </div>
+    `
+    return
+  }
+
+  vacationsData.forEach((request) => {
+    const row = document.createElement("article")
+    row.className = "vacation-admin-row"
+
+    row.innerHTML = `
+      <div class="shift-cell shift-caregiver" data-label="Cuidador">
+        <div class="shift-avatar"></div>
+        <div class="shift-name-group">
+          <span>${escapeHtml(request.user?.name || "Cuidador")}</span>
+          <span class="shift-email">${escapeHtml(request.user?.email || "")}</span>
+        </div>
+      </div>
+
+      <div class="shift-cell" data-label="Fechas">
+        ${escapeHtml(formatDate(request.start_date))} - ${escapeHtml(formatDate(request.end_date))}
+      </div>
+
+      <div class="shift-cell" data-label="Motivo">
+        ${escapeHtml(request.reason || "Sin motivo")}
+      </div>
+
+      <div class="shift-cell" data-label="Estado">
+        <span class="vacation-status vacation-status-${escapeHtml(request.status)}">
+          ${escapeHtml(statusLabel(request.status))}
+        </span>
+      </div>
+
+      <div class="shift-cell" data-label="Accion">
+        ${request.status === "pending" ? `
+          <button type="button" class="approve-vacation-button" data-id="${request.id}">
+            Aprobar
+          </button>
+          <button type="button" class="reject-vacation-button" data-id="${request.id}">
+            Rechazar
+          </button>
+        ` : `<span class="request-empty">Revisada</span>`}
+      </div>
+    `
+
+    vacationsTableBody.appendChild(row)
+  })
+
+  document.querySelectorAll(".approve-vacation-button").forEach((button) => {
+    button.addEventListener("click", () => resolveVacationRequest(button.dataset.id, "approve"))
+  })
+
+  document.querySelectorAll(".reject-vacation-button").forEach((button) => {
+    button.addEventListener("click", () => resolveVacationRequest(button.dataset.id, "reject"))
+  })
 }
 
 function renderSchedules() {
@@ -261,15 +345,41 @@ async function resolveChangeRequest(scheduleId, action) {
   }
 }
 
+async function resolveVacationRequest(requestId, action) {
+  const label = action === "approve" ? "aprobar" : "rechazar"
+
+  if (!window.confirm(`Seguro que deseas ${label} esta solicitud de vacaciones?`)) {
+    return
+  }
+
+  try {
+    const data = await fetchJson(`${API_URL}/admin/vacation-requests/${requestId}/${action}`, {
+      method: "PATCH",
+    })
+
+    setMessage(data.message || "Solicitud de vacaciones actualizada.")
+    await loadVacations()
+  } catch (error) {
+    setMessage(error.message, true)
+  }
+}
+
 async function initShiftsPage() {
   try {
-    await Promise.all([loadCaregivers(), loadSchedules()])
+    await Promise.all([loadCaregivers(), loadSchedules(), loadVacations()])
   } catch (error) {
     shiftsTableBody.innerHTML = `
       <div class="empty-state">
         ${escapeHtml(error.message)}
       </div>
     `
+    if (vacationsTableBody) {
+      vacationsTableBody.innerHTML = `
+        <div class="empty-state">
+          ${escapeHtml(error.message)}
+        </div>
+      `
+    }
   }
 }
 

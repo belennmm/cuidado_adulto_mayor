@@ -25,11 +25,26 @@
 }
 
 .shift-panel,
-.shifts-table-card {
+.shifts-table-card,
+.vacations-table-card {
   background-color: #efefef;
   border-radius: 18px;
   padding: 18px 14px 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.vacations-table-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-x: auto;
+}
+
+.vacations-title {
+  margin: 0;
+  color: #111111;
+  font-size: 22px;
+  font-weight: 500;
 }
 
 .shift-form {
@@ -75,7 +90,9 @@
 .assign-shift-button,
 .delete-shift-button,
 .approve-request-button,
-.reject-request-button {
+.reject-request-button,
+.approve-vacation-button,
+.reject-vacation-button {
   height: 42px;
   border: none;
   border-radius: 10px;
@@ -96,23 +113,29 @@
 }
 
 .approve-request-button,
-.reject-request-button {
+.reject-request-button,
+.approve-vacation-button,
+.reject-vacation-button {
   width: 100%;
   margin-bottom: 8px;
 }
 
-.approve-request-button {
+.approve-request-button,
+.approve-vacation-button {
   background-color: #2d8c57;
 }
 
-.reject-request-button {
+.reject-request-button,
+.reject-vacation-button {
   background-color: #7a7a82;
 }
 
 .assign-shift-button:hover,
 .delete-shift-button:hover,
 .approve-request-button:hover,
-.reject-request-button:hover {
+.reject-request-button:hover,
+.approve-vacation-button:hover,
+.reject-vacation-button:hover {
   opacity: 0.95;
 }
 
@@ -137,6 +160,34 @@
   grid-template-columns: 1.2fr 0.7fr 0.8fr 1fr 1.2fr 112px;
   gap: 12px;
   min-width: 980px;
+}
+
+.vacations-table-head,
+.vacation-admin-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.4fr 0.8fr 112px;
+  gap: 12px;
+  min-width: 860px;
+}
+
+.vacations-table-head {
+  padding: 0 16px 0;
+  color: #5a5a5a;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.vacations-table-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vacation-admin-row {
+  align-items: center;
+  background-color: #fafafa;
+  border-radius: 16px;
+  padding: 14px 16px;
 }
 
 .shifts-table-head {
@@ -212,6 +263,32 @@
 
 .request-empty {
   color: #8a8a8a;
+}
+
+.vacation-status {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.vacation-status-pending {
+  background: #fff5e5;
+  color: #b97b12;
+}
+
+.vacation-status-approved {
+  background: #e8f7ee;
+  color: #2d8c57;
+}
+
+.vacation-status-rejected {
+  background: #fdecec;
+  color: #c94f4f;
 }
 
 .empty-state {

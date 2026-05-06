@@ -68,6 +68,32 @@
                 </div>
 
                 <div class="professional-list" id="professionalSchedulesList"></div>
+
+                <section class="vacation-panel">
+                    <div>
+                        <h2>Vacaciones</h2>
+                        <p>Solicita dias libres para revision del administrador.</p>
+                    </div>
+
+                    <form class="vacation-form" id="vacationForm">
+                        <label>
+                            Inicio
+                            <input type="date" id="vacationStartDate" required />
+                        </label>
+                        <label>
+                            Fin
+                            <input type="date" id="vacationEndDate" required />
+                        </label>
+                        <label class="vacation-reason-field">
+                            Motivo
+                            <textarea id="vacationReason" maxlength="500" required></textarea>
+                        </label>
+                        <button type="submit">Enviar solicitud</button>
+                    </form>
+
+                    <p class="vacation-message" id="vacationMessage" aria-live="polite"></p>
+                    <div class="vacation-list" id="vacationRequestsList"></div>
+                </section>
             </section>
         </main>
     </div>

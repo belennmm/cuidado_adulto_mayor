@@ -10,6 +10,7 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MedicationAdministrationController;
 use App\Http\Controllers\OlderAdultController;
 use App\Http\Controllers\ProfessionalCareController;
+use App\Http\Controllers\VacationRequestController;
 
 Route::get('/ping', function () {
     return response()->json(['ok' => true]);
@@ -48,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
         Route::get('/routines', [ProfessionalCareController::class, 'routine']);
         Route::get('/schedules', [ProfessionalCareController::class, 'schedules']);
+        Route::get('/vacation-requests', [VacationRequestController::class, 'index']);
+        Route::post('/vacation-requests', [VacationRequestController::class, 'store']);
     });
 });
 
@@ -67,6 +70,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::patch('/schedules/{schedule}/change-request/approve', [CaregiverScheduleController::class, 'approveChangeRequest']);
     Route::patch('/schedules/{schedule}/change-request/reject', [CaregiverScheduleController::class, 'rejectChangeRequest']);
     Route::delete('/schedules/{schedule}', [CaregiverScheduleController::class, 'destroy']);
+    Route::get('/vacation-requests', [VacationRequestController::class, 'adminIndex']);
+    Route::patch('/vacation-requests/{vacationRequest}/approve', [VacationRequestController::class, 'approve']);
+    Route::patch('/vacation-requests/{vacationRequest}/reject', [VacationRequestController::class, 'reject']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);
