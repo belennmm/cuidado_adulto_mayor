@@ -16,6 +16,11 @@ class CaregiverSchedule extends Model
         'start_time',
         'end_time',
         'notes',
+        'change_request_status',
+        'change_request_start_time',
+        'change_request_end_time',
+        'change_request_notes',
+        'change_request_message',
     ];
 
     protected function casts(): array
@@ -30,4 +35,3 @@ class CaregiverSchedule extends Model
         return $this->belongsTo(User::class);
     }
 }
-

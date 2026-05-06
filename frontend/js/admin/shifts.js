@@ -143,7 +143,19 @@ function renderSchedules() {
         ${escapeHtml(schedule.notes || "Sin notas")}
       </div>
 
+      <div class="shift-cell shift-request" data-label="Solicitud">
+        ${renderChangeRequest(schedule)}
+      </div>
+
       <div class="shift-cell" data-label="Accion">
+        ${schedule.change_request?.status === "pending" ? `
+          <button type="button" class="approve-request-button" data-id="${schedule.id}">
+            Aprobar
+          </button>
+          <button type="button" class="reject-request-button" data-id="${schedule.id}">
+            Rechazar
+          </button>
+        ` : ""}
         <button type="button" class="delete-shift-button" data-id="${schedule.id}">
           Eliminar
         </button>
@@ -156,6 +168,30 @@ function renderSchedules() {
   document.querySelectorAll(".delete-shift-button").forEach((button) => {
     button.addEventListener("click", () => deleteSchedule(button.dataset.id))
   })
+
+  document.querySelectorAll(".approve-request-button").forEach((button) => {
+    button.addEventListener("click", () => resolveChangeRequest(button.dataset.id, "approve"))
+  })
+
+  document.querySelectorAll(".reject-request-button").forEach((button) => {
+    button.addEventListener("click", () => resolveChangeRequest(button.dataset.id, "reject"))
+  })
+}
+
+function renderChangeRequest(schedule) {
+  const request = schedule.change_request
+
+  if (!request || request.status !== "pending") {
+    return `<span class="request-empty">Sin solicitud</span>`
+  }
+
+  return `
+    <div class="request-card">
+      <strong>${escapeHtml(normalizeTime(request.start_time))} - ${escapeHtml(normalizeTime(request.end_time))}</strong>
+      <span>${escapeHtml(request.notes || "Sin notas")}</span>
+      <p>${escapeHtml(request.message || "")}</p>
+    </div>
+  `
 }
 
 async function saveSchedule(event) {
@@ -200,6 +236,25 @@ async function deleteSchedule(scheduleId) {
     })
 
     setMessage(data.message || "Turno eliminado correctamente.")
+    await loadSchedules()
+  } catch (error) {
+    setMessage(error.message, true)
+  }
+}
+
+async function resolveChangeRequest(scheduleId, action) {
+  const label = action === "approve" ? "aprobar" : "rechazar"
+
+  if (!window.confirm(`Seguro que deseas ${label} esta solicitud?`)) {
+    return
+  }
+
+  try {
+    const data = await fetchJson(`${API_URL}/admin/schedules/${scheduleId}/change-request/${action}`, {
+      method: "PATCH",
+    })
+
+    setMessage(data.message || "Solicitud actualizada correctamente.")
     await loadSchedules()
   } catch (error) {
     setMessage(error.message, true)

@@ -73,7 +73,9 @@
 }
 
 .assign-shift-button,
-.delete-shift-button {
+.delete-shift-button,
+.approve-request-button,
+.reject-request-button {
   height: 42px;
   border: none;
   border-radius: 10px;
@@ -93,8 +95,24 @@
   background-color: #c94f4f;
 }
 
+.approve-request-button,
+.reject-request-button {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.approve-request-button {
+  background-color: #2d8c57;
+}
+
+.reject-request-button {
+  background-color: #7a7a82;
+}
+
 .assign-shift-button:hover,
-.delete-shift-button:hover {
+.delete-shift-button:hover,
+.approve-request-button:hover,
+.reject-request-button:hover {
   opacity: 0.95;
 }
 
@@ -116,9 +134,9 @@
 .shifts-table-head,
 .shift-row {
   display: grid;
-  grid-template-columns: 1.3fr 0.8fr 0.9fr 1.2fr 110px;
+  grid-template-columns: 1.2fr 0.7fr 0.8fr 1fr 1.2fr 112px;
   gap: 12px;
-  min-width: 760px;
+  min-width: 980px;
 }
 
 .shifts-table-head {
@@ -171,6 +189,29 @@
 .shift-email {
   color: #81818a;
   font-size: 13px;
+}
+
+.shift-request {
+  min-width: 0;
+}
+
+.request-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px;
+  background: #fff5e5;
+  border-radius: 10px;
+  color: #7a5511;
+  font-size: 13px;
+}
+
+.request-card p {
+  margin: 0;
+}
+
+.request-empty {
+  color: #8a8a8a;
 }
 
 .empty-state {

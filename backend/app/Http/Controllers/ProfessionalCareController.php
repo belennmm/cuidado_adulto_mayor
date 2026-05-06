@@ -356,6 +356,13 @@ class ProfessionalCareController extends Controller
             'start_time' => $this->formatTime($schedule->start_time),
             'end_time' => $this->formatTime($schedule->end_time),
             'notes' => $schedule->notes,
+            'change_request' => $schedule->change_request_status ? [
+                'status' => $schedule->change_request_status,
+                'start_time' => $this->formatTime($schedule->change_request_start_time),
+                'end_time' => $this->formatTime($schedule->change_request_end_time),
+                'notes' => $schedule->change_request_notes,
+                'message' => $schedule->change_request_message,
+            ] : null,
         ];
     }
 

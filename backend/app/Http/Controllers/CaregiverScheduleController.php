@@ -106,6 +106,76 @@ class CaregiverScheduleController extends Controller
         ]);
     }
 
+    public function requestChange(Request $request, CaregiverSchedule $schedule): JsonResponse
+    {
+        $user = $request->user();
+
+        if ((int) $schedule->user_id !== (int) $user?->id) {
+            return response()->json([
+                'message' => 'No tienes permiso para solicitar cambios en este horario.',
+            ], 403);
+        }
+
+        $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
+
+        $data = $this->validateChangeRequestPayload($request);
+
+        $schedule->fill([
+            'change_request_status' => 'pending',
+            'change_request_start_time' => $data['start_time'],
+            'change_request_end_time' => $data['end_time'],
+            'change_request_notes' => $data['notes'] ?? null,
+            'change_request_message' => $data['message'],
+        ]);
+
+        $schedule->save();
+
+        return response()->json([
+            'message' => 'Solicitud de cambio enviada correctamente.',
+            'schedule' => $this->formatSchedule($schedule),
+        ]);
+    }
+
+    public function approveChangeRequest(CaregiverSchedule $schedule): JsonResponse
+    {
+        if ($schedule->change_request_status !== 'pending') {
+            return response()->json([
+                'message' => 'Este turno no tiene una solicitud pendiente.',
+            ], 422);
+        }
+
+        $schedule->fill([
+            'start_time' => $schedule->change_request_start_time,
+            'end_time' => $schedule->change_request_end_time,
+            'notes' => $schedule->change_request_notes,
+        ]);
+
+        $this->clearChangeRequest($schedule);
+        $schedule->save();
+
+        return response()->json([
+            'message' => 'Solicitud aprobada y turno actualizado.',
+            'schedule' => $this->formatSchedule($schedule->load('user:id,name,email,role,is_approved')),
+        ]);
+    }
+
+    public function rejectChangeRequest(CaregiverSchedule $schedule): JsonResponse
+    {
+        if ($schedule->change_request_status !== 'pending') {
+            return response()->json([
+                'message' => 'Este turno no tiene una solicitud pendiente.',
+            ], 422);
+        }
+
+        $this->clearChangeRequest($schedule);
+        $schedule->save();
+
+        return response()->json([
+            'message' => 'Solicitud rechazada correctamente.',
+            'schedule' => $this->formatSchedule($schedule->load('user:id,name,email,role,is_approved')),
+        ]);
+    }
+
     public function destroy(CaregiverSchedule $schedule): JsonResponse
     {
         $schedule->delete();
@@ -142,6 +212,31 @@ class CaregiverScheduleController extends Controller
         if ($end->lessThanOrEqualTo($start)) {
             abort(response()->json([
                 'message' => 'El horario es inválido.',
+                'errors' => [
+                    'end_time' => ['end_time debe ser mayor que start_time.'],
+                ],
+            ], 422));
+        }
+
+        return $data;
+    }
+
+    private function validateChangeRequestPayload(Request $request): array
+    {
+        $data = $request->validate([
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i'],
+            'notes' => ['nullable', 'string', 'max:255'],
+            'message' => ['required', 'string', 'max:500'],
+        ]);
+
+        $timezone = (string) config('app.timezone');
+        $start = Carbon::createFromFormat('H:i', $data['start_time'], $timezone);
+        $end = Carbon::createFromFormat('H:i', $data['end_time'], $timezone);
+
+        if ($end->lessThanOrEqualTo($start)) {
+            abort(response()->json([
+                'message' => 'El horario es invalido.',
                 'errors' => [
                     'end_time' => ['end_time debe ser mayor que start_time.'],
                 ],
@@ -188,7 +283,25 @@ class CaregiverScheduleController extends Controller
             'start_time' => $this->formatTime($schedule->start_time),
             'end_time' => $this->formatTime($schedule->end_time),
             'notes' => $schedule->notes,
+            'change_request' => $schedule->change_request_status ? [
+                'status' => $schedule->change_request_status,
+                'start_time' => $this->formatTime($schedule->change_request_start_time),
+                'end_time' => $this->formatTime($schedule->change_request_end_time),
+                'notes' => $schedule->change_request_notes,
+                'message' => $schedule->change_request_message,
+            ] : null,
         ];
+    }
+
+    private function clearChangeRequest(CaregiverSchedule $schedule): void
+    {
+        $schedule->fill([
+            'change_request_status' => null,
+            'change_request_start_time' => null,
+            'change_request_end_time' => null,
+            'change_request_notes' => null,
+            'change_request_message' => null,
+        ]);
     }
 
     private function formatTime(mixed $time): ?string

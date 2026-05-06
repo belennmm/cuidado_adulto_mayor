@@ -95,6 +95,129 @@
   border-radius: 10px;
 }
 
+.schedule-row {
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+}
+
+.schedule-content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-request-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: #7a5511;
+  font-size: 13px;
+}
+
+.schedule-request-summary p {
+  width: 100%;
+  margin: 0;
+  color: #7a5511;
+}
+
+.schedule-change-toggle,
+.schedule-change-form button {
+  min-height: 36px;
+  border: none;
+  border-radius: 8px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.schedule-change-toggle {
+  padding: 0 12px;
+  background: #1d73f3;
+  color: #ffffff;
+}
+
+.schedule-change-toggle:disabled {
+  background: #cbd5e1;
+  cursor: default;
+}
+
+.schedule-change-form {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+}
+
+.schedule-change-form[hidden] {
+  display: none;
+}
+
+.change-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.schedule-change-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #555555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.schedule-change-form input,
+.schedule-change-form textarea {
+  width: 100%;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  padding: 10px;
+  color: #333333;
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.schedule-change-form textarea {
+  min-height: 82px;
+  resize: vertical;
+}
+
+.change-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.change-form-actions button[type="button"] {
+  background: #e4e4e7;
+  color: #3f3f46;
+  padding: 0 12px;
+}
+
+.change-form-actions button[type="submit"] {
+  background: #2d8c57;
+  color: #ffffff;
+  padding: 0 14px;
+}
+
+.schedule-change-message {
+  min-height: 18px;
+  margin: 0;
+  color: #2d8c57;
+  font-size: 13px;
+}
+
+.schedule-change-message.is-error {
+  color: #c94f4f;
+}
+
 .professional-row h3,
 .professional-card h2 {
   margin: 0;
@@ -201,5 +324,15 @@
   .professional-row .badge {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .schedule-row .schedule-change-toggle,
+  .schedule-row .schedule-change-form {
+    grid-column: 2;
+    justify-self: stretch;
+  }
+
+  .change-form-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -220,6 +220,117 @@ class CaregiverScheduleEndpointsTest extends TestCase
             ->assertJsonPath('schedules.0.user.name', $professional->name);
     }
 
+    public function test_professional_can_request_schedule_change(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $schedule = CaregiverSchedule::create([
+            'user_id' => $professional->id,
+            'day_of_week' => 2,
+            'start_time' => '08:00:00',
+            'end_time' => '16:00:00',
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->postJson("/api/schedules/{$schedule->id}/change-request", [
+            'start_time' => '09:00',
+            'end_time' => '17:00',
+            'notes' => 'Turno tarde',
+            'message' => 'Necesito mover mi horario por cita medica.',
+        ])
+            ->assertOk()
+            ->assertJsonPath('schedule.change_request.status', 'pending')
+            ->assertJsonPath('schedule.change_request.start_time', '09:00:00')
+            ->assertJsonPath('schedule.change_request.end_time', '17:00:00');
+
+        $this->assertDatabaseHas('caregiver_schedules', [
+            'id' => $schedule->id,
+            'change_request_status' => 'pending',
+            'change_request_notes' => 'Turno tarde',
+        ]);
+    }
+
+    public function test_admin_can_approve_schedule_change_request(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $schedule = CaregiverSchedule::create([
+            'user_id' => $professional->id,
+            'day_of_week' => 2,
+            'start_time' => '08:00:00',
+            'end_time' => '16:00:00',
+            'change_request_status' => 'pending',
+            'change_request_start_time' => '10:00:00',
+            'change_request_end_time' => '18:00:00',
+            'change_request_notes' => 'Actualizado',
+            'change_request_message' => 'Cambio solicitado.',
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $this->patchJson("/api/admin/schedules/{$schedule->id}/change-request/approve")
+            ->assertOk()
+            ->assertJsonPath('schedule.start_time', '10:00:00')
+            ->assertJsonPath('schedule.end_time', '18:00:00')
+            ->assertJsonPath('schedule.change_request', null);
+
+        $this->assertDatabaseHas('caregiver_schedules', [
+            'id' => $schedule->id,
+            'start_time' => '10:00:00',
+            'end_time' => '18:00:00',
+            'change_request_status' => null,
+        ]);
+    }
+
+    public function test_admin_can_reject_schedule_change_request(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $schedule = CaregiverSchedule::create([
+            'user_id' => $professional->id,
+            'day_of_week' => 2,
+            'start_time' => '08:00:00',
+            'end_time' => '16:00:00',
+            'change_request_status' => 'pending',
+            'change_request_start_time' => '10:00:00',
+            'change_request_end_time' => '18:00:00',
+            'change_request_message' => 'Cambio solicitado.',
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $this->patchJson("/api/admin/schedules/{$schedule->id}/change-request/reject")
+            ->assertOk()
+            ->assertJsonPath('schedule.start_time', '08:00:00')
+            ->assertJsonPath('schedule.change_request', null);
+
+        $this->assertDatabaseHas('caregiver_schedules', [
+            'id' => $schedule->id,
+            'start_time' => '08:00:00',
+            'change_request_status' => null,
+        ]);
+    }
+
     public function test_admin_cannot_assign_schedule_to_pending_professional(): void
     {
         $admin = User::factory()->create([
