@@ -1,5 +1,6 @@
 (() => {
   const api = window.FamilyCare
+  let assignedAdults = []
 
   function setValue(id, value) {
     const element = document.getElementById(id)
@@ -17,6 +18,18 @@
     return String(fullName || "Adulto mayor").split(" ")[0]
   }
 
+  function getRequestedAdultId() {
+    const params = new URLSearchParams(window.location.search)
+    return params.get("older_adult_id") || params.get("id") || ""
+  }
+
+  function updateAdultUrl(adultId) {
+    if (!adultId) return
+    const url = new URL(window.location.href)
+    url.searchParams.set("older_adult_id", adultId)
+    window.history.replaceState({}, "", url)
+  }
+
   function formatInputDate(value) {
     if (!value) return ""
     const [year, month, day] = value.split("-")
@@ -27,6 +40,23 @@
     if (item.administered_today) return "Administrado"
     if (item.due_today) return "Pendiente"
     return "Programado"
+  }
+
+  function renderAdultSelector(selectedId) {
+    const wrapper = document.getElementById("routineAdultSelectorWrapper")
+    const selector = document.getElementById("routineAdultSelector")
+    if (!wrapper || !selector) return
+
+    wrapper.hidden = assignedAdults.length <= 1
+    selector.innerHTML = assignedAdults
+      .map((adult) => `
+        <option value="${api.escapeHtml(adult.id)}">
+          ${api.escapeHtml(adult.full_name || "Adulto mayor")}
+        </option>
+      `)
+      .join("")
+
+    if (selectedId) selector.value = String(selectedId)
   }
 
   function renderActivityHistory(items) {
@@ -91,10 +121,9 @@
     `).join("")
   }
 
-  function renderRoutine(data) {
+  function renderRoutine(data, adult) {
     const items = data.routine || []
-    const firstItem = items[0] || {}
-    const adultName = firstItem.older_adult_name || "Sin adulto asignado"
+    const adultName = adult?.full_name || items[0]?.older_adult_name || "Sin adulto asignado"
     const todayItems = items.filter((item) => item.due_today)
     const visibleItems = todayItems.length ? todayItems : items
 
@@ -116,14 +145,40 @@
     renderMedicineTable([])
   }
 
+  async function loadRoutineForAdult(adultId) {
+    const adult = assignedAdults.find((item) => String(item.id) === String(adultId))
+    const data = await api.fetchJson(`/family/routines?older_adult_id=${encodeURIComponent(adultId)}`)
+    renderRoutine(data, adult)
+    renderAdultSelector(adultId)
+    updateAdultUrl(adultId)
+  }
+
   async function loadRoutine() {
     try {
-      const data = await api.fetchJson("/family/routines")
-      renderRoutine(data)
+      const adultsData = await api.fetchJson("/family/older-adults")
+      assignedAdults = adultsData.older_adults || []
+
+      if (!assignedAdults.length) {
+        renderError("No tienes adultos mayores asignados por ahora.")
+        return
+      }
+
+      const requestedAdultId = getRequestedAdultId()
+      const selectedAdultId = assignedAdults.some((adult) => String(adult.id) === String(requestedAdultId))
+        ? requestedAdultId
+        : assignedAdults[0].id
+
+      await loadRoutineForAdult(selectedAdultId)
     } catch (error) {
       renderError(error.message)
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadRoutine)
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("routineAdultSelector")?.addEventListener("change", (event) => {
+      loadRoutineForAdult(event.target.value).catch((error) => renderError(error.message))
+    })
+
+    loadRoutine()
+  })
 })()

@@ -1,6 +1,7 @@
 (() => {
   const api = window.FamilyCare
   let selectedIncident = null
+  let assignedAdults = []
 
   function formatShortDate(value) {
     if (!value) return "Sin fecha"
@@ -18,8 +19,37 @@
     return incident?.older_adult?.full_name || incident?.adult_name || "Adulto mayor"
   }
 
+  function getRequestedAdultId() {
+    const params = new URLSearchParams(window.location.search)
+    return params.get("older_adult_id") || params.get("id") || ""
+  }
+
+  function updateAdultUrl(adultId) {
+    if (!adultId) return
+    const url = new URL(window.location.href)
+    url.searchParams.set("older_adult_id", adultId)
+    window.history.replaceState({}, "", url)
+  }
+
   function getReporterName(incident) {
     return incident?.reporter?.name || incident?.reported_by || "Sin reportero"
+  }
+
+  function renderAdultSelector(selectedId) {
+    const wrapper = document.getElementById("incidentsAdultSelectorWrapper")
+    const selector = document.getElementById("incidentsAdultSelector")
+    if (!wrapper || !selector) return
+
+    wrapper.hidden = assignedAdults.length <= 1
+    selector.innerHTML = assignedAdults
+      .map((adult) => `
+        <option value="${api.escapeHtml(adult.id)}">
+          ${api.escapeHtml(adult.full_name || "Adulto mayor")}
+        </option>
+      `)
+      .join("")
+
+    if (selectedId) selector.value = String(selectedId)
   }
 
   function formatIncidentDetail(incident) {
@@ -98,10 +128,29 @@
     })
   }
 
+  async function loadIncidentsForAdult(adultId) {
+    const data = await api.fetchJson(`/family/older-adults/${encodeURIComponent(adultId)}/incidents`)
+    renderIncidents(data.incidents || [])
+    renderAdultSelector(adultId)
+    updateAdultUrl(adultId)
+  }
+
   async function loadIncidents() {
     try {
-      const data = await api.fetchJson("/family/incidents")
-      renderIncidents(data.incidents || [])
+      const adultsData = await api.fetchJson("/family/older-adults")
+      assignedAdults = adultsData.older_adults || []
+
+      if (!assignedAdults.length) {
+        renderEmpty("No tienes adultos mayores asignados por ahora.")
+        return
+      }
+
+      const requestedAdultId = getRequestedAdultId()
+      const selectedAdultId = assignedAdults.some((adult) => String(adult.id) === String(requestedAdultId))
+        ? requestedAdultId
+        : assignedAdults[0].id
+
+      await loadIncidentsForAdult(selectedAdultId)
     } catch (error) {
       renderEmpty(error.message)
     }
@@ -110,6 +159,10 @@
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("incidentDetailButton")?.addEventListener("click", () => {
       alert(formatIncidentDetail(selectedIncident))
+    })
+
+    document.getElementById("incidentsAdultSelector")?.addEventListener("change", (event) => {
+      loadIncidentsForAdult(event.target.value).catch((error) => renderEmpty(error.message))
     })
 
     loadIncidents()
