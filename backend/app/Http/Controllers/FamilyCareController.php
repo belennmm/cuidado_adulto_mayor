@@ -158,6 +158,29 @@ class FamilyCareController extends Controller
         ]);
     }
 
+    public function olderAdultIncidents(Request $request, OlderAdult $olderAdult): JsonResponse
+    {
+        $this->ensureFamilyUser($request);
+
+        $data = $request->validate([
+            'date' => 'nullable|date_format:Y-m-d',
+        ]);
+
+        $date = isset($data['date'])
+            ? Carbon::createFromFormat('Y-m-d', $data['date'], config('app.timezone'))->startOfDay()
+            : null;
+
+        $assignedOlderAdult = $this->assignedOlderAdultOrFail($request->user(), $olderAdult->id);
+        $olderAdults = collect([$assignedOlderAdult]);
+        $incidents = $this->incidentsForOlderAdults($olderAdults, $date);
+
+        return response()->json([
+            'date' => $date?->toDateString(),
+            'older_adult' => $this->formatOlderAdultSummary($assignedOlderAdult),
+            'incidents' => $incidents,
+        ]);
+    }
+
     private function ensureFamilyUser(Request $request): void
     {
         $user = $request->user();

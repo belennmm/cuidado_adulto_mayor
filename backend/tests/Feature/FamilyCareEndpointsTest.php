@@ -489,6 +489,89 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_family_can_get_incidents_for_assigned_older_adult(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-01 10:00:00'));
+
+        $family = User::factory()->create([
+            'name' => 'Laura Rodriguez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $otherFamily = User::factory()->create([
+            'name' => 'Ana Lopez',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        $professional = User::factory()->create([
+            'name' => 'Maria Gonzalez',
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $assignedAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'age' => 81,
+            'room' => 'A-101',
+            'status' => 'Estable',
+            'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $otherAdult = OlderAdult::create([
+            'full_name' => 'Elena Castillo',
+            'age' => 88,
+            'room' => 'C-305',
+            'status' => 'Critico',
+            'caregiver_family' => 'Ana Lopez',
+            'family_caregiver_id' => $otherFamily->id,
+            'created_by' => $professional->id,
+        ]);
+
+        Incident::create([
+            'title' => 'Revision de presion',
+            'description' => 'Se notifico lectura elevada.',
+            'adult_name' => 'Rosa Martinez',
+            'older_adult_id' => $assignedAdult->id,
+            'severity' => 'media',
+            'status' => 'abierto',
+            'incident_date' => '2026-05-01',
+            'incident_time' => '08:30:00',
+            'reported_by' => $professional->id,
+        ]);
+
+        Incident::create([
+            'title' => 'Molestia respiratoria',
+            'description' => 'Se monitoreo saturacion.',
+            'adult_name' => 'Elena Castillo',
+            'older_adult_id' => $otherAdult->id,
+            'severity' => 'alta',
+            'status' => 'abierto',
+            'incident_date' => '2026-05-01',
+            'incident_time' => '09:30:00',
+            'reported_by' => $professional->id,
+        ]);
+
+        Sanctum::actingAs($family);
+
+        $this->getJson("/api/family/older-adults/{$assignedAdult->id}/incidents?date=2026-05-01")
+            ->assertOk()
+            ->assertJsonPath('date', '2026-05-01')
+            ->assertJsonPath('older_adult.id', $assignedAdult->id)
+            ->assertJsonPath('older_adult.full_name', 'Rosa Martinez')
+            ->assertJsonPath('incidents.0.title', 'Revision de presion')
+            ->assertJsonPath('incidents.0.older_adult_id', $assignedAdult->id)
+            ->assertJsonPath('incidents.0.reporter.name', 'Maria Gonzalez')
+            ->assertJsonMissing(['title' => 'Molestia respiratoria']);
+
+        $this->getJson("/api/family/older-adults/{$otherAdult->id}/incidents")
+            ->assertForbidden();
+    }
+
     public function test_admin_assigns_older_adult_to_real_approved_family_caregiver(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-04-30 09:00:00'));

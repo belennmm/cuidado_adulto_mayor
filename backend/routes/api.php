@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
         Route::get('/older-adults', [FamilyCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [FamilyCareController::class, 'olderAdult']);
+        Route::get('/older-adults/{olderAdult}/incidents', [FamilyCareController::class, 'olderAdultIncidents']);
         Route::get('/incidents', [FamilyCareController::class, 'incidents']);
         Route::get('/routine', [FamilyCareController::class, 'routine']);
         Route::get('/routines', [FamilyCareController::class, 'routine']);
