@@ -142,15 +142,7 @@ class FamilyCareController extends Controller
 
         return response()->json([
             'date' => $date->toDateString(),
-            'summary' => [
-                'total' => $incidents->count(),
-                'open' => $incidents
-                    ->filter(fn (array $incident) => !in_array($this->normalizeText($incident['status']), ['cerrado', 'resuelto'], true))
-                    ->count(),
-                'resolved' => $incidents
-                    ->filter(fn (array $incident) => in_array($this->normalizeText($incident['status']), ['cerrado', 'resuelto'], true))
-                    ->count(),
-            ],
+            'summary' => $this->incidentSummary($incidents),
             'older_adults' => $olderAdults
                 ->map(fn (OlderAdult $olderAdult) => $this->formatOlderAdultSummary($olderAdult))
                 ->values(),
@@ -176,6 +168,11 @@ class FamilyCareController extends Controller
 
         return response()->json([
             'date' => $date?->toDateString(),
+            'filters' => [
+                'older_adult_id' => $assignedOlderAdult->id,
+                'date' => $date?->toDateString(),
+            ],
+            'summary' => $this->incidentSummary($incidents),
             'older_adult' => $this->formatOlderAdultSummary($assignedOlderAdult),
             'incidents' => $incidents,
         ]);
@@ -345,6 +342,19 @@ class FamilyCareController extends Controller
                 'email' => $incident->reporter->email,
             ] : null,
             'older_adult' => $olderAdult ? $this->formatOlderAdultSummary($olderAdult) : null,
+        ];
+    }
+
+    private function incidentSummary(Collection $incidents): array
+    {
+        return [
+            'total' => $incidents->count(),
+            'open' => $incidents
+                ->filter(fn (array $incident) => !in_array($this->normalizeText($incident['status']), ['cerrado', 'resuelto'], true))
+                ->count(),
+            'resolved' => $incidents
+                ->filter(fn (array $incident) => in_array($this->normalizeText($incident['status']), ['cerrado', 'resuelto'], true))
+                ->count(),
         ];
     }
 
