@@ -33,7 +33,10 @@
     currentDate: new Date(),
     view: VIEW_LABELS.week,
     shifts: [],
+    requestId: 0,
   }
+
+  const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
   function safeJsonParse(value) {
     try {
@@ -50,6 +53,10 @@
     }
 
     window.location.assign("../../index.html")
+  }
+
+  function getToken() {
+    return localStorage.getItem("token")
   }
 
   function startOfDay(date) {
@@ -113,6 +120,30 @@
     return `${MONTH_NAMES[currentDate.getMonth()]} de ${currentDate.getFullYear()}`
   }
 
+  function getFetchRange() {
+    if (state.view === VIEW_LABELS.day) {
+      return {
+        startDate: startOfDay(state.currentDate),
+        endDate: startOfDay(state.currentDate),
+      }
+    }
+
+    if (state.view === VIEW_LABELS.week) {
+      return {
+        startDate: startOfWeek(state.currentDate),
+        endDate: endOfWeek(state.currentDate),
+      }
+    }
+
+    const monthStart = startOfMonth(state.currentDate)
+    const calendarStart = addDays(monthStart, -monthStart.getDay())
+
+    return {
+      startDate: calendarStart,
+      endDate: addDays(calendarStart, 41),
+    }
+  }
+
   function getStatusClass(status) {
     if (status === "completed") return "status-completed"
     if (status === "pending") return "status-pending"
@@ -142,105 +173,34 @@
     return `${DAY_NAMES[date.getDay()]}, ${date.getDate()} de ${MONTH_NAMES[date.getMonth()]} de ${date.getFullYear()}`
   }
 
-  function createMockShifts() {
-    const today = startOfDay(new Date())
-    const weekStart = startOfWeek(today)
+  async function fetchCalendarShifts() {
+    const token = getToken()
 
-    return [
-      {
-        id: 1,
-        caregiver: "Maria Gonzalez",
-        olderAdult: "Rosa Martinez",
-        date: formatDateKey(addDays(weekStart, 1)),
-        startTime: "07:00",
-        endTime: "13:00",
-        status: "assigned",
-        notes: "Acompanamiento matutino y apoyo con medicacion.",
-      },
-      {
-        id: 2,
-        caregiver: "Daniel Soto",
-        olderAdult: "Carlos Ramirez",
-        date: formatDateKey(addDays(weekStart, 2)),
-        startTime: "09:00",
-        endTime: "15:00",
-        status: "pending",
-        notes: "Pendiente confirmar cobertura por terapia fisica.",
-      },
-      {
-        id: 3,
-        caregiver: "Maria Gonzalez",
-        olderAdult: "Miguel Herrera",
-        date: formatDateKey(today),
-        startTime: "08:00",
-        endTime: "14:00",
-        status: "completed",
-        notes: "Turno completado con monitoreo de glicemia.",
-      },
-      {
-        id: 4,
-        caregiver: "Daniel Soto",
-        olderAdult: "Elena Castillo",
-        date: formatDateKey(addDays(today, 1)),
-        startTime: "14:00",
-        endTime: "20:00",
-        status: "assigned",
-        notes: "Supervision respiratoria en horario vespertino.",
-      },
-      {
-        id: 5,
-        caregiver: "Maria Gonzalez",
-        olderAdult: "Rosa Martinez",
-        date: formatDateKey(addDays(today, 3)),
-        startTime: "07:00",
-        endTime: "13:00",
-        status: "cancelled",
-        notes: "Turno cancelado por ajuste operativo.",
-      },
-      {
-        id: 6,
-        caregiver: "Daniel Soto",
-        olderAdult: "Carlos Ramirez",
-        date: formatDateKey(new Date(today.getFullYear(), today.getMonth(), 1)),
-        startTime: "10:00",
-        endTime: "16:00",
-        status: "assigned",
-        notes: "Cobertura de inicio de mes para actividades grupales.",
-      },
-      {
-        id: 7,
-        caregiver: "Maria Gonzalez",
-        olderAdult: "Miguel Herrera",
-        date: formatDateKey(addDays(endOfMonth(today), -2)),
-        startTime: "12:00",
-        endTime: "18:00",
-        status: "pending",
-        notes: "Pendiente reasignacion final de cierre de mes.",
-      },
-    ]
-  }
-
-  function getVisibleShifts() {
-    const currentDate = state.currentDate
-
-    if (state.view === VIEW_LABELS.day) {
-      return state.shifts.filter((shift) => shift.date === formatDateKey(currentDate))
+    if (!token) {
+      throw new Error("Inicia sesion como administrador para ver el calendario.")
     }
 
-    if (state.view === VIEW_LABELS.week) {
-      const firstDay = startOfWeek(currentDate)
-      const lastDay = endOfWeek(currentDate)
-
-      return state.shifts.filter((shift) => {
-        const shiftDate = new Date(`${shift.date}T00:00:00`)
-        return shiftDate >= firstDay && shiftDate <= lastDay
-      })
-    }
-
-    return state.shifts.filter((shift) => {
-      const shiftDate = new Date(`${shift.date}T00:00:00`)
-      return shiftDate.getMonth() === currentDate.getMonth() && shiftDate.getFullYear() === currentDate.getFullYear()
+    const { startDate, endDate } = getFetchRange()
+    const params = new URLSearchParams({
+      start_date: formatDateKey(startDate),
+      end_date: formatDateKey(endDate),
     })
+
+    const response = await fetch(`${API_URL}/admin/schedules/calendar?${params.toString()}`, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudo cargar el calendario de turnos.")
+    }
+
+    return data.shifts || []
   }
 
   function renderEmptyState(container, message) {
@@ -248,6 +208,26 @@
       <div class="calendar-empty-state">
         <i class="bx bx-calendar-x"></i>
         <strong>No hay turnos para esta vista.</strong>
+        <span>${escapeHtml(message)}</span>
+      </div>
+    `
+  }
+
+  function renderLoadingState(container) {
+    container.innerHTML = `
+      <div class="calendar-loading-state">
+        <div class="calendar-loading-spinner"></div>
+        <strong>Cargando turnos...</strong>
+        <span>Estamos preparando el calendario para la vista seleccionada.</span>
+      </div>
+    `
+  }
+
+  function renderErrorState(container, message) {
+    container.innerHTML = `
+      <div class="calendar-error-state">
+        <i class="bx bx-error-circle"></i>
+        <strong>No se pudo cargar el calendario.</strong>
         <span>${escapeHtml(message)}</span>
       </div>
     `
@@ -270,9 +250,9 @@
             ${dayShifts.length
               ? dayShifts.map((shift) => `
                 <button type="button" class="calendar-shift-chip ${getStatusClass(shift.status)}" data-shift-id="${shift.id}">
-                  <strong>${escapeHtml(shift.caregiver)}</strong>
-                  <span>${escapeHtml(shift.olderAdult)}</span>
-                  <span>${escapeHtml(`${normalizeTime(shift.startTime)} - ${normalizeTime(shift.endTime)}`)}</span>
+                  <strong>${escapeHtml(shift.caregiver_name)}</strong>
+                  <span>${escapeHtml(shift.older_adult_name)}</span>
+                  <span>${escapeHtml(`${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`)}</span>
                 </button>
               `).join("")
               : ""
@@ -310,9 +290,9 @@
             ${dayShifts.length
               ? dayShifts.map((shift) => `
                 <button type="button" class="week-shift-card ${getStatusClass(shift.status)}" data-shift-id="${shift.id}">
-                  <strong>${escapeHtml(shift.caregiver)}</strong>
-                  <span>${escapeHtml(shift.olderAdult)}</span>
-                  <span>${escapeHtml(`${normalizeTime(shift.startTime)} - ${normalizeTime(shift.endTime)}`)}</span>
+                  <strong>${escapeHtml(shift.caregiver_name)}</strong>
+                  <span>${escapeHtml(shift.older_adult_name)}</span>
+                  <span>${escapeHtml(`${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`)}</span>
                   <span>${escapeHtml(statusLabel(shift.status))}</span>
                 </button>
               `).join("")
@@ -330,7 +310,7 @@
     const currentDateKey = formatDateKey(state.currentDate)
     const dayShifts = shifts
       .filter((shift) => shift.date === currentDateKey)
-      .sort((firstShift, secondShift) => firstShift.startTime.localeCompare(secondShift.startTime))
+      .sort((firstShift, secondShift) => firstShift.start_time.localeCompare(secondShift.start_time))
 
     if (!dayShifts.length) {
       renderEmptyState(container, "No hay turnos programados para la fecha seleccionada.")
@@ -346,10 +326,10 @@
         <div class="day-shifts-list">
           ${dayShifts.map((shift) => `
             <button type="button" class="day-shift-card ${getStatusClass(shift.status)}" data-shift-id="${shift.id}">
-              <div class="day-shift-time">${escapeHtml(`${normalizeTime(shift.startTime)} - ${normalizeTime(shift.endTime)}`)}</div>
+              <div class="day-shift-time">${escapeHtml(`${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`)}</div>
               <div class="day-shift-content">
-                <strong>${escapeHtml(shift.caregiver)}</strong>
-                <span>${escapeHtml(shift.olderAdult)}</span>
+                <strong>${escapeHtml(shift.caregiver_name)}</strong>
+                <span>${escapeHtml(shift.older_adult_name)}</span>
               </div>
               <span class="day-shift-status ${getStatusClass(shift.status)}">${escapeHtml(statusLabel(shift.status))}</span>
             </button>
@@ -364,11 +344,11 @@
     const modal = document.getElementById("shiftDetailModal")
     if (!shift || !modal) return
 
-    document.getElementById("detailCaregiver").textContent = shift.caregiver
-    document.getElementById("detailOlderAdult").textContent = shift.olderAdult
+    document.getElementById("detailCaregiver").textContent = shift.caregiver_name
+    document.getElementById("detailOlderAdult").textContent = shift.older_adult_name
     document.getElementById("detailDate").textContent = formatLongDate(shift.date)
-    document.getElementById("detailStartTime").textContent = normalizeTime(shift.startTime)
-    document.getElementById("detailEndTime").textContent = normalizeTime(shift.endTime)
+    document.getElementById("detailStartTime").textContent = normalizeTime(shift.start_time)
+    document.getElementById("detailEndTime").textContent = normalizeTime(shift.end_time)
     document.getElementById("detailStatus").textContent = statusLabel(shift.status)
     document.getElementById("detailStatus").className = getStatusClass(shift.status)
     document.getElementById("detailNotes").textContent = shift.notes || "Sin notas registradas."
@@ -392,7 +372,6 @@
     const container = document.getElementById("shiftsCalendarContainer")
     if (!container) return
 
-    const visibleShifts = getVisibleShifts()
     const rangeText = document.getElementById("calendarRangeText")
     if (rangeText) {
       rangeText.textContent = formatRangeText()
@@ -400,25 +379,46 @@
 
     updateViewButtons()
 
-    if (!visibleShifts.length) {
+    if (!state.shifts.length) {
       renderEmptyState(container, "Prueba cambiando la fecha o la vista del calendario.")
       return
     }
 
     if (state.view === VIEW_LABELS.month) {
-      renderMonthView(container, visibleShifts)
+      renderMonthView(container, state.shifts)
       return
     }
 
     if (state.view === VIEW_LABELS.week) {
-      renderWeekView(container, visibleShifts)
+      renderWeekView(container, state.shifts)
       return
     }
 
-    renderDayView(container, visibleShifts)
+    renderDayView(container, state.shifts)
   }
 
-  function moveCalendar(direction) {
+  async function refreshCalendar() {
+    const container = document.getElementById("shiftsCalendarContainer")
+    if (!container) return
+
+    closeShiftDetail()
+    const currentRequestId = state.requestId + 1
+    state.requestId = currentRequestId
+    renderLoadingState(container)
+
+    try {
+      const shifts = await fetchCalendarShifts()
+      if (currentRequestId !== state.requestId) return
+      state.shifts = shifts
+      renderCalendar()
+    } catch (error) {
+      if (currentRequestId !== state.requestId) return
+      state.shifts = []
+      renderErrorState(container, error.message)
+    }
+  }
+
+  async function moveCalendar(direction) {
     if (state.view === VIEW_LABELS.day) {
       state.currentDate = addDays(state.currentDate, direction)
     } else if (state.view === VIEW_LABELS.week) {
@@ -427,17 +427,17 @@
       state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() + direction, 1)
     }
 
-    renderCalendar()
+    await refreshCalendar()
   }
 
-  function setToday() {
+  async function setToday() {
     state.currentDate = startOfDay(new Date())
-    renderCalendar()
+    await refreshCalendar()
   }
 
-  function setView(view) {
+  async function setView(view) {
     state.view = view
-    renderCalendar()
+    await refreshCalendar()
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -451,15 +451,21 @@
     }
 
     state.currentDate = startOfDay(new Date())
-    state.shifts = createMockShifts()
+    state.shifts = []
 
-    document.getElementById("calendarPrevButton")?.addEventListener("click", () => moveCalendar(-1))
-    document.getElementById("calendarNextButton")?.addEventListener("click", () => moveCalendar(1))
-    document.getElementById("calendarTodayButton")?.addEventListener("click", setToday)
-    document.getElementById("calendarViewSwitcher")?.addEventListener("click", (event) => {
+    document.getElementById("calendarPrevButton")?.addEventListener("click", async () => {
+      await moveCalendar(-1)
+    })
+    document.getElementById("calendarNextButton")?.addEventListener("click", async () => {
+      await moveCalendar(1)
+    })
+    document.getElementById("calendarTodayButton")?.addEventListener("click", async () => {
+      await setToday()
+    })
+    document.getElementById("calendarViewSwitcher")?.addEventListener("click", async (event) => {
       const button = event.target.closest(".calendar-view-button[data-view]")
       if (!button) return
-      setView(button.dataset.view)
+      await setView(button.dataset.view)
     })
 
     document.getElementById("shiftsCalendarContainer")?.addEventListener("click", (event) => {
@@ -475,6 +481,6 @@
       }
     })
 
-    renderCalendar()
+    refreshCalendar()
   })
 })()

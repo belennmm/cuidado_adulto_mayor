@@ -72,6 +72,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::delete('/users/{user}/reject', [AdminUserController::class, 'reject']);
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
     Route::get('/schedules', [CaregiverScheduleController::class, 'adminIndex']);
+    Route::get('/schedules/calendar', [CaregiverScheduleController::class, 'calendar']);
     Route::post('/schedules', [CaregiverScheduleController::class, 'adminStore']);
     Route::patch('/schedules/{schedule}/change-request/approve', [CaregiverScheduleController::class, 'approveChangeRequest']);
     Route::patch('/schedules/{schedule}/change-request/reject', [CaregiverScheduleController::class, 'rejectChangeRequest']);
