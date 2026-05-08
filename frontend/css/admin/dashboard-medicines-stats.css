@@ -61,6 +61,21 @@
   gap: 10px;
 }
 
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background-color: #dceef8;
+  color: #2c7ea6;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
 .section-heading h2 {
   margin: 0;
   font-size: 24px;
@@ -133,6 +148,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  box-shadow: 0 8px 20px rgba(16, 41, 76, 0.04);
 }
 
 .stats-summary-top {
@@ -195,6 +211,13 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.mini-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: #c8ddee;
+  box-shadow: 0 14px 24px rgba(80, 178, 223, 0.08);
 }
 
 .mini-stat-label {
@@ -267,7 +290,12 @@
   border-radius: 12px;
   background: linear-gradient(180deg, #5fc0e5 0%, #1d73f3 100%);
   box-shadow: 0 12px 24px rgba(29, 115, 243, 0.18);
-  transition: height 0.22s ease;
+  transition: height 0.22s ease, filter 0.18s ease, transform 0.18s ease;
+}
+
+.chart-bar-card:hover .chart-bar-fill {
+  filter: brightness(1.03);
+  transform: translateY(-2px);
 }
 
 .chart-bar-label {
@@ -320,6 +348,10 @@
   border-color: #50b2df;
   background-color: #eef8fc;
   box-shadow: 0 12px 26px rgba(80, 178, 223, 0.16);
+}
+
+.ranking-item.selected .ranking-position {
+  background-color: #50b2df;
 }
 
 .ranking-item-main {
@@ -383,19 +415,55 @@
   padding: 24px;
 }
 
-.stats-empty-state i {
+.stats-empty-state i,
+.stats-error-state i {
   font-size: 36px;
   color: #50b2df;
 }
 
-.stats-empty-state strong {
+.stats-empty-state strong,
+.stats-loading-state strong,
+.stats-error-state strong {
   color: #0a112f;
   font-size: 20px;
   font-weight: 600;
 }
 
+.stats-loading-state,
+.stats-error-state {
+  min-height: 240px;
+  border-radius: 20px;
+  background-color: #fafcfe;
+  border: 1px dashed #cad8e5;
+  color: #73859a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 24px;
+}
+
+.stats-loading-spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 4px solid rgba(80, 178, 223, 0.24);
+  border-top-color: #50b2df;
+  animation: medicines-stats-spin 0.8s linear infinite;
+}
+
+.stats-loading-state span,
+.stats-error-state span,
+.stats-empty-state span {
+  max-width: 420px;
+  line-height: 1.5;
+}
+
 .inventory-section {
   min-height: 220px;
+  border-top: 6px solid #d7eaf5;
 }
 
 .inventory-placeholder {
@@ -412,10 +480,29 @@
   text-align: center;
 }
 
+@keyframes medicines-stats-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media screen and (max-width: 1100px) {
-  .medicines-stats-layout,
-  .stats-cards-grid {
+  .medicines-stats-layout {
     grid-template-columns: 1fr;
+  }
+
+  .ranking-panel {
+    order: -1;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .stats-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .usage-chart {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   }
 }
 
@@ -437,11 +524,69 @@
     font-size: 20px;
   }
 
+  .stats-filter-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stats-filter-button {
+    flex: 1;
+    min-width: 0;
+  }
+
   .summary-title {
     font-size: 24px;
   }
 
+  .stats-cards-grid,
   .usage-chart {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .chart-bar-card {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) 56px;
+    align-items: end;
+    gap: 10px;
+  }
+
+  .chart-bar-track {
+    height: 120px;
+  }
+
+  .chart-bar-label,
+  .chart-bar-value {
+    text-align: left;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .dashboard-medicines-page {
+    gap: 18px;
+  }
+
+  .dashboard-medicines-title {
+    font-size: 23px;
+  }
+
+  .dashboard-medicines-subtitle {
+    font-size: 14px;
+  }
+
+  .back-button {
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+  }
+
+  .mini-stat-card,
+  .usage-chart-card,
+  .ranking-item,
+  .inventory-placeholder,
+  .stats-empty-state,
+  .stats-loading-state,
+  .stats-error-state {
+    border-radius: 16px;
   }
 }

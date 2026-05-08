@@ -1,8 +1,8 @@
 (() => {
   const FILTER_LABELS = {
-    day: "Dia",
+    day: "Día",
     month: "Mes",
-    year: "Ano",
+    year: "Año",
   }
 
   const medicinesStatsData = {
@@ -13,10 +13,10 @@
         totalUses: 18,
         patients: 6,
         streak: 3,
-        streakLabel: "3 dias recientes",
+        streakLabel: "3 días recientes",
         usageLabel: "18 administraciones hoy",
-        chartTitle: "Uso por hora del dia",
-        rankingNote: "Mayor actividad durante la manana",
+        chartTitle: "Uso por hora del día",
+        rankingNote: "Mayor actividad durante la mañana",
         chart: [
           { label: "6 AM", value: 2 },
           { label: "8 AM", value: 4 },
@@ -34,9 +34,9 @@
         totalUses: 11,
         patients: 4,
         streak: 2,
-        streakLabel: "2 dias recientes",
+        streakLabel: "2 días recientes",
         usageLabel: "11 administraciones hoy",
-        chartTitle: "Uso por hora del dia",
+        chartTitle: "Uso por hora del día",
         rankingNote: "Concentrado en dosis matutinas",
         chart: [
           { label: "6 AM", value: 1 },
@@ -55,9 +55,9 @@
         totalUses: 9,
         patients: 3,
         streak: 2,
-        streakLabel: "2 dias recientes",
+        streakLabel: "2 días recientes",
         usageLabel: "9 administraciones hoy",
-        chartTitle: "Uso por hora del dia",
+        chartTitle: "Uso por hora del día",
         rankingNote: "Predomina antes del desayuno",
         chart: [
           { label: "6 AM", value: 3 },
@@ -78,7 +78,7 @@
         totalUses: 86,
         patients: 10,
         streak: 14,
-        streakLabel: "14 dias consecutivos",
+        streakLabel: "14 días consecutivos",
         usageLabel: "86 administraciones este mes",
         chartTitle: "Uso semanal del mes",
         rankingNote: "Uso sostenido toda la semana",
@@ -96,7 +96,7 @@
         totalUses: 71,
         patients: 7,
         streak: 11,
-        streakLabel: "11 dias consecutivos",
+        streakLabel: "11 días consecutivos",
         usageLabel: "71 administraciones este mes",
         chartTitle: "Uso semanal del mes",
         rankingNote: "Repunte en la cuarta semana",
@@ -114,10 +114,10 @@
         totalUses: 54,
         patients: 5,
         streak: 7,
-        streakLabel: "7 dias recientes",
+        streakLabel: "7 días recientes",
         usageLabel: "54 administraciones este mes",
         chartTitle: "Uso semanal del mes",
-        rankingNote: "Uso variable por dolor e inflamacion",
+        rankingNote: "Uso variable por dolor e inflamación",
         chart: [
           { label: "Sem 1", value: 8 },
           { label: "Sem 2", value: 10 },
@@ -134,9 +134,9 @@
         totalUses: 402,
         patients: 18,
         streak: 42,
-        streakLabel: "42 dias de uso reciente",
-        usageLabel: "402 administraciones este ano",
-        chartTitle: "Uso mensual del ano",
+        streakLabel: "42 días de uso reciente",
+        usageLabel: "402 administraciones este año",
+        chartTitle: "Uso mensual del año",
         rankingNote: "Consumo estable en casi todos los meses",
         chart: [
           { label: "Ene", value: 28 },
@@ -159,9 +159,9 @@
         totalUses: 389,
         patients: 16,
         streak: 39,
-        streakLabel: "39 dias de uso reciente",
-        usageLabel: "389 administraciones este ano",
-        chartTitle: "Uso mensual del ano",
+        streakLabel: "39 días de uso reciente",
+        usageLabel: "389 administraciones este año",
+        chartTitle: "Uso mensual del año",
         rankingNote: "Picos de uso en octubre y noviembre",
         chart: [
           { label: "Ene", value: 27 },
@@ -184,9 +184,9 @@
         totalUses: 344,
         patients: 15,
         streak: 24,
-        streakLabel: "24 dias de uso reciente",
-        usageLabel: "344 administraciones este ano",
-        chartTitle: "Uso mensual del ano",
+        streakLabel: "24 días de uso reciente",
+        usageLabel: "344 administraciones este año",
+        chartTitle: "Uso mensual del año",
         rankingNote: "Sube en temporadas de mayor demanda",
         chart: [
           { label: "Ene", value: 21 },
@@ -209,6 +209,7 @@
   const state = {
     activeFilter: "day",
     selectedMedicineId: null,
+    status: "idle",
   }
 
   function safeJsonParse(value) {
@@ -230,6 +231,16 @@
 
   function getCurrentItems() {
     return medicinesStatsData[state.activeFilter] || []
+  }
+
+  function getStatusElements() {
+    return {
+      statsLayout: document.getElementById("medicinesStatsLayout"),
+      emptyState: document.getElementById("statsEmptyState"),
+      loadingState: document.getElementById("statsLoadingState"),
+      errorState: document.getElementById("statsErrorState"),
+      errorMessage: document.getElementById("statsErrorMessage"),
+    }
   }
 
   function getSelectedMedicine(items) {
@@ -355,8 +366,7 @@
   }
 
   function renderEmptyState() {
-    const statsLayout = document.getElementById("medicinesStatsLayout")
-    const emptyState = document.getElementById("statsEmptyState")
+    const { statsLayout, emptyState, loadingState, errorState } = getStatusElements()
 
     if (statsLayout) {
       statsLayout.hidden = true
@@ -365,19 +375,62 @@
     if (emptyState) {
       emptyState.hidden = false
     }
+
+    if (loadingState) {
+      loadingState.hidden = true
+    }
+
+    if (errorState) {
+      errorState.hidden = true
+    }
   }
 
-  function renderStats() {
-    const items = getCurrentItems()
-    const statsLayout = document.getElementById("medicinesStatsLayout")
-    const emptyState = document.getElementById("statsEmptyState")
+  function renderLoadingState() {
+    const { statsLayout, emptyState, loadingState, errorState } = getStatusElements()
 
-    updateFilterButtons()
-
-    if (!items.length) {
-      renderEmptyState()
-      return
+    if (statsLayout) {
+      statsLayout.hidden = true
     }
+
+    if (emptyState) {
+      emptyState.hidden = true
+    }
+
+    if (loadingState) {
+      loadingState.hidden = false
+    }
+
+    if (errorState) {
+      errorState.hidden = true
+    }
+  }
+
+  function renderErrorState(message) {
+    const { statsLayout, emptyState, loadingState, errorState, errorMessage } = getStatusElements()
+
+    if (statsLayout) {
+      statsLayout.hidden = true
+    }
+
+    if (emptyState) {
+      emptyState.hidden = true
+    }
+
+    if (loadingState) {
+      loadingState.hidden = true
+    }
+
+    if (errorState) {
+      errorState.hidden = false
+    }
+
+    if (errorMessage) {
+      errorMessage.textContent = message
+    }
+  }
+
+  function renderReadyState() {
+    const { statsLayout, emptyState, loadingState, errorState } = getStatusElements()
 
     if (statsLayout) {
       statsLayout.hidden = false
@@ -387,16 +440,62 @@
       emptyState.hidden = true
     }
 
-    const selectedMedicine = getSelectedMedicine(items)
-    state.selectedMedicineId = selectedMedicine.id
+    if (loadingState) {
+      loadingState.hidden = true
+    }
 
-    renderSummary(items, selectedMedicine)
-    renderChart(selectedMedicine)
-    renderRanking(items, selectedMedicine.id)
+    if (errorState) {
+      errorState.hidden = true
+    }
+  }
+
+  async function loadFilterItems() {
+    await new Promise((resolve) => window.setTimeout(resolve, 260))
+
+    const forcedState = new URLSearchParams(window.location.search).get("state")
+
+    if (forcedState === "error") {
+      throw new Error("No fue posible obtener las estadísticas del medicamento.")
+    }
+
+    if (forcedState === "empty") {
+      return []
+    }
+
+    return getCurrentItems()
+  }
+
+  async function renderStats() {
+    updateFilterButtons()
+    state.status = "loading"
+    renderLoadingState()
+
+    try {
+      const items = await loadFilterItems()
+
+      if (!items.length) {
+        state.status = "empty"
+        renderEmptyState()
+        return
+      }
+
+      renderReadyState()
+      state.status = "ready"
+
+      const selectedMedicine = getSelectedMedicine(items)
+      state.selectedMedicineId = selectedMedicine.id
+
+      renderSummary(items, selectedMedicine)
+      renderChart(selectedMedicine)
+      renderRanking(items, selectedMedicine.id)
+    } catch (error) {
+      state.status = "error"
+      renderErrorState(error.message || "No se pudo cargar la informacion solicitada.")
+    }
   }
 
   function bindEvents() {
-    document.getElementById("statsFilterGroup")?.addEventListener("click", (event) => {
+    document.getElementById("statsFilterGroup")?.addEventListener("click", async (event) => {
       const button = event.target.closest(".stats-filter-button[data-filter]")
 
       if (!button || button.dataset.filter === state.activeFilter) {
@@ -405,10 +504,10 @@
 
       state.activeFilter = button.dataset.filter
       state.selectedMedicineId = null
-      renderStats()
+      await renderStats()
     })
 
-    document.getElementById("medicinesRankingList")?.addEventListener("click", (event) => {
+    document.getElementById("medicinesRankingList")?.addEventListener("click", async (event) => {
       const button = event.target.closest(".ranking-item[data-medicine-id]")
 
       if (!button) {
@@ -416,11 +515,11 @@
       }
 
       state.selectedMedicineId = button.dataset.medicineId
-      renderStats()
+      await renderStats()
     })
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token")
     const user = safeJsonParse(localStorage.getItem("user"))
     const role = String(user?.role || "").trim().toLowerCase()
@@ -431,6 +530,6 @@
     }
 
     bindEvents()
-    renderStats()
+    await renderStats()
   })
 })()

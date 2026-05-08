@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Estadisticas de Medicamentos</title>
+    <title>Estadísticas de Medicamentos</title>
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
@@ -74,7 +74,7 @@
         <section class="page-shell dashboard-medicines-page">
           <div class="dashboard-medicines-header">
             <div>
-              <h1 class="dashboard-medicines-title">Estadisticas de Medicamentos</h1>
+              <h1 class="dashboard-medicines-title">Estadísticas de Medicamentos</h1>
               <p class="dashboard-medicines-subtitle">Resumen general de uso y control de medicamentos.</p>
             </div>
 
@@ -85,12 +85,15 @@
 
           <section class="medicines-section-card">
             <div class="section-heading section-heading-split">
-              <h2>Estadisticas de la Medicina Mas Utilizada</h2>
+              <div>
+                <span class="section-badge">Estadísticas</span>
+                <h2>Estadísticas de la Medicina Más Utilizada</h2>
+              </div>
 
               <div class="stats-filter-group" id="statsFilterGroup">
-                <button type="button" class="stats-filter-button active" data-filter="day">Dia</button>
+                <button type="button" class="stats-filter-button active" data-filter="day">Día</button>
                 <button type="button" class="stats-filter-button" data-filter="month">Mes</button>
-                <button type="button" class="stats-filter-button" data-filter="year">Ano</button>
+                <button type="button" class="stats-filter-button" data-filter="year">Año</button>
               </div>
             </div>
 
@@ -102,12 +105,12 @@
                       <span class="summary-overline">Medicamento seleccionado</span>
                       <h3 class="summary-title" id="selectedMedicineName">--</h3>
                     </div>
-                    <span class="summary-filter-pill" id="selectedFilterLabel">Dia</span>
+                    <span class="summary-filter-pill" id="selectedFilterLabel">Día</span>
                   </div>
 
                   <div class="stats-cards-grid">
                     <article class="mini-stat-card">
-                      <span class="mini-stat-label">Medicina mas utilizada</span>
+                      <span class="mini-stat-label">Medicina más utilizada</span>
                       <strong class="mini-stat-value" id="topMedicineUsage">--</strong>
                       <span class="mini-stat-caption" id="topMedicineUsageCaption">--</span>
                     </article>
@@ -119,7 +122,7 @@
                     </article>
 
                     <article class="mini-stat-card">
-                      <span class="mini-stat-label">Dias de uso consecutivo o reciente</span>
+                      <span class="mini-stat-label">Días de uso consecutivo o reciente</span>
                       <strong class="mini-stat-value" id="selectedMedicineStreak">--</strong>
                       <span class="mini-stat-caption" id="selectedMedicineStreakCaption">--</span>
                     </article>
@@ -128,7 +131,7 @@
                   <div class="usage-chart-card">
                     <div class="chart-header">
                       <div>
-                        <span class="chart-overline">Grafica de uso</span>
+                        <span class="chart-overline">Gráfica de uso</span>
                         <h4 class="chart-title" id="usageChartTitle">Uso del medicamento</h4>
                       </div>
                     </div>
@@ -153,12 +156,25 @@
             <div class="stats-empty-state" id="statsEmptyState" hidden>
               <i class="bx bx-bar-chart-square"></i>
               <strong>No hay datos para este filtro.</strong>
-              <span>Prueba cambiar entre Dia, Mes o Ano para revisar otro periodo.</span>
+              <span>Prueba cambiar entre Día, Mes o Año para revisar otro periodo.</span>
+            </div>
+
+            <div class="stats-loading-state" id="statsLoadingState" hidden>
+              <div class="stats-loading-spinner"></div>
+              <strong>Cargando estadísticas...</strong>
+              <span>Estamos preparando el resumen visual del periodo seleccionado.</span>
+            </div>
+
+            <div class="stats-error-state" id="statsErrorState" hidden>
+              <i class="bx bx-wifi-off"></i>
+              <strong>No se pudo cargar la informacion.</strong>
+              <span id="statsErrorMessage">Intenta nuevamente en unos segundos.</span>
             </div>
           </section>
 
           <section class="medicines-section-card inventory-section">
             <div class="section-heading">
+              <span class="section-badge">Inventario</span>
               <h2>Inventario de medicamentos</h2>
             </div>
 
@@ -170,8 +186,8 @@
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesion</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesion?</p>
+        <h3 class="logout-modal-title">Cerrar sesión</h3>
+        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
