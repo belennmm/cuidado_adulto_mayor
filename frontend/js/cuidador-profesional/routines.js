@@ -31,6 +31,15 @@
     element.classList.toggle("is-success", Boolean(message) && !isError)
   }
 
+  function setCustomRoutineMessage(message, isError = false) {
+    const element = document.getElementById("customRoutineMessage")
+    if (!element) return
+
+    element.textContent = message || ""
+    element.classList.toggle("is-error", isError)
+    element.classList.toggle("is-success", Boolean(message) && !isError)
+  }
+
   function resetNoteForm() {
     editingNoteId = null
     const textarea = document.getElementById("routineNoteInput")
@@ -44,10 +53,14 @@
     if (cancelButton) cancelButton.hidden = true
   }
 
-  function statusLabel(item) {
-    if (item.administered_today) return "Administrado"
-    if (item.due_today) return "Pendiente"
-    return "Programado"
+  function resetCustomRoutineForm() {
+    const nameInput = document.getElementById("customRoutineName")
+    const scheduleInput = document.getElementById("customRoutineSchedule")
+    const activitiesInput = document.getElementById("customRoutineActivities")
+
+    if (nameInput) nameInput.value = ""
+    if (scheduleInput) scheduleInput.value = ""
+    if (activitiesInput) activitiesInput.value = ""
   }
 
   function renderAdultSelector() {
@@ -67,7 +80,13 @@
     }
   }
 
-  function renderRoutine(item) {
+  function statusLabel(item) {
+    if (item.administered_today) return "Administrado"
+    if (item.due_today) return "Pendiente"
+    return "Programado"
+  }
+
+  function renderMedicineRoutine(item) {
     return `
       <article class="professional-row">
         <span class="row-icon"><i class="bx bxs-capsule"></i></span>
@@ -80,6 +99,39 @@
         </span>
       </article>
     `
+  }
+
+  function renderCustomRoutine(routine) {
+    const activities = Array.isArray(routine.actividades) ? routine.actividades : []
+
+    return `
+      <article class="routine-note-card custom-routine-card">
+        <div class="routine-note-card-top">
+          <div>
+            <strong>${api.escapeHtml(routine.nombre || "Rutina")}</strong>
+            <span>${api.escapeHtml(routine.horario || "Sin horario")}</span>
+          </div>
+          <span class="badge badge-blue">${activities.length} actividades</span>
+        </div>
+        <ul>
+          ${activities.map((activity) => `<li>${api.escapeHtml(activity)}</li>`).join("")}
+        </ul>
+      </article>
+    `
+  }
+
+  function renderCustomRoutines(routines) {
+    const list = document.getElementById("professionalCustomRoutinesList")
+    if (!list) return
+
+    setText("professionalCustomRoutineTotal", routines.length)
+
+    if (!routines.length) {
+      list.innerHTML = api.renderEmpty("No hay rutinas creadas para este adulto mayor.")
+      return
+    }
+
+    list.innerHTML = routines.map(renderCustomRoutine).join("")
   }
 
   function renderNotes(notes) {
@@ -126,8 +178,14 @@
     setText("professionalRoutinePending", 0)
     setText("professionalRoutineAdministered", 0)
     setText("professionalWeeklyNotesCount", 0)
+    setText("professionalCustomRoutineTotal", 0)
     setText("professionalRoutineWeekRange", "Sin semana activa")
     setText("professionalRoutineAdultMeta", "Sin adulto mayor seleccionado")
+
+    const customRoutinesList = document.getElementById("professionalCustomRoutinesList")
+    if (customRoutinesList) {
+      customRoutinesList.innerHTML = api.renderEmpty(message)
+    }
   }
 
   function renderSummary(routineData, olderAdult) {
@@ -153,9 +211,6 @@
   }
 
   async function loadRoutinesAndNotes() {
-    const list = document.getElementById("professionalRoutinesList")
-    if (!list) return
-
     if (!activeOlderAdultId) {
       renderEmptyState("No tienes adultos mayores asignados por ahora.")
       return
@@ -163,20 +218,77 @@
 
     try {
       const selectedAdult = assignedAdults.find((adult) => String(adult.id) === String(activeOlderAdultId))
-      const [routineData, notesData] = await Promise.all([
+      const [routineData, notesData, customRoutineData] = await Promise.all([
         api.fetchJson(`/professional/routines?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
         api.fetchJson(`/professional/routine-notes?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
+        api.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
       ])
 
       renderSummary(routineData, selectedAdult)
       renderWeekRange(notesData.week)
-      list.innerHTML = routineData.routine?.length
-        ? routineData.routine.map(renderRoutine).join("")
-        : api.renderEmpty("No hay rutinas registradas para este adulto mayor.")
+      const medicineList = document.getElementById("professionalRoutinesList")
+      if (medicineList) {
+        medicineList.innerHTML = routineData.routine?.length
+          ? routineData.routine.map(renderMedicineRoutine).join("")
+          : api.renderEmpty("No hay medicamentos asignados para este adulto mayor.")
+      }
       renderNotes(notesData.notes || [])
+      renderCustomRoutines(customRoutineData.rutinas || [])
       updateAdultUrl(activeOlderAdultId)
     } catch (error) {
       renderEmptyState(error.message)
+    }
+  }
+
+  function parseActivities(value) {
+    return String(value || "")
+      .split(/\r?\n|,/)
+      .map((activity) => activity.trim())
+      .filter(Boolean)
+  }
+
+  async function saveCustomRoutine() {
+    if (!activeOlderAdultId) {
+      setCustomRoutineMessage("Selecciona un adulto mayor antes de guardar una rutina.", true)
+      return
+    }
+
+    const saveButton = document.getElementById("saveCustomRoutineButton")
+    const nombre = document.getElementById("customRoutineName")?.value.trim() || ""
+    const horario = document.getElementById("customRoutineSchedule")?.value.trim() || ""
+    const actividades = parseActivities(document.getElementById("customRoutineActivities")?.value)
+
+    if (!nombre || !horario || !actividades.length) {
+      setCustomRoutineMessage("Completa nombre, horario y al menos una actividad.", true)
+      return
+    }
+
+    try {
+      if (saveButton) {
+        saveButton.disabled = true
+        saveButton.textContent = "Guardando..."
+      }
+
+      await api.fetchJson("/rutinas", {
+        method: "POST",
+        body: JSON.stringify({
+          nombre,
+          horario,
+          actividades,
+          adulto_mayor_id: activeOlderAdultId,
+        }),
+      })
+
+      resetCustomRoutineForm()
+      setCustomRoutineMessage("Rutina creada correctamente.")
+      await loadRoutinesAndNotes()
+    } catch (error) {
+      setCustomRoutineMessage(error.message, true)
+    } finally {
+      if (saveButton) {
+        saveButton.disabled = false
+        saveButton.textContent = "Guardar rutina"
+      }
     }
   }
 
@@ -294,7 +406,13 @@
       activeOlderAdultId = event.target.value
       resetNoteForm()
       setMessage("")
+      setCustomRoutineMessage("")
       await loadRoutinesAndNotes()
+    })
+
+    document.getElementById("professionalCustomRoutineForm")?.addEventListener("submit", async (event) => {
+      event.preventDefault()
+      await saveCustomRoutine()
     })
 
     document.getElementById("professionalRoutineNoteForm")?.addEventListener("submit", async (event) => {

@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules', [CaregiverScheduleController::class, 'store']);
     Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update']);
     Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange']);
+    Route::get('/rutinas', [RutinaController::class, 'index']);
     Route::post('/rutinas', [RutinaController::class, 'store']);
 
     Route::prefix('family')->group(function () {

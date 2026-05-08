@@ -12,6 +12,55 @@ class RutinaEndpointsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_get_rutinas_returns_only_assigned_professional_routines(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $otherProfessional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $assignedAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $otherAdult = OlderAdult::create([
+            'full_name' => 'Jose Lopez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $otherProfessional->id,
+            'created_by' => $otherProfessional->id,
+        ]);
+
+        $assignedAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales'],
+        ]);
+
+        $otherAdult->rutinas()->create([
+            'created_by' => $otherProfessional->id,
+            'nombre' => 'Rutina externa',
+            'horario' => '09:00',
+            'actividades' => ['Revision general'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->getJson('/api/rutinas')
+            ->assertOk()
+            ->assertJsonCount(1, 'rutinas')
+            ->assertJsonPath('rutinas.0.nombre', 'Rutina matutina')
+            ->assertJsonPath('rutinas.0.adulto_mayor_id', $assignedAdult->id);
+    }
+
     public function test_post_rutinas_creates_a_routine_for_assigned_professional(): void
     {
         $professional = User::factory()->create([

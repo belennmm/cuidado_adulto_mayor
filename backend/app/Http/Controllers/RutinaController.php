@@ -11,6 +11,43 @@ use Illuminate\Validation\ValidationException;
 
 class RutinaController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'adulto_mayor_id' => 'nullable|integer',
+            'older_adult_id' => 'nullable|integer',
+        ]);
+
+        $olderAdultId = $data['adulto_mayor_id'] ?? $data['older_adult_id'] ?? null;
+        $query = Rutina::query()->with('olderAdult:id,full_name,room,status');
+
+        if ($olderAdultId !== null && $olderAdultId !== '') {
+            $olderAdult = OlderAdult::query()->find((int) $olderAdultId);
+
+            if (!$olderAdult) {
+                throw ValidationException::withMessages([
+                    'adulto_mayor_id' => ['El adulto mayor seleccionado no existe.'],
+                ]);
+            }
+
+            $this->authorizeOlderAdult($request, $olderAdult);
+            $query->where('older_adult_id', $olderAdult->id);
+        } else {
+            $this->scopeRutinasForUser($request, $query);
+        }
+
+        $rutinas = $query
+            ->orderBy('horario')
+            ->orderBy('nombre')
+            ->get()
+            ->map(fn (Rutina $rutina) => $this->formatRutina($rutina))
+            ->values();
+
+        return response()->json([
+            'rutinas' => $rutinas,
+        ]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -69,6 +106,45 @@ class RutinaController extends Controller
             'message' => 'Rutina creada correctamente.',
             'rutina' => $this->formatRutina($rutina),
         ], 201);
+    }
+
+    private function scopeRutinasForUser(Request $request, $query): void
+    {
+        $user = $request->user();
+        $role = $this->normalizeText($user?->role);
+
+        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && !(bool) $user?->is_approved) {
+            abort(response()->json([
+                'message' => 'Tu cuenta debe estar aprobada para consultar rutinas.',
+            ], 403));
+        }
+
+        if ($role === 'admin' || $role === 'administrador') {
+            return;
+        }
+
+        if ($role === 'profesional' || $role === 'cuidador_profesional') {
+            $query->whereHas('olderAdult', fn ($olderAdultQuery) => $olderAdultQuery
+                ->where('professional_caregiver_id', $user?->id));
+            return;
+        }
+
+        if ($role === 'familiar' || $role === 'cuidador_familiar') {
+            $normalizedName = $this->normalizeText($user?->name);
+
+            $query->whereHas('olderAdult', fn ($olderAdultQuery) => $olderAdultQuery
+                ->where('family_caregiver_id', $user?->id)
+                ->orWhere(function ($legacyQuery) use ($normalizedName) {
+                    $legacyQuery
+                        ->whereNull('family_caregiver_id')
+                        ->whereRaw('LOWER(caregiver_family) = ?', [$normalizedName]);
+                }));
+            return;
+        }
+
+        abort(response()->json([
+            'message' => 'No tienes acceso a la informacion de rutinas.',
+        ], 403));
     }
 
     private function authorizeOlderAdult(Request $request, OlderAdult $olderAdult): void

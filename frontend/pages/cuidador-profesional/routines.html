@@ -89,6 +89,11 @@
 
                 <section class="professional-metrics routine-metrics">
                     <article class="professional-stat">
+                        <i class="bx bxs-star"></i>
+                        <strong id="professionalCustomRoutineTotal">0</strong>
+                        <span>Rutinas creadas</span>
+                    </article>
+                    <article class="professional-stat">
                         <i class="bx bxs-capsule"></i>
                         <strong id="professionalRoutineTotal">0</strong>
                         <span>Medicamentos de la rutina</span>
@@ -110,12 +115,54 @@
                     </article>
                 </section>
 
+                <section class="professional-panel custom-routine-panel">
+                    <div class="routine-panel-header">
+                        <div>
+                            <h2>Crear rutina</h2>
+                            <p class="panel-helper-text">Registra actividades con nombre y horario para el adulto mayor seleccionado.</p>
+                        </div>
+                    </div>
+
+                    <form class="custom-routine-form" id="professionalCustomRoutineForm">
+                        <label>
+                            <span>Nombre</span>
+                            <input id="customRoutineName" type="text" placeholder="Rutina matutina" />
+                        </label>
+
+                        <label>
+                            <span>Horario</span>
+                            <input id="customRoutineSchedule" type="time" />
+                        </label>
+
+                        <label class="custom-routine-activities-field">
+                            <span>Actividades</span>
+                            <textarea id="customRoutineActivities" placeholder="Tomar signos vitales&#10;Desayuno asistido&#10;Caminata breve"></textarea>
+                        </label>
+
+                        <div class="custom-routine-actions">
+                            <p class="routine-note-message" id="customRoutineMessage" aria-live="polite"></p>
+                            <button type="submit" class="dashboard-button routine-note-submit" id="saveCustomRoutineButton">Guardar rutina</button>
+                        </div>
+                    </form>
+                </section>
+
                 <div class="professional-grid routine-grid">
                     <section class="professional-panel">
                         <div class="routine-panel-header">
                             <div>
-                                <h2>Rutina del adulto mayor</h2>
-                                <p class="panel-helper-text">Medicamentos y estado del dia para el adulto mayor seleccionado.</p>
+                                <h2>Rutinas creadas</h2>
+                                <p class="panel-helper-text">Actividades registradas manualmente para el adulto mayor seleccionado.</p>
+                            </div>
+                        </div>
+
+                        <div class="routine-week-list" id="professionalCustomRoutinesList"></div>
+                    </section>
+
+                    <section class="professional-panel">
+                        <div class="routine-panel-header">
+                            <div>
+                                <h2>Medicinas asignadas</h2>
+                                <p class="panel-helper-text">Medicamentos asignados desde administracion y estado del dia para el adulto mayor seleccionado.</p>
                             </div>
                         </div>
 
