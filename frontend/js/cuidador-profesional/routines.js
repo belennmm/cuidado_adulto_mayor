@@ -40,6 +40,17 @@
     element.classList.toggle("is-success", Boolean(message) && !isError)
   }
 
+  function firstValidationMessage(error) {
+    const errors = error?.errors || {}
+    const firstField = Object.keys(errors)[0]
+
+    if (firstField && Array.isArray(errors[firstField]) && errors[firstField][0]) {
+      return errors[firstField][0]
+    }
+
+    return error?.message || "No se pudo guardar la rutina."
+  }
+
   function resetNoteForm() {
     editingNoteId = null
     const textarea = document.getElementById("routineNoteInput")
@@ -247,6 +258,13 @@
       .filter(Boolean)
   }
 
+  function isValidSchedule(value) {
+    if (!/^\d{2}:\d{2}$/.test(value)) return false
+
+    const [hours, minutes] = value.split(":").map(Number)
+    return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59
+  }
+
   async function saveCustomRoutine() {
     if (!activeOlderAdultId) {
       setCustomRoutineMessage("Selecciona un adulto mayor antes de guardar una rutina.", true)
@@ -258,8 +276,18 @@
     const horario = document.getElementById("customRoutineSchedule")?.value.trim() || ""
     const actividades = parseActivities(document.getElementById("customRoutineActivities")?.value)
 
-    if (!nombre || !horario || !actividades.length) {
-      setCustomRoutineMessage("Completa nombre, horario y al menos una actividad.", true)
+    if (!nombre) {
+      setCustomRoutineMessage("Ingresa el nombre de la rutina.", true)
+      return
+    }
+
+    if (!isValidSchedule(horario)) {
+      setCustomRoutineMessage("Ingresa un horario valido en formato HH:MM.", true)
+      return
+    }
+
+    if (!actividades.length) {
+      setCustomRoutineMessage("Agrega al menos una actividad.", true)
       return
     }
 
@@ -283,7 +311,7 @@
       setCustomRoutineMessage("Rutina creada correctamente.")
       await loadRoutinesAndNotes()
     } catch (error) {
-      setCustomRoutineMessage(error.message, true)
+      setCustomRoutineMessage(firstValidationMessage(error), true)
     } finally {
       if (saveButton) {
         saveButton.disabled = false

@@ -126,17 +126,17 @@
                     <form class="custom-routine-form" id="professionalCustomRoutineForm">
                         <label>
                             <span>Nombre</span>
-                            <input id="customRoutineName" type="text" placeholder="Rutina matutina" />
+                            <input id="customRoutineName" type="text" placeholder="Rutina matutina" required maxlength="255" />
                         </label>
 
                         <label>
                             <span>Horario</span>
-                            <input id="customRoutineSchedule" type="time" />
+                            <input id="customRoutineSchedule" type="time" required />
                         </label>
 
                         <label class="custom-routine-activities-field">
                             <span>Actividades</span>
-                            <textarea id="customRoutineActivities" placeholder="Tomar signos vitales&#10;Desayuno asistido&#10;Caminata breve"></textarea>
+                            <textarea id="customRoutineActivities" placeholder="Tomar signos vitales&#10;Desayuno asistido&#10;Caminata breve" required></textarea>
                         </label>
 
                         <div class="custom-routine-actions">

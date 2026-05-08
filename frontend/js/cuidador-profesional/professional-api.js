@@ -30,7 +30,10 @@
     const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {
-      throw new Error(data.message || "No se pudo cargar la informacion.")
+      const error = new Error(data.message || "No se pudo cargar la informacion.")
+      error.status = response.status
+      error.errors = data.errors || {}
+      throw error
     }
 
     return data
