@@ -49,6 +49,18 @@
     }).format(date)
   }
 
+  function formatShortDate(value) {
+    if (!value) return "Sin fecha"
+    const [year, month, day] = value.split("-")
+    const date = new Date(Number(year), Number(month) - 1, Number(day))
+
+    return new Intl.DateTimeFormat("es-GT", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(date)
+  }
+
   function formatTime(value) {
     if (!value) return "Sin hora"
     return String(value).slice(0, 5)
@@ -95,6 +107,7 @@
     escapeHtml,
     fetchJson,
     formatDate,
+    formatShortDate,
     formatTime,
     getSeverityClass,
     getStatusClass,

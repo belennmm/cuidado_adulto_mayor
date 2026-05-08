@@ -10,6 +10,7 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MedicationAdministrationController;
 use App\Http\Controllers\OlderAdultController;
 use App\Http\Controllers\ProfessionalCareController;
+use App\Http\Controllers\ProfessionalRoutineNoteController;
 use App\Http\Controllers\VacationRequestController;
 
 Route::get('/ping', function () {
@@ -49,6 +50,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
         Route::get('/routines', [ProfessionalCareController::class, 'routine']);
+        Route::get('/routine-notes', [ProfessionalRoutineNoteController::class, 'index']);
+        Route::post('/routine-notes', [ProfessionalRoutineNoteController::class, 'store']);
+        Route::put('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'update']);
+        Route::delete('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'destroy']);
         Route::get('/schedules', [ProfessionalCareController::class, 'schedules']);
         Route::get('/vacation-requests', [VacationRequestController::class, 'index']);
         Route::post('/vacation-requests', [VacationRequestController::class, 'store']);

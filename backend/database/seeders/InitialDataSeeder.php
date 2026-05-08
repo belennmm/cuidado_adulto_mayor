@@ -7,6 +7,7 @@ use App\Models\Medication;
 use App\Models\MedicationAdministration;
 use App\Models\OlderAdult;
 use App\Models\OlderAdultMedication;
+use App\Models\RoutineNote;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
@@ -20,6 +21,7 @@ class InitialDataSeeder extends Seeder
         $this->assignProfessionalCaregivers($olderAdults, $users);
         $this->seedMedications($olderAdults, $users);
         $this->seedIncidents($users, $olderAdults);
+        $this->seedRoutineNotes($users, $olderAdults);
     }
 
     private function seedUsers(): array
@@ -469,6 +471,52 @@ class InitialDataSeeder extends Seeder
                     'incident_date' => $incident['incident_date'],
                 ],
                 $incident
+            );
+        }
+    }
+
+    private function seedRoutineNotes(array $users, array $olderAdults): void
+    {
+        $today = Carbon::today();
+
+        $notes = [
+            [
+                'older_adult' => 'Rosa Martinez',
+                'professional' => 'professional_1',
+                'content' => 'Se mantuvo estable durante la manana y colaboro bien en la rutina de medicamentos.',
+                'note_date' => $today->copy()->startOfWeek(Carbon::MONDAY)->addDay()->toDateString(),
+            ],
+            [
+                'older_adult' => 'Rosa Martinez',
+                'professional' => 'professional_1',
+                'content' => 'Se observo mejor apetito en el almuerzo y buena hidratacion.',
+                'note_date' => $today->copy()->startOfWeek(Carbon::MONDAY)->addDays(3)->toDateString(),
+            ],
+            [
+                'older_adult' => 'Elena Castillo',
+                'professional' => 'professional_2',
+                'content' => 'Necesito supervision adicional durante la noche, pero descanso mejor despues del monitoreo.',
+                'note_date' => $today->copy()->startOfWeek(Carbon::MONDAY)->toDateString(),
+            ],
+        ];
+
+        foreach ($notes as $note) {
+            $olderAdult = $olderAdults[$note['older_adult']] ?? null;
+            $professional = $users[$note['professional']] ?? null;
+
+            if (!$olderAdult || !$professional) {
+                continue;
+            }
+
+            RoutineNote::updateOrCreate(
+                [
+                    'older_adult_id' => $olderAdult->id,
+                    'professional_caregiver_id' => $professional->id,
+                    'note_date' => $note['note_date'],
+                ],
+                [
+                    'content' => $note['content'],
+                ]
             );
         }
     }

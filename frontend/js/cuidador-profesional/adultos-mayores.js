@@ -13,6 +13,7 @@
         <p>${api.escapeHtml(adult.age || "Sin edad")} anios &middot; ${api.escapeHtml(adult.room || "Sin habitacion")}</p>
         <p>Familiar: ${api.escapeHtml(adult.family_caregiver_name || "Sin familiar asignado")}</p>
         <p>Medicamentos activos: ${api.escapeHtml(meds)}</p>
+        <a href="./routines.html?older_adult_id=${api.escapeHtml(adult.id)}" class="professional-card-link">Ver rutina</a>
       </article>
     `
   }

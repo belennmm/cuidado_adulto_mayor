@@ -60,14 +60,96 @@
         <main class="main-content">
             <section class="professional-page">
                 <h1>Rutinas</h1>
-                <p>Navega entre rutinas y tareas del dia.</p>
+                <p>Navega entre rutinas y tareas del dia por adulto mayor asignado.</p>
 
                 <div class="professional-actions">
                     <a href="./adultos-mayores.html" class="dashboard-button">Ver adultos mayores</a>
                     <a href="./incidents.html" class="dashboard-button">Ver incidentes</a>
                 </div>
 
-                <div class="professional-list" id="professionalRoutinesList"></div>
+                <section class="professional-panel routine-selector-panel">
+                    <div>
+                        <h2>Adulto mayor activo</h2>
+                        <p class="panel-helper-text">Selecciona un adulto mayor para ver su rutina y las notas de la semana actual.</p>
+                    </div>
+
+                    <div class="routine-selector-grid">
+                        <label class="routine-selector-field" for="professionalRoutineAdultSelector">
+                            <span>Adulto mayor</span>
+                            <select id="professionalRoutineAdultSelector"></select>
+                        </label>
+
+                        <div class="routine-active-summary">
+                            <span class="summary-label">Semana actual</span>
+                            <strong id="professionalRoutineWeekRange">Sin semana activa</strong>
+                            <span id="professionalRoutineAdultMeta">Sin adulto mayor seleccionado</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="professional-metrics routine-metrics">
+                    <article class="professional-stat">
+                        <i class="bx bxs-capsule"></i>
+                        <strong id="professionalRoutineTotal">0</strong>
+                        <span>Medicamentos de la rutina</span>
+                    </article>
+                    <article class="professional-stat">
+                        <i class="bx bx-time-five"></i>
+                        <strong id="professionalRoutinePending">0</strong>
+                        <span>Pendientes hoy</span>
+                    </article>
+                    <article class="professional-stat">
+                        <i class="bx bx-check-circle"></i>
+                        <strong id="professionalRoutineAdministered">0</strong>
+                        <span>Administrados hoy</span>
+                    </article>
+                    <article class="professional-stat">
+                        <i class="bx bx-note"></i>
+                        <strong id="professionalWeeklyNotesCount">0</strong>
+                        <span>Notas de la semana</span>
+                    </article>
+                </section>
+
+                <div class="professional-grid routine-grid">
+                    <section class="professional-panel">
+                        <div class="routine-panel-header">
+                            <div>
+                                <h2>Rutina del adulto mayor</h2>
+                                <p class="panel-helper-text">Medicamentos y estado del dia para el adulto mayor seleccionado.</p>
+                            </div>
+                        </div>
+
+                        <div class="professional-list" id="professionalRoutinesList"></div>
+                    </section>
+
+                    <section class="professional-panel notes-panel">
+                        <div class="routine-panel-header">
+                            <div>
+                                <h2>Notas de la semana</h2>
+                                <p class="panel-helper-text">Estas notas solo se muestran para el adulto mayor activo y la semana actual.</p>
+                            </div>
+                        </div>
+
+                        <form class="routine-note-form" id="professionalRoutineNoteForm">
+                            <label for="routineNoteInput">
+                                <span id="routineNoteFormTitle">Agregar nota</span>
+                                <textarea
+                                    id="routineNoteInput"
+                                    placeholder="Escribe una observacion relevante para este adulto mayor..."
+                                ></textarea>
+                            </label>
+
+                            <p class="routine-note-message" id="routineNoteMessage" aria-live="polite"></p>
+
+                            <div class="routine-note-actions">
+                                <button type="button" class="routine-note-secondary" id="cancelRoutineNoteEdit" hidden>Cancelar edicion</button>
+                                <button type="submit" class="dashboard-button routine-note-submit" id="saveRoutineNoteButton">Guardar nota</button>
+                            </div>
+                        </form>
+
+                        <div class="routine-week-list" id="professionalRoutineNotesList"></div>
+                    </section>
+                </div>
             </section>
         </main>
     </div>

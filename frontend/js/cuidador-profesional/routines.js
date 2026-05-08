@@ -1,10 +1,70 @@
 (() => {
   const api = window.ProfessionalCare
+  let assignedAdults = []
+  let activeOlderAdultId = ""
+  let editingNoteId = null
+
+  function getRequestedAdultId() {
+    const params = new URLSearchParams(window.location.search)
+    return params.get("older_adult_id") || params.get("id") || ""
+  }
+
+  function updateAdultUrl(adultId) {
+    if (!adultId) return
+    const url = new URL(window.location.href)
+    url.searchParams.set("older_adult_id", adultId)
+    window.history.replaceState({}, "", url)
+  }
+
+  function setText(id, value, fallback = "0") {
+    const element = document.getElementById(id)
+    if (!element) return
+    element.textContent = value ?? fallback
+  }
+
+  function setMessage(message, isError = false) {
+    const element = document.getElementById("routineNoteMessage")
+    if (!element) return
+
+    element.textContent = message || ""
+    element.classList.toggle("is-error", isError)
+    element.classList.toggle("is-success", Boolean(message) && !isError)
+  }
+
+  function resetNoteForm() {
+    editingNoteId = null
+    const textarea = document.getElementById("routineNoteInput")
+    const title = document.getElementById("routineNoteFormTitle")
+    const saveButton = document.getElementById("saveRoutineNoteButton")
+    const cancelButton = document.getElementById("cancelRoutineNoteEdit")
+
+    if (textarea) textarea.value = ""
+    if (title) title.textContent = "Agregar nota"
+    if (saveButton) saveButton.textContent = "Guardar nota"
+    if (cancelButton) cancelButton.hidden = true
+  }
 
   function statusLabel(item) {
     if (item.administered_today) return "Administrado"
     if (item.due_today) return "Pendiente"
     return "Programado"
+  }
+
+  function renderAdultSelector() {
+    const selector = document.getElementById("professionalRoutineAdultSelector")
+    if (!selector) return
+
+    selector.innerHTML = assignedAdults
+      .map((adult) => `
+        <option value="${api.escapeHtml(adult.id)}">
+          ${api.escapeHtml(adult.full_name || "Adulto mayor")}
+        </option>
+      `)
+      .join("")
+
+    if (activeOlderAdultId) {
+      selector.value = String(activeOlderAdultId)
+    }
   }
 
   function renderRoutine(item) {
@@ -22,19 +82,245 @@
     `
   }
 
-  async function loadRoutines() {
+  function renderNotes(notes) {
+    const list = document.getElementById("professionalRoutineNotesList")
+    if (!list) return
+
+    setText("professionalWeeklyNotesCount", notes.length)
+
+    if (!notes.length) {
+      list.innerHTML = api.renderEmpty("No hay notas registradas para esta semana y este adulto mayor.")
+      return
+    }
+
+    list.innerHTML = notes.map((note) => `
+      <article class="routine-note-card" data-note-id="${note.id}">
+        <div class="routine-note-card-top">
+          <div>
+            <strong>${api.formatShortDate(note.note_date)}</strong>
+            <span>${api.escapeHtml(note.professional_caregiver?.name || "Cuidador profesional")}</span>
+          </div>
+          <div class="routine-note-card-actions">
+            <button type="button" class="routine-note-text-button" data-action="edit" data-id="${note.id}">Editar</button>
+            <button type="button" class="routine-note-text-button is-danger" data-action="delete" data-id="${note.id}">Eliminar</button>
+          </div>
+        </div>
+        <p>${api.escapeHtml(note.content)}</p>
+      </article>
+    `).join("")
+  }
+
+  function renderEmptyState(message) {
+    const routinesList = document.getElementById("professionalRoutinesList")
+    const notesList = document.getElementById("professionalRoutineNotesList")
+
+    if (routinesList) {
+      routinesList.innerHTML = api.renderEmpty(message)
+    }
+
+    if (notesList) {
+      notesList.innerHTML = api.renderEmpty(message)
+    }
+
+    setText("professionalRoutineTotal", 0)
+    setText("professionalRoutinePending", 0)
+    setText("professionalRoutineAdministered", 0)
+    setText("professionalWeeklyNotesCount", 0)
+    setText("professionalRoutineWeekRange", "Sin semana activa")
+    setText("professionalRoutineAdultMeta", "Sin adulto mayor seleccionado")
+  }
+
+  function renderSummary(routineData, olderAdult) {
+    setText("professionalRoutineTotal", routineData.summary?.total ?? 0)
+    setText("professionalRoutinePending", routineData.summary?.pending_today ?? 0)
+    setText("professionalRoutineAdministered", routineData.summary?.administered_today ?? 0)
+    setText("professionalRoutineWeekRange", "Semana actual")
+    setText(
+      "professionalRoutineAdultMeta",
+      `${olderAdult?.full_name || "Adulto mayor"}${olderAdult?.room ? ` · Habitacion ${olderAdult.room}` : ""}`
+    )
+  }
+
+  function renderWeekRange(week) {
+    const start = api.formatShortDate(week?.start)
+    const end = api.formatShortDate(week?.end)
+    setText("professionalRoutineWeekRange", `${start} - ${end}`)
+  }
+
+  async function loadAdults() {
+    const data = await api.fetchJson("/professional/older-adults")
+    assignedAdults = data.older_adults || []
+  }
+
+  async function loadRoutinesAndNotes() {
     const list = document.getElementById("professionalRoutinesList")
     if (!list) return
 
+    if (!activeOlderAdultId) {
+      renderEmptyState("No tienes adultos mayores asignados por ahora.")
+      return
+    }
+
     try {
-      const data = await api.fetchJson("/professional/routines")
-      list.innerHTML = data.routine?.length
-        ? data.routine.map(renderRoutine).join("")
-        : api.renderEmpty("No hay rutinas registradas para tus adultos asignados.")
+      const selectedAdult = assignedAdults.find((adult) => String(adult.id) === String(activeOlderAdultId))
+      const [routineData, notesData] = await Promise.all([
+        api.fetchJson(`/professional/routines?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
+        api.fetchJson(`/professional/routine-notes?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
+      ])
+
+      renderSummary(routineData, selectedAdult)
+      renderWeekRange(notesData.week)
+      list.innerHTML = routineData.routine?.length
+        ? routineData.routine.map(renderRoutine).join("")
+        : api.renderEmpty("No hay rutinas registradas para este adulto mayor.")
+      renderNotes(notesData.notes || [])
+      updateAdultUrl(activeOlderAdultId)
     } catch (error) {
-      list.innerHTML = api.renderEmpty(error.message)
+      renderEmptyState(error.message)
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadRoutines)
+  async function saveNote() {
+    if (!activeOlderAdultId) {
+      setMessage("Selecciona un adulto mayor antes de guardar una nota.", true)
+      return
+    }
+
+    const textarea = document.getElementById("routineNoteInput")
+    const saveButton = document.getElementById("saveRoutineNoteButton")
+    const content = textarea?.value.trim() || ""
+
+    if (!content) {
+      setMessage("La nota no puede estar vacia.", true)
+      return
+    }
+
+    try {
+      if (saveButton) {
+        saveButton.disabled = true
+        saveButton.textContent = editingNoteId ? "Guardando cambios..." : "Guardando..."
+      }
+
+      const wasEditing = Boolean(editingNoteId)
+      const path = editingNoteId
+        ? `/professional/routine-notes/${editingNoteId}`
+        : "/professional/routine-notes"
+
+      const method = editingNoteId ? "PUT" : "POST"
+      const body = editingNoteId
+        ? { content }
+        : { older_adult_id: activeOlderAdultId, content }
+
+      await api.fetchJson(path, {
+        method,
+        body: JSON.stringify(body),
+      })
+
+      setMessage(wasEditing ? "Nota actualizada correctamente." : "Nota guardada correctamente.")
+      resetNoteForm()
+      await loadRoutinesAndNotes()
+    } catch (error) {
+      setMessage(error.message, true)
+    } finally {
+      if (saveButton) {
+        saveButton.disabled = false
+        saveButton.textContent = "Guardar nota"
+      }
+    }
+  }
+
+  function startEditNote(noteId) {
+    const notesList = document.getElementById("professionalRoutineNotesList")
+    const noteCard = notesList?.querySelector(`[data-note-id="${noteId}"] p`)
+    const textarea = document.getElementById("routineNoteInput")
+    const title = document.getElementById("routineNoteFormTitle")
+    const saveButton = document.getElementById("saveRoutineNoteButton")
+    const cancelButton = document.getElementById("cancelRoutineNoteEdit")
+
+    if (!noteCard || !textarea) return
+
+    editingNoteId = noteId
+    textarea.value = noteCard.textContent.trim()
+    textarea.focus()
+    if (title) title.textContent = "Editar nota"
+    if (saveButton) saveButton.textContent = "Guardar cambios"
+    if (cancelButton) cancelButton.hidden = false
+    setMessage("")
+  }
+
+  async function deleteNote(noteId) {
+    const confirmed = confirm("Deseas eliminar esta nota?")
+    if (!confirmed) return
+
+    try {
+      await api.fetchJson(`/professional/routine-notes/${noteId}`, {
+        method: "DELETE",
+      })
+
+      if (String(editingNoteId) === String(noteId)) {
+        resetNoteForm()
+      }
+
+      setMessage("Nota eliminada correctamente.")
+      await loadRoutinesAndNotes()
+    } catch (error) {
+      setMessage(error.message, true)
+    }
+  }
+
+  async function initialize() {
+    try {
+      await loadAdults()
+
+      if (!assignedAdults.length) {
+        renderAdultSelector()
+        renderEmptyState("No tienes adultos mayores asignados por ahora.")
+        return
+      }
+
+      const requestedAdultId = getRequestedAdultId()
+      const hasRequestedAdult = assignedAdults.some((adult) => String(adult.id) === String(requestedAdultId))
+      activeOlderAdultId = hasRequestedAdult ? requestedAdultId : String(assignedAdults[0].id)
+
+      renderAdultSelector()
+      await loadRoutinesAndNotes()
+    } catch (error) {
+      renderEmptyState(error.message)
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("professionalRoutineAdultSelector")?.addEventListener("change", async (event) => {
+      activeOlderAdultId = event.target.value
+      resetNoteForm()
+      setMessage("")
+      await loadRoutinesAndNotes()
+    })
+
+    document.getElementById("professionalRoutineNoteForm")?.addEventListener("submit", async (event) => {
+      event.preventDefault()
+      await saveNote()
+    })
+
+    document.getElementById("cancelRoutineNoteEdit")?.addEventListener("click", () => {
+      resetNoteForm()
+      setMessage("")
+    })
+
+    document.getElementById("professionalRoutineNotesList")?.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action][data-id]")
+      if (!button) return
+
+      if (button.dataset.action === "edit") {
+        startEditNote(button.dataset.id)
+        return
+      }
+
+      if (button.dataset.action === "delete") {
+        await deleteNote(button.dataset.id)
+      }
+    })
+
+    initialize()
+  })
 })()
