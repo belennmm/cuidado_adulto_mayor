@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\OlderAdult;
+use App\Models\Rutina;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -99,6 +100,11 @@ class RutinaEndpointsTest extends TestCase
         ]);
 
         $this->assertTrue($olderAdult->rutinas()->where('nombre', 'Rutina matutina')->exists());
+
+        $storedRoutine = Rutina::query()->where('nombre', 'Rutina matutina')->firstOrFail();
+        $this->assertSame(['Tomar signos vitales', 'Desayuno asistido'], $storedRoutine->actividades);
+        $this->assertTrue($storedRoutine->olderAdult->is($olderAdult));
+        $this->assertTrue($storedRoutine->creator->is($professional));
     }
 
     public function test_post_rutinas_requires_valid_schedule_format(): void
@@ -124,7 +130,10 @@ class RutinaEndpointsTest extends TestCase
             'adulto_mayor_id' => $olderAdult->id,
         ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['horario']);
+            ->assertJsonValidationErrors(['horario'])
+            ->assertJsonPath('errors.horario.0', 'El horario debe tener el formato HH:MM.');
+
+        $this->assertDatabaseCount('rutinas', 0);
     }
 
     public function test_post_rutinas_requires_an_existing_older_adult(): void
@@ -143,7 +152,10 @@ class RutinaEndpointsTest extends TestCase
             'adulto_mayor_id' => 999,
         ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['adulto_mayor_id']);
+            ->assertJsonValidationErrors(['adulto_mayor_id'])
+            ->assertJsonPath('errors.adulto_mayor_id.0', 'El adulto mayor seleccionado no existe.');
+
+        $this->assertDatabaseCount('rutinas', 0);
     }
 
     public function test_post_rutinas_rejects_unassigned_older_adult(): void
@@ -172,7 +184,11 @@ class RutinaEndpointsTest extends TestCase
             'horario' => '20:00',
             'actividades' => ['Cena', 'Preparacion para dormir'],
             'adulto_mayor_id' => $olderAdult->id,
-        ])->assertForbidden();
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'No tienes acceso a la informacion de este adulto mayor.');
+
+        $this->assertDatabaseCount('rutinas', 0);
     }
 
     public function test_post_rutinas_validates_required_fields(): void
@@ -186,6 +202,12 @@ class RutinaEndpointsTest extends TestCase
 
         $this->postJson('/api/rutinas', [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['nombre', 'horario', 'actividades', 'adulto_mayor_id']);
+            ->assertJsonValidationErrors(['nombre', 'horario', 'actividades', 'adulto_mayor_id'])
+            ->assertJsonPath('errors.nombre.0', 'El nombre de la rutina es obligatorio.')
+            ->assertJsonPath('errors.horario.0', 'El horario de la rutina es obligatorio.')
+            ->assertJsonPath('errors.actividades.0', 'Debes registrar al menos una actividad.')
+            ->assertJsonPath('errors.adulto_mayor_id.0', 'Debes seleccionar un adulto mayor.');
+
+        $this->assertDatabaseCount('rutinas', 0);
     }
 }
