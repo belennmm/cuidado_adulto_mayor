@@ -118,7 +118,7 @@
                 <section class="professional-panel custom-routine-panel">
                     <div class="routine-panel-header">
                         <div>
-                            <h2>Crear rutina</h2>
+                            <h2 id="customRoutineFormTitle">Crear rutina</h2>
                             <p class="panel-helper-text">Registra actividades con nombre y horario para el adulto mayor seleccionado.</p>
                         </div>
                     </div>
@@ -141,6 +141,7 @@
 
                         <div class="custom-routine-actions">
                             <p class="routine-note-message" id="customRoutineMessage" aria-live="polite"></p>
+                            <button type="button" class="routine-note-secondary" id="cancelCustomRoutineEdit" hidden>Cancelar edicion</button>
                             <button type="submit" class="dashboard-button routine-note-submit" id="saveCustomRoutineButton">Guardar rutina</button>
                         </div>
                     </form>

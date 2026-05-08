@@ -3,6 +3,8 @@
   let assignedAdults = []
   let activeOlderAdultId = ""
   let editingNoteId = null
+  let editingCustomRoutineId = null
+  let currentCustomRoutines = []
 
   function getRequestedAdultId() {
     const params = new URLSearchParams(window.location.search)
@@ -65,13 +67,20 @@
   }
 
   function resetCustomRoutineForm() {
+    editingCustomRoutineId = null
     const nameInput = document.getElementById("customRoutineName")
     const scheduleInput = document.getElementById("customRoutineSchedule")
     const activitiesInput = document.getElementById("customRoutineActivities")
+    const title = document.getElementById("customRoutineFormTitle")
+    const saveButton = document.getElementById("saveCustomRoutineButton")
+    const cancelButton = document.getElementById("cancelCustomRoutineEdit")
 
     if (nameInput) nameInput.value = ""
     if (scheduleInput) scheduleInput.value = ""
     if (activitiesInput) activitiesInput.value = ""
+    if (title) title.textContent = "Crear rutina"
+    if (saveButton) saveButton.textContent = "Guardar rutina"
+    if (cancelButton) cancelButton.hidden = true
   }
 
   function renderAdultSelector() {
@@ -122,7 +131,11 @@
             <strong>${api.escapeHtml(routine.nombre || "Rutina")}</strong>
             <span>${api.escapeHtml(routine.horario || "Sin horario")}</span>
           </div>
-          <span class="badge badge-blue">${activities.length} actividades</span>
+          <div class="routine-note-card-actions">
+            <span class="badge badge-blue">${activities.length} actividades</span>
+            <button type="button" class="routine-note-text-button" data-custom-routine-action="edit" data-id="${routine.id}">Editar</button>
+            <button type="button" class="routine-note-text-button is-danger" data-custom-routine-action="delete" data-id="${routine.id}">Eliminar</button>
+          </div>
         </div>
         <ul>
           ${activities.map((activity) => `<li>${api.escapeHtml(activity)}</li>`).join("")}
@@ -135,6 +148,7 @@
     const list = document.getElementById("professionalCustomRoutinesList")
     if (!list) return
 
+    currentCustomRoutines = routines
     setText("professionalCustomRoutineTotal", routines.length)
 
     if (!routines.length) {
@@ -297,26 +311,69 @@
         saveButton.textContent = "Guardando..."
       }
 
-      await api.fetchJson("/rutinas", {
-        method: "POST",
+      await api.fetchJson(editingCustomRoutineId ? `/rutinas/${editingCustomRoutineId}` : "/rutinas", {
+        method: editingCustomRoutineId ? "PUT" : "POST",
         body: JSON.stringify({
           nombre,
           horario,
           actividades,
-          adulto_mayor_id: activeOlderAdultId,
+          ...(editingCustomRoutineId ? {} : { adulto_mayor_id: activeOlderAdultId }),
         }),
       })
 
+      const wasEditing = Boolean(editingCustomRoutineId)
       resetCustomRoutineForm()
-      setCustomRoutineMessage("Rutina creada correctamente.")
+      setCustomRoutineMessage(wasEditing ? "Rutina actualizada correctamente." : "Rutina creada correctamente.")
       await loadRoutinesAndNotes()
     } catch (error) {
       setCustomRoutineMessage(firstValidationMessage(error), true)
     } finally {
       if (saveButton) {
         saveButton.disabled = false
-        saveButton.textContent = "Guardar rutina"
+        saveButton.textContent = editingCustomRoutineId ? "Guardar cambios" : "Guardar rutina"
       }
+    }
+  }
+
+  function startEditCustomRoutine(routineId) {
+    const routine = currentCustomRoutines.find((item) => String(item.id) === String(routineId))
+    if (!routine) return
+
+    const nameInput = document.getElementById("customRoutineName")
+    const scheduleInput = document.getElementById("customRoutineSchedule")
+    const activitiesInput = document.getElementById("customRoutineActivities")
+    const title = document.getElementById("customRoutineFormTitle")
+    const saveButton = document.getElementById("saveCustomRoutineButton")
+    const cancelButton = document.getElementById("cancelCustomRoutineEdit")
+
+    editingCustomRoutineId = routine.id
+    if (nameInput) nameInput.value = routine.nombre || ""
+    if (scheduleInput) scheduleInput.value = routine.horario || ""
+    if (activitiesInput) activitiesInput.value = Array.isArray(routine.actividades) ? routine.actividades.join("\n") : ""
+    if (title) title.textContent = "Editar rutina"
+    if (saveButton) saveButton.textContent = "Guardar cambios"
+    if (cancelButton) cancelButton.hidden = false
+    setCustomRoutineMessage("")
+    document.getElementById("professionalCustomRoutineForm")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
+  async function deleteCustomRoutine(routineId) {
+    const confirmed = confirm("Deseas eliminar esta rutina?")
+    if (!confirmed) return
+
+    try {
+      await api.fetchJson(`/rutinas/${routineId}`, {
+        method: "DELETE",
+      })
+
+      if (String(editingCustomRoutineId) === String(routineId)) {
+        resetCustomRoutineForm()
+      }
+
+      setCustomRoutineMessage("Rutina eliminada correctamente.")
+      await loadRoutinesAndNotes()
+    } catch (error) {
+      setCustomRoutineMessage(firstValidationMessage(error), true)
     }
   }
 
@@ -433,6 +490,7 @@
     document.getElementById("professionalRoutineAdultSelector")?.addEventListener("change", async (event) => {
       activeOlderAdultId = event.target.value
       resetNoteForm()
+      resetCustomRoutineForm()
       setMessage("")
       setCustomRoutineMessage("")
       await loadRoutinesAndNotes()
@@ -441,6 +499,11 @@
     document.getElementById("professionalCustomRoutineForm")?.addEventListener("submit", async (event) => {
       event.preventDefault()
       await saveCustomRoutine()
+    })
+
+    document.getElementById("cancelCustomRoutineEdit")?.addEventListener("click", () => {
+      resetCustomRoutineForm()
+      setCustomRoutineMessage("")
     })
 
     document.getElementById("professionalRoutineNoteForm")?.addEventListener("submit", async (event) => {
@@ -464,6 +527,20 @@
 
       if (button.dataset.action === "delete") {
         await deleteNote(button.dataset.id)
+      }
+    })
+
+    document.getElementById("professionalCustomRoutinesList")?.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-custom-routine-action][data-id]")
+      if (!button) return
+
+      if (button.dataset.customRoutineAction === "edit") {
+        startEditCustomRoutine(button.dataset.id)
+        return
+      }
+
+      if (button.dataset.customRoutineAction === "delete") {
+        await deleteCustomRoutine(button.dataset.id)
       }
     })
 

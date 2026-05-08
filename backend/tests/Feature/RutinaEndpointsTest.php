@@ -136,6 +136,124 @@ class RutinaEndpointsTest extends TestCase
         $this->assertDatabaseCount('rutinas', 0);
     }
 
+    public function test_put_rutinas_updates_an_assigned_routine(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->putJson("/api/rutinas/{$rutina->id}", [
+            'nombre' => 'Rutina vespertina',
+            'horario' => '17:30',
+            'actividades' => ['Merienda', 'Caminata breve'],
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Rutina actualizada correctamente.')
+            ->assertJsonPath('rutina.nombre', 'Rutina vespertina')
+            ->assertJsonPath('rutina.horario', '17:30')
+            ->assertJsonPath('rutina.actividades.1', 'Caminata breve')
+            ->assertJsonPath('rutina.adulto_mayor_id', $olderAdult->id);
+
+        $this->assertDatabaseHas('rutinas', [
+            'id' => $rutina->id,
+            'nombre' => 'Rutina vespertina',
+            'horario' => '17:30',
+            'older_adult_id' => $olderAdult->id,
+        ]);
+    }
+
+    public function test_delete_rutinas_deletes_an_assigned_routine(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->deleteJson("/api/rutinas/{$rutina->id}")
+            ->assertOk()
+            ->assertJsonPath('message', 'Rutina eliminada correctamente.');
+
+        $this->assertDatabaseMissing('rutinas', [
+            'id' => $rutina->id,
+        ]);
+    }
+
+    public function test_rutina_update_and_delete_reject_unassigned_routine(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $otherProfessional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Jose Lopez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $otherProfessional->id,
+            'created_by' => $otherProfessional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $otherProfessional->id,
+            'nombre' => 'Rutina externa',
+            'horario' => '09:00',
+            'actividades' => ['Revision general'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->putJson("/api/rutinas/{$rutina->id}", [
+            'nombre' => 'Rutina editada',
+            'horario' => '10:00',
+            'actividades' => ['Actividad'],
+        ])->assertForbidden();
+
+        $this->deleteJson("/api/rutinas/{$rutina->id}")
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('rutinas', [
+            'id' => $rutina->id,
+            'nombre' => 'Rutina externa',
+        ]);
+    }
+
     public function test_post_rutinas_requires_an_existing_older_adult(): void
     {
         $admin = User::factory()->create([

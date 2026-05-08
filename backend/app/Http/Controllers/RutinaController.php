@@ -51,14 +51,7 @@ class RutinaController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'horario' => 'required|date_format:H:i',
-            'actividades' => 'required|array|min:1',
-            'actividades.*' => 'required|string|max:255',
-            'adulto_mayor_id' => 'required_without:older_adult_id|integer',
-            'older_adult_id' => 'required_without:adulto_mayor_id|integer',
-        ], $this->validationMessages());
+        $data = $request->validate($this->rules(), $this->validationMessages());
 
         $olderAdultId = (int) ($data['adulto_mayor_id'] ?? $data['older_adult_id']);
         $olderAdult = OlderAdult::query()->find($olderAdultId);
@@ -107,6 +100,60 @@ class RutinaController extends Controller
             'message' => 'Rutina creada correctamente.',
             'rutina' => $this->formatRutina($rutina),
         ], 201);
+    }
+
+    public function update(Request $request, Rutina $rutina): JsonResponse
+    {
+        $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
+        $this->authorizeOlderAdult($request, $rutina->olderAdult);
+
+        $data = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'horario' => 'required|date_format:H:i',
+            'actividades' => 'required|array|min:1',
+            'actividades.*' => 'required|string|max:255',
+        ], $this->validationMessages());
+
+        $nombre = trim((string) $data['nombre']);
+        $horario = $this->normalizeHorario($data['horario']);
+        $actividades = $this->normalizeActividades($data['actividades']);
+
+        if ($nombre === '') {
+            throw ValidationException::withMessages([
+                'nombre' => ['El nombre de la rutina no puede estar vacio.'],
+            ]);
+        }
+
+        if (count($actividades) === 0) {
+            throw ValidationException::withMessages([
+                'actividades' => ['Debes registrar al menos una actividad.'],
+            ]);
+        }
+
+        $rutina->update([
+            'nombre' => $nombre,
+            'horario' => $horario,
+            'actividades' => $actividades,
+        ]);
+
+        $rutina->refresh()->load('olderAdult:id,full_name,room,status');
+
+        return response()->json([
+            'message' => 'Rutina actualizada correctamente.',
+            'rutina' => $this->formatRutina($rutina),
+        ]);
+    }
+
+    public function destroy(Request $request, Rutina $rutina): JsonResponse
+    {
+        $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
+        $this->authorizeOlderAdult($request, $rutina->olderAdult);
+
+        $rutina->delete();
+
+        return response()->json([
+            'message' => 'Rutina eliminada correctamente.',
+        ]);
     }
 
     private function scopeRutinasForUser(Request $request, $query): void
@@ -193,6 +240,18 @@ class RutinaController extends Controller
             ->filter(fn (string $actividad) => $actividad !== '')
             ->values()
             ->all();
+    }
+
+    private function rules(): array
+    {
+        return [
+            'nombre' => 'required|string|max:255',
+            'horario' => 'required|date_format:H:i',
+            'actividades' => 'required|array|min:1',
+            'actividades.*' => 'required|string|max:255',
+            'adulto_mayor_id' => 'required_without:older_adult_id|integer',
+            'older_adult_id' => 'required_without:adulto_mayor_id|integer',
+        ];
     }
 
     private function validationMessages(): array
