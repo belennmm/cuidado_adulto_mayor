@@ -6,6 +6,7 @@ use App\Models\OlderAdult;
 use App\Models\Rutina;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -52,7 +53,7 @@ class RutinaController extends Controller
     {
         $data = $request->validate([
             'nombre' => 'required|string|max:255',
-            'horario' => 'required|string|max:255',
+            'horario' => 'required|date_format:H:i',
             'actividades' => 'required|array|min:1',
             'actividades.*' => 'required|string|max:255',
             'adulto_mayor_id' => 'required_without:older_adult_id|integer',
@@ -69,7 +70,7 @@ class RutinaController extends Controller
         }
 
         $nombre = trim((string) $data['nombre']);
-        $horario = trim((string) $data['horario']);
+        $horario = $this->normalizeHorario($data['horario']);
         $actividades = $this->normalizeActividades($data['actividades']);
 
         if ($nombre === '') {
@@ -192,6 +193,11 @@ class RutinaController extends Controller
             ->filter(fn (string $actividad) => $actividad !== '')
             ->values()
             ->all();
+    }
+
+    private function normalizeHorario(string $horario): string
+    {
+        return Carbon::createFromFormat('H:i', trim($horario))->format('H:i');
     }
 
     private function normalizeText(mixed $value): string
