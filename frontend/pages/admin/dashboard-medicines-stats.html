@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estadísticas de Medicamentos</title>
+
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
+    <link rel="stylesheet" href="../../css/admin/dashboard-medicines-stats.css" />
+    <link rel="stylesheet" href="../../css/logout-modal.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-top"></div>
+
+        <nav class="sidebar-nav">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
+            <i class="bx bxs-home"></i>
+          </a>
+
+          <a href="./dashboard.html" class="nav-icon active" data-label="Dashboard">
+            <i class="bx bxs-dashboard"></i>
+          </a>
+
+          <a href="./users.html" class="nav-icon" data-label="Usuarios">
+            <i class="bx bxs-user"></i>
+          </a>
+
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
+            <i class="bx bxs-time"></i>
+          </a>
+
+          <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
+            <i class="bx bxs-id-card"></i>
+          </a>
+
+          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+            <i class="bx bxs-error"></i>
+          </a>
+
+          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+            <i class="bx bxs-star"></i>
+          </a>
+
+          <a href="./settings.html" class="nav-icon" data-label="Configuración">
+            <i class="bx bxs-cog"></i>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
+            <i class="bx bx-user-circle"></i>
+          </a>
+
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
+            <i class="bx bx-log-out"></i>
+          </a>
+        </div>
+      </aside>
+
+      <main class="admin-main">
+        <div class="admin-topbar"></div>
+
+        <section class="page-shell dashboard-medicines-page">
+          <div class="dashboard-medicines-header">
+            <div>
+              <h1 class="dashboard-medicines-title">Estadísticas de Medicamentos</h1>
+              <p class="dashboard-medicines-subtitle">Resumen general de uso y control de medicamentos.</p>
+            </div>
+
+            <a href="./dashboard.html" class="back-button" aria-label="Volver a Dashboard" title="Volver a Dashboard">
+              <i class="bx bx-arrow-back"></i>
+            </a>
+          </div>
+
+          <section class="medicines-section-card">
+            <div class="section-heading">
+              <h2>Estadísticas de la Medicina Más Utilizada</h2>
+            </div>
+
+            <div class="stats-placeholder">
+              <div class="placeholder-block placeholder-wide"></div>
+              <div class="placeholder-grid">
+                <div class="placeholder-block"></div>
+                <div class="placeholder-block"></div>
+                <div class="placeholder-block"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="medicines-section-card inventory-section">
+            <div class="section-heading">
+              <h2>Inventario de medicamentos</h2>
+            </div>
+
+            <div class="inventory-placeholder">Inventario...</div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal-box">
+        <h3 class="logout-modal-title">Cerrar sesión</h3>
+        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+
+        <div class="logout-modal-actions">
+          <button type="button" class="logout-cancel-button" id="cancelLogout">
+            Cancelar
+          </button>
+          <button type="button" class="logout-confirm-button" id="confirmLogout">
+            Aceptar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/app-loading.js"></script>
+    <script src="../../js/logout-modal.js"></script>
+    <script src="../../js/admin/dashboard-medicines-stats.js"></script>
+  </body>
+</html>
