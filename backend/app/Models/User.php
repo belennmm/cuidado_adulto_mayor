@@ -46,4 +46,9 @@ class User extends Authenticatable
             ->orderByDesc('note_date')
             ->orderByDesc('updated_at');
     }
+
+    public function rutinas(): HasMany
+    {
+        return $this->hasMany(Rutina::class, 'created_by')->orderByDesc('created_at');
+    }
 }

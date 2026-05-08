@@ -11,6 +11,7 @@ use App\Http\Controllers\MedicationAdministrationController;
 use App\Http\Controllers\OlderAdultController;
 use App\Http\Controllers\ProfessionalCareController;
 use App\Http\Controllers\ProfessionalRoutineNoteController;
+use App\Http\Controllers\RutinaController;
 use App\Http\Controllers\VacationRequestController;
 
 Route::get('/ping', function () {
@@ -34,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules', [CaregiverScheduleController::class, 'store']);
     Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update']);
     Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange']);
+    Route::post('/rutinas', [RutinaController::class, 'store']);
 
     Route::prefix('family')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
