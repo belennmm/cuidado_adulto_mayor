@@ -1,9 +1,12 @@
 (() => {
   const POLL_INTERVAL = 60000
+  const ALARM_CHECK_INTERVAL = 15000
   const storagePrefix = "care-notifications-seen"
+  const alarmStoragePrefix = "care-notifications-alarmed"
   const soundStorageKey = "care-notifications-sound"
   const instances = new Map()
   let audioContext = null
+  let activeAlarm = null
 
   function supportsNotifications() {
     return "Notification" in window
@@ -19,6 +22,18 @@
 
   function writeSeen(role, date, seen) {
     localStorage.setItem(`${storagePrefix}:${role}:${date}`, JSON.stringify([...seen]))
+  }
+
+  function readAlarmed(role, date) {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(`${alarmStoragePrefix}:${role}:${date}`)) || [])
+    } catch {
+      return new Set()
+    }
+  }
+
+  function writeAlarmed(role, date, alarmed) {
+    localStorage.setItem(`${alarmStoragePrefix}:${role}:${date}`, JSON.stringify([...alarmed]))
   }
 
   function formatTime(value) {
@@ -42,6 +57,33 @@
     return `${name} para ${adult} (${schedule})`
   }
 
+  function parseScheduleTimes(schedule) {
+    const matches = [...String(schedule || "").matchAll(/(\d{1,2}):(\d{2})\s*(AM|PM)?/gi)]
+
+    return matches
+      .map((match) => {
+        let hour = Number(match[1])
+        const minutes = Number(match[2])
+        const period = String(match[3] || "").toUpperCase()
+
+        if (!Number.isInteger(hour) || !Number.isInteger(minutes) || minutes > 59) return null
+        if (period === "PM" && hour < 12) hour += 12
+        if (period === "AM" && hour === 12) hour = 0
+        if (hour > 23) return null
+
+        return {
+          label: `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`,
+          minutes: (hour * 60) + minutes,
+        }
+      })
+      .filter(Boolean)
+  }
+
+  function currentMinutes() {
+    const now = new Date()
+    return (now.getHours() * 60) + now.getMinutes()
+  }
+
   function collectAlerts(data, routineUrl = "./routine.html") {
     const date = data?.date || new Date().toISOString().slice(0, 10)
     const incidents = (data?.incidents || []).map((incident) => ({
@@ -53,12 +95,20 @@
 
     const medications = (data?.next_medications || [])
       .filter((medication) => medication.due_today !== false && !medication.administered_today)
-      .map((medication) => ({
-        key: `medication:${date}:${medication.id || medication.medication_name}:${medication.schedule || "sin-horario"}`,
-        title: "Medicamento pendiente",
-        body: medicationLabel(medication),
-        url: routineUrl,
-      }))
+      .flatMap((medication) => {
+        const times = parseScheduleTimes(medication.schedule)
+        const fallbackTime = { label: medication.schedule || "sin-horario", minutes: null }
+
+        return (times.length ? times : [fallbackTime]).map((time) => ({
+          key: `medication:${date}:${medication.id || medication.medication_name}:${time.label}`,
+          alarmKey: `alarm:${date}:${medication.id || medication.medication_name}:${time.label}`,
+          type: "medication",
+          dueMinutes: time.minutes,
+          title: "Medicamento pendiente",
+          body: medicationLabel(medication),
+          url: routineUrl,
+        }))
+      })
 
     return { date, alerts: [...incidents, ...medications] }
   }
@@ -116,6 +166,30 @@
     }
   }
 
+  function stopAlarmSound() {
+    if (!activeAlarm) return
+
+    window.clearInterval(activeAlarm.timer)
+    activeAlarm = null
+  }
+
+  function playAlarmSound() {
+    if (!isSoundEnabled()) return
+
+    stopAlarmSound()
+
+    let count = 0
+    activeAlarm = {
+      timer: window.setInterval(() => {
+        count += 1
+        playAlertSound()
+        if (count >= 12) stopAlarmSound()
+      }, 900),
+    }
+
+    playAlertSound()
+  }
+
   function unlockAudio() {
     if (!isSoundEnabled()) return
 
@@ -148,6 +222,50 @@
 
     document.body.appendChild(toast)
     window.setTimeout(() => toast.remove(), 6500)
+  }
+
+  function showAlarm(alert) {
+    const existing = document.querySelector(".care-alarm")
+    if (existing) existing.remove()
+
+    const alarm = document.createElement("div")
+    alarm.className = "care-alarm"
+    alarm.innerHTML = `
+      <div class="care-alarm-icon"><i class="bx bxs-alarm"></i></div>
+      <div class="care-alarm-content">
+        <strong>Hora del medicamento</strong>
+        <span>${escapeHtml(alert.body)}</span>
+      </div>
+      <button type="button" class="care-alarm-stop">Detener</button>
+    `
+
+    alarm.querySelector(".care-alarm-stop")?.addEventListener("click", () => {
+      stopAlarmSound()
+      alarm.remove()
+    })
+
+    document.body.appendChild(alarm)
+  }
+
+  function checkDueAlarms(instance) {
+    const dataDate = instance.latestData?.date || new Date().toISOString().slice(0, 10)
+    const alarmed = readAlarmed(instance.role, dataDate)
+    const nowMinutes = currentMinutes()
+
+    const dueAlerts = instance.currentAlerts.filter((alert) => (
+      alert.type === "medication"
+      && Number.isInteger(alert.dueMinutes)
+      && nowMinutes >= alert.dueMinutes
+      && nowMinutes <= alert.dueMinutes + 1
+      && !alarmed.has(alert.alarmKey)
+    ))
+
+    if (!dueAlerts.length) return
+
+    dueAlerts.forEach((alert) => alarmed.add(alert.alarmKey))
+    writeAlarmed(instance.role, dataDate, alarmed)
+    showAlarm(dueAlerts[0])
+    playAlarmSound()
   }
 
   function renderCenter(instance, alerts) {
@@ -296,6 +414,7 @@
       latestData: null,
       currentAlerts: [],
       timer: null,
+      alarmTimer: null,
       button: null,
       center: null,
       handleData(data, shouldNotify = true) {
@@ -307,6 +426,7 @@
 
         this.currentAlerts = alerts
         renderCenter(this, alerts)
+        checkDueAlarms(this)
 
         if (!shouldNotify) {
           alerts.forEach((alert) => seen.add(alert.key))
@@ -344,6 +464,7 @@
         document.addEventListener("pointerdown", unlockAudio, { once: true })
         document.addEventListener("keydown", unlockAudio, { once: true })
         this.timer = window.setInterval(() => this.poll(), POLL_INTERVAL)
+        this.alarmTimer = window.setInterval(() => checkDueAlarms(this), ALARM_CHECK_INTERVAL)
       },
     }
 
