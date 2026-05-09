@@ -158,6 +158,18 @@ async function loadDashboardSummary() {
       olderAdultsCount.textContent = data.stats?.older_adults ?? dashboardData.stats.olderAdults
     }
 
+    if (caregiversCount) {
+      caregiversCount.textContent = data.stats?.caregivers ?? dashboardData.stats.caregivers
+    }
+
+    if (incidentsCount) {
+      incidentsCount.textContent = data.stats?.incidents_today ?? dashboardData.stats.incidents
+    }
+
+    if (requestsCount) {
+      requestsCount.textContent = data.stats?.requests ?? dashboardData.stats.requests
+    }
+
     if (medicineCount) {
       medicineCount.textContent = data.medications?.pending_today ?? dashboardData.medicines.pendingToday
     }
@@ -165,6 +177,22 @@ async function loadDashboardSummary() {
     if (medicineText) {
       const pendingToday = data.medications?.pending_today ?? dashboardData.medicines.pendingToday
       medicineText.textContent = `${pendingToday} no se han administrado hoy`
+    }
+
+    if (lateEntriesCount) {
+      lateEntriesCount.textContent = data.report?.late_entries ?? dashboardData.report.lateEntries
+    }
+
+    if (absencesCount) {
+      absencesCount.textContent = data.report?.absences ?? dashboardData.report.absences
+    }
+
+    if (vacationsCount) {
+      vacationsCount.textContent = data.report?.vacation_requests ?? dashboardData.report.vacations
+    }
+
+    if (changesCount) {
+      changesCount.textContent = data.report?.change_requests ?? dashboardData.report.changes
     }
   } catch (error) {
     console.error("Error al cargar resumen del dashboard:", error)
