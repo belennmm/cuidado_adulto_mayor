@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
-    <link rel="stylesheet" href="../../css/admin/placeholder.css" />
+    <link rel="stylesheet" href="../../css/admin/routines.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -33,7 +33,7 @@
           <a href="./users.html" class="nav-icon" data-label="Usuarios">
             <i class="bx bxs-user"></i>
           </a>
-          <a href="./shifts.html" class="nav-icon active" data-label="Turnos">
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
             <i class="bx bxs-time"></i>
           </a>
           <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
@@ -42,7 +42,7 @@
           <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
             <i class="bx bxs-error"></i>
           </a>
-          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+          <a href="./routines.html" class="nav-icon active" data-label="Rutinas">
             <i class="bx bxs-star"></i>
           </a>
           <a href="./settings.html" class="nav-icon" data-label="Configuración">
@@ -64,7 +64,94 @@
       <main class="admin-main">
         <div class="admin-topbar"></div>
 
-        
+        <section class="routines-page">
+          <div class="routines-header">
+            <div>
+              <h1>Rutinas</h1>
+              <p>Administra las rutinas de actividades por adulto mayor.</p>
+            </div>
+
+            <a href="./adultos-mayores.html" class="secondary-link">
+              <i class="bx bxs-id-card"></i>
+              Adultos mayores
+            </a>
+          </div>
+
+          <section class="routines-selector-panel">
+            <label class="routine-field" for="adminRoutineAdultSelector">
+              <span>Adulto mayor</span>
+              <select id="adminRoutineAdultSelector"></select>
+            </label>
+
+            <div class="routine-summary">
+              <span>Rutinas registradas</span>
+              <strong id="adminRoutineTotal">0</strong>
+              <p id="adminRoutineAdultMeta">Sin adulto mayor seleccionado</p>
+            </div>
+
+            <div class="routine-summary">
+              <span>Medicamentos asignados</span>
+              <strong id="adminMedicationTotal">0</strong>
+              <p id="adminMedicationMeta">Sin medicamentos cargados</p>
+            </div>
+          </section>
+
+          <section class="routine-form-panel">
+            <div class="panel-heading">
+              <div>
+                <h2 id="adminRoutineFormTitle">Crear rutina</h2>
+                <p>Registra actividades y horario para el adulto mayor seleccionado.</p>
+              </div>
+            </div>
+
+            <form class="routine-form" id="adminRoutineForm">
+              <label class="routine-field">
+                <span>Nombre</span>
+                <input id="adminRoutineName" type="text" placeholder="Rutina matutina" required maxlength="255" />
+              </label>
+
+              <label class="routine-field">
+                <span>Horario</span>
+                <input id="adminRoutineSchedule" type="time" required />
+              </label>
+
+              <label class="routine-field routine-activities-field">
+                <span>Actividades</span>
+                <textarea id="adminRoutineActivities" placeholder="Tomar signos vitales&#10;Desayuno asistido&#10;Caminata breve" required></textarea>
+              </label>
+
+              <div class="routine-form-actions">
+                <p class="routine-message" id="adminRoutineMessage" aria-live="polite"></p>
+                <button type="button" class="secondary-button" id="adminCancelRoutineEdit" hidden>Cancelar edicion</button>
+                <button type="submit" class="primary-button" id="adminSaveRoutineButton">Guardar rutina</button>
+              </div>
+            </form>
+          </section>
+
+          <div class="routines-grid">
+            <section class="routine-list-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Rutinas creadas</h2>
+                  <p>Actividades manuales asociadas al adulto mayor.</p>
+                </div>
+              </div>
+
+              <div class="routine-card-list" id="adminRoutinesList"></div>
+            </section>
+
+            <section class="routine-list-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Medicamentos</h2>
+                  <p>Medicinas asignadas desde el perfil del adulto mayor.</p>
+                </div>
+              </div>
+
+              <div class="routine-card-list" id="adminMedicationsList"></div>
+            </section>
+          </div>
+        </section>
       </main>
     </div>
 
@@ -88,6 +175,6 @@
   <script src="../../js/app-loading.js"></script>
   <script src="../../js/logout-modal.js"></script>
 
-    
+  <script src="../../js/admin/routines.js"></script>
   </body>
 </html>

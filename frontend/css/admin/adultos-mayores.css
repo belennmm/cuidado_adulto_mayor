@@ -152,20 +152,35 @@
   color: #c73a68;
 }
 
-.edit-button {
+.older-adult-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button,
+.routine-button {
   width: 100%;
   height: 40px;
   border: none;
   border-radius: 10px;
-  background-color: #1d73f3;
-  color: #ffffff;
   font-family: "Outfit", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
 }
 
-.edit-button:hover {
+.edit-button {
+  background-color: #1d73f3;
+  color: #ffffff;
+}
+
+.routine-button {
+  background-color: #eef5ff;
+  color: #1d73f3;
+}
+
+.edit-button:hover,
+.routine-button:hover {
   opacity: 0.95;
 }
 
@@ -217,7 +232,12 @@
     margin-bottom: 0;
   }
 
-  .edit-button {
+  .older-adult-actions {
+    max-width: 260px;
+  }
+
+  .edit-button,
+  .routine-button {
     max-width: 160px;
   }
 }
@@ -242,7 +262,13 @@
     padding: 14px;
   }
 
-  .edit-button {
+  .older-adult-actions {
+    max-width: none;
+    width: 100%;
+  }
+
+  .edit-button,
+  .routine-button {
     max-width: none;
     width: 100%;
   }

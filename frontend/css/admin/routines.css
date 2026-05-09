@@ -1,0 +1,299 @@
+.routines-page {
+  padding: 30px 36px 40px;
+}
+
+.routines-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.routines-header h1 {
+  margin: 0 0 6px;
+  color: #0a112f;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.routines-header p,
+.panel-heading p {
+  margin: 0;
+  color: #70707a;
+  font-size: 14px;
+}
+
+.secondary-link,
+.primary-button,
+.secondary-button,
+.text-button {
+  border: none;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary-link {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: #eef5ff;
+  color: #1d73f3;
+}
+
+.routines-selector-panel,
+.routine-form-panel,
+.routine-list-panel {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+}
+
+.routines-selector-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) repeat(2, minmax(180px, 0.6fr));
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.routine-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #555555;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.routine-field input,
+.routine-field select,
+.routine-field textarea {
+  width: 100%;
+  border: 1px solid #d4d4d8;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #333333;
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  background: #ffffff;
+}
+
+.routine-field textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.routine-summary {
+  min-height: 86px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.routine-summary span,
+.routine-summary p {
+  margin: 0;
+  color: #70707a;
+  font-size: 13px;
+}
+
+.routine-summary strong {
+  color: #0a112f;
+  font-size: 28px;
+}
+
+.routine-form-panel,
+.routine-list-panel {
+  padding: 16px;
+}
+
+.routine-form-panel {
+  margin-bottom: 16px;
+}
+
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-heading h2 {
+  margin: 0 0 4px;
+  color: #0a112f;
+  font-size: 20px;
+}
+
+.routine-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(140px, 0.45fr) minmax(260px, 1.2fr);
+  gap: 12px;
+  align-items: end;
+}
+
+.routine-activities-field {
+  grid-row: span 2;
+}
+
+.routine-form-actions {
+  grid-column: 1 / 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.routine-message {
+  flex: 1;
+  min-height: 20px;
+  margin: 0;
+  color: #2d8c57;
+  font-size: 13px;
+}
+
+.routine-message.is-error {
+  color: #c94f4f;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+}
+
+.primary-button {
+  background: #1d73f3;
+  color: #ffffff;
+}
+
+.secondary-button {
+  background: #e4e4e7;
+  color: #3f3f46;
+}
+
+.routines-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.routine-card-list {
+  display: grid;
+  gap: 12px;
+}
+
+.routine-card,
+.empty-state {
+  padding: 14px;
+  border: 1px solid #e6edf7;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.routine-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.routine-card strong {
+  display: block;
+  color: #0a112f;
+  font-size: 15px;
+}
+
+.routine-card span,
+.routine-card p,
+.empty-state {
+  color: #70707a;
+  font-size: 14px;
+}
+
+.routine-card p {
+  margin: 4px 0 0;
+}
+
+.routine-card ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.routine-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.text-button {
+  padding: 0;
+  background: transparent;
+  color: #1d73f3;
+  font-size: 13px;
+}
+
+.text-button.is-danger {
+  color: #c94f4f;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef5ff;
+  color: #1d73f3;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 980px) {
+  .routines-selector-panel,
+  .routine-form,
+  .routines-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-activities-field,
+  .routine-form-actions {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .routine-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .routines-page {
+    padding: 24px 14px 34px;
+  }
+
+  .routines-header,
+  .routine-card-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

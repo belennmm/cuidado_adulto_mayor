@@ -101,8 +101,9 @@ function renderOlderAdults(list) {
         <span class="status-badge ${getStatusClass(olderAdult.status)}">${escapeHtml(olderAdult.status || "Estable")}</span>
       </div>
 
-      <div class="older-adult-cell" data-label="Accion">
+      <div class="older-adult-cell older-adult-actions" data-label="Accion">
         <button class="edit-button" data-id="${olderAdult.id}">Editar</button>
+        <button class="routine-button" data-id="${olderAdult.id}">Rutina</button>
       </div>
     `
 
@@ -115,6 +116,19 @@ function renderOlderAdults(list) {
     button.addEventListener("click", () => {
       const olderAdultId = button.dataset.id
       const destination = `./edit-adulto-mayor.html?id=${olderAdultId}`
+
+      if (window.navigateWithLoading) {
+        window.navigateWithLoading(destination)
+        return
+      }
+
+      window.location.assign(destination)
+    })
+  })
+
+  document.querySelectorAll(".routine-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const destination = `./routines.html?older_adult_id=${button.dataset.id}`
 
       if (window.navigateWithLoading) {
         window.navigateWithLoading(destination)
