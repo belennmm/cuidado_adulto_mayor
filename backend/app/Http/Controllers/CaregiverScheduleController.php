@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CaregiverSchedule;
+use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
 use App\Models\VacationRequest;
@@ -61,6 +62,7 @@ class CaregiverScheduleController extends Controller
             ->groupBy('user_id');
 
         $shifts = $this->buildCalendarShifts($schedules, $olderAdultsByCaregiver, $vacationsByCaregiver, $startDate, $endDate);
+        $events = $this->buildCalendarEvents($shifts, $startDate, $endDate);
 
         return response()->json([
             'range' => [
@@ -68,6 +70,7 @@ class CaregiverScheduleController extends Controller
                 'end_date' => $endDate->toDateString(),
             ],
             'shifts' => $shifts->values(),
+            'events' => $events->values(),
         ]);
     }
 
@@ -409,6 +412,66 @@ class CaregiverScheduleController extends Controller
                 ['start_time', 'asc'],
                 ['caregiver_name', 'asc'],
                 ['older_adult_name', 'asc'],
+            ])
+            ->values();
+    }
+
+    private function buildCalendarEvents(Collection $shifts, Carbon $startDate, Carbon $endDate): Collection
+    {
+        $shiftEvents = $shifts->map(fn (array $shift) => [
+            'id' => 'shift-' . $shift['id'],
+            'type' => 'shift',
+            'title' => 'Turno: ' . ($shift['caregiver_name'] ?: 'Cuidador'),
+            'date' => $shift['date'],
+            'time' => $shift['start_time'],
+            'person' => $shift['older_adult_name'],
+            'status' => $shift['status'],
+            'description' => trim(($shift['start_time'] ?? '') . ' - ' . ($shift['end_time'] ?? '') . "\n" . ($shift['notes'] ?? '')),
+        ]);
+
+        $vacationEvents = VacationRequest::query()
+            ->with('user:id,name,email')
+            ->whereDate('start_date', '<=', $endDate->toDateString())
+            ->whereDate('end_date', '>=', $startDate->toDateString())
+            ->orderBy('start_date')
+            ->get()
+            ->map(fn (VacationRequest $request) => [
+                'id' => 'vacation-' . $request->id,
+                'type' => 'vacation',
+                'title' => 'Vacaciones: ' . ($request->user?->name ?: 'Cuidador'),
+                'date' => $request->start_date?->toDateString(),
+                'time' => null,
+                'person' => $request->user?->email,
+                'status' => $request->status,
+                'description' => trim(($request->reason ?: 'Sin motivo') . "\n" . $request->start_date?->toDateString() . ' - ' . $request->end_date?->toDateString()),
+            ]);
+
+        $incidentEvents = Incident::query()
+            ->with(['olderAdult:id,full_name,room', 'reporter:id,name'])
+            ->whereDate('incident_date', '>=', $startDate->toDateString())
+            ->whereDate('incident_date', '<=', $endDate->toDateString())
+            ->orderBy('incident_date')
+            ->orderByRaw('incident_time IS NULL')
+            ->orderBy('incident_time')
+            ->get()
+            ->map(fn (Incident $incident) => [
+                'id' => 'incident-' . $incident->id,
+                'type' => 'incident',
+                'title' => $incident->title ?: 'Incidente',
+                'date' => $incident->incident_date?->toDateString(),
+                'time' => $incident->incident_time,
+                'person' => $incident->adult_name ?? $incident->olderAdult?->full_name,
+                'status' => $incident->status,
+                'description' => trim(($incident->description ?: 'Sin descripcion') . "\nReportado por: " . ($incident->reporter?->name ?: 'Sin registro')),
+            ]);
+
+        return $shiftEvents
+            ->merge($vacationEvents)
+            ->merge($incidentEvents)
+            ->sortBy([
+                ['date', 'asc'],
+                ['time', 'asc'],
+                ['type', 'asc'],
             ])
             ->values();
     }

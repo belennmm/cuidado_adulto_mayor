@@ -52,6 +52,128 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
+.calendar-events-card {
+  background-color: #efefef;
+  border-radius: 18px;
+  padding: 18px 14px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-events-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.calendar-events-header h2 {
+  margin: 0;
+  color: #0a112f;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.calendar-events-header p {
+  margin: 6px 0 0;
+  color: #6f6f78;
+  font-size: 14px;
+}
+
+.calendar-events-header span {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #eef5ff;
+  color: #1d73f3;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.calendar-events-list {
+  display: grid;
+  gap: 10px;
+}
+
+.calendar-events-empty,
+.calendar-event-item {
+  border-radius: 14px;
+  background: #fafafa;
+  border: 1px solid #e2e2e2;
+}
+
+.calendar-events-empty {
+  padding: 20px;
+  color: #7a7a82;
+  text-align: center;
+}
+
+.calendar-event-item {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.calendar-event-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef5ff;
+  color: #1d73f3;
+  font-size: 21px;
+}
+
+.event-vacation .calendar-event-icon {
+  background: #fff5e5;
+  color: #b97b12;
+}
+
+.event-incident .calendar-event-icon {
+  background: #fdecec;
+  color: #c94f4f;
+}
+
+.calendar-event-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.calendar-event-top strong {
+  color: #0a112f;
+  font-size: 15px;
+}
+
+.calendar-event-top span,
+.calendar-event-status {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #eef5ff;
+  color: #1d73f3;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.calendar-event-content p,
+.calendar-event-content small {
+  display: block;
+  margin: 4px 0 0;
+  color: #6f6f78;
+  font-size: 13px;
+}
+
 .shifts-calendar-toolbar {
   display: flex;
   align-items: center;

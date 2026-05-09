@@ -33,6 +33,7 @@
     currentDate: new Date(),
     view: VIEW_LABELS.week,
     shifts: [],
+    events: [],
     requestId: 0,
   }
 
@@ -200,7 +201,10 @@
       throw new Error(data.message || "No se pudo cargar el calendario de turnos.")
     }
 
-    return data.shifts || []
+    return {
+      shifts: data.shifts || [],
+      events: data.events || [],
+    }
   }
 
   function renderEmptyState(container, message) {
@@ -339,6 +343,82 @@
     `
   }
 
+  function eventTypeLabel(type) {
+    if (type === "vacation") return "Vacaciones"
+    if (type === "incident") return "Incidente"
+    return "Turno"
+  }
+
+  function eventStatusLabel(status) {
+    if (status === "approved") return "Aprobado"
+    if (status === "rejected") return "Rechazado"
+    if (status === "pending") return "Pendiente"
+    if (status === "completed") return "Completado"
+    if (status === "cancelled") return "Cancelado"
+    if (status === "resolved" || status === "resuelto") return "Resuelto"
+    return status || "Activo"
+  }
+
+  function renderEvents() {
+    const list = document.getElementById("calendarEventsList")
+    const count = document.getElementById("calendarEventsCount")
+    if (!list) return
+
+    if (count) {
+      count.textContent = `${state.events.length} evento${state.events.length === 1 ? "" : "s"}`
+    }
+
+    if (!state.events.length) {
+      list.innerHTML = `
+        <div class="calendar-events-empty">
+          No hay eventos para el rango seleccionado.
+        </div>
+      `
+      return
+    }
+
+    list.innerHTML = state.events
+      .map((event) => `
+        <article class="calendar-event-item event-${escapeHtml(event.type)}" data-event-id="${escapeHtml(event.id)}">
+          <div class="calendar-event-icon">
+            <i class="bx ${event.type === "incident" ? "bxs-error" : event.type === "vacation" ? "bxs-calendar-x" : "bxs-time"}"></i>
+          </div>
+          <div class="calendar-event-content">
+            <div class="calendar-event-top">
+              <strong>${escapeHtml(event.title)}</strong>
+              <span>${escapeHtml(eventTypeLabel(event.type))}</span>
+            </div>
+            <p>${escapeHtml(event.person || "Sin persona asociada")}</p>
+            <small>${escapeHtml(formatLongDate(event.date))}${event.time ? ` - ${escapeHtml(normalizeTime(event.time))}` : ""}</small>
+          </div>
+          <span class="calendar-event-status">${escapeHtml(eventStatusLabel(event.status))}</span>
+        </article>
+      `)
+      .join("")
+  }
+
+  async function openEventDetail(eventId) {
+    const event = state.events.find((item) => String(item.id) === String(eventId))
+    if (!event) return
+
+    const message = [
+      `Tipo: ${eventTypeLabel(event.type)}`,
+      `Fecha: ${formatLongDate(event.date)}`,
+      event.time ? `Hora: ${normalizeTime(event.time)}` : "",
+      event.person ? `Persona: ${event.person}` : "",
+      `Estado: ${eventStatusLabel(event.status)}`,
+      "",
+      event.description || "Sin descripcion.",
+    ].filter((line) => line !== "").join("\n")
+
+    if (window.showAdminAlert) {
+      await window.showAdminAlert(message, { title: event.title })
+      return
+    }
+
+    alert(message)
+  }
+
   function openShiftDetail(shiftId) {
     const shift = state.shifts.find((item) => String(item.id) === String(shiftId))
     const modal = document.getElementById("shiftDetailModal")
@@ -381,20 +461,24 @@
 
     if (!state.shifts.length) {
       renderEmptyState(container, "Prueba cambiando la fecha o la vista del calendario.")
+      renderEvents()
       return
     }
 
     if (state.view === VIEW_LABELS.month) {
       renderMonthView(container, state.shifts)
+      renderEvents()
       return
     }
 
     if (state.view === VIEW_LABELS.week) {
       renderWeekView(container, state.shifts)
+      renderEvents()
       return
     }
 
     renderDayView(container, state.shifts)
+    renderEvents()
   }
 
   async function refreshCalendar() {
@@ -407,13 +491,16 @@
     renderLoadingState(container)
 
     try {
-      const shifts = await fetchCalendarShifts()
+      const data = await fetchCalendarShifts()
       if (currentRequestId !== state.requestId) return
-      state.shifts = shifts
+      state.shifts = data.shifts
+      state.events = data.events
       renderCalendar()
     } catch (error) {
       if (currentRequestId !== state.requestId) return
       state.shifts = []
+      state.events = []
+      renderEvents()
       renderErrorState(container, error.message)
     }
   }
@@ -472,6 +559,12 @@
       const button = event.target.closest("[data-shift-id]")
       if (!button) return
       openShiftDetail(button.dataset.shiftId)
+    })
+
+    document.getElementById("calendarEventsList")?.addEventListener("click", (event) => {
+      const item = event.target.closest("[data-event-id]")
+      if (!item) return
+      openEventDetail(item.dataset.eventId)
     })
 
     document.getElementById("closeShiftDetailModal")?.addEventListener("click", closeShiftDetail)
