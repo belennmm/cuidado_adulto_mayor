@@ -1,21 +1,3 @@
-const dashboardData = {
-  stats: {
-    olderAdults: 15,
-    caregivers: 8,
-    incidents: 2,
-    requests: 5,
-  },
-  medicines: {
-    pendingToday: 0,
-  },
-  report: {
-    lateEntries: 1,
-    absences: 0,
-    vacations: 3,
-    changes: 1,
-  },
-}
-
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 const olderAdultsCount = document.getElementById("olderAdultsCount")
@@ -101,7 +83,8 @@ function renderLatestRoutines(routines) {
     .map((routine) => {
       const adult = routine.adulto_mayor?.full_name || "Adulto mayor"
       const activities = Array.isArray(routine.actividades) ? routine.actividades.length : 0
-      const destination = `./routines.html?older_adult_id=${encodeURIComponent(routine.older_adult_id || routine.adulto_mayor_id || "")}`
+      const olderAdultId = routine.older_adult_id || routine.adulto_mayor_id || ""
+      const destination = `./routines.html?older_adult_id=${encodeURIComponent(olderAdultId)}`
 
       return `
         <a class="routine-item routine-link-item" href="${destination}">
@@ -154,46 +137,21 @@ async function loadDashboardSummary() {
   try {
     const data = await fetchJson("/dashboard-summary")
 
-    if (olderAdultsCount) {
-      olderAdultsCount.textContent = data.stats?.older_adults ?? dashboardData.stats.olderAdults
-    }
-
-    if (caregiversCount) {
-      caregiversCount.textContent = data.stats?.caregivers ?? dashboardData.stats.caregivers
-    }
-
-    if (incidentsCount) {
-      incidentsCount.textContent = data.stats?.incidents_today ?? dashboardData.stats.incidents
-    }
-
-    if (requestsCount) {
-      requestsCount.textContent = data.stats?.requests ?? dashboardData.stats.requests
-    }
-
-    if (medicineCount) {
-      medicineCount.textContent = data.medications?.pending_today ?? dashboardData.medicines.pendingToday
-    }
+    if (olderAdultsCount) olderAdultsCount.textContent = data.stats?.older_adults ?? 0
+    if (caregiversCount) caregiversCount.textContent = data.stats?.caregivers ?? 0
+    if (incidentsCount) incidentsCount.textContent = data.stats?.incidents_today ?? 0
+    if (requestsCount) requestsCount.textContent = data.stats?.requests ?? 0
+    if (medicineCount) medicineCount.textContent = data.medications?.pending_today ?? 0
 
     if (medicineText) {
-      const pendingToday = data.medications?.pending_today ?? dashboardData.medicines.pendingToday
+      const pendingToday = data.medications?.pending_today ?? 0
       medicineText.textContent = `${pendingToday} no se han administrado hoy`
     }
 
-    if (lateEntriesCount) {
-      lateEntriesCount.textContent = data.report?.late_entries ?? dashboardData.report.lateEntries
-    }
-
-    if (absencesCount) {
-      absencesCount.textContent = data.report?.absences ?? dashboardData.report.absences
-    }
-
-    if (vacationsCount) {
-      vacationsCount.textContent = data.report?.vacation_requests ?? dashboardData.report.vacations
-    }
-
-    if (changesCount) {
-      changesCount.textContent = data.report?.change_requests ?? dashboardData.report.changes
-    }
+    if (lateEntriesCount) lateEntriesCount.textContent = data.report?.late_entries ?? 0
+    if (absencesCount) absencesCount.textContent = data.report?.absences ?? 0
+    if (vacationsCount) vacationsCount.textContent = data.report?.vacation_requests ?? 0
+    if (changesCount) changesCount.textContent = data.report?.change_requests ?? 0
   } catch (error) {
     console.error("Error al cargar resumen del dashboard:", error)
 
@@ -203,15 +161,15 @@ async function loadDashboardSummary() {
   }
 }
 
-if (olderAdultsCount) olderAdultsCount.textContent = dashboardData.stats.olderAdults
-if (caregiversCount) caregiversCount.textContent = dashboardData.stats.caregivers
-if (incidentsCount) incidentsCount.textContent = dashboardData.stats.incidents
-if (requestsCount) requestsCount.textContent = dashboardData.stats.requests
-if (medicineCount) medicineCount.textContent = dashboardData.medicines.pendingToday
-if (lateEntriesCount) lateEntriesCount.textContent = dashboardData.report.lateEntries
-if (absencesCount) absencesCount.textContent = dashboardData.report.absences
-if (vacationsCount) vacationsCount.textContent = dashboardData.report.vacations
-if (changesCount) changesCount.textContent = dashboardData.report.changes
+if (olderAdultsCount) olderAdultsCount.textContent = "0"
+if (caregiversCount) caregiversCount.textContent = "0"
+if (incidentsCount) incidentsCount.textContent = "0"
+if (requestsCount) requestsCount.textContent = "0"
+if (medicineCount) medicineCount.textContent = "0"
+if (lateEntriesCount) lateEntriesCount.textContent = "0"
+if (absencesCount) absencesCount.textContent = "0"
+if (vacationsCount) vacationsCount.textContent = "0"
+if (changesCount) changesCount.textContent = "0"
 
 loadDashboardSummary()
 loadLatestRoutineChanges()
