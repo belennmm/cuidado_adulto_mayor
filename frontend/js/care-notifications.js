@@ -54,7 +54,7 @@
     const medications = (data?.next_medications || [])
       .filter((medication) => medication.due_today !== false && !medication.administered_today)
       .map((medication) => ({
-        key: `medication:${date}:${medication.id || medication.medication_name}`,
+        key: `medication:${date}:${medication.id || medication.medication_name}:${medication.schedule || "sin-horario"}`,
         title: "Medicamento pendiente",
         body: medicationLabel(medication),
         url: routineUrl,
@@ -215,8 +215,10 @@
     })
 
     soundButton?.addEventListener("click", () => {
-      setSoundEnabled(!isSoundEnabled())
+      const enabled = !isSoundEnabled()
+      setSoundEnabled(enabled)
       renderCenter(instance, instance.currentAlerts)
+      if (enabled) playAlertSound()
     })
 
     document.addEventListener("click", (event) => {

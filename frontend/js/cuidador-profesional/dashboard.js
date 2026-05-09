@@ -93,7 +93,7 @@
     try {
       const data = await api.fetchJson("/professional/overview")
       renderDashboard(data)
-      window.CareNotifications?.handleData("professional", data, false)
+      window.CareNotifications?.handleData("professional", data, true)
     } catch (error) {
       document.querySelectorAll(".professional-list").forEach((element) => {
         element.innerHTML = api.renderEmpty(error.message)

@@ -90,7 +90,7 @@
     try {
       const data = await api.fetchJson("/family/overview")
       renderDashboard(data)
-      window.CareNotifications?.handleData("family", data, false)
+      window.CareNotifications?.handleData("family", data, true)
     } catch (error) {
       const containers = ["dashboardRoutineList", "dashboardIncidentsList", "dashboardAdultsList"]
 
