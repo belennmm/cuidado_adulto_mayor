@@ -28,6 +28,15 @@ function navigateTo(url) {
   window.location.assign(url)
 }
 
+async function showPopup(message, options = {}) {
+  if (window.showAdminAlert) {
+    await window.showAdminAlert(message, options)
+    return
+  }
+
+  alert(message)
+}
+
 function getToken() {
   return localStorage.getItem("token")
 }
@@ -100,13 +109,13 @@ function fillForm(user) {
 
 async function loadUser() {
   if (!userId) {
-    alert("No se encontro el usuario a editar.")
+    await showPopup("No se encontro el usuario a editar.", { variant: "error" })
     navigateTo("./users.html")
     return
   }
 
   if (!getToken()) {
-    alert("Inicia sesion como administrador para editar usuarios.")
+    await showPopup("Inicia sesion como administrador para editar usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
   }
@@ -120,7 +129,7 @@ async function loadUser() {
 
     fillForm(data.user)
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
     navigateTo("./users.html")
   } finally {
     setFormDisabled(false)
@@ -149,7 +158,7 @@ async function saveUser() {
   }
 
   if (!payload.name || !payload.email || !payload.role) {
-    alert("Completa nombre, correo y tipo de usuario.")
+    await showPopup("Completa nombre, correo y tipo de usuario.", { variant: "error" })
     return
   }
 
@@ -162,10 +171,10 @@ async function saveUser() {
       body: JSON.stringify(payload)
     })
 
-    alert(data.message || "Usuario actualizado correctamente.")
+    await showPopup(data.message || "Usuario actualizado correctamente.")
     navigateTo("./users.html")
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
   } finally {
     setFormDisabled(false)
 
@@ -184,10 +193,10 @@ async function deleteUser() {
       headers: getAuthHeaders()
     })
 
-    alert(data.message || "Usuario eliminado correctamente.")
+    await showPopup(data.message || "Usuario eliminado correctamente.")
     navigateTo("./users.html")
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
     setFormDisabled(false)
   }
 }

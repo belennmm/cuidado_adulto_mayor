@@ -16,6 +16,15 @@ function navigateTo(url) {
   window.location.assign(url)
 }
 
+async function showPopup(message, options = {}) {
+  if (window.showAdminAlert) {
+    await window.showAdminAlert(message, options)
+    return
+  }
+
+  alert(message)
+}
+
 function createDayOptions(index, selectedDays = []) {
   const days = [
     { value: "lunes", label: "Lunes" },
@@ -274,7 +283,7 @@ if (newOlderAdultForm) {
     const payload = buildPayload(formData)
 
     if (!payload.full_name) {
-      alert("Ingresa el nombre completo del adulto mayor.")
+      await showPopup("Ingresa el nombre completo del adulto mayor.", { variant: "error" })
       return
     }
 
@@ -285,10 +294,10 @@ if (newOlderAdultForm) {
       }
 
       const data = await createOlderAdult(payload)
-      alert(data.message || "Adulto mayor creado correctamente.")
+      await showPopup(data.message || "Adulto mayor creado correctamente.")
       navigateTo("./adultos-mayores.html")
     } catch (error) {
-      alert(error.message)
+      await showPopup(error.message, { variant: "error" })
     } finally {
       if (submitButton) {
         submitButton.disabled = false

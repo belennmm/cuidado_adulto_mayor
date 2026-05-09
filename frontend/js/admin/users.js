@@ -9,6 +9,15 @@ function getToken() {
   return localStorage.getItem("token")
 }
 
+async function showPopup(message, options = {}) {
+  if (window.showAdminAlert) {
+    await window.showAdminAlert(message, options)
+    return
+  }
+
+  alert(message)
+}
+
 function isApproved(value) {
   return value === true || value === 1 || value === "1" || value === "true" || value === "t"
 }
@@ -74,7 +83,7 @@ async function approveUser(userId) {
   const token = getToken()
 
   if (!token) {
-    alert("Inicia sesion para aprobar usuarios.")
+    await showPopup("Inicia sesion para aprobar usuarios.", { variant: "error" })
     return
   }
 
@@ -94,10 +103,10 @@ async function approveUser(userId) {
       throw new Error(data.message || "No se pudo aprobar el usuario.")
     }
 
-    alert(data.message || "Usuario aprobado correctamente.")
+    await showPopup(data.message || "Usuario aprobado correctamente.")
     await loadUsers()
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 

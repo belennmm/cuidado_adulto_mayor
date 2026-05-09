@@ -22,6 +22,23 @@ function navigateTo(url) {
   window.location.assign(url)
 }
 
+async function showPopup(message, options = {}) {
+  if (window.showAdminAlert) {
+    await window.showAdminAlert(message, options)
+    return
+  }
+
+  alert(message)
+}
+
+async function confirmPopup(message, options = {}) {
+  if (window.showAdminConfirm) {
+    return window.showAdminConfirm(message, options)
+  }
+
+  return confirm(message)
+}
+
 function getToken() {
   return localStorage.getItem("token")
 }
@@ -126,7 +143,7 @@ async function createUser() {
   const token = getToken()
 
   if (!token) {
-    alert("Inicia sesion como administrador para crear usuarios.")
+    await showPopup("Inicia sesion como administrador para crear usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
   }
@@ -142,7 +159,7 @@ async function createUser() {
   }
 
   if (!payload.name || !payload.email || !payload.password || !payload.role) {
-    alert("Completa tipo de usuario, nombre, correo y contrasena.")
+    await showPopup("Completa tipo de usuario, nombre, correo y contrasena.", { variant: "error" })
     return
   }
 
@@ -155,11 +172,11 @@ async function createUser() {
       body: JSON.stringify(payload)
     })
 
-    alert(data.message || "Usuario creado correctamente.")
+    await showPopup(data.message || "Usuario creado correctamente.")
     clearForm()
     await loadPendingRequests()
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
   } finally {
     setFormDisabled(false)
   }
@@ -206,15 +223,18 @@ async function approveRequest(userId) {
       }
     })
 
-    alert(data.message || "Usuario aprobado correctamente.")
+    await showPopup(data.message || "Usuario aprobado correctamente.")
     await loadPendingRequests()
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 
 async function rejectRequest(userId) {
-  const confirmed = confirm("Deseas rechazar esta solicitud de cuenta?")
+  const confirmed = await confirmPopup("Deseas rechazar esta solicitud de cuenta?", {
+    title: "Rechazar solicitud",
+    confirmText: "Rechazar",
+  })
 
   if (!confirmed) {
     return
@@ -231,26 +251,26 @@ async function rejectRequest(userId) {
       }
     })
 
-    alert(data.message || "Solicitud rechazada correctamente.")
+    await showPopup(data.message || "Solicitud rechazada correctamente.")
     await loadPendingRequests()
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 
-function showRequestDetails(userId) {
+async function showRequestDetails(userId) {
   const request = pendingRequests.find((item) => String(item.id) === String(userId))
 
   if (!request) return
 
-  alert([
+  await showPopup([
     `Nombre: ${request.name || "Sin nombre"}`,
     `Rol: ${getRoleLabel(request.role)}`,
     `Correo: ${request.email || "Sin correo"}`,
     `Telefono: ${request.phone || "Sin telefono"}`,
     `Locacion: ${request.location || "Sin locacion"}`,
     `Fecha de nacimiento: ${request.birthdate || "Sin fecha"}`
-  ].join("\n"))
+  ].join("\n"), { title: "Informacion de solicitud" })
 }
 
 if (togglePassword && passwordInput) {

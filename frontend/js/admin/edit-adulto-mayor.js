@@ -37,6 +37,15 @@ function navigateTo(url) {
   window.location.assign(url)
 }
 
+async function showPopup(message, options = {}) {
+  if (window.showAdminAlert) {
+    await window.showAdminAlert(message, options)
+    return
+  }
+
+  alert(message)
+}
+
 function createDayOptions(index, selectedDays = []) {
   const days = [
     { value: "lunes", label: "Lunes" },
@@ -322,7 +331,7 @@ async function loadProfessionalCaregivers(selectedId = null) {
 
 async function loadOlderAdult() {
   if (!olderAdultId) {
-    alert("No se encontro el adulto mayor a editar.")
+    await showPopup("No se encontro el adulto mayor a editar.", { variant: "error" })
     navigateTo("./adultos-mayores.html")
     return
   }
@@ -335,7 +344,7 @@ async function loadOlderAdult() {
     ])
     fillForm(data.older_adult || {})
   } catch (error) {
-    alert(error.message)
+    await showPopup(error.message, { variant: "error" })
     navigateTo("./adultos-mayores.html")
   }
 }
@@ -385,10 +394,10 @@ if (editOlderAdultForm) {
       }
 
       const data = await updateOlderAdult()
-      alert(data.message || "Se guardaron los cambios del adulto mayor.")
+      await showPopup(data.message || "Se guardaron los cambios del adulto mayor.")
       navigateTo("./adultos-mayores.html")
     } catch (error) {
-      alert(error.message)
+      await showPopup(error.message, { variant: "error" })
     } finally {
       if (submitButton) {
         submitButton.disabled = false
@@ -425,10 +434,10 @@ if (confirmDeleteOlderAdult) {
       confirmDeleteOlderAdult.textContent = "Eliminando..."
 
       const data = await deleteOlderAdult()
-      alert(data.message || "Adulto mayor eliminado correctamente.")
+      await showPopup(data.message || "Adulto mayor eliminado correctamente.")
       navigateTo("./adultos-mayores.html")
     } catch (error) {
-      alert(error.message)
+      await showPopup(error.message, { variant: "error" })
       confirmDeleteOlderAdult.disabled = false
       confirmDeleteOlderAdult.textContent = "Si, eliminar"
     }

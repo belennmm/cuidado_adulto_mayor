@@ -310,7 +310,14 @@ async function saveSchedule(event) {
 }
 
 async function deleteSchedule(scheduleId) {
-  if (!window.confirm("Seguro que deseas eliminar este turno?")) {
+  const confirmed = window.showAdminConfirm
+    ? await window.showAdminConfirm("Seguro que deseas eliminar este turno?", {
+        title: "Eliminar turno",
+        confirmText: "Eliminar",
+      })
+    : window.confirm("Seguro que deseas eliminar este turno?")
+
+  if (!confirmed) {
     return
   }
 
@@ -328,8 +335,15 @@ async function deleteSchedule(scheduleId) {
 
 async function resolveChangeRequest(scheduleId, action) {
   const label = action === "approve" ? "aprobar" : "rechazar"
+  const confirmed = window.showAdminConfirm
+    ? await window.showAdminConfirm(`Seguro que deseas ${label} esta solicitud?`, {
+        title: action === "approve" ? "Aprobar solicitud" : "Rechazar solicitud",
+        confirmText: action === "approve" ? "Aprobar" : "Rechazar",
+        variant: action === "approve" ? "info" : "danger",
+      })
+    : window.confirm(`Seguro que deseas ${label} esta solicitud?`)
 
-  if (!window.confirm(`Seguro que deseas ${label} esta solicitud?`)) {
+  if (!confirmed) {
     return
   }
 
@@ -347,8 +361,15 @@ async function resolveChangeRequest(scheduleId, action) {
 
 async function resolveVacationRequest(requestId, action) {
   const label = action === "approve" ? "aprobar" : "rechazar"
+  const confirmed = window.showAdminConfirm
+    ? await window.showAdminConfirm(`Seguro que deseas ${label} esta solicitud de vacaciones?`, {
+        title: action === "approve" ? "Aprobar vacaciones" : "Rechazar vacaciones",
+        confirmText: action === "approve" ? "Aprobar" : "Rechazar",
+        variant: action === "approve" ? "info" : "danger",
+      })
+    : window.confirm(`Seguro que deseas ${label} esta solicitud de vacaciones?`)
 
-  if (!window.confirm(`Seguro que deseas ${label} esta solicitud de vacaciones?`)) {
+  if (!confirmed) {
     return
   }
 

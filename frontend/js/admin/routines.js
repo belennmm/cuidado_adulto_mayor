@@ -291,7 +291,14 @@
   }
 
   async function deleteRoutine(routineId) {
-    if (!confirm("Deseas eliminar esta rutina?")) return
+    const confirmed = window.showAdminConfirm
+      ? await window.showAdminConfirm("Deseas eliminar esta rutina?", {
+          title: "Eliminar rutina",
+          confirmText: "Eliminar",
+        })
+      : confirm("Deseas eliminar esta rutina?")
+
+    if (!confirmed) return
 
     try {
       await fetchJson(`/rutinas/${routineId}`, { method: "DELETE" })
