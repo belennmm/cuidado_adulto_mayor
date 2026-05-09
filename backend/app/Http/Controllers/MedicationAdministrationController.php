@@ -36,21 +36,31 @@ class MedicationAdministrationController extends Controller
             ? Carbon::createFromFormat('H:i', $data['administration_time'], $timezone)->format('H:i:s')
             : $now->format('H:i:s');
 
-        $administration = MedicationAdministration::updateOrCreate(
-            [
+        $administration = MedicationAdministration::query()
+            ->where('administration_type', 'scheduled')
+            ->whereDate('administration_date', $date)
+            ->where('older_adult_medication_id', $assignment->id)
+            ->first();
+
+        $values = [
+            'older_adult_id' => $assignment->older_adult_id,
+            'medication_id' => $assignment->medication_id,
+            'dosage' => $assignment->dosage,
+            'administration_date' => $date,
+            'administration_time' => $time,
+            'notes' => $data['notes'] ?? null,
+            'recorded_by' => $user->id,
+        ];
+
+        if ($administration) {
+            $administration->update($values);
+        } else {
+            $administration = MedicationAdministration::create([
                 'administration_type' => 'scheduled',
-                'administration_date' => $date,
                 'older_adult_medication_id' => $assignment->id,
-            ],
-            [
-                'older_adult_id' => $assignment->older_adult_id,
-                'medication_id' => $assignment->medication_id,
-                'dosage' => $assignment->dosage,
-                'administration_time' => $time,
-                'notes' => $data['notes'] ?? null,
-                'recorded_by' => $user->id,
-            ],
-        );
+                ...$values,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Medicamento marcado como tomado.',
@@ -59,7 +69,7 @@ class MedicationAdministrationController extends Controller
                 'older_adult_medication_id' => $administration->older_adult_medication_id,
                 'older_adult_id' => $administration->older_adult_id,
                 'medication_id' => $administration->medication_id,
-                'administration_date' => $administration->administration_date?->toDateString(),
+                'administration_date' => Carbon::parse($administration->administration_date)->toDateString(),
                 'administration_time' => $administration->administration_time,
                 'notes' => $administration->notes,
                 'recorded_by' => $administration->recorded_by,
@@ -93,5 +103,3 @@ class MedicationAdministrationController extends Controller
             ->toString();
     }
 }
-
-

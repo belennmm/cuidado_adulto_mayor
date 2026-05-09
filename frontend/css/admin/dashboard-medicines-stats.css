@@ -466,7 +466,13 @@
   border-top: 6px solid #d7eaf5;
 }
 
-.inventory-placeholder {
+.inventory-list {
+  display: grid;
+  gap: 12px;
+}
+
+.inventory-placeholder,
+.inventory-empty {
   min-height: 140px;
   border-radius: 18px;
   border: 1px dashed #c9d7e4;
@@ -478,6 +484,47 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.inventory-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #dce6f0;
+  background: #fafcfe;
+}
+
+.inventory-item strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #0a112f;
+  font-size: 17px;
+}
+
+.inventory-item span {
+  color: #718198;
+  font-size: 13px;
+}
+
+.inventory-item-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.inventory-item-stats span {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef6fb;
+  color: #2a79a0;
+  font-weight: 600;
 }
 
 @keyframes medicines-stats-spin {
@@ -541,6 +588,14 @@
   .stats-cards-grid,
   .usage-chart {
     grid-template-columns: 1fr;
+  }
+
+  .inventory-item {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-item-stats {
+    justify-content: flex-start;
   }
 
   .chart-bar-card {

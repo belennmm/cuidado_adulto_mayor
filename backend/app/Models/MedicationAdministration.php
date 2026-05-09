@@ -22,13 +22,6 @@ class MedicationAdministration extends Model
         'recorded_by',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'administration_date' => 'date',
-        ];
-    }
-
     public function olderAdult(): BelongsTo
     {
         return $this->belongsTo(OlderAdult::class);

@@ -85,6 +85,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/vacation-requests', [VacationRequestController::class, 'adminIndex']);
     Route::patch('/vacation-requests/{vacationRequest}/approve', [VacationRequestController::class, 'approve']);
     Route::patch('/vacation-requests/{vacationRequest}/reject', [VacationRequestController::class, 'reject']);
+    Route::get('/medication-statistics', [AdminDashboardController::class, 'medicationStatistics']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);
