@@ -499,6 +499,15 @@
   font: inherit;
 }
 
+.routine-adult-selector {
+  margin: 0 0 24px;
+}
+
+.incidents-adult-selector {
+  margin: -56px auto 42px;
+  width: min(100%, 440px);
+}
+
 .adult-prototype-grid {
   display: grid;
   grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);

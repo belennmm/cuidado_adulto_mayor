@@ -30,7 +30,10 @@
     const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {
-      throw new Error(data.message || "No se pudo cargar la informacion.")
+      const error = new Error(data.message || "No se pudo cargar la informacion.")
+      error.status = response.status
+      error.errors = data.errors || {}
+      throw error
     }
 
     return data
@@ -45,6 +48,18 @@
       weekday: "long",
       day: "numeric",
       month: "long",
+      year: "numeric",
+    }).format(date)
+  }
+
+  function formatShortDate(value) {
+    if (!value) return "Sin fecha"
+    const [year, month, day] = value.split("-")
+    const date = new Date(Number(year), Number(month) - 1, Number(day))
+
+    return new Intl.DateTimeFormat("es-GT", {
+      day: "numeric",
+      month: "short",
       year: "numeric",
     }).format(date)
   }
@@ -95,6 +110,7 @@
     escapeHtml,
     fetchJson,
     formatDate,
+    formatShortDate,
     formatTime,
     getSeverityClass,
     getStatusClass,

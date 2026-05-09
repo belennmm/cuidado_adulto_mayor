@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendario de Turnos</title>
+
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
+    <link rel="stylesheet" href="../../css/admin/shifts-calendar.css" />
+    <link rel="stylesheet" href="../../css/logout-modal.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-top"></div>
+
+        <nav class="sidebar-nav">
+          <a href="./home-page.html" class="nav-icon" data-label="Inicio">
+            <i class="bx bxs-home"></i>
+          </a>
+          <a href="./dashboard.html" class="nav-icon" data-label="Dashboard">
+            <i class="bx bxs-dashboard"></i>
+          </a>
+          <a href="./users.html" class="nav-icon" data-label="Usuarios">
+            <i class="bx bxs-user"></i>
+          </a>
+          <a href="./shifts.html" class="nav-icon active" data-label="Turnos">
+            <i class="bx bxs-time"></i>
+          </a>
+          <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
+            <i class="bx bxs-id-card"></i>
+          </a>
+          <a href="./incidents.html" class="nav-icon" data-label="Incidentes">
+            <i class="bx bxs-error"></i>
+          </a>
+          <a href="./routines.html" class="nav-icon" data-label="Rutinas">
+            <i class="bx bxs-star"></i>
+          </a>
+          <a href="./settings.html" class="nav-icon" data-label="ConfiguraciÃ³n">
+            <i class="bx bxs-cog"></i>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
+            <i class="bx bx-user-circle"></i>
+          </a>
+
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesiÃ³n">
+            <i class="bx bx-log-out"></i>
+          </a>
+        </div>
+      </aside>
+
+      <main class="admin-main">
+        <div class="admin-topbar"></div>
+
+        <section class="page-shell shifts-calendar-page">
+          <div class="shifts-calendar-header">
+            <div>
+              <h1 class="shifts-calendar-title">Calendario de Turnos</h1>
+              <p class="shifts-calendar-subtitle">Vista general de turnos para cuidadores profesionales.</p>
+            </div>
+
+            <a href="./shifts.html" class="back-button" aria-label="Volver a Turnos" title="Volver a Turnos">
+              <i class="bx bx-arrow-back"></i>
+            </a>
+          </div>
+
+          <section class="shifts-calendar-card">
+            <div class="shifts-calendar-toolbar">
+              <div class="calendar-navigation">
+                <button type="button" class="calendar-nav-button" id="calendarPrevButton" aria-label="Anterior">
+                  <i class="bx bx-chevron-left"></i>
+                </button>
+                <button type="button" class="calendar-nav-button" id="calendarNextButton" aria-label="Siguiente">
+                  <i class="bx bx-chevron-right"></i>
+                </button>
+                <button type="button" class="calendar-today-button" id="calendarTodayButton">Hoy</button>
+              </div>
+
+              <div class="calendar-view-switcher" id="calendarViewSwitcher">
+                <button type="button" class="calendar-view-button active" data-view="day">Diaria</button>
+                <button type="button" class="calendar-view-button" data-view="week">Semanal</button>
+                <button type="button" class="calendar-view-button" data-view="month">Mensual</button>
+              </div>
+            </div>
+
+            <div class="calendar-range-text" id="calendarRangeText"></div>
+            <div class="shifts-calendar-container" id="shiftsCalendarContainer"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div class="logout-modal-overlay" id="logoutModal">
+      <div class="logout-modal-box">
+        <h3 class="logout-modal-title">Cerrar sesiÃ³n</h3>
+        <p class="logout-modal-text">Â¿Seguro que deseas cerrar sesiÃ³n?</p>
+
+        <div class="logout-modal-actions">
+          <button type="button" class="logout-cancel-button" id="cancelLogout">
+            Cancelar
+          </button>
+          <button type="button" class="logout-confirm-button" id="confirmLogout">
+            Aceptar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="shift-detail-modal-overlay" id="shiftDetailModal" hidden>
+      <div class="shift-detail-modal-box">
+        <div class="shift-detail-header">
+          <div>
+            <h2 class="shift-detail-title">Detalle del turno</h2>
+            <p class="shift-detail-subtitle">Informacion completa del turno seleccionado.</p>
+          </div>
+          <button type="button" class="shift-detail-close" id="closeShiftDetailModal" aria-label="Cerrar detalle">
+            <i class="bx bx-x"></i>
+          </button>
+        </div>
+
+        <div class="shift-detail-grid">
+          <div class="shift-detail-item">
+            <span>Cuidador profesional</span>
+            <strong id="detailCaregiver"></strong>
+          </div>
+          <div class="shift-detail-item">
+            <span>Adulto mayor</span>
+            <strong id="detailOlderAdult"></strong>
+          </div>
+          <div class="shift-detail-item">
+            <span>Fecha</span>
+            <strong id="detailDate"></strong>
+          </div>
+          <div class="shift-detail-item">
+            <span>Hora de inicio</span>
+            <strong id="detailStartTime"></strong>
+          </div>
+          <div class="shift-detail-item">
+            <span>Hora de fin</span>
+            <strong id="detailEndTime"></strong>
+          </div>
+          <div class="shift-detail-item">
+            <span>Estado</span>
+            <strong id="detailStatus"></strong>
+          </div>
+        </div>
+
+        <div class="shift-detail-notes">
+          <span>Notas</span>
+          <p id="detailNotes"></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/app-loading.js"></script>
+    <script src="../../js/logout-modal.js"></script>
+    <script src="../../js/admin/shifts-calendar.js"></script>
+  </body>
+</html>

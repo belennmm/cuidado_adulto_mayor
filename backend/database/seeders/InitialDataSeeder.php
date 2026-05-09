@@ -2,12 +2,15 @@
 
 namespace Database\Seeders;
 
+use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\Medication;
 use App\Models\MedicationAdministration;
 use App\Models\OlderAdult;
 use App\Models\OlderAdultMedication;
+use App\Models\RoutineNote;
 use App\Models\User;
+use App\Models\VacationRequest;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -18,8 +21,10 @@ class InitialDataSeeder extends Seeder
         $users = $this->seedUsers();
         $olderAdults = $this->seedOlderAdults($users['admin'], $users);
         $this->assignProfessionalCaregivers($olderAdults, $users);
+        $this->seedSchedules($users);
         $this->seedMedications($olderAdults, $users);
         $this->seedIncidents($users, $olderAdults);
+        $this->seedRoutineNotes($users, $olderAdults);
     }
 
     private function seedUsers(): array
@@ -217,6 +222,87 @@ class InitialDataSeeder extends Seeder
                 'professional_caregiver_id' => $caregiverId,
             ]);
         }
+    }
+
+    private function seedSchedules(array $users): void
+    {
+        $today = Carbon::today();
+        $weekStart = $today->copy()->startOfWeek(Carbon::MONDAY);
+
+        $schedules = [
+            [
+                'user_id' => $users['professional_1']->id,
+                'day_of_week' => 1,
+                'start_time' => '07:00',
+                'end_time' => '15:00',
+                'notes' => 'Turno matutino de seguimiento general.',
+                'change_request_status' => null,
+                'change_request_start_time' => null,
+                'change_request_end_time' => null,
+                'change_request_notes' => null,
+                'change_request_message' => null,
+            ],
+            [
+                'user_id' => $users['professional_1']->id,
+                'day_of_week' => 4,
+                'start_time' => '08:00',
+                'end_time' => '16:00',
+                'notes' => 'Cobertura de rutina y medicamentos.',
+                'change_request_status' => 'pending',
+                'change_request_start_time' => '09:00',
+                'change_request_end_time' => '17:00',
+                'change_request_notes' => 'Solicita mover el turno una hora por cita medica.',
+                'change_request_message' => 'Cambio solicitado por cita medica programada.',
+            ],
+            [
+                'user_id' => $users['professional_2']->id,
+                'day_of_week' => 3,
+                'start_time' => '06:00',
+                'end_time' => '14:00',
+                'notes' => 'Supervision temprana y control respiratorio.',
+                'change_request_status' => null,
+                'change_request_start_time' => null,
+                'change_request_end_time' => null,
+                'change_request_notes' => null,
+                'change_request_message' => null,
+            ],
+            [
+                'user_id' => $users['professional_2']->id,
+                'day_of_week' => 6,
+                'start_time' => '10:00',
+                'end_time' => '18:00',
+                'notes' => 'Apoyo de fin de semana y seguimiento de actividades.',
+                'change_request_status' => null,
+                'change_request_start_time' => null,
+                'change_request_end_time' => null,
+                'change_request_notes' => null,
+                'change_request_message' => null,
+            ],
+        ];
+
+        foreach ($schedules as $schedule) {
+            CaregiverSchedule::updateOrCreate(
+                [
+                    'user_id' => $schedule['user_id'],
+                    'day_of_week' => $schedule['day_of_week'],
+                ],
+                $schedule
+            );
+        }
+
+        VacationRequest::updateOrCreate(
+            [
+                'user_id' => $users['professional_2']->id,
+                'start_date' => $weekStart->copy()->addDays(2)->toDateString(),
+                'end_date' => $weekStart->copy()->addDays(2)->toDateString(),
+            ],
+            [
+                'reason' => 'Permiso aprobado para cita medica de seguimiento.',
+                'status' => 'approved',
+                'reviewed_by' => $users['admin']->id,
+                'reviewed_at' => $today->copy()->setTime(9, 0),
+            ]
+        );
     }
 
     private function seedMedications(array $olderAdults, array $users): void
@@ -469,6 +555,52 @@ class InitialDataSeeder extends Seeder
                     'incident_date' => $incident['incident_date'],
                 ],
                 $incident
+            );
+        }
+    }
+
+    private function seedRoutineNotes(array $users, array $olderAdults): void
+    {
+        $today = Carbon::today();
+
+        $notes = [
+            [
+                'older_adult' => 'Rosa Martinez',
+                'professional' => 'professional_1',
+                'content' => 'Se mantuvo estable durante la manana y colaboro bien en la rutina de medicamentos.',
+                'note_date' => $today->copy()->startOfWeek(Carbon::MONDAY)->addDay()->toDateString(),
+            ],
+            [
+                'older_adult' => 'Rosa Martinez',
+                'professional' => 'professional_1',
+                'content' => 'Se observo mejor apetito en el almuerzo y buena hidratacion.',
+                'note_date' => $today->copy()->startOfWeek(Carbon::MONDAY)->addDays(3)->toDateString(),
+            ],
+            [
+                'older_adult' => 'Elena Castillo',
+                'professional' => 'professional_2',
+                'content' => 'Necesito supervision adicional durante la noche, pero descanso mejor despues del monitoreo.',
+                'note_date' => $today->copy()->startOfWeek(Carbon::MONDAY)->toDateString(),
+            ],
+        ];
+
+        foreach ($notes as $note) {
+            $olderAdult = $olderAdults[$note['older_adult']] ?? null;
+            $professional = $users[$note['professional']] ?? null;
+
+            if (!$olderAdult || !$professional) {
+                continue;
+            }
+
+            RoutineNote::updateOrCreate(
+                [
+                    'older_adult_id' => $olderAdult->id,
+                    'professional_caregiver_id' => $professional->id,
+                    'note_date' => $note['note_date'],
+                ],
+                [
+                    'content' => $note['content'],
+                ]
             );
         }
     }

@@ -73,4 +73,14 @@ class OlderAdult extends Model
     {
         return $this->hasMany(Incident::class)->orderByDesc('incident_date');
     }
+
+    public function routineNotes(): HasMany
+    {
+        return $this->hasMany(RoutineNote::class)->orderByDesc('note_date')->orderByDesc('updated_at');
+    }
+
+    public function rutinas(): HasMany
+    {
+        return $this->hasMany(Rutina::class)->orderBy('horario')->orderBy('nombre');
+    }
 }

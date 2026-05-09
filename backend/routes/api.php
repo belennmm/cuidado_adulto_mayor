@@ -10,6 +10,8 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MedicationAdministrationController;
 use App\Http\Controllers\OlderAdultController;
 use App\Http\Controllers\ProfessionalCareController;
+use App\Http\Controllers\ProfessionalRoutineNoteController;
+use App\Http\Controllers\RutinaController;
 use App\Http\Controllers\VacationRequestController;
 
 Route::get('/ping', function () {
@@ -33,11 +35,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules', [CaregiverScheduleController::class, 'store']);
     Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update']);
     Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange']);
+    Route::get('/rutinas', [RutinaController::class, 'index']);
+    Route::post('/rutinas', [RutinaController::class, 'store']);
+    Route::put('/rutinas/{rutina}', [RutinaController::class, 'update']);
+    Route::delete('/rutinas/{rutina}', [RutinaController::class, 'destroy']);
 
     Route::prefix('family')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
         Route::get('/older-adults', [FamilyCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [FamilyCareController::class, 'olderAdult']);
+        Route::get('/older-adults/{olderAdult}/incidents', [FamilyCareController::class, 'olderAdultIncidents']);
         Route::get('/incidents', [FamilyCareController::class, 'incidents']);
         Route::get('/routine', [FamilyCareController::class, 'routine']);
         Route::get('/routines', [FamilyCareController::class, 'routine']);
@@ -48,6 +55,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
         Route::get('/routines', [ProfessionalCareController::class, 'routine']);
+        Route::get('/routine-notes', [ProfessionalRoutineNoteController::class, 'index']);
+        Route::post('/routine-notes', [ProfessionalRoutineNoteController::class, 'store']);
+        Route::put('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'update']);
+        Route::delete('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'destroy']);
         Route::get('/schedules', [ProfessionalCareController::class, 'schedules']);
         Route::get('/vacation-requests', [VacationRequestController::class, 'index']);
         Route::post('/vacation-requests', [VacationRequestController::class, 'store']);
@@ -66,6 +77,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::delete('/users/{user}/reject', [AdminUserController::class, 'reject']);
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
     Route::get('/schedules', [CaregiverScheduleController::class, 'adminIndex']);
+    Route::get('/schedules/calendar', [CaregiverScheduleController::class, 'calendar']);
     Route::post('/schedules', [CaregiverScheduleController::class, 'adminStore']);
     Route::patch('/schedules/{schedule}/change-request/approve', [CaregiverScheduleController::class, 'approveChangeRequest']);
     Route::patch('/schedules/{schedule}/change-request/reject', [CaregiverScheduleController::class, 'rejectChangeRequest']);
