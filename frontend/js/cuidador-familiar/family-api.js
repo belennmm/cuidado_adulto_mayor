@@ -130,6 +130,24 @@
     `
   }
 
+  async function showAlert(message, options = {}) {
+    if (typeof window.showAdminAlert === "function") {
+      await window.showAdminAlert(message, options)
+      return
+    }
+
+    console.warn(message)
+  }
+
+  async function showConfirm(message, options = {}) {
+    if (typeof window.showAdminConfirm === "function") {
+      return window.showAdminConfirm(message, options)
+    }
+
+    console.warn(message, options)
+    return false
+  }
+
   window.FamilyCare = {
     fetchJson,
     formatDate,
@@ -143,6 +161,8 @@
     renderEmpty,
     saveUser,
     setText,
+    showAlert,
+    showConfirm,
     escapeHtml,
   }
 })()

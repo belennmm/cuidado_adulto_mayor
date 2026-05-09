@@ -148,9 +148,12 @@
       loadAdultDetail(event.target.value).catch((error) => renderEmpty(error.message))
     })
 
-    document.getElementById("requestChangeButton")?.addEventListener("click", () => {
+    document.getElementById("requestChangeButton")?.addEventListener("click", async () => {
       const name = selectedAdult?.full_name || "este adulto mayor"
-      alert(`Solicitud registrada para revisar los datos de ${name}.`)
+      await api.showAlert(`Solicitud registrada para revisar los datos de ${name}.`, {
+        title: "Solicitud registrada",
+        variant: "info",
+      })
     })
 
     loadOlderAdults()

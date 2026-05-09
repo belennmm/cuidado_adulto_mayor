@@ -53,6 +53,24 @@
     return error?.message || "No se pudo guardar la rutina."
   }
 
+  async function showProfessionalAlert(message, options = {}) {
+    if (typeof window.showAdminAlert === "function") {
+      await window.showAdminAlert(message, options)
+      return
+    }
+
+    console.warn(message)
+  }
+
+  async function showProfessionalConfirm(message, options = {}) {
+    if (typeof window.showAdminConfirm === "function") {
+      return window.showAdminConfirm(message, options)
+    }
+
+    console.warn(message, options)
+    return false
+  }
+
   function resetNoteForm() {
     editingNoteId = null
     const textarea = document.getElementById("routineNoteInput")
@@ -323,10 +341,20 @@
 
       const wasEditing = Boolean(editingCustomRoutineId)
       resetCustomRoutineForm()
-      setCustomRoutineMessage(wasEditing ? "Rutina actualizada correctamente." : "Rutina creada correctamente.")
+      const successMessage = wasEditing ? "Rutina actualizada correctamente." : "Rutina creada correctamente."
+      setCustomRoutineMessage(successMessage)
       await loadRoutinesAndNotes()
+      await showProfessionalAlert(successMessage, {
+        title: "Rutina guardada",
+        variant: "info",
+      })
     } catch (error) {
-      setCustomRoutineMessage(firstValidationMessage(error), true)
+      const message = firstValidationMessage(error)
+      setCustomRoutineMessage(message, true)
+      await showProfessionalAlert(message, {
+        title: "No se pudo guardar",
+        variant: "error",
+      })
     } finally {
       if (saveButton) {
         saveButton.disabled = false
@@ -358,7 +386,12 @@
   }
 
   async function deleteCustomRoutine(routineId) {
-    const confirmed = confirm("Deseas eliminar esta rutina?")
+    const confirmed = await showProfessionalConfirm("Deseas eliminar esta rutina?", {
+      title: "Eliminar rutina",
+      confirmText: "Eliminar",
+      cancelText: "Cancelar",
+      variant: "danger",
+    })
     if (!confirmed) return
 
     try {
@@ -370,10 +403,20 @@
         resetCustomRoutineForm()
       }
 
-      setCustomRoutineMessage("Rutina eliminada correctamente.")
+      const message = "Rutina eliminada correctamente."
+      setCustomRoutineMessage(message)
       await loadRoutinesAndNotes()
+      await showProfessionalAlert(message, {
+        title: "Rutina eliminada",
+        variant: "info",
+      })
     } catch (error) {
-      setCustomRoutineMessage(firstValidationMessage(error), true)
+      const message = firstValidationMessage(error)
+      setCustomRoutineMessage(message, true)
+      await showProfessionalAlert(message, {
+        title: "No se pudo eliminar",
+        variant: "error",
+      })
     }
   }
 
@@ -413,11 +456,20 @@
         body: JSON.stringify(body),
       })
 
-      setMessage(wasEditing ? "Nota actualizada correctamente." : "Nota guardada correctamente.")
+      const successMessage = wasEditing ? "Nota actualizada correctamente." : "Nota guardada correctamente."
+      setMessage(successMessage)
       resetNoteForm()
       await loadRoutinesAndNotes()
+      await showProfessionalAlert(successMessage, {
+        title: "Nota guardada",
+        variant: "info",
+      })
     } catch (error) {
       setMessage(error.message, true)
+      await showProfessionalAlert(error.message, {
+        title: "No se pudo guardar",
+        variant: "error",
+      })
     } finally {
       if (saveButton) {
         saveButton.disabled = false
@@ -446,7 +498,12 @@
   }
 
   async function deleteNote(noteId) {
-    const confirmed = confirm("Deseas eliminar esta nota?")
+    const confirmed = await showProfessionalConfirm("Deseas eliminar esta nota?", {
+      title: "Eliminar nota",
+      confirmText: "Eliminar",
+      cancelText: "Cancelar",
+      variant: "danger",
+    })
     if (!confirmed) return
 
     try {
@@ -458,10 +515,19 @@
         resetNoteForm()
       }
 
-      setMessage("Nota eliminada correctamente.")
+      const message = "Nota eliminada correctamente."
+      setMessage(message)
       await loadRoutinesAndNotes()
+      await showProfessionalAlert(message, {
+        title: "Nota eliminada",
+        variant: "info",
+      })
     } catch (error) {
       setMessage(error.message, true)
+      await showProfessionalAlert(error.message, {
+        title: "No se pudo eliminar",
+        variant: "error",
+      })
     }
   }
 

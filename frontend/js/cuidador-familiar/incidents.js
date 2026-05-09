@@ -157,8 +157,11 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("incidentDetailButton")?.addEventListener("click", () => {
-      alert(formatIncidentDetail(selectedIncident))
+    document.getElementById("incidentDetailButton")?.addEventListener("click", async () => {
+      await api.showAlert(formatIncidentDetail(selectedIncident), {
+        title: "Detalle del incidente",
+        variant: selectedIncident ? "info" : "error",
+      })
     })
 
     document.getElementById("incidentsAdultSelector")?.addEventListener("change", (event) => {

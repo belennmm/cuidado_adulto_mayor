@@ -65,6 +65,24 @@
     `
   }
 
+  async function showProfessionalAlert(message, options = {}) {
+    if (typeof window.showAdminAlert === "function") {
+      await window.showAdminAlert(message, options)
+      return
+    }
+
+    console.warn(message)
+  }
+
+  async function showProfessionalConfirm(message, options = {}) {
+    if (typeof window.showAdminConfirm === "function") {
+      return window.showAdminConfirm(message, options)
+    }
+
+    console.warn(message, options)
+    return false
+  }
+
   function statusLabel(status) {
     if (status === "approved") return "Aprobada"
     if (status === "rejected") return "Rechazada"
@@ -136,6 +154,15 @@
     message.textContent = ""
     message.classList.remove("is-error")
 
+    const confirmed = await showProfessionalConfirm("Deseas enviar esta solicitud de cambio de turno?", {
+      title: "Enviar solicitud",
+      confirmText: "Enviar",
+      cancelText: "Cancelar",
+      variant: "info",
+    })
+
+    if (!confirmed) return
+
     try {
       const payload = {
         start_time: form.elements.start_time.value,
@@ -149,11 +176,20 @@
         body: JSON.stringify(payload),
       })
 
-      message.textContent = data.message || "Solicitud enviada correctamente."
+      const successMessage = data.message || "Solicitud enviada correctamente."
+      message.textContent = successMessage
       await loadSchedules()
+      await showProfessionalAlert(successMessage, {
+        title: "Solicitud enviada",
+        variant: "info",
+      })
     } catch (error) {
       message.textContent = error.message
       message.classList.add("is-error")
+      await showProfessionalAlert(error.message, {
+        title: "No se pudo enviar",
+        variant: "error",
+      })
     }
   }
 
@@ -165,6 +201,15 @@
     message.textContent = ""
     message.classList.remove("is-error")
 
+    const confirmed = await showProfessionalConfirm("Deseas enviar esta solicitud de vacaciones?", {
+      title: "Enviar solicitud",
+      confirmText: "Enviar",
+      cancelText: "Cancelar",
+      variant: "info",
+    })
+
+    if (!confirmed) return
+
     try {
       const data = await api.fetchJson("/professional/vacation-requests", {
         method: "POST",
@@ -175,12 +220,21 @@
         }),
       })
 
-      message.textContent = data.message || "Solicitud enviada correctamente."
+      const successMessage = data.message || "Solicitud enviada correctamente."
+      message.textContent = successMessage
       form.reset()
       await loadVacationRequests()
+      await showProfessionalAlert(successMessage, {
+        title: "Solicitud enviada",
+        variant: "info",
+      })
     } catch (error) {
       message.textContent = error.message
       message.classList.add("is-error")
+      await showProfessionalAlert(error.message, {
+        title: "No se pudo enviar",
+        variant: "error",
+      })
     }
   }
 

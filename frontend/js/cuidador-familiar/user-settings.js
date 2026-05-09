@@ -89,9 +89,18 @@
       api.saveUser(data.user)
       fillProfile(data.user)
       clearPasswordFields()
-      setMessage(data.message || "Perfil actualizado correctamente.", "success")
+      const message = data.message || "Perfil actualizado correctamente."
+      setMessage(message, "success")
+      await api.showAlert(message, {
+        title: "Perfil actualizado",
+        variant: "info",
+      })
     } catch (error) {
       setMessage(error.message, "error")
+      await api.showAlert(error.message, {
+        title: "No se pudo guardar",
+        variant: "error",
+      })
     }
   }
 
