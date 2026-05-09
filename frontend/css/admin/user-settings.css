@@ -153,7 +153,22 @@
 
 .form-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.settings-message {
+  flex: 1;
+  min-width: 220px;
+  margin: 0;
+  color: #2d8c57;
+  font-size: 14px;
+}
+
+.settings-message.is-error {
+  color: #c94f4f;
 }
 
 .primary-button {
@@ -191,6 +206,8 @@
 
   .form-actions {
     justify-content: stretch;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .primary-button {
