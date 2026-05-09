@@ -90,6 +90,7 @@
     try {
       const data = await api.fetchJson("/family/overview")
       renderDashboard(data)
+      window.CareNotifications?.handleData("family", data, false)
     } catch (error) {
       const containers = ["dashboardRoutineList", "dashboardIncidentsList", "dashboardAdultsList"]
 
@@ -100,5 +101,14 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadDashboard)
+  document.addEventListener("DOMContentLoaded", () => {
+    window.CareNotifications?.init({
+      role: "family",
+      endpoint: "/family/overview",
+      fetchJson: api.fetchJson,
+      mountSelector: ".family-page-header",
+      routineUrl: "./routine.html",
+    })
+    loadDashboard()
+  })
 })()

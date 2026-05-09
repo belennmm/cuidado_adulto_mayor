@@ -34,6 +34,186 @@ textarea {
   font: inherit;
 }
 
+.notification-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #c7d7ee;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #17395f;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.notification-button i {
+  flex: 0 0 auto;
+  font-size: 20px;
+}
+
+.notification-button:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.care-notification-center {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.care-bell-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #d9b8bf;
+  border-radius: 8px;
+  background: #fff8f8;
+  color: #8a1f32;
+  cursor: pointer;
+}
+
+.care-bell-button i {
+  font-size: 21px;
+}
+
+.care-bell-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #d91f3d;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+}
+
+.care-notification-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  width: min(340px, calc(100vw - 32px));
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid #dce5f0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 36, 59, 0.16);
+}
+
+.care-notification-panel-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #edf1f6;
+  background: #ffffff;
+  color: #152238;
+}
+
+.care-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid #d7e2ee;
+  border-radius: 8px;
+  background: #f8fbff;
+  color: #24415f;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.care-notification-empty {
+  padding: 18px 14px;
+  color: #68798f;
+  font-size: 14px;
+}
+
+.care-notification-list {
+  display: grid;
+}
+
+.care-notification-item {
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf1f6;
+  color: #19283d;
+  text-decoration: none;
+}
+
+.care-notification-item:hover {
+  background: #f7fbff;
+}
+
+.care-notification-item strong {
+  font-size: 14px;
+}
+
+.care-notification-item span {
+  color: #66768a;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.care-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 80;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid #f0c5ce;
+  border-radius: 8px;
+  background: #fff7f8;
+  color: #1d2634;
+  box-shadow: 0 18px 45px rgba(23, 36, 52, 0.18);
+}
+
+.care-toast i {
+  color: #c81d3a;
+  font-size: 24px;
+}
+
+.care-toast div {
+  display: grid;
+  gap: 4px;
+}
+
+.care-toast strong {
+  font-size: 15px;
+}
+
+.care-toast span {
+  color: #5f6d7e;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
 a,
 button,
 input,

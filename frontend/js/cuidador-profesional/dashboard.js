@@ -91,7 +91,9 @@
 
   async function loadDashboard() {
     try {
-      renderDashboard(await api.fetchJson("/professional/overview"))
+      const data = await api.fetchJson("/professional/overview")
+      renderDashboard(data)
+      window.CareNotifications?.handleData("professional", data, false)
     } catch (error) {
       document.querySelectorAll(".professional-list").forEach((element) => {
         element.innerHTML = api.renderEmpty(error.message)
@@ -99,5 +101,14 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadDashboard)
+  document.addEventListener("DOMContentLoaded", () => {
+    window.CareNotifications?.init({
+      role: "professional",
+      endpoint: "/professional/overview",
+      fetchJson: api.fetchJson,
+      mountSelector: ".professional-actions",
+      routineUrl: "./routines.html",
+    })
+    loadDashboard()
+  })
 })()
