@@ -38,6 +38,19 @@
     return isInsideApp() ? APP_SHOW_DELAY_MS : AUTH_SHOW_DELAY_MS
   }
 
+  function isLoadingEnabled() {
+    if (!window.location.pathname.toLowerCase().includes("/pages/admin/")) {
+      return true
+    }
+
+    try {
+      const settings = JSON.parse(localStorage.getItem("adminPanelSettings") || "{}")
+      return settings.showLoading !== false
+    } catch (error) {
+      return true
+    }
+  }
+
   function clearTimer(timerId) {
     if (timerId) {
       clearTimeout(timerId)
@@ -151,6 +164,10 @@
   }
 
   function startRequest(message = DEFAULT_MESSAGE) {
+    if (!isLoadingEnabled()) {
+      return
+    }
+
     activeRequests += 1
 
     if (activeRequests === 1) {
@@ -167,6 +184,10 @@
   }
 
   function finishRequest({ ok = true, message } = {}) {
+    if (!isLoadingEnabled() && activeRequests === 0) {
+      return
+    }
+
     activeRequests = Math.max(0, activeRequests - 1)
 
     if (!ok) {
@@ -254,6 +275,16 @@
   function navigate(url, { replace = false, message = "Abriendo pagina..." } = {}) {
     if (!url) return
 
+    if (!isLoadingEnabled()) {
+      if (replace) {
+        window.location.replace(url)
+        return
+      }
+
+      window.location.assign(url)
+      return
+    }
+
     routeNavigationInProgress = true
     queueShow({
       state: "loading",
@@ -303,6 +334,10 @@
         return
       }
 
+      if (!isLoadingEnabled()) {
+        return
+      }
+
       routeNavigationInProgress = true
       queueShow({
         state: "loading",
@@ -315,6 +350,7 @@
 
   window.AppLoading = {
     show(message = DEFAULT_MESSAGE, detail = "Estamos preparando la informacion.") {
+      if (!isLoadingEnabled()) return
       showOverlay({ state: "loading", message, detail })
     },
     success(message = DEFAULT_SUCCESS_MESSAGE, detail = "") {

@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configuración de Anuncios</title>
+    <title>Configuracion</title>
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
-    <link rel="stylesheet" href="../../css/admin/placeholder.css" />
+    <link rel="stylesheet" href="../../css/admin/settings.css" />
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link
       rel="stylesheet"
@@ -33,7 +33,7 @@
           <a href="./users.html" class="nav-icon" data-label="Usuarios">
             <i class="bx bxs-user"></i>
           </a>
-          <a href="./shifts.html" class="nav-icon active" data-label="Turnos">
+          <a href="./shifts.html" class="nav-icon" data-label="Turnos">
             <i class="bx bxs-time"></i>
           </a>
           <a href="./adultos-mayores.html" class="nav-icon" data-label="Adultos mayores">
@@ -45,7 +45,7 @@
           <a href="./routines.html" class="nav-icon" data-label="Rutinas">
             <i class="bx bxs-star"></i>
           </a>
-          <a href="./settings.html" class="nav-icon" data-label="Configuración">
+          <a href="./settings.html" class="nav-icon active" data-label="Configuracion">
             <i class="bx bxs-cog"></i>
           </a>
         </nav>
@@ -54,8 +54,8 @@
           <a href="./user-settings.html" class="nav-icon" data-label="Perfil">
             <i class="bx bx-user-circle"></i>
           </a>
-          
-          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesión">
+
+          <a href="#" class="nav-icon logout-trigger" data-label="Cerrar sesion">
             <i class="bx bx-log-out"></i>
           </a>
         </div>
@@ -64,14 +64,135 @@
       <main class="admin-main">
         <div class="admin-topbar"></div>
 
-        
+        <section class="settings-page">
+          <div class="settings-header">
+            <div>
+              <h1>Configuracion</h1>
+              <p>Controla preferencias del panel y revisa el estado operativo.</p>
+            </div>
+
+            <a href="./user-settings.html" class="settings-profile-link">
+              <i class="bx bx-user-circle"></i>
+              Editar perfil
+            </a>
+          </div>
+
+          <section class="settings-summary-grid">
+            <article class="settings-summary-card">
+              <span>Administrador</span>
+              <strong id="settingsAdminName">Cargando...</strong>
+              <p id="settingsAdminEmail">Verificando sesion</p>
+            </article>
+
+            <article class="settings-summary-card">
+              <span>Adultos mayores</span>
+              <strong id="settingsOlderAdultsCount">0</strong>
+              <p>Registrados en el sistema</p>
+            </article>
+
+            <article class="settings-summary-card">
+              <span>Medicamentos pendientes</span>
+              <strong id="settingsPendingMedicines">0</strong>
+              <p id="settingsSummaryDate">Resumen de hoy</p>
+            </article>
+          </section>
+
+          <div class="settings-grid">
+            <section class="settings-panel">
+              <div class="settings-panel-heading">
+                <div>
+                  <h2>Preferencias del panel</h2>
+                  <p>Estos ajustes se guardan para este navegador.</p>
+                </div>
+              </div>
+
+              <form class="settings-form" id="adminSettingsForm">
+                <label class="settings-field" for="settingsDefaultPage">
+                  <span>Pantalla inicial</span>
+                  <select id="settingsDefaultPage">
+                    <option value="./dashboard.html">Dashboard</option>
+                    <option value="./adultos-mayores.html">Adultos mayores</option>
+                    <option value="./users.html">Usuarios</option>
+                    <option value="./shifts.html">Turnos</option>
+                    <option value="./routines.html">Rutinas</option>
+                    <option value="./incidents.html">Incidentes</option>
+                  </select>
+                </label>
+
+                <div class="settings-toggle-list">
+                  <label class="settings-toggle">
+                    <input type="checkbox" id="settingsShowLoading" />
+                    <span class="toggle-ui"></span>
+                    <span>
+                      Animacion de carga
+                      <small>Mostrar indicador al navegar entre pantallas.</small>
+                    </span>
+                  </label>
+
+                  <label class="settings-toggle">
+                    <input type="checkbox" id="settingsDailySummary" />
+                    <span class="toggle-ui"></span>
+                    <span>
+                      Resumen diario
+                      <small>Priorizar datos de medicamentos pendientes del dia.</small>
+                    </span>
+                  </label>
+
+                  <label class="settings-toggle">
+                    <input type="checkbox" id="settingsCareAlerts" />
+                    <span class="toggle-ui"></span>
+                    <span>
+                      Alertas de cuidado
+                      <small>Resaltar pendientes y estados criticos en el panel.</small>
+                    </span>
+                  </label>
+                </div>
+
+                <p class="settings-message" id="adminSettingsMessage" aria-live="polite"></p>
+
+                <div class="settings-actions">
+                  <button type="button" class="secondary-button" id="resetAdminSettings">Restablecer</button>
+                  <button type="submit" class="primary-button">Guardar preferencias</button>
+                </div>
+              </form>
+            </section>
+
+            <section class="settings-panel">
+              <div class="settings-panel-heading">
+                <div>
+                  <h2>Accesos rapidos</h2>
+                  <p>Administra las areas principales del sistema.</p>
+                </div>
+              </div>
+
+              <div class="quick-actions">
+                <a href="./new-user.html">
+                  <i class="bx bxs-user-plus"></i>
+                  Nuevo usuario
+                </a>
+                <a href="./new-adulto-mayor.html">
+                  <i class="bx bxs-id-card"></i>
+                  Nuevo adulto mayor
+                </a>
+                <a href="./shifts-calendar.html">
+                  <i class="bx bxs-calendar"></i>
+                  Calendario de turnos
+                </a>
+                <a href="./routines.html">
+                  <i class="bx bxs-star"></i>
+                  Gestionar rutinas
+                </a>
+              </div>
+            </section>
+          </div>
+        </section>
       </main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesion</h3>
+        <p class="logout-modal-text">Seguro que deseas cerrar sesion?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">
@@ -84,9 +205,8 @@
       </div>
     </div>
 
-  
-  <script src="../../js/app-loading.js"></script>
-  <script src="../../js/logout-modal.js"></script>
-
+    <script src="../../js/app-loading.js"></script>
+    <script src="../../js/logout-modal.js"></script>
+    <script src="../../js/admin/settings.js"></script>
   </body>
 </html>
