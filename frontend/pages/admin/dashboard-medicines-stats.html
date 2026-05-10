@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Estadísticas de Medicamentos</title>
+    <title>Estadisticas de Medicamentos</title>
 
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/admin/admin-layout.css" />
@@ -74,7 +74,7 @@
         <section class="page-shell dashboard-medicines-page">
           <div class="dashboard-medicines-header">
             <div>
-              <h1 class="dashboard-medicines-title">Estadísticas de Medicamentos</h1>
+              <h1 class="dashboard-medicines-title">Estadisticas de Medicamentos</h1>
               <p class="dashboard-medicines-subtitle">Resumen general de uso y control de medicamentos.</p>
             </div>
 
@@ -86,14 +86,14 @@
           <section class="medicines-section-card">
             <div class="section-heading section-heading-split">
               <div>
-                <span class="section-badge">Estadísticas</span>
-                <h2>Estadísticas de la Medicina Más Utilizada</h2>
+                <span class="section-badge">Estadisticas</span>
+                <h2>Estadisticas de la Medicina Mas Utilizada</h2>
               </div>
 
               <div class="stats-filter-group" id="statsFilterGroup">
-                <button type="button" class="stats-filter-button active" data-filter="day">Día</button>
+                <button type="button" class="stats-filter-button active" data-filter="day">Dia</button>
                 <button type="button" class="stats-filter-button" data-filter="month">Mes</button>
-                <button type="button" class="stats-filter-button" data-filter="year">Año</button>
+                <button type="button" class="stats-filter-button" data-filter="year">Ano</button>
               </div>
             </div>
 
@@ -105,12 +105,12 @@
                       <span class="summary-overline">Medicamento seleccionado</span>
                       <h3 class="summary-title" id="selectedMedicineName">--</h3>
                     </div>
-                    <span class="summary-filter-pill" id="selectedFilterLabel">Día</span>
+                    <span class="summary-filter-pill" id="selectedFilterLabel">Dia</span>
                   </div>
 
                   <div class="stats-cards-grid">
                     <article class="mini-stat-card">
-                      <span class="mini-stat-label">Medicina más utilizada</span>
+                      <span class="mini-stat-label">Medicina mas utilizada</span>
                       <strong class="mini-stat-value" id="topMedicineUsage">--</strong>
                       <span class="mini-stat-caption" id="topMedicineUsageCaption">--</span>
                     </article>
@@ -122,7 +122,7 @@
                     </article>
 
                     <article class="mini-stat-card">
-                      <span class="mini-stat-label">Días de uso consecutivo o reciente</span>
+                      <span class="mini-stat-label">Dias de uso consecutivo o reciente</span>
                       <strong class="mini-stat-value" id="selectedMedicineStreak">--</strong>
                       <span class="mini-stat-caption" id="selectedMedicineStreakCaption">--</span>
                     </article>
@@ -131,7 +131,7 @@
                   <div class="usage-chart-card">
                     <div class="chart-header">
                       <div>
-                        <span class="chart-overline">Gráfica de uso</span>
+                        <span class="chart-overline">Grafica de uso</span>
                         <h4 class="chart-title" id="usageChartTitle">Uso del medicamento</h4>
                       </div>
                     </div>
@@ -156,12 +156,12 @@
             <div class="stats-empty-state" id="statsEmptyState" hidden>
               <i class="bx bx-bar-chart-square"></i>
               <strong>No hay datos para este filtro.</strong>
-              <span>Prueba cambiar entre Día, Mes o Año para revisar otro periodo.</span>
+              <span>Prueba cambiar entre Dia, Mes o Ano para revisar otro periodo.</span>
             </div>
 
             <div class="stats-loading-state" id="statsLoadingState" hidden>
               <div class="stats-loading-spinner"></div>
-              <strong>Cargando estadísticas...</strong>
+              <strong>Cargando estadisticas...</strong>
               <span>Estamos preparando el resumen visual del periodo seleccionado.</span>
             </div>
 
@@ -173,11 +173,18 @@
           </section>
 
           <section class="medicines-section-card inventory-section">
-            <div class="section-heading">
-              <span class="section-badge">Inventario</span>
-              <h2>Inventario de medicamentos</h2>
+            <div class="section-heading section-heading-split">
+              <div>
+                <span class="section-badge">Inventario</span>
+                <h2>Inventario de medicamentos</h2>
+              </div>
+
+              <button type="button" class="inventory-primary-button" id="openNewMedicationButton">
+                Nuevo medicamento
+              </button>
             </div>
 
+            <div class="inventory-feedback" id="inventoryFeedback" hidden></div>
             <div class="inventory-list" id="inventoryList">
               <div class="inventory-placeholder">Cargando inventario...</div>
             </div>
@@ -186,10 +193,102 @@
       </main>
     </div>
 
+    <div class="inventory-modal-overlay" id="medicationFormModal" hidden>
+      <div class="inventory-modal-box">
+        <div class="inventory-modal-header">
+          <div>
+            <h3 class="inventory-modal-title" id="medicationFormTitle">Nuevo medicamento</h3>
+            <p class="inventory-modal-subtitle">Completa la informacion del inventario.</p>
+          </div>
+          <button type="button" class="inventory-modal-close" id="closeMedicationFormModal" aria-label="Cerrar">
+            <i class="bx bx-x"></i>
+          </button>
+        </div>
+
+        <form id="medicationForm" class="inventory-form">
+          <input type="hidden" id="medicationId" name="medicationId" />
+
+          <div class="inventory-form-grid">
+            <div class="inventory-form-group">
+              <label for="medicationName">Nombre</label>
+              <input type="text" id="medicationName" name="medicationName" required />
+            </div>
+
+            <div class="inventory-form-group">
+              <label for="medicationPresentation">Presentacion</label>
+              <input type="text" id="medicationPresentation" name="medicationPresentation" required />
+            </div>
+
+            <div class="inventory-form-group">
+              <label for="medicationQuantity">Cantidad</label>
+              <input type="number" id="medicationQuantity" name="medicationQuantity" min="0" required />
+            </div>
+
+            <div class="inventory-form-group">
+              <label for="medicationUnit">Unidad</label>
+              <input type="text" id="medicationUnit" name="medicationUnit" required />
+            </div>
+
+            <div class="inventory-form-group">
+              <label for="medicationMinimumStock">Stock minimo</label>
+              <input type="number" id="medicationMinimumStock" name="medicationMinimumStock" min="0" required />
+            </div>
+
+            <div class="inventory-form-group">
+              <label for="medicationExpirationDate">Vencimiento</label>
+              <input type="date" id="medicationExpirationDate" name="medicationExpirationDate" required />
+            </div>
+          </div>
+
+          <div class="inventory-form-actions">
+            <button type="button" class="inventory-secondary-button" id="cancelMedicationFormButton">
+              Cancelar
+            </button>
+            <button type="submit" class="inventory-primary-button" id="submitMedicationFormButton">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="inventory-modal-overlay" id="stockAdjustmentModal" hidden>
+      <div class="inventory-modal-box inventory-modal-box-small">
+        <div class="inventory-modal-header">
+          <div>
+            <h3 class="inventory-modal-title" id="stockAdjustmentTitle">Ajustar stock</h3>
+            <p class="inventory-modal-subtitle" id="stockAdjustmentSubtitle">Define la cantidad a modificar.</p>
+          </div>
+          <button type="button" class="inventory-modal-close" id="closeStockAdjustmentModal" aria-label="Cerrar">
+            <i class="bx bx-x"></i>
+          </button>
+        </div>
+
+        <form id="stockAdjustmentForm" class="inventory-form">
+          <input type="hidden" id="stockMedicationId" name="stockMedicationId" />
+          <input type="hidden" id="stockActionType" name="stockActionType" />
+
+          <div class="inventory-form-group">
+            <label for="stockAmount">Cantidad</label>
+            <input type="number" id="stockAmount" name="stockAmount" min="1" required />
+          </div>
+
+          <div class="inventory-form-actions">
+            <button type="button" class="inventory-secondary-button" id="cancelStockAdjustmentButton">
+              Cancelar
+            </button>
+            <button type="submit" class="inventory-primary-button" id="submitStockAdjustmentButton">
+              Confirmar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="logout-modal-overlay" id="logoutModal">
       <div class="logout-modal-box">
-        <h3 class="logout-modal-title">Cerrar sesión</h3>
-        <p class="logout-modal-text">¿Seguro que deseas cerrar sesión?</p>
+        <h3 class="logout-modal-title">Cerrar sesion</h3>
+        <p class="logout-modal-text">¿Seguro que deseas cerrar sesion?</p>
 
         <div class="logout-modal-actions">
           <button type="button" class="logout-cancel-button" id="cancelLogout">

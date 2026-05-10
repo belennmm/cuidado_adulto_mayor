@@ -308,18 +308,67 @@ class InitialDataSeeder extends Seeder
     private function seedMedications(array $olderAdults, array $users): void
     {
         $catalog = [
-            'Losartan',
-            'Metformina',
-            'Salbutamol',
-            'Paracetamol',
-            'Ibuprofeno',
-            'Omeprazol',
+            [
+                'name' => 'Losartan',
+                'presentation' => 'Caja de tabletas 50 mg',
+                'quantity' => 120,
+                'unit' => 'tabletas',
+                'minimum_stock' => 30,
+                'expiration_date' => Carbon::today()->copy()->addMonths(9)->toDateString(),
+            ],
+            [
+                'name' => 'Metformina',
+                'presentation' => 'Caja de tabletas 850 mg',
+                'quantity' => 26,
+                'unit' => 'tabletas',
+                'minimum_stock' => 30,
+                'expiration_date' => Carbon::today()->copy()->addMonths(4)->toDateString(),
+            ],
+            [
+                'name' => 'Salbutamol',
+                'presentation' => 'Inhalador 100 mcg',
+                'quantity' => 15,
+                'unit' => 'inhaladores',
+                'minimum_stock' => 8,
+                'expiration_date' => Carbon::today()->copy()->addDays(18)->toDateString(),
+            ],
+            [
+                'name' => 'Paracetamol',
+                'presentation' => 'Blister de tabletas 500 mg',
+                'quantity' => 88,
+                'unit' => 'tabletas',
+                'minimum_stock' => 25,
+                'expiration_date' => Carbon::today()->copy()->addMonths(6)->toDateString(),
+            ],
+            [
+                'name' => 'Ibuprofeno',
+                'presentation' => 'Frasco de tabletas 400 mg',
+                'quantity' => 9,
+                'unit' => 'tabletas',
+                'minimum_stock' => 12,
+                'expiration_date' => Carbon::today()->copy()->subDays(3)->toDateString(),
+            ],
+            [
+                'name' => 'Omeprazol',
+                'presentation' => 'Caja de capsulas 20 mg',
+                'quantity' => 42,
+                'unit' => 'capsulas',
+                'minimum_stock' => 15,
+                'expiration_date' => Carbon::today()->copy()->addMonths(7)->toDateString(),
+            ],
         ];
 
-        foreach ($catalog as $name) {
+        foreach ($catalog as $medicationData) {
             Medication::updateOrCreate(
-                ['name' => $name],
-                ['is_active' => true]
+                ['name' => $medicationData['name']],
+                [
+                    'presentation' => $medicationData['presentation'],
+                    'quantity' => $medicationData['quantity'],
+                    'unit' => $medicationData['unit'],
+                    'minimum_stock' => $medicationData['minimum_stock'],
+                    'expiration_date' => $medicationData['expiration_date'],
+                    'is_active' => true,
+                ]
             );
         }
 

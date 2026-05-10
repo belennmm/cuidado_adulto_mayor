@@ -241,13 +241,21 @@ class AdminDashboardController extends Controller
             ->orderBy('name')
             ->get()
             ->map(function (Medication $medication) {
+                $status = $medication->inventoryStatus();
                 $activeAssignments = $medication->olderAdultMedications
                     ->filter(fn (OlderAdultMedication $assignment) => (bool) $assignment->is_active);
 
                 return [
                     'id' => $medication->id,
                     'name' => $medication->name,
+                    'presentation' => $medication->presentation,
+                    'quantity' => (int) $medication->quantity,
+                    'unit' => $medication->unit,
+                    'minimum_stock' => (int) $medication->minimum_stock,
+                    'expiration_date' => $medication->expiration_date?->toDateString(),
                     'is_active' => (bool) $medication->is_active,
+                    'status' => $status['key'],
+                    'status_label' => $status['label'],
                     'assigned_patients' => $activeAssignments
                         ->pluck('older_adult_id')
                         ->filter()
