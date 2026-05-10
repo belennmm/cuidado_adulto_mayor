@@ -93,15 +93,6 @@
     return data
   }
 
-  function getStatusElements() {
-    return {
-      statsLayout: document.getElementById("medicinesStatsLayout"),
-      emptyState: document.getElementById("statsEmptyState"),
-      loadingState: document.getElementById("statsLoadingState"),
-      errorState: document.getElementById("statsErrorState"),
-      errorMessage: document.getElementById("statsErrorMessage"),
-    }
-  }
 
   function updateFilterButtons() {
     document.querySelectorAll(".stats-filter-button").forEach((button) => {
@@ -280,39 +271,9 @@
       .join("")
   }
 
-  function renderEmptyState() {
-    const { statsLayout, emptyState, loadingState, errorState } = getStatusElements()
-    if (statsLayout) statsLayout.hidden = true
-    if (emptyState) emptyState.hidden = false
-    if (loadingState) loadingState.hidden = true
-    if (errorState) errorState.hidden = true
-  }
 
-  function renderLoadingState() {
-    const { statsLayout, emptyState, loadingState, errorState } = getStatusElements()
-    if (statsLayout) statsLayout.hidden = true
-    if (emptyState) emptyState.hidden = true
-    if (loadingState) loadingState.hidden = false
-    if (errorState) errorState.hidden = true
-    renderInventoryLoading()
-  }
 
-  function renderErrorState(message) {
-    const { statsLayout, emptyState, loadingState, errorState, errorMessage } = getStatusElements()
-    if (statsLayout) statsLayout.hidden = true
-    if (emptyState) emptyState.hidden = true
-    if (loadingState) loadingState.hidden = true
-    if (errorState) errorState.hidden = false
-    if (errorMessage) errorMessage.textContent = message
-  }
 
-  function renderReadyState() {
-    const { statsLayout, emptyState, loadingState, errorState } = getStatusElements()
-    if (statsLayout) statsLayout.hidden = false
-    if (emptyState) emptyState.hidden = true
-    if (loadingState) loadingState.hidden = true
-    if (errorState) errorState.hidden = true
-  }
 
   async function loadFilterItems() {
     const data = await fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(state.activeFilter)}`)
@@ -322,26 +283,30 @@
 
   async function renderStats() {
     updateFilterButtons()
-    renderLoadingState()
 
     try {
       await loadFilterItems()
       renderInventory()
 
       if (!state.items.length) {
-        renderEmptyState()
+        state.selectedMedicineId = null
+        const statsLayout = document.getElementById("medicinesStatsLayout")
+        if (statsLayout) statsLayout.hidden = true
         return
       }
+
+      const statsLayout = document.getElementById("medicinesStatsLayout")
+      if (statsLayout) statsLayout.hidden = false
 
       const selectedMedicine = getSelectedMedicine()
       state.selectedMedicineId = selectedMedicine.id
 
-      renderReadyState()
       renderSummary(selectedMedicine)
       renderChart(selectedMedicine)
       renderRanking(selectedMedicine.id)
     } catch (error) {
-      renderErrorState(error.message || "No se pudo cargar la informacion solicitada.")
+      console.error(error)
+      renderInventory()
     }
   }
 
@@ -573,16 +538,23 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    const token = getToken()
-    const user = safeJsonParse(localStorage.getItem("user"))
-    const role = String(user?.role || "").trim().toLowerCase()
+  const token = getToken()
+  const user = safeJsonParse(localStorage.getItem("user"))
+  const role = String(user?.role || "").trim().toLowerCase()
 
-    if (!token || role !== "admin") {
-      navigateToLogin()
-      return
-    }
+  if (!token || role !== "admin") {
+    navigateToLogin()
+    return
+  }
 
-    bindEvents()
-    await renderStats()
-  })
+  bindEvents()
+
+
+  if (dayButton) {
+    dayButton.click()
+    return
+  }
+
+  await renderStats()
+})
 })()
