@@ -125,4 +125,75 @@ class ProfessionalIncidentEndpointsTest extends TestCase
             'severity' => 'critica',
         ])->assertUnprocessable();
     }
+
+    public function test_professional_can_update_incident_notes(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $incident = Incident::create([
+            'title' => 'Caída leve',
+            'older_adult_id' => $olderAdult->id,
+            'adult_name' => $olderAdult->full_name,
+            'severity' => 'media',
+            'status' => 'abierto',
+            'incident_date' => '2026-05-11',
+            'incident_time' => '10:00:00',
+            'reported_by' => $professional->id,
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->patchJson("/api/professional/incidents/{$incident->id}", [
+            'description' => 'Se aplicó hielo y se monitorea.',
+        ])
+            ->assertOk()
+            ->assertJsonPath('incident.description', 'Se aplicó hielo y se monitorea.');
+    }
+
+    public function test_professional_cannot_update_other_professionals_incident(): void
+    {
+        $owner = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $other = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $owner->id,
+            'created_by' => $owner->id,
+        ]);
+
+        $incident = Incident::create([
+            'title' => 'Caída leve',
+            'older_adult_id' => $olderAdult->id,
+            'adult_name' => $olderAdult->full_name,
+            'severity' => 'media',
+            'status' => 'abierto',
+            'incident_date' => '2026-05-11',
+            'incident_time' => '10:00:00',
+            'reported_by' => $owner->id,
+        ]);
+
+        Sanctum::actingAs($other);
+
+        $this->patchJson("/api/professional/incidents/{$incident->id}", [
+            'description' => 'Intento de modificar.',
+        ])->assertForbidden();
+    }
 }

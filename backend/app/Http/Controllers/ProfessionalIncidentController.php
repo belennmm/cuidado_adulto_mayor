@@ -86,6 +86,59 @@ class ProfessionalIncidentController extends Controller
         ], 201);
     }
 
+    public function update(Request $request, Incident $incident): JsonResponse
+    {
+        $user = $request->user();
+        $this->ensureProfessionalCaregiver($user?->role, (bool) $user?->is_approved);
+
+        $incident->load('olderAdult:id,professional_caregiver_id,full_name');
+
+        if (!$incident->older_adult_id || !$incident->olderAdult) {
+            return response()->json([
+                'message' => 'No se puede modificar este incidente.',
+            ], 403);
+        }
+
+        if ((int) $incident->olderAdult->professional_caregiver_id !== (int) $user->id) {
+            return response()->json([
+                'message' => 'No tienes acceso para modificar este incidente.',
+            ], 403);
+        }
+
+        $data = $request->validate([
+            'description' => ['nullable', 'string', 'max:2000'],
+            'severity' => ['nullable', 'in:baja,media,alta'],
+            'status' => ['nullable', 'in:abierto,en_progreso,resuelto,cerrado'],
+        ], [
+            'description.string' => 'La nota debe ser texto.',
+            'description.max' => 'La nota no puede superar 2000 caracteres.',
+            'severity.in' => 'La severidad debe ser baja, media o alta.',
+            'status.in' => 'El estado no es válido.',
+        ]);
+
+        $incident->fill([
+            'description' => array_key_exists('description', $data) ? $data['description'] : $incident->description,
+            'severity' => $data['severity'] ?? $incident->severity,
+            'status' => $data['status'] ?? $incident->status,
+        ]);
+
+        $incident->save();
+
+        return response()->json([
+            'message' => 'Incidente actualizado correctamente.',
+            'incident' => [
+                'id' => $incident->id,
+                'older_adult_id' => $incident->older_adult_id,
+                'title' => $incident->title,
+                'description' => $incident->description,
+                'incident_date' => $incident->incident_date?->toDateString(),
+                'incident_time' => $incident->incident_time,
+                'severity' => $incident->severity,
+                'status' => $incident->status,
+            ],
+        ]);
+    }
+
     private function ensureProfessionalCaregiver(mixed $role, bool $isApproved): void
     {
         $normalized = $this->normalizeText($role);

@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
         Route::post('/incidents', [ProfessionalIncidentController::class, 'store']);
+        Route::patch('/incidents/{incident}', [ProfessionalIncidentController::class, 'update']);
         Route::get('/routines', [ProfessionalCareController::class, 'routine']);
         Route::get('/reminders', [ReminderController::class, 'index']);
         Route::get('/routine-notes', [ProfessionalRoutineNoteController::class, 'index']);
