@@ -139,19 +139,39 @@
     `
   }
 
+  function formatCompletedAt(value) {
+    if (!value) return ""
+
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ""
+
+    return new Intl.DateTimeFormat("es-GT", {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date)
+  }
+
   function renderCustomRoutine(routine) {
     const activities = Array.isArray(routine.actividades) ? routine.actividades : []
     const completedActivities = routine.actividades_completadas || {}
+    const isRoutineCompleted = Boolean(routine.completada)
+    const routineCompletedAt = formatCompletedAt(routine.completada_at)
 
     return `
-      <article class="routine-note-card custom-routine-card">
+      <article class="routine-note-card custom-routine-card ${isRoutineCompleted ? "is-completed" : ""}">
         <div class="routine-note-card-top">
           <div>
             <strong>${api.escapeHtml(routine.nombre || "Rutina")}</strong>
-            <span>${api.escapeHtml(routine.horario || "Sin horario")}</span>
+            <span>
+              ${api.escapeHtml(routine.horario || "Sin horario")}
+              ${isRoutineCompleted && routineCompletedAt ? `&middot; Completada ${api.escapeHtml(routineCompletedAt)}` : ""}
+            </span>
           </div>
           <div class="routine-note-card-actions">
             <span class="badge badge-blue">${activities.length} actividades</span>
+            ${isRoutineCompleted ? `<span class="badge badge-success">Rutina completada</span>` : ""}
             <button type="button" class="routine-note-text-button" data-custom-routine-action="edit" data-id="${routine.id}">Editar</button>
             <button type="button" class="routine-note-text-button is-danger" data-custom-routine-action="delete" data-id="${routine.id}">Eliminar</button>
           </div>
@@ -160,10 +180,14 @@
           ${activities.map((activity, index) => {
             const completedActivity = completedActivities[index] || completedActivities[String(index)]
             const isCompleted = Boolean(completedActivity?.completada)
+            const completedAt = formatCompletedAt(completedActivity?.completada_at)
 
             return `
               <li class="${isCompleted ? "is-completed" : ""}">
-                <span>${api.escapeHtml(activity)}</span>
+                <span>
+                  <strong>${api.escapeHtml(activity)}</strong>
+                  ${isCompleted && completedAt ? `<small>Completada ${api.escapeHtml(completedAt)}</small>` : ""}
+                </span>
                 ${isCompleted
                   ? `<span class="badge badge-success">Completada</span>`
                   : `<button type="button" class="routine-note-text-button" data-custom-routine-action="complete" data-id="${routine.id}" data-activity-index="${index}">Completar</button>`

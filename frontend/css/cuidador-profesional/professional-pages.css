@@ -202,6 +202,11 @@
   line-height: 1.6;
 }
 
+.custom-routine-card.is-completed {
+  border-color: #bde8cc;
+  background: #f6fcf8;
+}
+
 .custom-routine-activity-list {
   display: grid;
   gap: 8px;
@@ -220,7 +225,24 @@
   background: #ffffff;
 }
 
-.custom-routine-activity-list li.is-completed span:first-child {
+.custom-routine-activity-list li > span:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.custom-routine-activity-list li > span:first-child strong {
+  color: inherit;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.custom-routine-activity-list small {
+  color: #70707a;
+  font-size: 12px;
+}
+
+.custom-routine-activity-list li.is-completed span:first-child strong {
   color: #64748b;
   text-decoration: line-through;
 }

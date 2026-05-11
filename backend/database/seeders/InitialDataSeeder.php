@@ -54,6 +54,28 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1999-04-23',
                 ]
             ),
+            'admin_her' => User::updateOrCreate(
+                ['email' => 'her241424@uvg.edu.gt'],
+                [
+                    'name' => 'wichandro',
+                    'password' => 'admin123',
+                    'role' => 'admin',
+                    'is_approved' => true,
+                    'location' => 'guatemala',
+                    'phone' => '12345678',
+                    'birthdate' => '2005-05-17',
+                ]
+            ),
+            'admin_wicho' => User::updateOrCreate(
+                ['email' => 'wicho123@gmail.com'],
+                [
+                    'name' => 'Wicho Admin',
+                    'password' => 'wicho123',
+                    'role' => 'admin',
+                    'is_approved' => true,
+                    'location' => 'Guatemala',
+                ]
+            ),
             'professional_1' => User::updateOrCreate(
                 ['email' => 'maria.gonzalez@organizate.com'],
                 [
