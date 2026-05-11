@@ -20,6 +20,7 @@ class ProfessionalIncidentController extends Controller
         $data = $request->validate([
             'older_adult_id' => ['required', 'integer'],
             'title' => ['required', 'string', 'max:255'],
+            'severity' => ['nullable', 'in:baja,media,alta'],
             'incident_date' => ['nullable', 'date_format:Y-m-d'],
             'incident_time' => ['nullable', 'date_format:H:i'],
         ], [
@@ -28,6 +29,7 @@ class ProfessionalIncidentController extends Controller
             'title.required' => 'El título del incidente es obligatorio.',
             'title.string' => 'El título del incidente debe ser texto.',
             'title.max' => 'El título del incidente no puede superar 255 caracteres.',
+            'severity.in' => 'La severidad debe ser baja, media o alta.',
             'incident_date.date_format' => 'La fecha debe tener el formato YYYY-MM-DD.',
             'incident_time.date_format' => 'La hora debe tener el formato HH:MM.',
         ]);
@@ -63,7 +65,7 @@ class ProfessionalIncidentController extends Controller
             'title' => $title,
             'adult_name' => $olderAdult->full_name,
             'older_adult_id' => $olderAdult->id,
-            'severity' => 'media',
+            'severity' => $data['severity'] ?? 'media',
             'status' => 'abierto',
             'incident_date' => $date,
             'incident_time' => $time,
@@ -110,4 +112,3 @@ class ProfessionalIncidentController extends Controller
             ->toString();
     }
 }
-

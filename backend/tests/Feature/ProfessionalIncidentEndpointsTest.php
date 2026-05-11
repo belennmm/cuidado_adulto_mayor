@@ -42,12 +42,13 @@ class ProfessionalIncidentEndpointsTest extends TestCase
         $this->postJson('/api/professional/incidents', [
             'older_adult_id' => $olderAdult->id,
             'title' => 'Caída leve',
+            'severity' => 'alta',
             'incident_time' => '10:00',
         ])
             ->assertCreated()
             ->assertJsonPath('incident.older_adult_id', $olderAdult->id)
             ->assertJsonPath('incident.title', 'Caída leve')
-            ->assertJsonPath('incident.severity', 'media')
+            ->assertJsonPath('incident.severity', 'alta')
             ->assertJsonPath('incident.status', 'abierto')
             ->assertJsonPath('incident.incident_date', '2026-05-11')
             ->assertJsonPath('incident.incident_time', '10:00:00');
@@ -101,5 +102,27 @@ class ProfessionalIncidentEndpointsTest extends TestCase
 
         $this->assertSame(0, Incident::query()->count());
     }
-}
 
+    public function test_incident_rejects_invalid_severity(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->postJson('/api/professional/incidents', [
+            'older_adult_id' => $olderAdult->id,
+            'title' => 'Caída leve',
+            'severity' => 'critica',
+        ])->assertUnprocessable();
+    }
+}
