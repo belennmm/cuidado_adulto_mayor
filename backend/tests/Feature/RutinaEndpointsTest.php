@@ -6,6 +6,7 @@ use App\Models\OlderAdult;
 use App\Models\Rutina;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -240,12 +241,16 @@ class RutinaEndpointsTest extends TestCase
             ->assertOk()
             ->assertJsonPath('message', 'Actividad marcada como completada.')
             ->assertJsonPath('rutina.actividades_completadas.1.actividad', 'Desayuno asistido')
-            ->assertJsonPath('rutina.actividades_completadas.1.completada', true);
+            ->assertJsonPath('rutina.actividades_completadas.1.completada', true)
+            ->assertJsonPath('rutina.completada', false);
 
         $rutina->refresh();
 
         $this->assertTrue($rutina->actividades_completadas[1]['completada']);
         $this->assertSame('Desayuno asistido', $rutina->actividades_completadas[1]['actividad']);
+        $this->assertNotNull($rutina->actividades_completadas[1]['completada_at']);
+        $this->assertFalse($rutina->completada);
+        $this->assertNull($rutina->completada_at);
     }
 
     public function test_patch_rutinas_completar_accepts_activity_index(): void
@@ -276,7 +281,59 @@ class RutinaEndpointsTest extends TestCase
         ])
             ->assertOk()
             ->assertJsonPath('rutina.actividades_completadas.0.actividad', 'Tomar signos vitales')
-            ->assertJsonPath('rutina.actividades_completadas.0.completada', true);
+            ->assertJsonPath('rutina.actividades_completadas.0.completada', true)
+            ->assertJsonPath('rutina.completada', false);
+    }
+
+    public function test_patch_rutinas_completar_marks_routine_as_completed_when_all_activities_are_done(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-01 10:30:00'));
+
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales', 'Desayuno asistido'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad_index' => 0,
+        ])
+            ->assertOk()
+            ->assertJsonPath('rutina.completada', false);
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad_index' => 1,
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Actividad marcada como completada.')
+            ->assertJsonPath('rutina.actividades_completadas.1.actividad', 'Desayuno asistido')
+            ->assertJsonPath('rutina.actividades_completadas.1.completada', true)
+            ->assertJsonPath('rutina.completada', true);
+
+        $rutina->refresh();
+
+        $this->assertTrue($rutina->completada);
+        $this->assertNotNull($rutina->completada_at);
+        $this->assertSame('2026-05-01 10:30:00', $rutina->completada_at->format('Y-m-d H:i:s'));
+        $this->assertNotNull($rutina->actividades_completadas[0]['completada_at']);
+        $this->assertNotNull($rutina->actividades_completadas[1]['completada_at']);
+
+        Carbon::setTestNow();
     }
 
     public function test_patch_rutinas_completar_rejects_missing_activity(): void
@@ -381,6 +438,10 @@ class RutinaEndpointsTest extends TestCase
 
         $this->deleteJson("/api/rutinas/{$rutina->id}")
             ->assertForbidden();
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad_index' => 0,
+        ])->assertForbidden();
 
         $this->assertDatabaseHas('rutinas', [
             'id' => $rutina->id,

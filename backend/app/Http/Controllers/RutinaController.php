@@ -134,6 +134,9 @@ class RutinaController extends Controller
             'nombre' => $nombre,
             'horario' => $horario,
             'actividades' => $actividades,
+            'actividades_completadas' => null,
+            'completada' => false,
+            'completada_at' => null,
         ]);
 
         $rutina->refresh()->load('olderAdult:id,full_name,room,status');
@@ -160,10 +163,15 @@ class RutinaController extends Controller
         $completedActivities[$activityIndex] = [
             'actividad' => $activityName,
             'completada' => true,
+            'completada_at' => now()->toISOString(),
         ];
+
+        $routineCompleted = $this->allActivitiesCompleted($rutina->actividades ?? [], $completedActivities);
 
         $rutina->update([
             'actividades_completadas' => $completedActivities,
+            'completada' => $routineCompleted,
+            'completada_at' => $routineCompleted ? ($rutina->completada_at ?? now()) : null,
         ]);
 
         $rutina->refresh()->load('olderAdult:id,full_name,room,status');
@@ -301,6 +309,21 @@ class RutinaController extends Controller
         ]);
     }
 
+    private function allActivitiesCompleted(array $activities, array $completedActivities): bool
+    {
+        if (count($activities) === 0) {
+            return false;
+        }
+
+        foreach (array_keys($activities) as $index) {
+            if (!((bool) ($completedActivities[$index]['completada'] ?? false))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private function rules(): array
     {
         return [
@@ -360,6 +383,8 @@ class RutinaController extends Controller
             'horario' => $rutina->horario,
             'actividades' => $rutina->actividades ?? [],
             'actividades_completadas' => $rutina->actividades_completadas ?? [],
+            'completada' => (bool) $rutina->completada,
+            'completada_at' => $rutina->completada_at?->toISOString(),
             'created_by' => $rutina->created_by,
             'adulto_mayor' => $rutina->olderAdult ? [
                 'id' => $rutina->olderAdult->id,

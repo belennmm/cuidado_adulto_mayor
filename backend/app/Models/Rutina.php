@@ -19,6 +19,8 @@ class Rutina extends Model
         'horario',
         'actividades',
         'actividades_completadas',
+        'completada',
+        'completada_at',
     ];
 
     protected function casts(): array
@@ -26,6 +28,8 @@ class Rutina extends Model
         return [
             'actividades' => 'array',
             'actividades_completadas' => 'array',
+            'completada' => 'boolean',
+            'completada_at' => 'datetime',
         ];
     }
 
