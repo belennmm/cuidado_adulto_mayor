@@ -12,6 +12,7 @@ use App\Http\Controllers\MedicationInventoryController;
 use App\Http\Controllers\OlderAdultController;
 use App\Http\Controllers\ProfessionalCareController;
 use App\Http\Controllers\ProfessionalRoutineNoteController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\RutinaController;
 use App\Http\Controllers\VacationRequestController;
 
@@ -57,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
         Route::get('/routines', [ProfessionalCareController::class, 'routine']);
+        Route::get('/reminders', [ReminderController::class, 'index']);
         Route::get('/routine-notes', [ProfessionalRoutineNoteController::class, 'index']);
         Route::post('/routine-notes', [ProfessionalRoutineNoteController::class, 'store']);
         Route::put('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'update']);
