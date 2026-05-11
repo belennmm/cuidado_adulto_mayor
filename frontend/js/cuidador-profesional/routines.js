@@ -141,6 +141,7 @@
 
   function renderCustomRoutine(routine) {
     const activities = Array.isArray(routine.actividades) ? routine.actividades : []
+    const completedActivities = routine.actividades_completadas || {}
 
     return `
       <article class="routine-note-card custom-routine-card">
@@ -155,8 +156,21 @@
             <button type="button" class="routine-note-text-button is-danger" data-custom-routine-action="delete" data-id="${routine.id}">Eliminar</button>
           </div>
         </div>
-        <ul>
-          ${activities.map((activity) => `<li>${api.escapeHtml(activity)}</li>`).join("")}
+        <ul class="custom-routine-activity-list">
+          ${activities.map((activity, index) => {
+            const completedActivity = completedActivities[index] || completedActivities[String(index)]
+            const isCompleted = Boolean(completedActivity?.completada)
+
+            return `
+              <li class="${isCompleted ? "is-completed" : ""}">
+                <span>${api.escapeHtml(activity)}</span>
+                ${isCompleted
+                  ? `<span class="badge badge-success">Completada</span>`
+                  : `<button type="button" class="routine-note-text-button" data-custom-routine-action="complete" data-id="${routine.id}" data-activity-index="${index}">Completar</button>`
+                }
+              </li>
+            `
+          }).join("")}
         </ul>
       </article>
     `
@@ -420,6 +434,27 @@
     }
   }
 
+  async function completeCustomRoutineActivity(routineId, activityIndex) {
+    try {
+      await api.fetchJson(`/rutinas/${routineId}/completar`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          actividad_index: Number(activityIndex),
+        }),
+      })
+
+      setCustomRoutineMessage("Actividad marcada como completada.")
+      await loadRoutinesAndNotes()
+    } catch (error) {
+      const message = firstValidationMessage(error)
+      setCustomRoutineMessage(message, true)
+      await showProfessionalAlert(message, {
+        title: "No se pudo completar",
+        variant: "error",
+      })
+    }
+  }
+
   async function saveNote() {
     if (!activeOlderAdultId) {
       setMessage("Selecciona un adulto mayor antes de guardar una nota.", true)
@@ -607,6 +642,11 @@
 
       if (button.dataset.customRoutineAction === "delete") {
         await deleteCustomRoutine(button.dataset.id)
+        return
+      }
+
+      if (button.dataset.customRoutineAction === "complete") {
+        await completeCustomRoutineActivity(button.dataset.id, button.dataset.activityIndex)
       }
     })
 

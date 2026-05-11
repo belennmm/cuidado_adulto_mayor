@@ -202,6 +202,29 @@
   line-height: 1.6;
 }
 
+.custom-routine-activity-list {
+  display: grid;
+  gap: 8px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.custom-routine-activity-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #e6edf7;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.custom-routine-activity-list li.is-completed span:first-child {
+  color: #64748b;
+  text-decoration: line-through;
+}
+
 .routine-note-message {
   min-height: 20px;
   margin: 0;
