@@ -18,12 +18,14 @@ class Rutina extends Model
         'nombre',
         'horario',
         'actividades',
+        'actividades_completadas',
     ];
 
     protected function casts(): array
     {
         return [
             'actividades' => 'array',
+            'actividades_completadas' => 'array',
         ];
     }
 

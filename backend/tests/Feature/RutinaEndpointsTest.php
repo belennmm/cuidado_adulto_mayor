@@ -211,6 +211,140 @@ class RutinaEndpointsTest extends TestCase
         ]);
     }
 
+    public function test_patch_rutinas_completar_marks_existing_activity_as_completed(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales', 'Desayuno asistido'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad' => 'Desayuno asistido',
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Actividad marcada como completada.')
+            ->assertJsonPath('rutina.actividades_completadas.1.actividad', 'Desayuno asistido')
+            ->assertJsonPath('rutina.actividades_completadas.1.completada', true);
+
+        $rutina->refresh();
+
+        $this->assertTrue($rutina->actividades_completadas[1]['completada']);
+        $this->assertSame('Desayuno asistido', $rutina->actividades_completadas[1]['actividad']);
+    }
+
+    public function test_patch_rutinas_completar_accepts_activity_index(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales', 'Desayuno asistido'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad_index' => 0,
+        ])
+            ->assertOk()
+            ->assertJsonPath('rutina.actividades_completadas.0.actividad', 'Tomar signos vitales')
+            ->assertJsonPath('rutina.actividades_completadas.0.completada', true);
+    }
+
+    public function test_patch_rutinas_completar_rejects_missing_activity(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad' => 'Caminata breve',
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['actividad'])
+            ->assertJsonPath('errors.actividad.0', 'La actividad seleccionada no existe en esta rutina.');
+
+        $this->assertNull($rutina->refresh()->actividades_completadas);
+    }
+
+    public function test_patch_rutinas_completar_rejects_missing_activity_index(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        $rutina = $olderAdult->rutinas()->create([
+            'created_by' => $professional->id,
+            'nombre' => 'Rutina matutina',
+            'horario' => '08:00',
+            'actividades' => ['Tomar signos vitales'],
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
+            'actividad_index' => 8,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['actividad_index'])
+            ->assertJsonPath('errors.actividad_index.0', 'La actividad seleccionada no existe en esta rutina.');
+
+        $this->assertNull($rutina->refresh()->actividades_completadas);
+    }
+
     public function test_rutina_update_and_delete_reject_unassigned_routine(): void
     {
         $professional = User::factory()->create([

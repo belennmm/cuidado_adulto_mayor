@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange']);
     Route::get('/rutinas', [RutinaController::class, 'index']);
     Route::post('/rutinas', [RutinaController::class, 'store']);
+    Route::patch('/rutinas/{rutina}/completar', [RutinaController::class, 'complete']);
     Route::put('/rutinas/{rutina}', [RutinaController::class, 'update']);
     Route::delete('/rutinas/{rutina}', [RutinaController::class, 'destroy']);
 

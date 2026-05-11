@@ -144,6 +144,36 @@ class RutinaController extends Controller
         ]);
     }
 
+    public function complete(Request $request, Rutina $rutina): JsonResponse
+    {
+        $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
+        $this->authorizeOlderAdult($request, $rutina->olderAdult);
+
+        $data = $request->validate([
+            'actividad' => 'required_without:actividad_index|string|max:255',
+            'actividad_index' => 'required_without:actividad|integer|min:0',
+        ], $this->validationMessages());
+
+        [$activityIndex, $activityName] = $this->activityFromRequest($rutina, $data);
+        $completedActivities = $rutina->actividades_completadas ?? [];
+
+        $completedActivities[$activityIndex] = [
+            'actividad' => $activityName,
+            'completada' => true,
+        ];
+
+        $rutina->update([
+            'actividades_completadas' => $completedActivities,
+        ]);
+
+        $rutina->refresh()->load('olderAdult:id,full_name,room,status');
+
+        return response()->json([
+            'message' => 'Actividad marcada como completada.',
+            'rutina' => $this->formatRutina($rutina),
+        ]);
+    }
+
     public function destroy(Request $request, Rutina $rutina): JsonResponse
     {
         $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
@@ -242,6 +272,35 @@ class RutinaController extends Controller
             ->all();
     }
 
+    private function activityFromRequest(Rutina $rutina, array $data): array
+    {
+        $activities = $rutina->actividades ?? [];
+
+        if (array_key_exists('actividad_index', $data)) {
+            $activityIndex = (int) $data['actividad_index'];
+
+            if (!array_key_exists($activityIndex, $activities)) {
+                throw ValidationException::withMessages([
+                    'actividad_index' => ['La actividad seleccionada no existe en esta rutina.'],
+                ]);
+            }
+
+            return [$activityIndex, (string) $activities[$activityIndex]];
+        }
+
+        $requestedActivity = trim((string) ($data['actividad'] ?? ''));
+
+        foreach ($activities as $index => $activity) {
+            if ($this->normalizeText($activity) === $this->normalizeText($requestedActivity)) {
+                return [(int) $index, (string) $activity];
+            }
+        }
+
+        throw ValidationException::withMessages([
+            'actividad' => ['La actividad seleccionada no existe en esta rutina.'],
+        ]);
+    }
+
     private function rules(): array
     {
         return [
@@ -272,6 +331,12 @@ class RutinaController extends Controller
             'adulto_mayor_id.integer' => 'El adulto mayor seleccionado no es valido.',
             'older_adult_id.required_without' => 'Debes seleccionar un adulto mayor.',
             'older_adult_id.integer' => 'El adulto mayor seleccionado no es valido.',
+            'actividad.required_without' => 'Debes seleccionar una actividad para completar.',
+            'actividad.string' => 'La actividad seleccionada debe ser texto.',
+            'actividad.max' => 'La actividad seleccionada no puede superar 255 caracteres.',
+            'actividad_index.required_without' => 'Debes seleccionar una actividad para completar.',
+            'actividad_index.integer' => 'La actividad seleccionada no es valida.',
+            'actividad_index.min' => 'La actividad seleccionada no es valida.',
         ];
     }
 
@@ -294,6 +359,7 @@ class RutinaController extends Controller
             'nombre' => $rutina->nombre,
             'horario' => $rutina->horario,
             'actividades' => $rutina->actividades ?? [],
+            'actividades_completadas' => $rutina->actividades_completadas ?? [],
             'created_by' => $rutina->created_by,
             'adulto_mayor' => $rutina->olderAdult ? [
                 'id' => $rutina->olderAdult->id,
