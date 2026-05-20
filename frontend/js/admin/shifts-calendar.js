@@ -57,7 +57,7 @@
   }
 
   function getToken() {
-    return localStorage.getItem("token")
+    return (window.AuthSession?.getToken() || "")
   }
 
   function startOfDay(date) {
@@ -528,8 +528,8 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("token")
-    const user = safeJsonParse(localStorage.getItem("user"))
+    const token = (window.AuthSession?.getToken() || "")
+    const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
     const role = String(user?.role || "").trim().toLowerCase()
 
     if (!token || role !== "admin") {

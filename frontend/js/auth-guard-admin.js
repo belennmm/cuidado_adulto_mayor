@@ -1,16 +1,4 @@
 (() => {
-  function safeJsonParse(value) {
-    try {
-      return JSON.parse(value)
-    } catch {
-      return null
-    }
-  }
-
-  function getUser() {
-    return window.AuthSession?.getUser(["profesional", "cuidador_profesional"]) || null
-  }
-
   function redirectToLogin() {
     if (window.navigateWithLoading) {
       window.navigateWithLoading("../../index.html")
@@ -24,10 +12,10 @@
     const normalized = String(role || "").trim().toLowerCase()
 
     const roleRedirects = {
-      admin: "../admin/home-page.html",
-      cuidador_profesional: "./home-page.html",
+      admin: "./home-page.html",
+      cuidador_profesional: "../cuidador-profesional/home-page.html",
       cuidador_familiar: "../cuidador-familiar/home-page.html",
-      profesional: "./home-page.html",
+      profesional: "../cuidador-profesional/home-page.html",
       familiar: "../cuidador-familiar/home-page.html",
     }
 
@@ -46,22 +34,15 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const token = window.AuthSession?.getToken(["profesional", "cuidador_profesional"]) || ""
-    if (!token) {
+    const session = window.AuthSession?.getSession(["admin"])
+    if (!session?.token || !session.user) {
       redirectToLogin()
       return
     }
 
-    const user = getUser()
-    if (!user) {
-      redirectToLogin()
-      return
-    }
-
-    const role = String(user.role || "").trim().toLowerCase()
-    if (role !== "profesional" && role !== "cuidador_profesional") {
+    const role = String(session.user.role || "").trim().toLowerCase()
+    if (role !== "admin") {
       redirectByRole(role)
     }
   })
 })()
-

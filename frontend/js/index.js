@@ -14,8 +14,7 @@ function showLoginMessage(message) {
 }
 
 function clearSession() {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
+    window.AuthSession?.clearSession()
 }
 
 const roleRedirects = {
@@ -91,8 +90,10 @@ if (loginForm) {
                 return
             }
 
-            localStorage.setItem("token", data.token)
-            localStorage.setItem("user", JSON.stringify(data.user))
+            if (!window.AuthSession?.saveSession(data.token, data.user)) {
+                showLoginMessage("No se pudo guardar la sesion")
+                return
+            }
 
             redirectByRole(data.user?.role || "familiar")
 

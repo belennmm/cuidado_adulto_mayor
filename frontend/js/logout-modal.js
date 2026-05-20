@@ -28,8 +28,7 @@ if (logoutModal) {
 
 if (confirmLogout) {
   confirmLogout.addEventListener("click", () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
+    window.AuthSession?.clearSession()
     if (window.navigateWithLoading) {
       window.navigateWithLoading("../../index.html")
       return

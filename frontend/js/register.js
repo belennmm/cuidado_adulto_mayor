@@ -25,8 +25,7 @@ function getErrorMessage(data, fallback) {
 }
 
 function clearSession() {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
+    window.AuthSession?.clearSession()
 }
 
 function navigateTo(url) {

@@ -10,16 +10,16 @@
   }
 
   function getToken() {
-    return localStorage.getItem("token")
+    return (window.AuthSession?.getToken() || "")
   }
 
   function getUser() {
-    return safeJsonParse(localStorage.getItem("user")) || {}
+    return safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null)) || {}
   }
 
   function saveUser(user) {
     if (!user) return
-    localStorage.setItem("user", JSON.stringify(user))
+    window.AuthSession?.saveUser(user)
   }
 
   function escapeHtml(value) {

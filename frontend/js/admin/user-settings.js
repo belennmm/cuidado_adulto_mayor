@@ -20,7 +20,7 @@ const togglePasswordButtons = document.querySelectorAll(".toggle-password")
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function getToken() {
-  return localStorage.getItem("token")
+  return (window.AuthSession?.getToken() || "")
 }
 
 function roleLabel(value) {

@@ -12,7 +12,7 @@ const adminDefaultPageLabels = {
 }
 
 function getToken() {
-  return localStorage.getItem("token")
+  return (window.AuthSession?.getToken() || "")
 }
 
 async function loadAdminReminder() {

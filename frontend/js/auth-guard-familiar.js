@@ -8,7 +8,7 @@
   }
 
   function getUser() {
-    return safeJsonParse(localStorage.getItem("user"))
+    return window.AuthSession?.getUser(["familiar", "cuidador_familiar"]) || null
   }
 
   function redirectToLogin() {
@@ -46,7 +46,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("token")
+    const token = window.AuthSession?.getToken(["familiar", "cuidador_familiar"]) || ""
     if (!token) {
       redirectToLogin()
       return

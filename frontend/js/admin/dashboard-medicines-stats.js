@@ -32,7 +32,7 @@
   }
 
   function getToken() {
-    return localStorage.getItem("token")
+    return (window.AuthSession?.getToken() || "")
   }
 
   function navigateToLogin() {
@@ -539,7 +539,7 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
   const token = getToken()
-  const user = safeJsonParse(localStorage.getItem("user"))
+  const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
   const role = String(user?.role || "").trim().toLowerCase()
 
   if (!token || role !== "admin") {

@@ -7,7 +7,7 @@
   let editingRoutineId = null
 
   function getToken() {
-    return localStorage.getItem("token")
+    return (window.AuthSession?.getToken() || "")
   }
 
   function escapeHtml(value) {

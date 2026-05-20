@@ -6,7 +6,7 @@ const incidentsDateInput = document.getElementById("incidentsDateInput")
 const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function getToken() {
-    return localStorage.getItem("token")
+    return (window.AuthSession?.getToken() || "")
 }
 
 function getSearchDate() {

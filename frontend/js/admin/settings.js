@@ -10,7 +10,7 @@
   }
 
   function getToken() {
-    return localStorage.getItem("token")
+    return (window.AuthSession?.getToken() || "")
   }
 
   function setText(id, value) {

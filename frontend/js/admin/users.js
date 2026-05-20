@@ -6,7 +6,7 @@ const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/a
 let usersData = []
 
 function getToken() {
-  return localStorage.getItem("token")
+  return (window.AuthSession?.getToken() || "")
 }
 
 async function showPopup(message, options = {}) {

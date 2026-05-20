@@ -145,7 +145,7 @@ function addMedicineCard(medicine = null) {
 }
 
 function getToken() {
-  return localStorage.getItem("token")
+  return (window.AuthSession?.getToken() || "")
 }
 
 function getValue(input) {

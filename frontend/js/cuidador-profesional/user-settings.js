@@ -34,7 +34,7 @@
   }
 
   async function loadUser() {
-    const cachedUser = safeJsonParse(localStorage.getItem("user"))
+    const cachedUser = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
     renderUser(cachedUser)
 
     if (!api?.fetchJson) return
@@ -44,7 +44,7 @@
       const user = data.user || cachedUser
 
       if (user) {
-        localStorage.setItem("user", JSON.stringify(user))
+        window.AuthSession?.saveUser(user)
       }
 
       renderUser(user)
