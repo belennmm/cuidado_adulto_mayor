@@ -8,7 +8,7 @@ const shiftMessage = document.getElementById("shiftMessage")
 const shiftsTableBody = document.getElementById("shiftsTableBody")
 const vacationsTableBody = document.getElementById("vacationsTableBody")
 
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 const DAY_LABELS = {
   0: "Domingo",

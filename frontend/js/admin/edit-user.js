@@ -15,7 +15,7 @@ const closeDeleteModal = document.getElementById("closeDeleteModal")
 const confirmDeleteUser = document.getElementById("confirmDeleteUser")
 const deleteModal = document.getElementById("deleteModal")
 
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 const params = new URLSearchParams(window.location.search)
 const userId = params.get("id")
 

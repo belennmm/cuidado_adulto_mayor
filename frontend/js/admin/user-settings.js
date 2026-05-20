@@ -17,7 +17,7 @@ const profileRole = document.getElementById("profileRole")
 const profileEmail = document.getElementById("profileEmail")
 
 const togglePasswordButtons = document.querySelectorAll(".toggle-password")
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function getToken() {
   return (window.AuthSession?.getToken() || "")

@@ -1,5 +1,5 @@
 (() => {
-  const apiUrl = `${window.location.protocol}//${window.location.hostname}:8080/api`
+  const apiUrl = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
   function getToken() {
     return (window.AuthSession?.getToken() || "")

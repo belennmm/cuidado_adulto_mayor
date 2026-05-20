@@ -4,7 +4,7 @@ const passwordInput = document.getElementById("password")
 const togglePassword = document.getElementById("togglePassword")
 const togglePasswordIcon = togglePassword ? togglePassword.querySelector("i") : null
 
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function showMessage(message, isError = false) {
     if (registerMessage) {

@@ -3,7 +3,7 @@ const incidentsDate = document.getElementById("incidentsDate")
 const incidentsCount = document.getElementById("incidentsCount")
 const incidentsDateInput = document.getElementById("incidentsDateInput")
 
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function getToken() {
     return (window.AuthSession?.getToken() || "")

@@ -9,7 +9,7 @@ const locationInput = document.getElementById("location")
 const phone = document.getElementById("phone")
 const birthdate = document.getElementById("birthdate")
 
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 let pendingRequests = []
 

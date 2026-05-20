@@ -1,5 +1,5 @@
 (() => {
-  const API_URL = `${window.location.protocol}//${window.location.hostname}:8080/api`
+  const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
   let olderAdults = []
   let activeOlderAdultId = ""
