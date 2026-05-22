@@ -16,7 +16,7 @@
     margin: 0;
     font-size: 26px;
     font-weight: 500;
-    color: #111111;
+    color: var(--color-text-base);
 }
 
 .incidents-date {
@@ -35,11 +35,11 @@
 .incidents-date-input {
     height: 34px;
     padding: 0 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 1px solid #e5e7eb;
-    background: #ffffff;
-    color: #111111;
-    font-family: "Outfit", sans-serif;
+    background: var(--color-background-card);
+    color: var(--color-text-base);
+    font-family: var(--font-family-base);
     font-size: 14px;
 }
 
@@ -52,9 +52,9 @@
 .incidents-counter {
     min-width: 130px;
     height: 42px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     background-color: #1678f3;
-    color: #ffffff;
+    color: var(--color-text-inverse);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -73,12 +73,12 @@
 
 .incident-card {
     min-height: 190px;
-    background-color: #ffffff;
+    background-color: var(--color-background-card);
     border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 18px;
     box-sizing: border-box;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-soft);
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -93,7 +93,7 @@
 
 .incident-title {
     margin: 0;
-    color: #111111;
+    color: var(--color-text-base);
     font-size: 18px;
     font-weight: 600;
 }
@@ -106,7 +106,7 @@
 
 .incident-badge {
     min-height: 28px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 5px 10px;
     box-sizing: border-box;
     display: inline-flex;
@@ -149,9 +149,9 @@
 }
 
 .incidents-empty {
-    background-color: #ffffff;
+    background-color: var(--color-background-card);
     border: 1px dashed #c9ced6;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 32px 18px;
     color: #777777;
     text-align: center;

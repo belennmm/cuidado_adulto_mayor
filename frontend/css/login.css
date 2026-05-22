@@ -63,7 +63,7 @@
   font-size: 40px;
   font-weight: 400;
   font-family: var(--font-rounded-mplus-1c);
-  color: var(--color-gray-300);
+  color: var(--color-text-soft);
   text-align: left;
   display: inline-block;
 }
@@ -81,7 +81,7 @@
   font-size: 25px;
   font-weight: 400;
   font-family: var(--font-rounded-mplus-1c);
-  color: var(--color-gray-300);
+  color: var(--color-text-soft);
   text-align: left;
 }
 .solicitar-cuenta {
@@ -124,7 +124,7 @@
   position: relative;
   font-size: var(--fs-18);
   font-family: var(--font-rounded-mplus-1c);
-  color: var(--color-gray-300);
+  color: var(--color-text-soft);
   text-align: left;
   display: inline-block;
   min-width: 64px;
@@ -140,7 +140,7 @@
   flex: 1;
   border-radius: var(--br-13);
   background-color: var(--color-white);
-  border: 1.2px solid var(--color-gainsboro-200);
+  border: 1.2px solid var(--color-gainsboro-300);
   box-sizing: border-box;
   padding: 7px 7px 9px;
   gap: var(--gap-12);
@@ -187,7 +187,7 @@
   position: relative;
   font-size: var(--fs-18);
   font-family: var(--font-rounded-mplus-1c);
-  color: var(--color-gray-300);
+  color: var(--color-text-soft);
   text-align: left;
   display: inline-block;
   min-width: 95px;
@@ -196,7 +196,7 @@
 .rectangle-container {
   border-radius: var(--br-13);
   background-color: var(--color-white);
-  border: 1.2px solid var(--color-gainsboro-200);
+  border: 1.2px solid var(--color-gainsboro-300);
   box-sizing: border-box;
   max-width: 100%;
 }
@@ -303,7 +303,7 @@
 .iniciar-sesin {
   position: relative;
   font-size: 21px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   color: var(--color-white);
   text-align: center;
   line-height: 1;
