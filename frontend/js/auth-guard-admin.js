@@ -1,4 +1,8 @@
 (() => {
+  function getUser() {
+    return window.AuthSession?.getUser(["admin", "administrador"]) || null
+  }
+
   function redirectToLogin() {
     if (window.navigateWithLoading) {
       window.navigateWithLoading("../../index.html")
@@ -13,6 +17,7 @@
 
     const roleRedirects = {
       admin: "./home-page.html",
+      administrador: "./home-page.html",
       cuidador_profesional: "../cuidador-profesional/home-page.html",
       cuidador_familiar: "../cuidador-familiar/home-page.html",
       profesional: "../cuidador-profesional/home-page.html",
@@ -34,14 +39,20 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const session = window.AuthSession?.getSession(["admin"])
-    if (!session?.token || !session.user) {
+    const token = window.AuthSession?.getToken(["admin", "administrador"]) || ""
+    if (!token) {
       redirectToLogin()
       return
     }
 
-    const role = String(session.user.role || "").trim().toLowerCase()
-    if (role !== "admin") {
+    const user = getUser()
+    if (!user) {
+      redirectToLogin()
+      return
+    }
+
+    const role = String(user.role || "").trim().toLowerCase()
+    if (role !== "admin" && role !== "administrador") {
       redirectByRole(role)
     }
   })
