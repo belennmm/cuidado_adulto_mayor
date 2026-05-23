@@ -1,6 +1,16 @@
 (() => {
+  const allowedRoles = ["admin", "administrador"]
+
+  function hidePageUntilValidated() {
+    document.documentElement.style.visibility = "hidden"
+  }
+
+  function showPage() {
+    document.documentElement.style.visibility = ""
+  }
+
   function getUser() {
-    return window.AuthSession?.getUser(["admin", "administrador"]) || null
+    return window.AuthSession?.getUser(allowedRoles) || null
   }
 
   function redirectToLogin() {
@@ -38,8 +48,8 @@
     redirectToLogin()
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const token = window.AuthSession?.getToken(["admin", "administrador"]) || ""
+  function validateAdminAccess() {
+    const token = window.AuthSession?.getToken(allowedRoles) || ""
     if (!token) {
       redirectToLogin()
       return
@@ -52,8 +62,14 @@
     }
 
     const role = String(user.role || "").trim().toLowerCase()
-    if (role !== "admin" && role !== "administrador") {
+    if (!allowedRoles.includes(role)) {
       redirectByRole(role)
+      return
     }
-  })
+
+    showPage()
+  }
+
+  hidePageUntilValidated()
+  validateAdminAccess()
 })()
