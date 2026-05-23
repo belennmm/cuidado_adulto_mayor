@@ -446,6 +446,185 @@ textarea.form-control {
   opacity: 0.95;
 }
 
+.professional-page .professional-panel,
+.professional-page .professional-card,
+.professional-page .professional-empty,
+.professional-page .vacation-panel {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+}
+
+.professional-page .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.professional-page .routine-note-secondary,
+.professional-page .schedule-change-form button[type="button"] {
+  min-height: 42px;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0 14px;
+  background: #e4e4e7;
+  color: #3f3f46;
+  font-family: var(--font-family-base);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.professional-page .routine-note-submit,
+.professional-page .schedule-change-toggle,
+.professional-page .change-form-actions button[type="submit"],
+.professional-page .vacation-form button {
+  min-height: 42px;
+  border: none;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-base);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.professional-page .routine-note-text-button {
+  border: none;
+  padding: 0;
+  background: transparent;
+  font-family: var(--font-family-base);
+  cursor: pointer;
+}
+
+.family-page .prototype-card,
+.family-page .home-status-item,
+.family-page .stat-card,
+.family-page .family-card,
+.family-page .mini-row,
+.family-page .incident-preview,
+.family-page .profile-card,
+.family-page .empty-card,
+.family-page .activity-history-card,
+.family-page .medicine-table-card,
+.family-page .incident-prototype-card,
+.family-page .incidents-empty-prototype {
+  border-radius: 22px;
+  background: var(--family-panel);
+  box-shadow: none;
+  border: none;
+}
+
+.family-page .prototype-button,
+.family-page .primary-action,
+.family-page .save-button {
+  min-height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: var(--family-blue);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.family-page .secondary-action,
+.family-page .filter-button {
+  min-height: 46px;
+  border: none;
+  border-radius: 14px;
+  background: #f2f2f2;
+  color: var(--family-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.family-page .prototype-back {
+  min-width: 180px;
+  min-height: 42px;
+  border-radius: 22px;
+  background: #f2f2f2;
+  color: #5b9aea;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: "Courier New", monospace;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.family-page .badge,
+.family-page .status-stable,
+.family-page .status-attention,
+.family-page .status-critical,
+.family-page .badge-blue,
+.family-page .badge-success,
+.family-page .badge-warning,
+.family-page .badge-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  box-sizing: border-box;
+  background: #eef5ff;
+  color: var(--family-blue);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.family-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.family-page .form-group label {
+  color: var(--family-ink);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.family-page .form-group input {
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: var(--family-field);
+  padding: 0 14px;
+  box-sizing: border-box;
+  font-size: 16px;
+  outline: none;
+}
+
+.family-page .form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 @media screen and (max-width: 560px) {
   .btn,
   .action-button,
