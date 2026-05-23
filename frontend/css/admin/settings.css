@@ -25,11 +25,9 @@
   font-size: 14px;
 }
 
-.settings-profile-link,
-.primary-button,
-.secondary-button {
+.settings-profile-link {
   border: none;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   font-weight: 600;
   cursor: pointer;
 }
@@ -208,23 +206,6 @@
   justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.primary-button,
-.secondary-button {
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 10px;
-}
-
-.primary-button {
-  background: #1d73f3;
-  color: #ffffff;
-}
-
-.secondary-button {
-  background: #e4e4e7;
-  color: #3f3f46;
 }
 
 .quick-actions {

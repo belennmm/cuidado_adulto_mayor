@@ -125,18 +125,6 @@
   flex-shrink: 0;
 }
 
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 82px;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: var(--radius-pill);
-  font-size: 13px;
-  font-weight: 500;
-}
-
 .status-stable {
   background-color: #e8f7ee;
   color: #2d8c57;
@@ -182,15 +170,6 @@
 .edit-button:hover,
 .routine-button:hover {
   opacity: 0.95;
-}
-
-.empty-state {
-  background-color: #fafafa;
-  border-radius: var(--radius-xl);
-  padding: 28px 16px;
-  text-align: center;
-  color: #8a8a8a;
-  font-size: 15px;
 }
 
 @media screen and (max-width: 1100px) {
