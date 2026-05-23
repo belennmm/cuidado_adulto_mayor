@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  font-family: "Outfit", sans-serif;
-  background-color: #f3f3f3;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background-panel);
 }
 
 a {
@@ -11,13 +11,13 @@ a {
 .professional-home {
   min-height: 100vh;
   display: flex;
-  background-color: #f3f3f3;
+  background-color: var(--color-background-panel);
 }
 
 .sidebar {
   width: 84px;
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: var(--color-background-card);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -55,9 +55,9 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1678f3;
+  color: var(--color-primary-strong);
   font-size: 24px;
-  transition: 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .nav-icon:hover {

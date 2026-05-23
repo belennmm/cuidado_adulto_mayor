@@ -1,8 +1,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Outfit", sans-serif;
-  background: #ffffff;
+  font-family: var(--font-family-base);
+  background: var(--color-background-card);
   color: #0f172a;
 }
 
@@ -13,7 +13,7 @@ a {
 .familiar-home {
   min-height: 100vh;
   display: flex;
-  background: #ffffff;
+  background: var(--color-background-card);
 }
 
 .sidebar {
@@ -59,7 +59,7 @@ a {
   justify-content: center;
   color: #1d7cf2;
   font-size: 24px;
-  transition: 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .nav-icon:hover,
