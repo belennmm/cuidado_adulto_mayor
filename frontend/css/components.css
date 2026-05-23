@@ -1,0 +1,282 @@
+.btn,
+.action-button,
+.primary-button,
+.secondary-button,
+.delete-button,
+.save-button {
+  min-height: 42px;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 14px;
+  font-family: var(--font-family-base);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  transition: opacity var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn:disabled,
+.action-button:disabled,
+.primary-button:disabled,
+.secondary-button:disabled,
+.delete-button:disabled,
+.save-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.btn-primary,
+.primary-button,
+.save-button {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.btn-secondary,
+.secondary-button {
+  background: var(--color-info);
+  color: var(--color-primary);
+}
+
+.btn-danger,
+.delete-button {
+  background: var(--color-danger-soft);
+  color: var(--color-text-inverse);
+}
+
+.btn-icon {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  min-height: 46px;
+  border-radius: var(--radius-pill);
+  padding: 0;
+}
+
+.btn:hover,
+.action-button:hover,
+.primary-button:hover,
+.secondary-button:hover,
+.delete-button:hover,
+.save-button:hover {
+  opacity: 0.95;
+}
+
+.card,
+.panel-card,
+.table-card,
+.panel,
+.settings-panel,
+.settings-summary-card,
+.professional-panel,
+.professional-card,
+.family-card,
+.prototype-card,
+.incident-card,
+.side-card,
+.users-table-card,
+.older-adults-table-card,
+.medicine-table-card,
+.activity-history-card {
+  background: var(--color-background-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.panel-card,
+.panel {
+  background: #efefef;
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.table-card,
+.users-table-card,
+.older-adults-table-card,
+.medicine-table-card,
+.activity-history-card {
+  overflow-x: auto;
+}
+
+.status-badge,
+.badge,
+.status-success,
+.status-warning,
+.status-danger,
+.status-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.status-success {
+  background: #e8f7ee;
+  color: var(--color-success);
+}
+
+.status-warning {
+  background: #fff5e5;
+  color: #b97b12;
+}
+
+.status-danger {
+  background: #fde8ee;
+  color: #c73a68;
+}
+
+.status-info {
+  background: var(--color-info);
+  color: var(--color-primary);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333333;
+}
+
+.form-control,
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid var(--color-gainsboro-300);
+  border-radius: var(--radius-md);
+  background: #fafafa;
+  padding: 0 14px;
+  box-sizing: border-box;
+  font-family: var(--font-family-base);
+  font-size: 15px;
+  color: #555555;
+  outline: none;
+}
+
+.form-control,
+.form-group input,
+.form-group select {
+  min-height: 46px;
+}
+
+.form-group textarea,
+textarea.form-control {
+  min-height: 96px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.form-group select,
+.form-control::placeholder {
+  color: #a5a5a5;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.empty-state,
+.loading-state,
+.error-state,
+.professional-empty,
+.empty-requests,
+.loading-requests,
+.incidents-empty,
+.routine-empty-state {
+  border-radius: 16px;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.empty-state,
+.professional-empty,
+.empty-requests,
+.incidents-empty,
+.routine-empty-state {
+  background: #fafafa;
+  color: #8a8a8a;
+}
+
+.loading-state,
+.loading-requests {
+  background: #fafafa;
+  color: #3a6cc6;
+}
+
+.error-state {
+  background: #fdeff4;
+  color: #c73a68;
+}
+
+.modal-overlay,
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal-overlay.active,
+.logout-modal-overlay.active {
+  display: flex;
+}
+
+.modal-box,
+.logout-modal-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-background-card);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+@media screen and (max-width: 560px) {
+  .btn,
+  .action-button,
+  .primary-button,
+  .secondary-button,
+  .delete-button,
+  .save-button {
+    width: 100%;
+  }
+
+  .panel-card,
+  .panel,
+  .modal-box,
+  .logout-modal-box {
+    padding: 18px 16px;
+  }
+
+  .form-actions {
+    align-items: stretch;
+  }
+}
