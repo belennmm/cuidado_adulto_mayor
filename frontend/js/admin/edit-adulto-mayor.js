@@ -81,7 +81,7 @@ function addMedicineCard(medicine = null) {
   card.innerHTML = `
     <div class="medicine-card-header">
       <h3 class="medicine-card-title">Medicina ${medicineCount}</h3>
-      <button type="button" class="remove-medicine-button">Eliminar</button>
+      <button type="button" class="remove-medicine-button danger-soft-button">Eliminar</button>
     </div>
 
     <div class="medicine-grid">

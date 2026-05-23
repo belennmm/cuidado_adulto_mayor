@@ -87,16 +87,10 @@
 }
 
 .remove-medicine-button {
-  border: none;
-  background-color: #fde8ee;
-  color: #c73a68;
-  border-radius: 10px;
   height: 36px;
   padding: 0 14px;
-  font-family: "Outfit", sans-serif;
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
 }
 
 .medicine-grid {

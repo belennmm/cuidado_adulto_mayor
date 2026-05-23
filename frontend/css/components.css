@@ -14,7 +14,8 @@
 .secondary-button,
 .delete-button,
 .deny-button,
-.save-button {
+.save-button,
+.danger-soft-button {
   min-height: 42px;
   border: none;
   border-radius: var(--radius-md);
@@ -47,7 +48,8 @@
 .secondary-button:disabled,
 .delete-button:disabled,
 .deny-button:disabled,
-.save-button:disabled {
+.save-button:disabled,
+.danger-soft-button:disabled {
   cursor: default;
   opacity: 0.7;
 }
@@ -73,9 +75,12 @@
 
 .btn-danger,
 .delete-button,
-.deny-button {
-  background: var(--color-danger-soft);
-  color: var(--color-text-inverse);
+.deny-button,
+.modal-confirm,
+.danger-soft-button {
+  background: #fff1f1;
+  border: 1px solid #f0c9c9;
+  color: #c94f4f;
 }
 
 .approve-request-button,
@@ -115,8 +120,17 @@
 .secondary-button:hover,
 .delete-button:hover,
 .deny-button:hover,
-.save-button:hover {
+.save-button:hover,
+.danger-soft-button:hover {
   opacity: 0.95;
+}
+
+.btn-danger:hover,
+.delete-button:hover,
+.deny-button:hover,
+.modal-confirm:hover,
+.danger-soft-button:hover {
+  transform: translateY(-1px);
 }
 
 .btn-primary,
@@ -423,7 +437,6 @@ textarea.form-control {
 .modal-confirm {
   min-width: 130px;
   min-height: 42px;
-  border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-family-base);
   font-size: 15px;
@@ -434,11 +447,11 @@ textarea.form-control {
 .modal-cancel {
   background-color: #edf4ff;
   color: var(--color-primary);
+  border: none;
 }
 
 .modal-confirm {
-  background-color: var(--color-danger-soft);
-  color: var(--color-text-inverse);
+  border: 1px solid #f0c9c9;
 }
 
 .modal-cancel:hover,

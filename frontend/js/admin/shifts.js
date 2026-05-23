@@ -240,7 +240,7 @@ function renderSchedules() {
             Rechazar
           </button>
         ` : ""}
-        <button type="button" class="delete-shift-button" data-id="${schedule.id}">
+        <button type="button" class="delete-shift-button danger-soft-button" data-id="${schedule.id}">
           Eliminar
         </button>
       </div>

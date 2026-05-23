@@ -319,6 +319,11 @@
 }
 
 .routine-note-text-button.is-danger {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #f0c9c9;
+  border-radius: 12px;
+  background: #fff1f1;
   color: #c94f4f;
 }
 
