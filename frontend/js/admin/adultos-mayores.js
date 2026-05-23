@@ -1,8 +1,6 @@
 const olderAdultSearchInput = document.getElementById("olderAdultSearchInput")
 const olderAdultsTableBody = document.getElementById("olderAdultsTableBody")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 let olderAdultsData = []
 
 function getToken() {
@@ -38,19 +36,10 @@ async function loadOlderAdults() {
   }
 
   try {
-    const response = await fetch(`${API_URL}/admin/older-adults`, {
-      cache: "no-store",
-      headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
+    const data = await window.CuidadoApi.fetchJson("/admin/older-adults", {
+      token,
+      fallbackError: "No se pudieron cargar los adultos mayores.",
     })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudieron cargar los adultos mayores.")
-    }
 
     olderAdultsData = data.older_adults || []
     renderOlderAdults(olderAdultsData)

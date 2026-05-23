@@ -4,24 +4,11 @@ const passwordInput = document.getElementById("password")
 const togglePassword = document.getElementById("togglePassword")
 const togglePasswordIcon = togglePassword ? togglePassword.querySelector("i") : null
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 function showMessage(message, isError = false) {
     if (registerMessage) {
         registerMessage.textContent = message
         registerMessage.classList.toggle("error", isError)
     }
-}
-
-function getErrorMessage(data, fallback) {
-    if (data?.message) return data.message
-
-    if (data?.errors) {
-        const firstError = Object.values(data.errors).flat()[0]
-        if (firstError) return firstError
-    }
-
-    return fallback
 }
 
 function clearSession() {
@@ -60,12 +47,9 @@ form.addEventListener("submit", async(e) => {
     }
 
     try {
-        const response = await fetch(`${API_URL}/register`, {
+        const data = await window.CuidadoApi.fetchJson("/register", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
+            auth: false,
             body: JSON.stringify({
                 name,
                 email,
@@ -74,17 +58,9 @@ form.addEventListener("submit", async(e) => {
                 location,
                 phone,
                 birthdate
-            })
+            }),
+            fallbackError: "Error al registrar",
         })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-            clearSession()
-            console.log(data)
-            showMessage(getErrorMessage(data, "Error al registrar"), true)
-            return
-        }
 
         clearSession()
         showMessage(data.message || "Registro enviado. Un administrador debe aprobar tu cuenta antes de iniciar sesion.")
@@ -95,7 +71,7 @@ form.addEventListener("submit", async(e) => {
 
     } catch (error) {
         console.error(error)
-        showMessage("No se pudo conectar con el servidor", true)
+        showMessage(error.message || "No se pudo conectar con el servidor", true)
     }
 })
 

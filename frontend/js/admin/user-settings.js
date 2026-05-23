@@ -17,7 +17,6 @@ const profileRole = document.getElementById("profileRole")
 const profileEmail = document.getElementById("profileEmail")
 
 const togglePasswordButtons = document.querySelectorAll(".toggle-password")
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 function getToken() {
   return (window.AuthSession?.getToken() || "")
@@ -47,17 +46,6 @@ function setMessage(message, isError = false) {
   accountSettingsMessage.classList.toggle("is-error", isError)
 }
 
-function firstValidationMessage(data) {
-  const errors = data?.errors || {}
-  const firstField = Object.keys(errors)[0]
-
-  if (firstField && Array.isArray(errors[firstField]) && errors[firstField][0]) {
-    return errors[firstField][0]
-  }
-
-  return data?.message || "No se pudo guardar el perfil."
-}
-
 async function fetchJson(path, options = {}) {
   const token = getToken()
 
@@ -65,24 +53,11 @@ async function fetchJson(path, options = {}) {
     throw new Error("Inicia sesion para ver tu perfil.")
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
-    cache: "no-store",
+  return window.CuidadoApi.fetchJson(path, {
     ...options,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...(options.headers || {}),
-    },
+    token,
+    fallbackError: "No se pudo guardar el perfil.",
   })
-
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(firstValidationMessage(data))
-  }
-
-  return data
 }
 
 function fillUser(user) {

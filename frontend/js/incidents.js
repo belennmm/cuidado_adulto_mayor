@@ -3,8 +3,6 @@ const incidentsDate = document.getElementById("incidentsDate")
 const incidentsCount = document.getElementById("incidentsCount")
 const incidentsDateInput = document.getElementById("incidentsDateInput")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 function getToken() {
     return (window.AuthSession?.getToken() || "")
 }
@@ -134,23 +132,15 @@ async function loadTodayIncidents() {
 
     try {
         const selectedDate = incidentsDateInput?.value || getSearchDate()
-        const url = new URL(`${API_URL}/incidents`)
+        const params = new URLSearchParams()
         if (selectedDate) {
-            url.searchParams.set("date", selectedDate)
+            params.set("date", selectedDate)
         }
 
-        const response = await fetch(url, {
-            headers: {
-                "Accept": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
+        const data = await window.CuidadoApi.fetchJson(`/incidents${params.toString() ? `?${params.toString()}` : ""}`, {
+            token,
+            fallbackError: "No se pudieron cargar los incidentes.",
         })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-            throw new Error(data.message || "No se pudieron cargar los incidentes.")
-        }
 
         incidentsDate.textContent = formatDate(data.date)
 

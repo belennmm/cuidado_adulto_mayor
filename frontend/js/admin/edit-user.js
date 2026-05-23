@@ -15,7 +15,6 @@ const closeDeleteModal = document.getElementById("closeDeleteModal")
 const confirmDeleteUser = document.getElementById("confirmDeleteUser")
 const deleteModal = document.getElementById("deleteModal")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 const params = new URLSearchParams(window.location.search)
 const userId = params.get("id")
 
@@ -45,39 +44,12 @@ function isApproved(value) {
   return value === true || value === 1 || value === "1" || value === "true" || value === "t"
 }
 
-function getErrorMessage(data, fallback) {
-  if (data?.message) return data.message
-
-  if (data?.errors) {
-    const firstError = Object.values(data.errors).flat()[0]
-    if (firstError) return firstError
-  }
-
-  return fallback
-}
-
-async function fetchJson(url, options = {}) {
-  const response = await fetch(url, options)
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data, "No se pudo completar la solicitud."))
-  }
-
-  return data
-}
-
-function getAuthHeaders(includeJson = false) {
-  const headers = {
-    "Accept": "application/json",
-    "Authorization": `Bearer ${getToken()}`
-  }
-
-  if (includeJson) {
-    headers["Content-Type"] = "application/json"
-  }
-
-  return headers
+async function fetchJson(path, options = {}) {
+  return window.CuidadoApi.fetchJson(path, {
+    ...options,
+    token: getToken(),
+    fallbackError: "No se pudo completar la solicitud.",
+  })
 }
 
 function setFormDisabled(disabled) {
@@ -123,9 +95,7 @@ async function loadUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users/${userId}`, {
-      headers: getAuthHeaders()
-    })
+    const data = await fetchJson(`/admin/users/${userId}`)
 
     fillForm(data.user)
   } catch (error) {
@@ -165,9 +135,8 @@ async function saveUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users/${userId}`, {
+    const data = await fetchJson(`/admin/users/${userId}`, {
       method: "PUT",
-      headers: getAuthHeaders(true),
       body: JSON.stringify(payload)
     })
 
@@ -188,10 +157,7 @@ async function deleteUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users/${userId}`, {
-      method: "DELETE",
-      headers: getAuthHeaders()
-    })
+    const data = await fetchJson(`/admin/users/${userId}`, { method: "DELETE" })
 
     await showPopup(data.message || "Usuario eliminado correctamente.")
     navigateTo("./users.html")

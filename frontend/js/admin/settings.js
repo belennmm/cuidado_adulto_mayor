@@ -1,5 +1,4 @@
 (() => {
-  const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
   const STORAGE_KEY = "adminPanelSettings"
 
   const defaultSettings = {
@@ -69,21 +68,10 @@
       throw new Error("Inicia sesion como administrador para ver configuracion.")
     }
 
-    const response = await fetch(`${API_URL}${path}`, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+    return window.CuidadoApi.fetchJson(path, {
+      token,
+      fallbackError: "No se pudo cargar la configuracion.",
     })
-
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudo cargar la configuracion.")
-    }
-
-    return data
   }
 
   function roleLabel(role) {
