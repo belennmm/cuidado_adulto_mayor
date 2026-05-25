@@ -14,7 +14,7 @@
   margin: 0;
   font-size: 26px;
   font-weight: 500;
-  color: #111111;
+  color: var(--color-text-base);
 }
 
 .older-adults-toolbar {
@@ -35,10 +35,10 @@
   width: 100%;
   height: 42px;
   border: 1px solid #b8b8b8;
-  border-radius: 8px;
-  background-color: #ffffff;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-background-card);
   padding: 0 42px 0 14px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   font-size: 15px;
   color: #555555;
   box-sizing: border-box;
@@ -61,9 +61,9 @@
 .new-older-adult-button {
   min-width: 142px;
   height: 40px;
-  border-radius: 10px;
-  background-color: #50b2df;
-  color: #ffffff;
+  border-radius: var(--radius-md);
+  background-color: var(--color-secondary);
+  color: var(--color-text-inverse);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +76,7 @@
   background-color: #efefef;
   border-radius: 18px;
   padding: 18px 14px 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-soft);
 }
 
 .older-adults-table-head {
@@ -101,7 +101,7 @@
   gap: 12px;
   align-items: center;
   background-color: #fafafa;
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 14px 16px;
 }
 
@@ -120,21 +120,9 @@
 .older-adult-avatar {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background-color: #2578e8;
   flex-shrink: 0;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 82px;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
 }
 
 .status-stable {
@@ -162,35 +150,26 @@
   width: 100%;
   height: 40px;
   border: none;
-  border-radius: 10px;
-  font-family: "Outfit", sans-serif;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-base);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
 }
 
 .edit-button {
-  background-color: #1d73f3;
-  color: #ffffff;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .routine-button {
   background-color: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
 }
 
 .edit-button:hover,
 .routine-button:hover {
   opacity: 0.95;
-}
-
-.empty-state {
-  background-color: #fafafa;
-  border-radius: 16px;
-  padding: 28px 16px;
-  text-align: center;
-  color: #8a8a8a;
-  font-size: 15px;
 }
 
 @media screen and (max-width: 1100px) {

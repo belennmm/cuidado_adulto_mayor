@@ -1,14 +1,14 @@
 body {
   margin: 0;
-  font-family: "Outfit", sans-serif;
-  background-color: #fff;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background-card);
 }
 
 .register-form-b {
   width: 100%;
   min-height: 100vh;
   display: flex;
-  background-color: #ffffff;
+  background-color: var(--color-background-card);
   overflow: hidden;
 }
 
@@ -47,7 +47,7 @@ body {
   margin: 0;
   font-size: 40px;
   font-weight: 400;
-  color: #7d7d7d;
+  color: var(--color-text-soft);
 }
 
 .account-prompt {
@@ -61,7 +61,7 @@ body {
   margin: 0;
   font-size: 25px;
   font-weight: 400;
-  color: #7d7d7d;
+  color: var(--color-text-soft);
 }
 
 .inicia-sesin {
@@ -70,7 +70,7 @@ body {
   padding: 0;
   font-size: 25px;
   font-weight: 500;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   color: var(--color-royalblue);
   cursor: pointer;
 }
@@ -78,25 +78,25 @@ body {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--gap-8);
 }
 
 .field-label {
   font-size: 18px;
   color: #8a8a8a;
-  padding-left: 4px;
+  padding-left: var(--padding-4, 4px);
 }
 
 .input-box {
   display: flex;
   align-items: center;
   min-height: 56px;
-  border: 1.2px solid #d8d8d8;
-  border-radius: 13px;
-  padding: 0 16px;
+  border: 1.2px solid var(--color-gainsboro-300);
+  border-radius: var(--br-13);
+  padding: 0 var(--padding-16);
   box-sizing: border-box;
-  background-color: #fff;
-  gap: 12px;
+  background-color: var(--color-background-card);
+  gap: var(--gap-12);
 }
 
 .input-icon {
@@ -109,9 +109,9 @@ body {
   flex: 1;
   border: none;
   outline: none;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   font-size: 18px;
-  color: #7d7d7d;
+  color: var(--color-text-soft);
   background: transparent;
 }
 
@@ -164,8 +164,8 @@ body {
   border: 1.5px solid var(--color-royalblue);
   border-radius: 23.5px;
   background-color: var(--color-royalblue);
-  color: #fff;
-  font-family: "Outfit", sans-serif;
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-base);
   font-size: 21px;
   font-weight: 500;
   cursor: pointer;
@@ -184,7 +184,7 @@ body {
   margin: 0;
   text-align: center;
   font-size: 16px;
-  color: #2d8c57;
+  color: var(--color-success);
 }
 
 .register-message.error {

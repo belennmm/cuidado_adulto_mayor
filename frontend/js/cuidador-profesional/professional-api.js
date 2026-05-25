@@ -1,6 +1,4 @@
 (() => {
-  const apiUrl = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
   function getToken() {
     return (window.AuthSession?.getToken() || "")
   }
@@ -15,28 +13,11 @@
   }
 
   async function fetchJson(path, options = {}) {
-    const token = getToken()
-    const response = await fetch(`${apiUrl}${path}`, {
-      cache: "no-store",
+    return window.CuidadoApi.fetchJson(path, {
       ...options,
-      headers: {
-        Accept: "application/json",
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(options.headers || {}),
-      },
+      token: getToken(),
+      fallbackError: "No se pudo cargar la informacion.",
     })
-
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      const error = new Error(data.message || "No se pudo cargar la informacion.")
-      error.status = response.status
-      error.errors = data.errors || {}
-      throw error
-    }
-
-    return data
   }
 
   function formatDate(value) {

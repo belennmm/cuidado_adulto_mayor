@@ -1,6 +1,4 @@
 (() => {
-  const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
   const FILTER_LABELS = {
     day: "Dia",
     month: "Mes",
@@ -53,19 +51,6 @@
       .replaceAll("'", "&#039;")
   }
 
-  function buildErrorMessage(data, fallback) {
-    if (data?.message) {
-      return data.message
-    }
-
-    const firstError = Object.values(data?.errors || {})[0]
-    if (Array.isArray(firstError) && firstError.length) {
-      return firstError[0]
-    }
-
-    return fallback
-  }
-
   async function fetchJson(path, options = {}) {
     const token = getToken()
 
@@ -73,24 +58,11 @@
       throw new Error("Inicia sesion como administrador para ver esta informacion.")
     }
 
-    const response = await fetch(`${API_URL}${path}`, {
-      cache: "no-store",
+    return window.CuidadoApi.fetchJson(path, {
       ...options,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {}),
-      },
+      token,
+      fallbackError: "No se pudo completar la solicitud.",
     })
-
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(buildErrorMessage(data, "No se pudo completar la solicitud."))
-    }
-
-    return data
   }
 
 
@@ -264,7 +236,7 @@
             <button type="button" class="inventory-inline-button" data-action="edit" data-id="${escapeHtml(item.id)}">Editar</button>
             <button type="button" class="inventory-inline-button" data-action="increase" data-id="${escapeHtml(item.id)}">Sumar stock</button>
             <button type="button" class="inventory-inline-button" data-action="decrease" data-id="${escapeHtml(item.id)}">Reducir stock</button>
-            <button type="button" class="inventory-inline-button danger" data-action="delete" data-id="${escapeHtml(item.id)}">Eliminar</button>
+            <button type="button" class="inventory-inline-button danger danger-soft-button" data-action="delete" data-id="${escapeHtml(item.id)}">Eliminar</button>
           </div>
         </article>
       `)

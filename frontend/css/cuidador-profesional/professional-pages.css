@@ -27,14 +27,6 @@
   gap: 16px;
 }
 
-.professional-panel,
-.professional-card,
-.professional-empty {
-  background: #ffffff;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-}
-
 .professional-panel {
   padding: 16px;
 }
@@ -269,23 +261,6 @@
   flex-wrap: wrap;
 }
 
-.routine-note-secondary,
-.routine-note-submit,
-.routine-note-text-button {
-  border: none;
-  font-family: "Outfit", sans-serif;
-  cursor: pointer;
-}
-
-.routine-note-secondary {
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #e4e4e7;
-  color: #3f3f46;
-  font-weight: 600;
-}
-
 .routine-note-submit {
   min-height: 42px;
 }
@@ -344,6 +319,11 @@
 }
 
 .routine-note-text-button.is-danger {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #f0c9c9;
+  border-radius: 12px;
+  background: #fff1f1;
   color: #c94f4f;
 }
 
@@ -416,22 +396,6 @@
   color: #7a5511;
 }
 
-.schedule-change-toggle,
-.schedule-change-form button {
-  min-height: 36px;
-  border: none;
-  border-radius: 8px;
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.schedule-change-toggle {
-  padding: 0 12px;
-  background: #1d73f3;
-  color: #ffffff;
-}
-
 .schedule-change-toggle:disabled {
   background: #cbd5e1;
   cursor: default;
@@ -492,14 +456,11 @@
 }
 
 .change-form-actions button[type="button"] {
-  background: #e4e4e7;
-  color: #3f3f46;
   padding: 0 12px;
 }
 
 .change-form-actions button[type="submit"] {
   background: #2d8c57;
-  color: #ffffff;
   padding: 0 14px;
 }
 
@@ -570,18 +531,6 @@
 .vacation-form textarea {
   min-height: 42px;
   resize: vertical;
-}
-
-.vacation-form button {
-  min-height: 42px;
-  border: none;
-  border-radius: 8px;
-  padding: 0 14px;
-  background: #1d73f3;
-  color: #ffffff;
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .vacation-message {
@@ -667,29 +616,9 @@
   align-items: flex-start;
 }
 
-.professional-empty {
-  padding: 20px;
-  color: #70707a;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .professional-empty i {
   color: #1d73f3;
   font-size: 22px;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
 }
 
 .status-stable,

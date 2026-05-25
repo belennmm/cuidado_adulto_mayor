@@ -1,8 +1,6 @@
 const userSearchInput = document.getElementById("userSearchInput")
 const usersTableBody = document.getElementById("usersTableBody")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 let usersData = []
 
 function getToken() {
@@ -56,17 +54,10 @@ function escapeHtml(value) {
 
 async function loadUsers() {
   try {
-    const response = await fetch(`${API_URL}/users`, {
-      headers: {
-        "Accept": "application/json"
-      }
+    const data = await window.CuidadoApi.fetchJson("/users", {
+      auth: false,
+      fallbackError: "No se pudieron cargar los usuarios.",
     })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudieron cargar los usuarios.")
-    }
 
     usersData = data.users || []
     renderUsers(usersData)
@@ -88,20 +79,11 @@ async function approveUser(userId) {
   }
 
   try {
-    const response = await fetch(`${API_URL}/admin/users/${userId}/approve`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/approve`, {
       method: "PATCH",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
+      token,
+      fallbackError: "No se pudo aprobar el usuario.",
     })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudo aprobar el usuario.")
-    }
 
     await showPopup(data.message || "Usuario aprobado correctamente.")
     await loadUsers()

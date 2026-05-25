@@ -9,8 +9,6 @@ const locationInput = document.getElementById("location")
 const phone = document.getElementById("phone")
 const birthdate = document.getElementById("birthdate")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 let pendingRequests = []
 
 function navigateTo(url) {
@@ -78,17 +76,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;")
 }
 
-function getErrorMessage(data, fallback) {
-  if (data?.message) return data.message
-
-  if (data?.errors) {
-    const firstError = Object.values(data.errors).flat()[0]
-    if (firstError) return firstError
-  }
-
-  return fallback
-}
-
 function renderRequestState(message, className = "empty-requests") {
   if (!requestList) return
 
@@ -99,28 +86,12 @@ function renderRequestState(message, className = "empty-requests") {
   `
 }
 
-async function fetchJson(url, options = {}) {
-  const response = await fetch(url, options)
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data, "No se pudo completar la solicitud."))
-  }
-
-  return data
-}
-
-function getAuthHeaders(includeJson = false) {
-  const headers = {
-    "Accept": "application/json",
-    "Authorization": `Bearer ${getToken()}`
-  }
-
-  if (includeJson) {
-    headers["Content-Type"] = "application/json"
-  }
-
-  return headers
+async function fetchJson(path, options = {}) {
+  return window.CuidadoApi.fetchJson(path, {
+    ...options,
+    token: getToken(),
+    fallbackError: "No se pudo completar la solicitud.",
+  })
 }
 
 function setFormDisabled(disabled) {
@@ -167,9 +138,8 @@ async function createUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users`, {
+    const data = await fetchJson("/admin/users", {
       method: "POST",
-      headers: getAuthHeaders(true),
       body: JSON.stringify(payload)
     })
 
@@ -194,12 +164,7 @@ async function loadPendingRequests() {
   renderRequestState("Cargando solicitudes...", "loading-requests")
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users`, {
-      headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
-    })
+    const data = await fetchJson("/admin/users", { token })
 
     pendingRequests = (data.users || []).filter((user) => {
       return user.role !== "admin" && !isApproved(user.is_approved)
@@ -215,13 +180,9 @@ async function approveRequest(userId) {
   const token = getToken()
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users/${userId}/approve`, {
+    const data = await fetchJson(`/admin/users/${userId}/approve`, {
       method: "PATCH",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
+      token,
     })
 
     await showPopup(data.message || "Usuario aprobado correctamente.")
@@ -244,12 +205,9 @@ async function rejectRequest(userId) {
   const token = getToken()
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/users/${userId}/reject`, {
+    const data = await fetchJson(`/admin/users/${userId}/reject`, {
       method: "DELETE",
-      headers: {
-        "Accept": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
+      token,
     })
 
     await showPopup(data.message || "Solicitud rechazada correctamente.")

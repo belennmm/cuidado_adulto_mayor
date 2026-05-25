@@ -1,6 +1,5 @@
 const adminReminderText = document.getElementById("adminReminderText")
 const adminDefaultPageButton = document.getElementById("adminDefaultPageButton")
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
 
 const adminDefaultPageLabels = {
   "./dashboard.html": "Dashboard",
@@ -20,18 +19,10 @@ async function loadAdminReminder() {
 
   try {
     const token = getToken()
-    const response = await fetch(`${API_URL}/dashboard-summary`, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+    const data = await window.CuidadoApi.fetchJson("/dashboard-summary", {
+      token,
+      fallbackError: "No se pudo cargar el estado de hoy.",
     })
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudo cargar el estado de hoy.")
-    }
 
     const pendingMeds = data.medications?.pending_today ?? 0
     const requests = data.stats?.requests ?? 0

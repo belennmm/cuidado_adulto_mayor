@@ -5,8 +5,6 @@ const loginForm = document.querySelector(".rectangle-parent")
 const usernameInput = document.querySelector(".ingrese-usuario")
 const loginMessage = document.getElementById("loginMessage")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 function showLoginMessage(message) {
     if (loginMessage) {
         loginMessage.textContent = message
@@ -78,23 +76,12 @@ if (loginForm) {
         }
 
         try {
-            const response = await fetch(`${API_URL}/login`, {
+            const data = await window.CuidadoApi.fetchJson("/login", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ email, password })
+                auth: false,
+                body: JSON.stringify({ email, password }),
+                fallbackError: "Credenciales invalidas",
             })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                clearSession()
-                showLoginMessage(data.message || "Credenciales inválidas")
-                return
-            }
-
             if (!window.AuthSession?.saveSession(data.token, data.user)) {
                 showLoginMessage("No se pudo guardar la sesion")
                 return
@@ -105,7 +92,7 @@ if (loginForm) {
         } catch (error) {
             console.error("Error al conectar con el servidor:", error)
             clearSession()
-            showLoginMessage("No se pudo conectar con el servidor.")
+            showLoginMessage(error.message || "No se pudo conectar con el servidor.")
         }
     })
 }

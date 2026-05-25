@@ -1,6 +1,4 @@
 (() => {
-  const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
   let olderAdults = []
   let activeOlderAdultId = ""
   let currentRoutines = []
@@ -39,35 +37,11 @@
       throw new Error("Inicia sesion como administrador para gestionar rutinas.")
     }
 
-    const response = await fetch(`${API_URL}${path}`, {
-      cache: "no-store",
+    return window.CuidadoApi.fetchJson(path, {
       ...options,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        ...(options.headers || {}),
-      },
+      token,
+      fallbackError: "No se pudo completar la accion.",
     })
-
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(firstValidationMessage(data))
-    }
-
-    return data
-  }
-
-  function firstValidationMessage(error) {
-    const errors = error?.errors || {}
-    const firstField = Object.keys(errors)[0]
-
-    if (firstField && Array.isArray(errors[firstField]) && errors[firstField][0]) {
-      return errors[firstField][0]
-    }
-
-    return error?.message || "No se pudo completar la accion."
   }
 
   function getRequestedAdultId() {

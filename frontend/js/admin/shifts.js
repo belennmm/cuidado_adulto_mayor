@@ -8,8 +8,6 @@ const shiftMessage = document.getElementById("shiftMessage")
 const shiftsTableBody = document.getElementById("shiftsTableBody")
 const vacationsTableBody = document.getElementById("vacationsTableBody")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 const DAY_LABELS = {
   0: "Domingo",
   1: "Lunes",
@@ -37,16 +35,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;")
 }
 
-function getHeaders() {
-  const token = getToken()
-
-  return {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-  }
-}
-
 function setMessage(message, isError = false) {
   shiftMessage.textContent = message
   shiftMessage.classList.toggle("is-error", isError)
@@ -72,38 +60,28 @@ function formatTimeRange(schedule) {
   return `${normalizeTime(schedule.start_time)} - ${normalizeTime(schedule.end_time)}`
 }
 
-async function fetchJson(url, options = {}) {
-  const response = await fetch(url, {
+async function fetchJson(path, options = {}) {
+  return window.CuidadoApi.fetchJson(path, {
     ...options,
-    headers: {
-      ...getHeaders(),
-      ...(options.headers || {}),
-    },
+    token: getToken(),
+    fallbackError: "No se pudo completar la accion.",
   })
-
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(data.message || "No se pudo completar la accion.")
-  }
-
-  return data
 }
 
 async function loadCaregivers() {
-  const data = await fetchJson(`${API_URL}/admin/professional-caregivers`)
+  const data = await fetchJson("/admin/professional-caregivers")
   caregiversData = data.users || []
   renderCaregiverOptions()
 }
 
 async function loadSchedules() {
-  const data = await fetchJson(`${API_URL}/admin/schedules`)
+  const data = await fetchJson("/admin/schedules")
   schedulesData = data.schedules || []
   renderSchedules()
 }
 
 async function loadVacations() {
-  const data = await fetchJson(`${API_URL}/admin/vacation-requests`)
+  const data = await fetchJson("/admin/vacation-requests")
   vacationsData = data.vacation_requests || []
   renderVacations()
 }
@@ -240,7 +218,7 @@ function renderSchedules() {
             Rechazar
           </button>
         ` : ""}
-        <button type="button" class="delete-shift-button" data-id="${schedule.id}">
+        <button type="button" class="delete-shift-button danger-soft-button" data-id="${schedule.id}">
           Eliminar
         </button>
       </div>
@@ -295,7 +273,7 @@ async function saveSchedule(event) {
       throw new Error("Selecciona un cuidador.")
     }
 
-    const data = await fetchJson(`${API_URL}/admin/schedules`, {
+    const data = await fetchJson("/admin/schedules", {
       method: "POST",
       body: JSON.stringify(payload),
     })
@@ -322,7 +300,7 @@ async function deleteSchedule(scheduleId) {
   }
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/schedules/${scheduleId}`, {
+    const data = await fetchJson(`/admin/schedules/${scheduleId}`, {
       method: "DELETE",
     })
 
@@ -348,7 +326,7 @@ async function resolveChangeRequest(scheduleId, action) {
   }
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/schedules/${scheduleId}/change-request/${action}`, {
+    const data = await fetchJson(`/admin/schedules/${scheduleId}/change-request/${action}`, {
       method: "PATCH",
     })
 
@@ -374,7 +352,7 @@ async function resolveVacationRequest(requestId, action) {
   }
 
   try {
-    const data = await fetchJson(`${API_URL}/admin/vacation-requests/${requestId}/${action}`, {
+    const data = await fetchJson(`/admin/vacation-requests/${requestId}/${action}`, {
       method: "PATCH",
     })
 

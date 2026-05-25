@@ -12,7 +12,7 @@
 
 .routines-header h1 {
   margin: 0 0 6px;
-  color: #0a112f;
+  color: var(--color-text-strong);
   font-size: 36px;
   font-weight: 700;
 }
@@ -20,7 +20,7 @@
 .routines-header p,
 .panel-heading p {
   margin: 0;
-  color: #70707a;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
@@ -29,7 +29,7 @@
 .secondary-button,
 .text-button {
   border: none;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   font-weight: 600;
   cursor: pointer;
 }
@@ -42,14 +42,14 @@
   padding: 0 14px;
   border-radius: 10px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
 }
 
 .routines-selector-panel,
 .routine-form-panel,
 .routine-list-panel {
-  background: #ffffff;
-  border: 1px solid #e4e4e7;
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border-light);
   border-radius: 12px;
 }
 
@@ -75,14 +75,14 @@
 .routine-field textarea {
   width: 100%;
   border: 1px solid #d4d4d8;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 12px 14px;
   color: #333333;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-family-base);
   font-size: 14px;
   box-sizing: border-box;
   outline: none;
-  background: #ffffff;
+  background: var(--color-background-card);
 }
 
 .routine-field textarea {
@@ -97,19 +97,19 @@
   justify-content: center;
   gap: 5px;
   padding: 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: #f8fafc;
 }
 
 .routine-summary span,
 .routine-summary p {
   margin: 0;
-  color: #70707a;
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
 .routine-summary strong {
-  color: #0a112f;
+  color: var(--color-text-strong);
   font-size: 28px;
 }
 
@@ -131,7 +131,7 @@
 
 .panel-heading h2 {
   margin: 0 0 4px;
-  color: #0a112f;
+  color: var(--color-text-strong);
   font-size: 20px;
 }
 
@@ -158,29 +158,12 @@
   flex: 1;
   min-height: 20px;
   margin: 0;
-  color: #2d8c57;
+  color: var(--color-success);
   font-size: 13px;
 }
 
 .routine-message.is-error {
   color: #c94f4f;
-}
-
-.primary-button,
-.secondary-button {
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 10px;
-}
-
-.primary-button {
-  background: #1d73f3;
-  color: #ffffff;
-}
-
-.secondary-button {
-  background: #e4e4e7;
-  color: #3f3f46;
 }
 
 .routines-grid {
@@ -199,7 +182,7 @@
 .empty-state {
   padding: 14px;
   border: 1px solid #e6edf7;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: #f8fafc;
 }
 
@@ -213,17 +196,12 @@
 
 .routine-card strong {
   display: block;
-  color: #0a112f;
+  color: var(--color-text-strong);
   font-size: 15px;
 }
 
 .routine-card span,
 .routine-card p,
-.empty-state {
-  color: #70707a;
-  font-size: 14px;
-}
-
 .routine-card p {
   margin: 4px 0 0;
 }
@@ -245,11 +223,16 @@
 .text-button {
   padding: 0;
   background: transparent;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 13px;
 }
 
 .text-button.is-danger {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #f0c9c9;
+  border-radius: 12px;
+  background: #fff1f1;
   color: #c94f4f;
 }
 
@@ -259,9 +242,9 @@
   justify-content: center;
   min-height: 28px;
   padding: 0 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;

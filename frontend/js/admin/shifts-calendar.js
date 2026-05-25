@@ -37,8 +37,6 @@
     requestId: 0,
   }
 
-  const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
   function safeJsonParse(value) {
     try {
       return JSON.parse(value)
@@ -187,19 +185,10 @@
       end_date: formatDateKey(endDate),
     })
 
-    const response = await fetch(`${API_URL}/admin/schedules/calendar?${params.toString()}`, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/calendar?${params.toString()}`, {
+      token,
+      fallbackError: "No se pudo cargar el calendario de turnos.",
     })
-
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudo cargar el calendario de turnos.")
-    }
 
     return {
       shifts: data.shifts || [],

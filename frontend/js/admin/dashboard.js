@@ -1,5 +1,3 @@
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 const olderAdultsCount = document.getElementById("olderAdultsCount")
 const caregiversCount = document.getElementById("caregiversCount")
 const incidentsCount = document.getElementById("incidentsCount")
@@ -26,24 +24,11 @@ function escapeHtml(value) {
 }
 
 async function fetchJson(path, options = {}) {
-  const token = getToken()
-  const response = await fetch(`${API_URL}${path}`, {
-    cache: "no-store",
+  return window.CuidadoApi.fetchJson(path, {
     ...options,
-    headers: {
-      Accept: "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
+    token: getToken(),
+    fallbackError: "No se pudo cargar la informacion.",
   })
-
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new Error(data.message || "No se pudo cargar la informacion.")
-  }
-
-  return data
 }
 
 function formatShortDate(value) {

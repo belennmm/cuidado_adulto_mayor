@@ -22,8 +22,6 @@ const closeDeleteModal = document.getElementById("closeDeleteModal")
 const confirmDeleteOlderAdult = document.getElementById("confirmDeleteOlderAdult")
 const deleteModal = document.getElementById("deleteModal")
 
-const API_URL = window.CuidadoConfig?.apiUrl || `${window.location.protocol}//${window.location.hostname}:8080/api`
-
 const params = new URLSearchParams(window.location.search)
 const olderAdultId = params.get("id")
 let medicineCount = 0
@@ -81,7 +79,7 @@ function addMedicineCard(medicine = null) {
   card.innerHTML = `
     <div class="medicine-card-header">
       <h3 class="medicine-card-title">Medicina ${medicineCount}</h3>
-      <button type="button" class="remove-medicine-button">Eliminar</button>
+      <button type="button" class="remove-medicine-button danger-soft-button">Eliminar</button>
     </div>
 
     <div class="medicine-grid">
@@ -203,25 +201,11 @@ async function apiRequest(path, options = {}) {
     throw new Error("Inicia sesion como administrador para gestionar adultos mayores.")
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
-    cache: "no-store",
+  return window.CuidadoApi.fetchJson(path, {
     ...options,
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
-      ...(options.headers || {}),
-    },
+    token,
+    fallbackError: "No se pudo completar la operacion.",
   })
-
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    const validationErrors = data.errors ? Object.values(data.errors).flat().join("\n") : null
-    throw new Error(validationErrors || data.message || "No se pudo completar la operacion.")
-  }
-
-  return data
 }
 
 function fillForm(olderAdult) {
@@ -261,19 +245,10 @@ async function loadFamilyCaregivers(selectedId = null) {
   if (!token) return
 
   try {
-    const response = await fetch(`${API_URL}/admin/family-caregivers`, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+    const data = await window.CuidadoApi.fetchJson("/admin/family-caregivers", {
+      token,
+      fallbackError: "No se pudieron cargar los cuidadores familiares.",
     })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudieron cargar los cuidadores familiares.")
-    }
 
     caregiverFamily.innerHTML = '<option value="">Seleccione cuidador familiar</option>'
 
@@ -299,19 +274,10 @@ async function loadProfessionalCaregivers(selectedId = null) {
   if (!token) return
 
   try {
-    const response = await fetch(`${API_URL}/admin/professional-caregivers`, {
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+    const data = await window.CuidadoApi.fetchJson("/admin/professional-caregivers", {
+      token,
+      fallbackError: "No se pudieron cargar los cuidadores profesionales.",
     })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || "No se pudieron cargar los cuidadores profesionales.")
-    }
 
     professionalCaregiver.innerHTML = '<option value="">Seleccione cuidador profesional</option>'
 

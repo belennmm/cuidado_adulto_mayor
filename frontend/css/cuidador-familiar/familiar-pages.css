@@ -81,13 +81,6 @@
   font-weight: 500;
 }
 
-.prototype-card {
-  background: var(--family-panel);
-  border-radius: 22px;
-  border: none;
-  box-shadow: none;
-}
-
 .prototype-field {
   width: 100%;
   min-height: 44px;
@@ -123,38 +116,6 @@
   outline: none;
 }
 
-.prototype-button {
-  min-height: 44px;
-  border: none;
-  border-radius: 14px;
-  background: var(--family-blue);
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 34px;
-  box-sizing: border-box;
-  font-family: "Courier New", monospace;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.prototype-back {
-  min-width: 180px;
-  height: 42px;
-  border-radius: 22px;
-  background: #f2f2f2;
-  color: #5b9aea;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  font-family: "Courier New", monospace;
-  font-size: 18px;
-  font-weight: 700;
-}
-
 .prototype-back i {
   width: 30px;
   height: 30px;
@@ -165,27 +126,6 @@
   align-items: center;
   justify-content: center;
   font-size: 22px;
-}
-
-.badge,
-.status-stable,
-.status-attention,
-.status-critical,
-.badge-blue,
-.badge-success,
-.badge-warning,
-.badge-danger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 30px;
-  border-radius: 999px;
-  padding: 4px 12px;
-  box-sizing: border-box;
-  background: #eef5ff;
-  color: var(--family-blue);
-  font-size: 14px;
-  font-weight: 700;
 }
 
 .status-stable,
@@ -204,15 +144,6 @@
 .badge-danger {
   background: #fde7ee;
   color: #c73a68;
-}
-
-.empty-card {
-  border-radius: 22px;
-  background: var(--family-panel);
-  color: #111111;
-  padding: 32px 42px;
-  font-size: 28px;
-  line-height: 1.35;
 }
 
 .home-status-list,
@@ -299,32 +230,6 @@
   font-family: "Courier New", monospace;
 }
 
-.primary-action,
-.secondary-action,
-.filter-button,
-.save-button {
-  min-height: 46px;
-  border-radius: 14px;
-  border: none;
-  background: var(--family-blue);
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 20px;
-  box-sizing: border-box;
-  font-family: "Courier New", monospace;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.secondary-action,
-.filter-button {
-  background: #f2f2f2;
-  color: var(--family-blue);
-}
-
 .filter-button.active {
   background: var(--family-blue);
   color: #ffffff;
@@ -362,29 +267,6 @@
   gap: 16px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  color: var(--family-ink);
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.form-group input {
-  height: 48px;
-  border: none;
-  border-radius: 8px;
-  background: var(--family-field);
-  padding: 0 14px;
-  box-sizing: border-box;
-  font-size: 16px;
-  outline: none;
-}
-
 .password-input-wrap {
   position: relative;
 }
@@ -407,14 +289,6 @@
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 20px;
-}
-
-.form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
 }
 
 .form-message {
