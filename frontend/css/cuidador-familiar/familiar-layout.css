@@ -74,6 +74,12 @@ a {
   box-shadow: 0 8px 16px rgba(29, 124, 242, 0.25);
 }
 
+.nav-icon[aria-current="page"] {
+  color: #ffffff;
+  background: #1d7cf2;
+  box-shadow: 0 8px 16px rgba(29, 124, 242, 0.25);
+}
+
 .main-content {
   flex: 1;
   min-width: 0;

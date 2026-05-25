@@ -64,7 +64,17 @@ a {
   background-color: #eef5ff;
 }
 
+.nav-icon:focus-visible {
+  background-color: #eef5ff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(22, 120, 243, 0.25);
+}
+
 .nav-icon.active {
+  background-color: #eef5ff;
+}
+
+.nav-icon[aria-current="page"] {
   background-color: #eef5ff;
 }
 
