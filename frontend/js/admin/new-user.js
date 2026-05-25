@@ -28,7 +28,7 @@ async function showPopup(message, options = {}) {
     return
   }
 
-  alert(message)
+  console.warn(message)
 }
 
 async function confirmPopup(message, options = {}) {
@@ -36,7 +36,8 @@ async function confirmPopup(message, options = {}) {
     return window.showAdminConfirm(message, options)
   }
 
-  return confirm(message)
+  console.warn(message, options)
+  return false
 }
 
 function getToken() {

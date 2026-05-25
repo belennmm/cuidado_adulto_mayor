@@ -416,7 +416,7 @@
       return
     }
 
-    alert(message)
+    console.warn(message)
   }
 
   function openShiftDetail(shiftId) {

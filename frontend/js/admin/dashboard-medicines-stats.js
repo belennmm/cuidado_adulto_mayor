@@ -468,7 +468,12 @@
     }
 
     if (action === "delete") {
-      const confirmed = window.confirm(`¿Deseas eliminar ${medication.name}?`)
+      const confirmed = window.showAdminConfirm
+        ? await window.showAdminConfirm(`¿Deseas eliminar ${medication.name}?`, {
+            title: "Eliminar medicamento",
+            confirmText: "Eliminar",
+          })
+        : false
       if (!confirmed) return
 
       try {

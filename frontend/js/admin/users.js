@@ -15,7 +15,7 @@ async function showPopup(message, options = {}) {
     return
   }
 
-  alert(message)
+  console.warn(message)
 }
 
 function isApproved(value) {

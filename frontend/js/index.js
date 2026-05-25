@@ -25,7 +25,7 @@ const roleRedirects = {
     familiar: "./pages/cuidador-familiar/home-page.html"
 }
 
-function redirectByRole(role) {
+async function redirectByRole(role) {
     const destination = roleRedirects[role]
     if (destination) {
         if (window.navigateWithLoading) {
@@ -36,7 +36,12 @@ function redirectByRole(role) {
         window.location.assign(destination)
         return
     }
-    alert("No se encontró acceso para este tipo de usuario")
+    const message = "No se encontró acceso para este tipo de usuario"
+    showLoginMessage(message)
+
+    if (window.showAdminAlert) {
+        await window.showAdminAlert(message, { variant: "error" })
+    }
 }
 
 if (solicitarCuentaText) {
@@ -95,7 +100,7 @@ if (loginForm) {
                 return
             }
 
-            redirectByRole(data.user?.role || "familiar")
+            await redirectByRole(data.user?.role || "familiar")
 
         } catch (error) {
             console.error("Error al conectar con el servidor:", error)

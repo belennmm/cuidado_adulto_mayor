@@ -296,7 +296,7 @@
           title: "Eliminar rutina",
           confirmText: "Eliminar",
         })
-      : confirm("Deseas eliminar esta rutina?")
+      : false
 
     if (!confirmed) return
 

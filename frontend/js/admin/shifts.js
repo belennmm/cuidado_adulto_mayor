@@ -315,7 +315,7 @@ async function deleteSchedule(scheduleId) {
         title: "Eliminar turno",
         confirmText: "Eliminar",
       })
-    : window.confirm("Seguro que deseas eliminar este turno?")
+    : false
 
   if (!confirmed) {
     return
@@ -341,7 +341,7 @@ async function resolveChangeRequest(scheduleId, action) {
         confirmText: action === "approve" ? "Aprobar" : "Rechazar",
         variant: action === "approve" ? "info" : "danger",
       })
-    : window.confirm(`Seguro que deseas ${label} esta solicitud?`)
+    : false
 
   if (!confirmed) {
     return
@@ -367,7 +367,7 @@ async function resolveVacationRequest(requestId, action) {
         confirmText: action === "approve" ? "Aprobar" : "Rechazar",
         variant: action === "approve" ? "info" : "danger",
       })
-    : window.confirm(`Seguro que deseas ${label} esta solicitud de vacaciones?`)
+    : false
 
   if (!confirmed) {
     return
