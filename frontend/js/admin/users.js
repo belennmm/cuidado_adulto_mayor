@@ -85,7 +85,7 @@ async function approveUser(userId) {
       fallbackError: "No se pudo aprobar el usuario.",
     })
 
-    await showPopup(data.message || "Usuario aprobado correctamente.")
+    await showPopup(data.message || "Usuario aprobado correctamente.", { variant: "success" })
     await loadUsers()
   } catch (error) {
     await showPopup(error.message, { variant: "error" })

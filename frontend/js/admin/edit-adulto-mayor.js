@@ -360,7 +360,7 @@ if (editOlderAdultForm) {
       }
 
       const data = await updateOlderAdult()
-      await showPopup(data.message || "Se guardaron los cambios del adulto mayor.")
+      await showPopup(data.message || "Se guardaron los cambios del adulto mayor.", { variant: "success" })
       navigateTo("./adultos-mayores.html")
     } catch (error) {
       await showPopup(error.message, { variant: "error" })
@@ -400,7 +400,7 @@ if (confirmDeleteOlderAdult) {
       confirmDeleteOlderAdult.textContent = "Eliminando..."
 
       const data = await deleteOlderAdult()
-      await showPopup(data.message || "Adulto mayor eliminado correctamente.")
+      await showPopup(data.message || "Adulto mayor eliminado correctamente.", { variant: "success" })
       navigateTo("./adultos-mayores.html")
     } catch (error) {
       await showPopup(error.message, { variant: "error" })

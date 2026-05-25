@@ -384,7 +384,7 @@
       await loadRoutinesAndNotes()
       await showProfessionalAlert(successMessage, {
         title: "Rutina guardada",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       const message = firstValidationMessage(error)
@@ -446,7 +446,7 @@
       await loadRoutinesAndNotes()
       await showProfessionalAlert(message, {
         title: "Rutina eliminada",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       const message = firstValidationMessage(error)
@@ -521,7 +521,7 @@
       await loadRoutinesAndNotes()
       await showProfessionalAlert(successMessage, {
         title: "Nota guardada",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       setMessage(error.message, true)
@@ -579,7 +579,7 @@
       await loadRoutinesAndNotes()
       await showProfessionalAlert(message, {
         title: "Nota eliminada",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       setMessage(error.message, true)

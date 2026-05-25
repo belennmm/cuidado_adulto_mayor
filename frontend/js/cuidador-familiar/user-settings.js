@@ -93,7 +93,7 @@
       setMessage(message, "success")
       await api.showAlert(message, {
         title: "Perfil actualizado",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       setMessage(error.message, "error")

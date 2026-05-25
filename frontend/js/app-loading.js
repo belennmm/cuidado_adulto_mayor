@@ -25,6 +25,31 @@
   let routeNavigationInProgress = false
   let adminPopupOverlay = null
   let adminPopupResolver = null
+  let adminPopupRestoreFocus = null
+  let adminPopupCleanup = null
+
+  const POPUP_VARIANTS = {
+    info: {
+      title: "Aviso",
+      icon: "bx bx-info-circle",
+    },
+    success: {
+      title: "Listo",
+      icon: "bx bx-check-circle",
+    },
+    error: {
+      title: "No se pudo completar",
+      icon: "bx bx-error-circle",
+    },
+    danger: {
+      title: "Confirmar accion",
+      icon: "bx bx-error-circle",
+    },
+    warning: {
+      title: "Revisar informacion",
+      icon: "bx bx-error-circle",
+    },
+  }
 
   function isInsideApp() {
     const path = window.location.pathname.toLowerCase()
@@ -378,7 +403,7 @@
         width: 100%;
         max-width: 430px;
         padding: 24px;
-        border-radius: 16px;
+        border-radius: 12px;
         background: #ffffff;
         box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
         font-family: "Outfit", sans-serif;
@@ -401,6 +426,16 @@
       .admin-popup-overlay[data-variant="error"] .admin-popup-icon {
         background: #fdecec;
         color: #c94f4f;
+      }
+
+      .admin-popup-overlay[data-variant="success"] .admin-popup-icon {
+        background: #e8f8ef;
+        color: #1e9d61;
+      }
+
+      .admin-popup-overlay[data-variant="warning"] .admin-popup-icon {
+        background: #fff6e3;
+        color: #b7791f;
       }
 
       .admin-popup-title {
@@ -430,7 +465,7 @@
         min-width: 120px;
         min-height: 42px;
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         padding: 0 14px;
         font-family: "Outfit", sans-serif;
         font-size: 15px;
@@ -451,6 +486,20 @@
       .admin-popup-overlay[data-variant="danger"] .admin-popup-confirm,
       .admin-popup-overlay[data-variant="error"] .admin-popup-confirm {
         background: #c94f4f;
+      }
+
+      .admin-popup-overlay[data-variant="success"] .admin-popup-confirm {
+        background: #1e9d61;
+      }
+
+      .admin-popup-overlay[data-variant="warning"] .admin-popup-confirm {
+        background: #b7791f;
+      }
+
+      .admin-popup-cancel:focus-visible,
+      .admin-popup-confirm:focus-visible {
+        outline: 3px solid rgba(29, 115, 243, 0.28);
+        outline-offset: 2px;
       }
 
       @media screen and (max-width: 560px) {
@@ -481,12 +530,12 @@
     adminPopupOverlay = document.createElement("div")
     adminPopupOverlay.className = "admin-popup-overlay"
     adminPopupOverlay.innerHTML = `
-      <div class="admin-popup-box" role="dialog" aria-modal="true" aria-labelledby="adminPopupTitle">
+      <div class="admin-popup-box" role="dialog" aria-modal="true" aria-labelledby="adminPopupTitle" aria-describedby="adminPopupMessage">
         <div class="admin-popup-icon" aria-hidden="true">
           <i class="bx bx-info-circle"></i>
         </div>
         <h3 class="admin-popup-title" id="adminPopupTitle"></h3>
-        <p class="admin-popup-message"></p>
+        <p class="admin-popup-message" id="adminPopupMessage"></p>
         <div class="admin-popup-actions">
           <button type="button" class="admin-popup-cancel">Cancelar</button>
           <button type="button" class="admin-popup-confirm">Aceptar</button>
@@ -498,18 +547,32 @@
     return adminPopupOverlay
   }
 
+  function normalizePopupVariant(variant) {
+    return POPUP_VARIANTS[variant] ? variant : "info"
+  }
+
   function closeAdminPopup(result) {
     if (!adminPopupOverlay) return
     adminPopupOverlay.classList.remove("active")
+
+    if (adminPopupCleanup) {
+      adminPopupCleanup()
+      adminPopupCleanup = null
+    }
 
     if (adminPopupResolver) {
       adminPopupResolver(result)
       adminPopupResolver = null
     }
+
+    if (adminPopupRestoreFocus && typeof adminPopupRestoreFocus.focus === "function") {
+      adminPopupRestoreFocus.focus()
+    }
+    adminPopupRestoreFocus = null
   }
 
   function showAdminPopup({
-    title = "Aviso",
+    title = "",
     message = "",
     confirmText = "Aceptar",
     cancelText = "Cancelar",
@@ -517,14 +580,21 @@
     variant = "info",
   } = {}) {
     const overlay = ensureAdminPopup()
+    const normalizedVariant = normalizePopupVariant(variant)
+    const variantConfig = POPUP_VARIANTS[normalizedVariant]
+    const dialog = overlay.querySelector(".admin-popup-box")
     const icon = overlay.querySelector(".admin-popup-icon i")
     const titleElement = overlay.querySelector(".admin-popup-title")
     const messageElement = overlay.querySelector(".admin-popup-message")
     const cancelButton = overlay.querySelector(".admin-popup-cancel")
     const confirmButton = overlay.querySelector(".admin-popup-confirm")
 
-    overlay.dataset.variant = variant
-    if (titleElement) titleElement.textContent = title
+    adminPopupRestoreFocus = document.activeElement
+    overlay.dataset.variant = normalizedVariant
+    if (dialog) {
+      dialog.setAttribute("role", showCancel || normalizedVariant === "error" || normalizedVariant === "danger" ? "alertdialog" : "dialog")
+    }
+    if (titleElement) titleElement.textContent = title || variantConfig.title
     if (messageElement) messageElement.textContent = message
     if (cancelButton) {
       cancelButton.textContent = cancelText
@@ -532,7 +602,7 @@
     }
     if (confirmButton) confirmButton.textContent = confirmText
     if (icon) {
-      icon.className = variant === "danger" || variant === "error" ? "bx bx-error-circle" : "bx bx-info-circle"
+      icon.className = variantConfig.icon
     }
 
     overlay.classList.add("active")
@@ -547,10 +617,25 @@
           closeAdminPopup(false)
         }
       }
+      const handleKeydown = (event) => {
+        if (event.key === "Escape") {
+          closeAdminPopup(false)
+        }
+      }
 
-      cancelButton?.addEventListener("click", handleCancel, { once: true })
-      confirmButton?.addEventListener("click", handleConfirm, { once: true })
-      overlay.addEventListener("click", handleOverlay, { once: true })
+      cancelButton?.addEventListener("click", handleCancel)
+      confirmButton?.addEventListener("click", handleConfirm)
+      overlay.addEventListener("click", handleOverlay)
+      document.addEventListener("keydown", handleKeydown)
+      adminPopupCleanup = () => {
+        cancelButton?.removeEventListener("click", handleCancel)
+        confirmButton?.removeEventListener("click", handleConfirm)
+        overlay.removeEventListener("click", handleOverlay)
+        document.removeEventListener("keydown", handleKeydown)
+      }
+      window.setTimeout(() => {
+        confirmButton?.focus()
+      }, 0)
     })
   }
 
@@ -574,20 +659,26 @@
   }
 
   window.navigateWithLoading = navigate
-  window.showAdminAlert = (message, options = {}) => showAdminPopup({
-    title: options.title || (options.variant === "error" ? "No se pudo completar" : "Aviso"),
+  window.showAppAlert = (message, options = {}) => showAdminPopup({
+    title: options.title,
     message,
     confirmText: options.confirmText || "Aceptar",
     variant: options.variant || "info",
   })
-  window.showAdminConfirm = (message, options = {}) => showAdminPopup({
-    title: options.title || "Confirmar accion",
+  window.showAppConfirm = (message, options = {}) => showAdminPopup({
+    title: options.title,
     message,
     confirmText: options.confirmText || "Aceptar",
     cancelText: options.cancelText || "Cancelar",
     showCancel: true,
     variant: options.variant || "danger",
   })
+  window.showAppSuccess = (message, options = {}) => window.showAppAlert(message, {
+    ...options,
+    variant: options.variant || "success",
+  })
+  window.showAdminAlert = window.showAppAlert
+  window.showAdminConfirm = window.showAppConfirm
 
   installFetchInterceptor()
   installNavigationInterceptor()

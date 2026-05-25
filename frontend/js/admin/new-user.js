@@ -143,7 +143,7 @@ async function createUser() {
       body: JSON.stringify(payload)
     })
 
-    await showPopup(data.message || "Usuario creado correctamente.")
+    await showPopup(data.message || "Usuario creado correctamente.", { variant: "success" })
     clearForm()
     await loadPendingRequests()
   } catch (error) {
@@ -185,7 +185,7 @@ async function approveRequest(userId) {
       token,
     })
 
-    await showPopup(data.message || "Usuario aprobado correctamente.")
+    await showPopup(data.message || "Usuario aprobado correctamente.", { variant: "success" })
     await loadPendingRequests()
   } catch (error) {
     await showPopup(error.message, { variant: "error" })
@@ -210,7 +210,7 @@ async function rejectRequest(userId) {
       token,
     })
 
-    await showPopup(data.message || "Solicitud rechazada correctamente.")
+    await showPopup(data.message || "Solicitud rechazada correctamente.", { variant: "success" })
     await loadPendingRequests()
   } catch (error) {
     await showPopup(error.message, { variant: "error" })

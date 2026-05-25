@@ -181,7 +181,7 @@
       await loadSchedules()
       await showProfessionalAlert(successMessage, {
         title: "Solicitud enviada",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       message.textContent = error.message
@@ -226,7 +226,7 @@
       await loadVacationRequests()
       await showProfessionalAlert(successMessage, {
         title: "Solicitud enviada",
-        variant: "info",
+        variant: "success",
       })
     } catch (error) {
       message.textContent = error.message

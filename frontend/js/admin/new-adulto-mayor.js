@@ -262,7 +262,7 @@ if (newOlderAdultForm) {
       }
 
       const data = await createOlderAdult(payload)
-      await showPopup(data.message || "Adulto mayor creado correctamente.")
+      await showPopup(data.message || "Adulto mayor creado correctamente.", { variant: "success" })
       navigateTo("./adultos-mayores.html")
     } catch (error) {
       await showPopup(error.message, { variant: "error" })

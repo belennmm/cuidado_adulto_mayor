@@ -152,7 +152,7 @@
       const name = selectedAdult?.full_name || "este adulto mayor"
       await api.showAlert(`Solicitud registrada para revisar los datos de ${name}.`, {
         title: "Solicitud registrada",
-        variant: "info",
+        variant: "success",
       })
     })
 

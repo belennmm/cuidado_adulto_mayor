@@ -140,7 +140,7 @@ async function saveUser() {
       body: JSON.stringify(payload)
     })
 
-    await showPopup(data.message || "Usuario actualizado correctamente.")
+    await showPopup(data.message || "Usuario actualizado correctamente.", { variant: "success" })
     navigateTo("./users.html")
   } catch (error) {
     await showPopup(error.message, { variant: "error" })
@@ -159,7 +159,7 @@ async function deleteUser() {
   try {
     const data = await fetchJson(`/admin/users/${userId}`, { method: "DELETE" })
 
-    await showPopup(data.message || "Usuario eliminado correctamente.")
+    await showPopup(data.message || "Usuario eliminado correctamente.", { variant: "success" })
     navigateTo("./users.html")
   } catch (error) {
     await showPopup(error.message, { variant: "error" })
