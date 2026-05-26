@@ -10,7 +10,7 @@
   const ERROR_VISIBLE_MS = 500
   const DEFAULT_MESSAGE = "Cargando..."
   const DEFAULT_SUCCESS_MESSAGE = "Listo"
-  const DEFAULT_ERROR_MESSAGE = "Ocurrio un error"
+  const DEFAULT_ERROR_MESSAGE = "Ocurrió un error"
 
   let overlay
   let statusLabel
@@ -42,11 +42,11 @@
       icon: "bx bx-error-circle",
     },
     danger: {
-      title: "Confirmar accion",
+      title: "Confirmar acción",
       icon: "bx bx-error-circle",
     },
     warning: {
-      title: "Revisar informacion",
+      title: "Revisar información",
       icon: "bx bx-error-circle",
     },
   }
@@ -102,7 +102,7 @@
         </div>
         <div class="app-loading-text-group">
           <strong class="app-loading-label">${DEFAULT_MESSAGE}</strong>
-          <span class="app-loading-detail">Estamos preparando la informacion.</span>
+          <span class="app-loading-detail">Estamos preparando la información.</span>
         </div>
       </div>
     `
@@ -129,7 +129,7 @@
   function showOverlay({
     state = "loading",
     message = DEFAULT_MESSAGE,
-    detail = "Estamos preparando la informacion.",
+    detail = "Estamos preparando la información.",
   } = {}) {
     ensureElements()
     hideTimer = clearTimer(hideTimer)
@@ -206,7 +206,7 @@
     queueShow({
       state: "loading",
       message,
-      detail: "Estamos preparando la informacion.",
+      detail: "Estamos preparando la información.",
     })
   }
 
@@ -299,7 +299,7 @@
     window.fetch = wrappedFetch
   }
 
-  function navigate(url, { replace = false, message = "Abriendo pagina..." } = {}) {
+  function navigate(url, { replace = false, message = "Abriendo página..." } = {}) {
     if (!url) return
 
     if (!isLoadingEnabled()) {
@@ -368,7 +368,7 @@
       routeNavigationInProgress = true
       queueShow({
         state: "loading",
-        message: "Abriendo pagina...",
+        message: "Abriendo página...",
         detail: "Estamos cambiando de pantalla.",
         delay: getShowDelay(),
       })
@@ -640,7 +640,7 @@
   }
 
   window.AppLoading = {
-    show(message = DEFAULT_MESSAGE, detail = "Estamos preparando la informacion.") {
+    show(message = DEFAULT_MESSAGE, detail = "Estamos preparando la información.") {
       if (!isLoadingEnabled()) return
       showOverlay({ state: "loading", message, detail })
     },
