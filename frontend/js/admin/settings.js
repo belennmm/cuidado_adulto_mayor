@@ -65,12 +65,12 @@
     const token = getToken()
 
     if (!token) {
-      throw new Error("Inicia sesion como administrador para ver configuracion.")
+      throw new Error("Inicia sesión como administrador para ver configuración.")
     }
 
     return window.CuidadoApi.fetchJson(path, {
       token,
-      fallbackError: "No se pudo cargar la configuracion.",
+      fallbackError: "No se pudo cargar la configuración.",
     })
   }
 
@@ -105,7 +105,7 @@
       setText("settingsPendingMedicines", summaryData.medications?.pending_today ?? 0)
       setText("settingsSummaryDate", formatDate(summaryData.date))
     } catch (error) {
-      setText("settingsAdminName", "Sin sesion")
+      setText("settingsAdminName", "Sin sesión")
       setText("settingsAdminEmail", error.message)
       setText("settingsOlderAdultsCount", 0)
       setText("settingsPendingMedicines", 0)

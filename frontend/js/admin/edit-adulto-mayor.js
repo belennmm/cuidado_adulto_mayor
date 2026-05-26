@@ -198,7 +198,7 @@ async function apiRequest(path, options = {}) {
   const token = getToken()
 
   if (!token) {
-    throw new Error("Inicia sesion como administrador para gestionar adultos mayores.")
+    throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
   }
 
   return window.CuidadoApi.fetchJson(path, {

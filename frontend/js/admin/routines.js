@@ -43,13 +43,13 @@
     const token = getToken()
 
     if (!token) {
-      throw new Error("Inicia sesion como administrador para gestionar rutinas.")
+      throw new Error("Inicia sesión como administrador para gestionar rutinas.")
     }
 
     return window.CuidadoApi.fetchJson(path, {
       ...options,
       token,
-      fallbackError: "No se pudo completar la accion.",
+      fallbackError: "No se pudo completar la acción.",
     })
   }
 
@@ -151,7 +151,7 @@
     const list = document.getElementById("adminMedicationsList")
 
     setText("adminMedicationTotal", medications.length)
-    setText("adminMedicationMeta", medications.length ? "Asignados en el perfil clinico" : "Sin medicamentos asignados")
+    setText("adminMedicationMeta", medications.length ? "Asignados en el perfil clínico" : "Sin medicamentos asignados")
 
     if (!list) return
 

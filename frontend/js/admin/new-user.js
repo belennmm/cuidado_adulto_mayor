@@ -115,7 +115,7 @@ async function createUser() {
   const token = getToken()
 
   if (!token) {
-    await showPopup("Inicia sesion como administrador para crear usuarios.", { variant: "error" })
+    await showPopup("Inicia sesión como administrador para crear usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
   }
@@ -131,7 +131,7 @@ async function createUser() {
   }
 
   if (!payload.name || !payload.email || !payload.password || !payload.role) {
-    await showPopup("Completa tipo de usuario, nombre, correo y contrasena.", { variant: "error" })
+    await showPopup("Completa tipo de usuario, nombre, correo y contraseña.", { variant: "error" })
     return
   }
 
@@ -157,7 +157,7 @@ async function loadPendingRequests() {
   const token = getToken()
 
   if (!token) {
-    renderRequestState("Inicia sesion como administrador para ver las solicitudes.")
+    renderRequestState("Inicia sesión como administrador para ver las solicitudes.")
     return
   }
 
@@ -226,7 +226,7 @@ async function showRequestDetails(userId) {
     `Nombre: ${request.name || "Sin nombre"}`,
     `Rol: ${getRoleLabel(request.role)}`,
     `Correo: ${request.email || "Sin correo"}`,
-    `Telefono: ${request.phone || "Sin telefono"}`,
+    `Teléfono: ${request.phone || "Sin teléfono"}`,
     `Locacion: ${request.location || "Sin locacion"}`,
     `Fecha de nacimiento: ${request.birthdate || "Sin fecha"}`
   ].join("\n"), { title: "Informacion de solicitud" })
@@ -269,11 +269,11 @@ function renderRequests() {
 
       <div class="request-info">
         <span>Correo: ${escapeHtml(request.email || "Sin correo")}</span>
-        <span>Telefono: ${escapeHtml(request.phone || "Sin telefono")}</span>
+        <span>Teléfono: ${escapeHtml(request.phone || "Sin teléfono")}</span>
       </div>
 
       <div class="request-actions">
-        <button class="secondary-button" data-id="${request.id}" type="button">Ver informacion</button>
+        <button class="secondary-button" data-id="${request.id}" type="button">Ver información</button>
         <button class="accept-button" data-id="${request.id}" type="button">Aceptar</button>
         <button class="deny-button" data-id="${request.id}" type="button">Rechazar</button>
       </div>

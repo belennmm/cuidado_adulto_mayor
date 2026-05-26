@@ -55,7 +55,7 @@
     const token = getToken()
 
     if (!token) {
-      throw new Error("Inicia sesion como administrador para ver esta informacion.")
+      throw new Error("Inicia sesión como administrador para ver esta información.")
     }
 
     return window.CuidadoApi.fetchJson(path, {
@@ -218,7 +218,7 @@
                 <span class="inventory-metric-value">${escapeHtml(item.quantity)} ${escapeHtml(item.unit)}</span>
               </div>
               <div class="inventory-metric">
-                <span class="inventory-metric-label">Stock minimo</span>
+                <span class="inventory-metric-label">Stock mínimo</span>
                 <span class="inventory-metric-value">${escapeHtml(item.minimum_stock)} ${escapeHtml(item.unit)}</span>
               </div>
               <div class="inventory-metric">

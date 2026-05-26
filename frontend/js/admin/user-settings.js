@@ -50,7 +50,7 @@ async function fetchJson(path, options = {}) {
   const token = getToken()
 
   if (!token) {
-    throw new Error("Inicia sesion para ver tu perfil.")
+    throw new Error("Inicia sesión para ver tu perfil.")
   }
 
   return window.CuidadoApi.fetchJson(path, {
@@ -106,7 +106,7 @@ async function saveProfile() {
 
   if (requestedPassword || passwordConfirmation || currentPassword?.value) {
     if (requestedPassword !== passwordConfirmation) {
-      setMessage("La confirmacion de contrasena no coincide.", true)
+      setMessage("La confirmación de contraseña no coincide.", true)
       return
     }
 

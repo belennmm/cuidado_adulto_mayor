@@ -176,7 +176,7 @@
     const token = getToken()
 
     if (!token) {
-      throw new Error("Inicia sesion como administrador para ver el calendario.")
+      throw new Error("Inicia sesión como administrador para ver el calendario.")
     }
 
     const { startDate, endDate } = getFetchRange()

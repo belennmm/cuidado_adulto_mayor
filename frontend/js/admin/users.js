@@ -74,7 +74,7 @@ async function approveUser(userId) {
   const token = getToken()
 
   if (!token) {
-    await showPopup("Inicia sesion para aprobar usuarios.", { variant: "error" })
+    await showPopup("Inicia sesión para aprobar usuarios.", { variant: "error" })
     return
   }
 
@@ -127,15 +127,15 @@ function renderUsers(list) {
         ${escapeHtml(user.email)}
       </div>
 
-      <div class="user-cell" data-label="Telefono">
-        ${escapeHtml(user.phone || "Sin telefono")}
+      <div class="user-cell" data-label="Teléfono">
+        ${escapeHtml(user.phone || "Sin teléfono")}
       </div>
 
       <div class="user-cell" data-label="Estado">
         <span class="status-badge ${getStatusClass(status)}">${status}</span>
       </div>
 
-      <div class="user-cell" data-label="Accion">
+      <div class="user-cell" data-label="Acción">
         ${actionButton}
       </div>
     `

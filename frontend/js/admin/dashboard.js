@@ -27,7 +27,7 @@ async function fetchJson(path, options = {}) {
   return window.CuidadoApi.fetchJson(path, {
     ...options,
     token: getToken(),
-    fallbackError: "No se pudo cargar la informacion.",
+    fallbackError: "No se pudo cargar la información.",
   })
 }
 
@@ -87,7 +87,7 @@ function renderLatestRoutines(routines) {
             </div>
             <div class="routine-line-group">
               <strong>${formatShortDate(routine.updated_at || routine.created_at)}</strong>
-              <span>Ultima actualizacion</span>
+              <span>Última actualización</span>
             </div>
           </div>
         </a>

@@ -31,7 +31,7 @@ async function loadOlderAdults() {
   const token = getToken()
 
   if (!token) {
-    renderEmpty("Inicia sesion como administrador para ver adultos mayores.")
+    renderEmpty("Inicia sesión como administrador para ver adultos mayores.")
     return
   }
 
@@ -90,7 +90,7 @@ function renderOlderAdults(list) {
         <span class="status-badge ${getStatusClass(olderAdult.status)}">${escapeHtml(olderAdult.status || "Estable")}</span>
       </div>
 
-      <div class="older-adult-cell older-adult-actions" data-label="Accion">
+      <div class="older-adult-cell older-adult-actions" data-label="Acción">
         <button class="edit-button" data-id="${olderAdult.id}">Editar</button>
         <button class="routine-button" data-id="${olderAdult.id}">Rutina</button>
       </div>

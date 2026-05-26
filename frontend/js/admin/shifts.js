@@ -73,7 +73,7 @@ async function fetchJson(path, options = {}) {
   return window.CuidadoApi.fetchJson(path, {
     ...options,
     token: getToken(),
-    fallbackError: "No se pudo completar la accion.",
+    fallbackError: "No se pudo completar la acción.",
   })
 }
 
@@ -153,7 +153,7 @@ function renderVacations() {
         </span>
       </div>
 
-      <div class="shift-cell" data-label="Accion">
+      <div class="shift-cell" data-label="Acción">
         ${request.status === "pending" ? `
           <button type="button" class="approve-vacation-button" data-id="${request.id}">
             Aprobar
@@ -218,7 +218,7 @@ function renderSchedules() {
         ${renderChangeRequest(schedule)}
       </div>
 
-      <div class="shift-cell" data-label="Accion">
+      <div class="shift-cell" data-label="Acción">
         ${schedule.change_request?.status === "pending" ? `
           <button type="button" class="approve-request-button" data-id="${schedule.id}">
             Aprobar

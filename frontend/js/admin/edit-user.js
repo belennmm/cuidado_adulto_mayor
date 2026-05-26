@@ -87,7 +87,7 @@ async function loadUser() {
   }
 
   if (!getToken()) {
-    await showPopup("Inicia sesion como administrador para editar usuarios.", { variant: "error" })
+    await showPopup("Inicia sesión como administrador para editar usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
   }

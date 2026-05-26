@@ -231,7 +231,7 @@ async function createOlderAdult(payload) {
   const token = getToken()
 
   if (!token) {
-    throw new Error("Inicia sesion como administrador para crear adultos mayores.")
+    throw new Error("Inicia sesión como administrador para crear adultos mayores.")
   }
 
   return window.CuidadoApi.fetchJson("/admin/older-adults", {
