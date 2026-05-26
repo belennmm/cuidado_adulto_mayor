@@ -95,7 +95,7 @@
     setText(
       "adultHistoryText",
       [
-        adult.medical_history || "No hay historial medico registrado.",
+        adult.medical_history || "No hay historial médico registrado.",
         adult.allergies ? `Alergias: ${adult.allergies}` : "",
         adult.professional_caregiver_name ? `Cuidador profesional: ${adult.professional_caregiver_name}` : "",
       ].filter(Boolean).join("\n")
@@ -113,7 +113,7 @@
     setValue("adultRoomField", "")
     setValue("adultNotesField", message)
     setValue("adultEmergencyField", "")
-    setText("adultHistorySummary", "Sin informacion")
+    setText("adultHistorySummary", "Sin información")
     setText("adultHistoryText", message)
     renderMedicines([])
   }

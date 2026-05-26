@@ -134,7 +134,7 @@ async function loadTodayIncidents() {
     const token = getToken()
 
     if (!token) {
-        const message = "Inicia sesion para ver los incidentes del dia."
+        const message = "Inicia sesión para ver los incidentes del día."
         renderEmpty(message)
         incidentsCount.textContent = "0"
         await showPopup(message, { variant: "error" })

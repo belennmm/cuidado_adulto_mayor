@@ -16,7 +16,7 @@
     return window.CuidadoApi.fetchJson(path, {
       ...options,
       token: getToken(),
-      fallbackError: "No se pudo cargar la informacion.",
+      fallbackError: "No se pudo cargar la información.",
     })
   }
 

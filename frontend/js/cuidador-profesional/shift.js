@@ -34,7 +34,7 @@
         </div>
         <span class="badge badge-blue">${api.escapeHtml(schedule.notes || "Asignado")}</span>
         <button type="button" class="schedule-change-toggle" data-id="${schedule.id}" ${pendingRequest ? "disabled" : ""}>
-          ${pendingRequest ? "En revision" : "Solicitar cambio"}
+          ${pendingRequest ? "En revisión" : "Solicitar cambio"}
         </button>
         <form class="schedule-change-form" data-id="${schedule.id}" hidden>
           <div class="change-form-grid">
