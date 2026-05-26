@@ -248,6 +248,42 @@
   }
 }
 
+@media screen and (max-width: 900px) {
+  .shifts-table-head,
+  .vacations-table-head {
+    display: none;
+  }
+
+  .shift-row,
+  .vacation-admin-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .shift-cell::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8a8a8a;
+    margin-bottom: 4px;
+  }
+
+  .shift-caregiver {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 4px;
+  }
+
+  .shift-caregiver::before {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+}
+
 @media screen and (max-width: 700px) {
   .shift-form {
     grid-template-columns: 1fr;
