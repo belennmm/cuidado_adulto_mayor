@@ -63,7 +63,7 @@ form.addEventListener("submit", async(e) => {
         })
 
         clearSession()
-        showMessage(data.message || "Registro enviado. Un administrador debe aprobar tu cuenta antes de iniciar sesion.")
+        showMessage(data.message || "Registro enviado. Un administrador debe aprobar tu cuenta antes de iniciar sesión.")
 
         setTimeout(() => {
             navigateTo("../index.html")

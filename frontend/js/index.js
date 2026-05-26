@@ -84,10 +84,10 @@ if (loginForm) {
                 method: "POST",
                 auth: false,
                 body: JSON.stringify({ email, password }),
-                fallbackError: "Credenciales invalidas",
+                fallbackError: "Credenciales inválidas",
             })
             if (!window.AuthSession?.saveSession(data.token, data.user)) {
-                await showLoginPopup("No se pudo guardar la sesion", { variant: "error" })
+                await showLoginPopup("No se pudo guardar la sesión", { variant: "error" })
                 return
             }
 
