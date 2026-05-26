@@ -40,6 +40,15 @@ function setMessage(message, isError = false) {
   shiftMessage.classList.toggle("is-error", isError)
 }
 
+async function showPopup(message, options = {}) {
+  if (window.showAdminAlert) {
+    await window.showAdminAlert(message, options)
+    return
+  }
+
+  console.warn(message)
+}
+
 function normalizeTime(value) {
   return String(value || "").slice(0, 5)
 }
@@ -278,12 +287,15 @@ async function saveSchedule(event) {
       body: JSON.stringify(payload),
     })
 
-    setMessage(data.message || "Turno asignado correctamente.")
+    const message = data.message || "Turno asignado correctamente."
+    setMessage(message)
     shiftForm.reset()
     daySelect.value = "1"
     await loadSchedules()
+    await showPopup(message, { variant: "success" })
   } catch (error) {
     setMessage(error.message, true)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 
@@ -304,10 +316,13 @@ async function deleteSchedule(scheduleId) {
       method: "DELETE",
     })
 
-    setMessage(data.message || "Turno eliminado correctamente.")
+    const message = data.message || "Turno eliminado correctamente."
+    setMessage(message)
     await loadSchedules()
+    await showPopup(message, { variant: "success" })
   } catch (error) {
     setMessage(error.message, true)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 
@@ -330,10 +345,13 @@ async function resolveChangeRequest(scheduleId, action) {
       method: "PATCH",
     })
 
-    setMessage(data.message || "Solicitud actualizada correctamente.")
+    const message = data.message || "Solicitud actualizada correctamente."
+    setMessage(message)
     await loadSchedules()
+    await showPopup(message, { variant: "success" })
   } catch (error) {
     setMessage(error.message, true)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 
@@ -356,10 +374,13 @@ async function resolveVacationRequest(requestId, action) {
       method: "PATCH",
     })
 
-    setMessage(data.message || "Solicitud de vacaciones actualizada.")
+    const message = data.message || "Solicitud de vacaciones actualizada."
+    setMessage(message)
     await loadVacations()
+    await showPopup(message, { variant: "success" })
   } catch (error) {
     setMessage(error.message, true)
+    await showPopup(error.message, { variant: "error" })
   }
 }
 

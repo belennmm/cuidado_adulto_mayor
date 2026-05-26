@@ -11,6 +11,14 @@ function showLoginMessage(message) {
     }
 }
 
+async function showLoginPopup(message, options = {}) {
+    showLoginMessage(message)
+
+    if (window.showAdminAlert) {
+        await window.showAdminAlert(message, options)
+    }
+}
+
 function clearSession() {
     window.AuthSession?.clearSession()
 }
@@ -35,11 +43,7 @@ async function redirectByRole(role) {
         return
     }
     const message = "No se encontró acceso para este tipo de usuario"
-    showLoginMessage(message)
-
-    if (window.showAdminAlert) {
-        await window.showAdminAlert(message, { variant: "error" })
-    }
+    await showLoginPopup(message, { variant: "error" })
 }
 
 if (solicitarCuentaText) {
@@ -71,7 +75,7 @@ if (loginForm) {
         const password = passwordInput ? passwordInput.value.trim() : ""
 
         if (!email || !password) {
-            showLoginMessage("Completa usuario y contraseña")
+            await showLoginPopup("Completa usuario y contraseña", { variant: "error" })
             return
         }
 
@@ -83,7 +87,7 @@ if (loginForm) {
                 fallbackError: "Credenciales invalidas",
             })
             if (!window.AuthSession?.saveSession(data.token, data.user)) {
-                showLoginMessage("No se pudo guardar la sesion")
+                await showLoginPopup("No se pudo guardar la sesion", { variant: "error" })
                 return
             }
 
@@ -92,7 +96,7 @@ if (loginForm) {
         } catch (error) {
             console.error("Error al conectar con el servidor:", error)
             clearSession()
-            showLoginMessage(error.message || "No se pudo conectar con el servidor.")
+            await showLoginPopup(error.message || "No se pudo conectar con el servidor.", { variant: "error" })
         }
     })
 }

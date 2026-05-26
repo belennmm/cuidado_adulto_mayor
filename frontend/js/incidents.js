@@ -7,6 +7,15 @@ function getToken() {
     return (window.AuthSession?.getToken() || "")
 }
 
+async function showPopup(message, options = {}) {
+    if (window.showAdminAlert) {
+        await window.showAdminAlert(message, options)
+        return
+    }
+
+    console.warn(message)
+}
+
 function getSearchDate() {
     const params = new URLSearchParams(window.location.search)
     const date = params.get("date")
@@ -125,8 +134,10 @@ async function loadTodayIncidents() {
     const token = getToken()
 
     if (!token) {
-        renderEmpty("Inicia sesion para ver los incidentes del dia.")
+        const message = "Inicia sesion para ver los incidentes del dia."
+        renderEmpty(message)
         incidentsCount.textContent = "0"
+        await showPopup(message, { variant: "error" })
         return
     }
 
@@ -156,6 +167,7 @@ async function loadTodayIncidents() {
     } catch (error) {
         incidentsCount.textContent = "0"
         renderEmpty(error.message)
+        await showPopup(error.message, { variant: "error" })
     }
 }
 

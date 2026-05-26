@@ -30,6 +30,15 @@
     element.classList.toggle("is-error", isError)
   }
 
+  async function showPopup(message, options = {}) {
+    if (window.showAdminAlert) {
+      await window.showAdminAlert(message, options)
+      return
+    }
+
+    console.warn(message)
+  }
+
   async function fetchJson(path, options = {}) {
     const token = getToken()
 
@@ -201,7 +210,9 @@
 
   async function saveRoutine() {
     if (!activeOlderAdultId) {
-      setMessage("Selecciona un adulto mayor antes de guardar una rutina.", true)
+      const message = "Selecciona un adulto mayor antes de guardar una rutina."
+      setMessage(message, true)
+      await showPopup(message, { variant: "error" })
       return
     }
 
@@ -211,7 +222,9 @@
     const actividades = parseActivities(document.getElementById("adminRoutineActivities")?.value)
 
     if (!nombre || !horario || !actividades.length) {
-      setMessage("Completa nombre, horario y al menos una actividad.", true)
+      const message = "Completa nombre, horario y al menos una actividad."
+      setMessage(message, true)
+      await showPopup(message, { variant: "error" })
       return
     }
 
@@ -233,10 +246,13 @@
 
       const wasEditing = Boolean(editingRoutineId)
       resetForm()
-      setMessage(wasEditing ? "Rutina actualizada correctamente." : "Rutina creada correctamente.")
+      const message = wasEditing ? "Rutina actualizada correctamente." : "Rutina creada correctamente."
+      setMessage(message)
       await loadRoutines()
+      await showPopup(message, { variant: "success" })
     } catch (error) {
       setMessage(error.message, true)
+      await showPopup(error.message, { variant: "error" })
     } finally {
       if (saveButton) {
         saveButton.disabled = false
@@ -278,10 +294,13 @@
       await fetchJson(`/rutinas/${routineId}`, { method: "DELETE" })
 
       if (String(editingRoutineId) === String(routineId)) resetForm()
-      setMessage("Rutina eliminada correctamente.")
+      const message = "Rutina eliminada correctamente."
+      setMessage(message)
       await loadRoutines()
+      await showPopup(message, { variant: "success" })
     } catch (error) {
       setMessage(error.message, true)
+      await showPopup(error.message, { variant: "error" })
     }
   }
 
