@@ -114,9 +114,9 @@
 
     body.innerHTML = items.map((item) => `
       <tr>
-        <td>${api.escapeHtml(item.medication_name || "Medicina")}</td>
-        <td>${api.escapeHtml(item.schedule || "Sin horario")}</td>
-        <td>${api.escapeHtml(statusLabel(item))}</td>
+        <td data-label="Medicina">${api.escapeHtml(item.medication_name || "Medicina")}</td>
+        <td data-label="Horario">${api.escapeHtml(item.schedule || "Sin horario")}</td>
+        <td data-label="Estado">${api.escapeHtml(statusLabel(item))}</td>
       </tr>
     `).join("")
   }

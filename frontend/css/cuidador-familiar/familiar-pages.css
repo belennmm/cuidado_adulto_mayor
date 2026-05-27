@@ -867,6 +867,43 @@
     font-size: 15px;
   }
 
+  .medicine-table thead {
+    display: none;
+  }
+
+  .medicine-table,
+  .medicine-table tbody,
+  .medicine-table tr,
+  .medicine-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .medicine-table tr {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 12px 12px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+
+  .medicine-table td {
+    padding: 10px 12px;
+  }
+
+  .medicine-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7892;
+    margin-bottom: 4px;
+  }
+
+  .medicine-table td[colspan] {
+    text-align: center;
+  }
+
   .family-date-pill,
   .summary-pill,
   .primary-action,
