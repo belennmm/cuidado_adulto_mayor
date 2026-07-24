@@ -12,6 +12,84 @@ class MedicationInventoryEndpointsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_can_list_medication_inventory(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $losartan = Medication::create([
+            'name' => 'Losartan',
+            'presentation' => 'Tableta 50mg',
+            'quantity' => 24,
+            'unit' => 'tabletas',
+            'minimum_stock' => 5,
+            'expiration_date' => '2030-12-31',
+            'is_active' => true,
+        ]);
+
+        $acetaminophen = Medication::create([
+            'name' => 'Acetaminofen',
+            'presentation' => 'Tableta 500mg',
+            'quantity' => 8,
+            'unit' => 'cajas',
+            'minimum_stock' => 10,
+            'expiration_date' => '2030-06-30',
+            'is_active' => false,
+        ]);
+
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertOk()
+            ->assertJsonCount(2, 'inventory')
+            ->assertJsonStructure([
+                'inventory' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'presentation',
+                        'quantity',
+                        'unit',
+                        'minimum_stock',
+                        'expiration_date',
+                        'is_active',
+                        'status',
+                        'status_label',
+                        'assigned_patients',
+                        'active_assignments',
+                        'administrations_count',
+                    ],
+                ],
+            ])
+            ->assertJsonPath('inventory.0.id', $acetaminophen->id)
+            ->assertJsonPath('inventory.0.name', 'Acetaminofen')
+            ->assertJsonPath('inventory.0.presentation', 'Tableta 500mg')
+            ->assertJsonPath('inventory.0.quantity', 8)
+            ->assertJsonPath('inventory.0.unit', 'cajas')
+            ->assertJsonPath('inventory.0.minimum_stock', 10)
+            ->assertJsonPath('inventory.0.expiration_date', '2030-06-30')
+            ->assertJsonPath('inventory.0.is_active', false)
+            ->assertJsonPath('inventory.0.status', 'low_stock')
+            ->assertJsonPath('inventory.1.id', $losartan->id)
+            ->assertJsonPath('inventory.1.name', 'Losartan')
+            ->assertJsonPath('inventory.1.quantity', 24)
+            ->assertJsonPath('inventory.1.status', 'available');
+    }
+
+    public function test_admin_receives_empty_medication_inventory(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertOk()
+            ->assertExactJson([
+                'inventory' => [],
+            ]);
+    }
+
     public function test_admin_can_update_existing_medication(): void
     {
         Sanctum::actingAs(User::factory()->create([
