@@ -101,4 +101,34 @@ class MedicationInventoryEndpointsTest extends TestCase
             'quantity' => 27,
         ]);
     }
+
+    public function test_admin_cannot_reduce_medication_stock_below_zero(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $medication = Medication::create([
+            'name' => 'Ibuprofeno',
+            'presentation' => 'Capsula 400mg',
+            'quantity' => 6,
+            'unit' => 'capsulas',
+            'minimum_stock' => 3,
+            'expiration_date' => '2027-06-20',
+            'is_active' => true,
+        ]);
+
+        $this->patchJson("/api/admin/medications/inventory/{$medication->id}/stock", [
+            'action' => 'decrease',
+            'amount' => 10,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'La cantidad no puede quedar negativa.');
+
+        $this->assertDatabaseHas('medications', [
+            'id' => $medication->id,
+            'quantity' => 6,
+        ]);
+    }
 }
