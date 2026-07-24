@@ -39,7 +39,9 @@ class MedicationInventoryEndpointsTest extends TestCase
             'is_active' => false,
         ]);
 
-        $this->getJson('/api/admin/medications/inventory')
+        $response = $this->getJson('/api/admin/medications/inventory');
+
+        $response
             ->assertOk()
             ->assertJsonCount(2, 'inventory')
             ->assertJsonStructure([
@@ -70,10 +72,23 @@ class MedicationInventoryEndpointsTest extends TestCase
             ->assertJsonPath('inventory.0.expiration_date', '2030-06-30')
             ->assertJsonPath('inventory.0.is_active', false)
             ->assertJsonPath('inventory.0.status', 'low_stock')
+            ->assertJsonPath('inventory.0.status_label', 'Bajo stock')
+            ->assertJsonPath('inventory.0.assigned_patients', 0)
+            ->assertJsonPath('inventory.0.active_assignments', 0)
+            ->assertJsonPath('inventory.0.administrations_count', 0)
             ->assertJsonPath('inventory.1.id', $losartan->id)
             ->assertJsonPath('inventory.1.name', 'Losartan')
+            ->assertJsonPath('inventory.1.presentation', 'Tableta 50mg')
             ->assertJsonPath('inventory.1.quantity', 24)
-            ->assertJsonPath('inventory.1.status', 'available');
+            ->assertJsonPath('inventory.1.unit', 'tabletas')
+            ->assertJsonPath('inventory.1.minimum_stock', 5)
+            ->assertJsonPath('inventory.1.expiration_date', '2030-12-31')
+            ->assertJsonPath('inventory.1.is_active', true)
+            ->assertJsonPath('inventory.1.status', 'available')
+            ->assertJsonPath('inventory.1.status_label', 'Disponible')
+            ->assertJsonPath('inventory.1.assigned_patients', 0)
+            ->assertJsonPath('inventory.1.active_assignments', 0)
+            ->assertJsonPath('inventory.1.administrations_count', 0);
     }
 
     public function test_admin_receives_empty_medication_inventory(): void
