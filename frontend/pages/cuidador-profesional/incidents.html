@@ -88,6 +88,70 @@
         </main>
     </div>
 
+    <div class="incident-form-overlay" id="incidentFormModal" hidden>
+        <section class="incident-form-dialog" role="dialog" aria-modal="true" aria-labelledby="incidentFormTitle">
+            <div class="incident-form-header">
+                <div>
+                    <h2 id="incidentFormTitle">Registrar incidente</h2>
+                    <p>Ingresa los datos del incidente ocurrido.</p>
+                </div>
+                <button type="button" class="incident-form-close" id="closeIncidentForm" aria-label="Cerrar formulario">
+                    <i class="bx bx-x"></i>
+                </button>
+            </div>
+
+            <form class="incident-form" id="incidentForm">
+                <label class="incident-form-field">
+                    <span>Adulto mayor</span>
+                    <select id="incidentOlderAdult" name="older_adult_id" required>
+                        <option value="">Selecciona un adulto mayor</option>
+                    </select>
+                </label>
+
+                <label class="incident-form-field">
+                    <span>Título del incidente</span>
+                    <input type="text" id="incidentTitle" name="title" maxlength="255"
+                        placeholder="Ejemplo: Caída leve" required />
+                </label>
+
+                <label class="incident-form-field incident-form-field-full">
+                    <span>Descripción</span>
+                    <textarea id="incidentDescription" name="description" maxlength="2000" rows="4"
+                        placeholder="Describe qué ocurrió y las acciones realizadas"></textarea>
+                </label>
+
+                <label class="incident-form-field">
+                    <span>Severidad</span>
+                    <select id="incidentSeverity" name="severity">
+                        <option value="baja">Baja</option>
+                        <option value="media" selected>Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </label>
+
+                <label class="incident-form-field">
+                    <span>Fecha</span>
+                    <input type="date" id="incidentDate" name="incident_date" required />
+                </label>
+
+                <label class="incident-form-field">
+                    <span>Hora</span>
+                    <input type="time" id="incidentTime" name="incident_time" required />
+                </label>
+
+                <p class="incident-form-message" id="incidentFormMessage" role="alert" hidden></p>
+
+                <div class="incident-form-actions">
+                    <button type="button" class="incident-cancel-button" id="cancelIncidentForm">Cancelar</button>
+                    <button type="submit" class="incident-submit-button" id="submitIncidentForm">
+                        <i class="bx bx-save"></i>
+                        Guardar incidente
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+
     <div class="logout-modal-overlay" id="logoutModal">
         <div class="logout-modal-box">
             <h3 class="logout-modal-title">Cerrar sesión</h3>

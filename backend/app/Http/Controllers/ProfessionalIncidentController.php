@@ -20,6 +20,7 @@ class ProfessionalIncidentController extends Controller
         $data = $request->validate([
             'older_adult_id' => ['required', 'integer'],
             'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
             'severity' => ['nullable', 'in:baja,media,alta'],
             'incident_date' => ['nullable', 'date_format:Y-m-d'],
             'incident_time' => ['nullable', 'date_format:H:i'],
@@ -30,6 +31,8 @@ class ProfessionalIncidentController extends Controller
             'title.string' => 'El título del incidente debe ser texto.',
             'title.max' => 'El título del incidente no puede superar 255 caracteres.',
             'severity.in' => 'La severidad debe ser baja, media o alta.',
+            'description.string' => 'La descripción debe ser texto.',
+            'description.max' => 'La descripción no puede superar 2000 caracteres.',
             'incident_date.date_format' => 'La fecha debe tener el formato YYYY-MM-DD.',
             'incident_time.date_format' => 'La hora debe tener el formato HH:MM.',
         ]);
@@ -63,6 +66,7 @@ class ProfessionalIncidentController extends Controller
 
         $incident = Incident::create([
             'title' => $title,
+            'description' => $data['description'] ?? null,
             'adult_name' => $olderAdult->full_name,
             'older_adult_id' => $olderAdult->id,
             'severity' => $data['severity'] ?? 'media',
@@ -78,6 +82,7 @@ class ProfessionalIncidentController extends Controller
                 'id' => $incident->id,
                 'older_adult_id' => $incident->older_adult_id,
                 'title' => $incident->title,
+                'description' => $incident->description,
                 'incident_date' => $incident->incident_date?->toDateString(),
                 'incident_time' => $incident->incident_time,
                 'severity' => $incident->severity,

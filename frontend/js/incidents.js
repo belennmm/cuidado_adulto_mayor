@@ -2,6 +2,17 @@ const incidentsList = document.getElementById("incidentsList")
 const incidentsDate = document.getElementById("incidentsDate")
 const incidentsCount = document.getElementById("incidentsCount")
 const incidentsDateInput = document.getElementById("incidentsDateInput")
+const registerIncidentButton = document.getElementById("registerIncidentButton")
+const incidentFormModal = document.getElementById("incidentFormModal")
+const incidentForm = document.getElementById("incidentForm")
+const incidentOlderAdult = document.getElementById("incidentOlderAdult")
+const incidentTitle = document.getElementById("incidentTitle")
+const incidentDateField = document.getElementById("incidentDate")
+const incidentTimeField = document.getElementById("incidentTime")
+const incidentFormMessage = document.getElementById("incidentFormMessage")
+const submitIncidentForm = document.getElementById("submitIncidentForm")
+
+let assignedOlderAdultsLoaded = false
 
 function getToken() {
     return (window.AuthSession?.getToken() || "")
@@ -59,6 +70,119 @@ function formatDate(value) {
 function formatTime(value) {
     if (!value) return "Sin hora registrada"
     return value.slice(0, 5)
+}
+
+function getLocalDateAndTime() {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, "0")
+    const day = String(now.getDate()).padStart(2, "0")
+    const hours = String(now.getHours()).padStart(2, "0")
+    const minutes = String(now.getMinutes()).padStart(2, "0")
+
+    return {
+        date: `${year}-${month}-${day}`,
+        time: `${hours}:${minutes}`,
+    }
+}
+
+function setIncidentFormMessage(message = "", variant = "error") {
+    if (!incidentFormMessage) return
+
+    incidentFormMessage.textContent = message
+    incidentFormMessage.classList.toggle("is-success", variant === "success")
+    incidentFormMessage.hidden = !message
+}
+
+async function loadAssignedOlderAdults() {
+    if (assignedOlderAdultsLoaded || !incidentOlderAdult) return
+
+    const data = await window.CuidadoApi.fetchJson("/professional/older-adults", {
+        token: getToken(),
+        fallbackError: "No se pudieron cargar los adultos mayores asignados.",
+    })
+    const olderAdults = data.older_adults || []
+
+    incidentOlderAdult.innerHTML = `
+        <option value="">Selecciona un adulto mayor</option>
+        ${olderAdults.map((adult) => `
+            <option value="${escapeHtml(adult.id)}">${escapeHtml(adult.full_name || "Sin nombre")}</option>
+        `).join("")}
+    `
+    incidentOlderAdult.disabled = olderAdults.length === 0
+    assignedOlderAdultsLoaded = true
+
+    if (!olderAdults.length) {
+        setIncidentFormMessage("No tienes adultos mayores asignados. Solicita una asignación al administrador.")
+    }
+}
+
+async function openIncidentForm() {
+    if (!incidentFormModal || !incidentForm) return
+
+    incidentForm.reset()
+    setIncidentFormMessage()
+
+    const current = getLocalDateAndTime()
+    incidentDateField.value = incidentsDateInput?.value || current.date
+    incidentTimeField.value = current.time
+    incidentFormModal.hidden = false
+    document.body.classList.add("incident-modal-open")
+
+    try {
+        await loadAssignedOlderAdults()
+        incidentOlderAdult?.focus()
+    } catch (error) {
+        setIncidentFormMessage(error.message)
+    }
+}
+
+function closeIncidentForm() {
+    if (!incidentFormModal) return
+
+    incidentFormModal.hidden = true
+    document.body.classList.remove("incident-modal-open")
+    setIncidentFormMessage()
+    registerIncidentButton?.focus()
+}
+
+async function saveIncident(event) {
+    event.preventDefault()
+
+    if (!incidentForm?.reportValidity()) return
+
+    const formData = new FormData(incidentForm)
+    const payload = {
+        older_adult_id: Number(formData.get("older_adult_id")),
+        title: String(formData.get("title") || "").trim(),
+        description: String(formData.get("description") || "").trim() || null,
+        severity: String(formData.get("severity") || "media"),
+        incident_date: String(formData.get("incident_date") || ""),
+        incident_time: String(formData.get("incident_time") || ""),
+    }
+
+    submitIncidentForm.disabled = true
+    setIncidentFormMessage()
+
+    try {
+        const data = await window.CuidadoApi.fetchJson("/professional/incidents", {
+            method: "POST",
+            token: getToken(),
+            body: JSON.stringify(payload),
+            fallbackError: "No se pudo registrar el incidente.",
+        })
+
+        setIncidentFormMessage(data.message || "Incidente registrado correctamente.", "success")
+        incidentsDateInput.value = payload.incident_date
+        setSearchDate(payload.incident_date)
+        await loadTodayIncidents()
+
+        window.setTimeout(() => closeIncidentForm(), 700)
+    } catch (error) {
+        setIncidentFormMessage(error.message)
+    } finally {
+        submitIncidentForm.disabled = false
+    }
 }
 
 function getSeverityLabel(severity) {
@@ -178,5 +302,22 @@ if (incidentsDateInput) {
         loadTodayIncidents()
     })
 }
+
+registerIncidentButton?.addEventListener("click", openIncidentForm)
+document.getElementById("closeIncidentForm")?.addEventListener("click", closeIncidentForm)
+document.getElementById("cancelIncidentForm")?.addEventListener("click", closeIncidentForm)
+incidentForm?.addEventListener("submit", saveIncident)
+
+incidentFormModal?.addEventListener("click", (event) => {
+    if (event.target === incidentFormModal) {
+        closeIncidentForm()
+    }
+})
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && incidentFormModal && !incidentFormModal.hidden) {
+        closeIncidentForm()
+    }
+})
 
 loadTodayIncidents()
