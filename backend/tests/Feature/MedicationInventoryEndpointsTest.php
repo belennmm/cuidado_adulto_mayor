@@ -98,11 +98,32 @@ class MedicationInventoryEndpointsTest extends TestCase
             'is_approved' => true,
         ]));
 
+        $this->assertDatabaseCount('medications', 0);
+
         $this->getJson('/api/admin/medications/inventory')
             ->assertOk()
+            ->assertJsonCount(0, 'inventory')
             ->assertExactJson([
                 'inventory' => [],
             ]);
+    }
+
+    public function test_guest_cannot_list_medication_inventory(): void
+    {
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertUnauthorized();
+    }
+
+    public function test_non_admin_cannot_list_medication_inventory(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]));
+
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
     }
 
     public function test_admin_can_update_existing_medication(): void
