@@ -60,4 +60,45 @@ class MedicationInventoryEndpointsTest extends TestCase
             'is_active' => false,
         ]);
     }
+
+    public function test_admin_can_increase_and_decrease_medication_stock(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $medication = Medication::create([
+            'name' => 'Acetaminofen',
+            'presentation' => 'Tableta 500mg',
+            'quantity' => 20,
+            'unit' => 'tabletas',
+            'minimum_stock' => 5,
+            'expiration_date' => '2027-03-10',
+            'is_active' => true,
+        ]);
+
+        $this->patchJson("/api/admin/medications/inventory/{$medication->id}/stock", [
+            'action' => 'increase',
+            'amount' => 15,
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Stock aumentado correctamente.')
+            ->assertJsonPath('medication.id', $medication->id)
+            ->assertJsonPath('medication.quantity', 35);
+
+        $this->patchJson("/api/admin/medications/inventory/{$medication->id}/stock", [
+            'action' => 'decrease',
+            'amount' => 8,
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Stock reducido correctamente.')
+            ->assertJsonPath('medication.id', $medication->id)
+            ->assertJsonPath('medication.quantity', 27);
+
+        $this->assertDatabaseHas('medications', [
+            'id' => $medication->id,
+            'quantity' => 27,
+        ]);
+    }
 }
