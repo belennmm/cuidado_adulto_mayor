@@ -131,4 +131,30 @@ class MedicationInventoryEndpointsTest extends TestCase
             'quantity' => 6,
         ]);
     }
+
+    public function test_admin_can_delete_existing_medication(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $medication = Medication::create([
+            'name' => 'Loratadina',
+            'presentation' => 'Jarabe',
+            'quantity' => 4,
+            'unit' => 'frascos',
+            'minimum_stock' => 2,
+            'expiration_date' => '2027-08-01',
+            'is_active' => true,
+        ]);
+
+        $this->deleteJson("/api/admin/medications/inventory/{$medication->id}")
+            ->assertOk()
+            ->assertJsonPath('message', 'Medicamento eliminado correctamente.');
+
+        $this->assertDatabaseMissing('medications', [
+            'id' => $medication->id,
+        ]);
+    }
 }
