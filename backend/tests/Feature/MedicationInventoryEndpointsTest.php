@@ -126,6 +126,33 @@ class MedicationInventoryEndpointsTest extends TestCase
             ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
     }
 
+    public function test_admin_can_prepare_valid_medication_payload(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $payload = $this->validMedicationPayload();
+
+        $this->assertAuthenticatedAs($admin, 'sanctum');
+        $this->assertSame([
+            'name',
+            'presentation',
+            'quantity',
+            'unit',
+            'minimum_stock',
+            'expiration_date',
+            'is_active',
+        ], array_keys($payload));
+        $this->assertSame('Metformina', $payload['name']);
+        $this->assertSame(40, $payload['quantity']);
+        $this->assertTrue($payload['is_active']);
+        $this->assertDatabaseCount('medications', 0);
+    }
+
     public function test_admin_can_update_existing_medication(): void
     {
         Sanctum::actingAs(User::factory()->create([
@@ -270,5 +297,18 @@ class MedicationInventoryEndpointsTest extends TestCase
         $this->assertDatabaseMissing('medications', [
             'id' => $medication->id,
         ]);
+    }
+
+    private function validMedicationPayload(): array
+    {
+        return [
+            'name' => 'Metformina',
+            'presentation' => 'Tableta 850mg',
+            'quantity' => 40,
+            'unit' => 'tabletas',
+            'minimum_stock' => 10,
+            'expiration_date' => '2030-10-15',
+            'is_active' => true,
+        ];
     }
 }
