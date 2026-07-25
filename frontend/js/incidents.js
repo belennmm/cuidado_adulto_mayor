@@ -175,6 +175,8 @@ async function saveIncident(event) {
     }
 
     submitIncidentForm.disabled = true
+    const submitButtonContent = submitIncidentForm.innerHTML
+    submitIncidentForm.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Guardando...'
     setIncidentFormMessage()
 
     try {
@@ -195,6 +197,7 @@ async function saveIncident(event) {
         setIncidentFormMessage(error.message)
     } finally {
         submitIncidentForm.disabled = false
+        submitIncidentForm.innerHTML = submitButtonContent
     }
 }
 
