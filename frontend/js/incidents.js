@@ -135,6 +135,7 @@ async function openIncidentForm() {
 
     incidentForm.reset()
     setIncidentFormMessage()
+    submitIncidentForm.disabled = Boolean(incidentOlderAdult?.disabled)
 
     const current = getLocalDateAndTime()
     incidentDateField.value = incidentsDateInput?.value || current.date
@@ -178,6 +179,7 @@ async function saveIncident(event) {
     const submitButtonContent = submitIncidentForm.innerHTML
     submitIncidentForm.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Guardando...'
     setIncidentFormMessage()
+    let incidentWasSaved = false
 
     try {
         const data = await window.CuidadoApi.fetchJson("/professional/incidents", {
@@ -186,17 +188,25 @@ async function saveIncident(event) {
             body: JSON.stringify(payload),
             fallbackError: "No se pudo registrar el incidente.",
         })
+        incidentWasSaved = true
 
         setIncidentFormMessage(data.message || "Incidente registrado correctamente.", "success")
         incidentsDateInput.value = payload.incident_date
         setSearchDate(payload.incident_date)
-        await loadTodayIncidents()
+        const listUpdated = await loadTodayIncidents(payload.incident_date)
 
-        window.setTimeout(() => closeIncidentForm(), 700)
+        if (listUpdated) {
+            window.setTimeout(() => closeIncidentForm(), 700)
+        } else {
+            setIncidentFormMessage(
+                "El incidente se guardó, pero la lista no pudo actualizarse. Cierra el formulario e intenta recargar la página.",
+                "success"
+            )
+        }
     } catch (error) {
         setIncidentFormMessage(error.message)
     } finally {
-        submitIncidentForm.disabled = false
+        submitIncidentForm.disabled = incidentWasSaved
         submitIncidentForm.innerHTML = submitButtonContent
     }
 }
@@ -270,7 +280,7 @@ function renderIncidents(incidents) {
     })
 }
 
-async function loadTodayIncidents() {
+async function loadTodayIncidents(requestedDate = "") {
     const token = getToken()
 
     if (!token) {
@@ -278,11 +288,11 @@ async function loadTodayIncidents() {
         renderEmpty(message)
         incidentsCount.textContent = "0"
         await showPopup(message, { variant: "error" })
-        return
+        return false
     }
 
     try {
-        const selectedDate = incidentsDateInput?.value || getSearchDate()
+        const selectedDate = requestedDate || incidentsDateInput?.value || getSearchDate()
         const params = new URLSearchParams()
         if (selectedDate) {
             params.set("date", selectedDate)
@@ -304,10 +314,12 @@ async function loadTodayIncidents() {
         }
 
         renderIncidents(data.incidents || [])
+        return true
     } catch (error) {
         incidentsCount.textContent = "0"
         renderEmpty(error.message)
         await showPopup(error.message, { variant: "error" })
+        return false
     }
 }
 
