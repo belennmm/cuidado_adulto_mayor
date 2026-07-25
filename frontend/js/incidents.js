@@ -97,23 +97,36 @@ function setIncidentFormMessage(message = "", variant = "error") {
 async function loadAssignedOlderAdults() {
     if (assignedOlderAdultsLoaded || !incidentOlderAdult) return
 
-    const data = await window.CuidadoApi.fetchJson("/professional/older-adults", {
-        token: getToken(),
-        fallbackError: "No se pudieron cargar los adultos mayores asignados.",
-    })
-    const olderAdults = data.older_adults || []
+    incidentOlderAdult.disabled = true
+    incidentOlderAdult.innerHTML = '<option value="">Cargando adultos asignados...</option>'
+    submitIncidentForm.disabled = true
 
-    incidentOlderAdult.innerHTML = `
-        <option value="">Selecciona un adulto mayor</option>
-        ${olderAdults.map((adult) => `
-            <option value="${escapeHtml(adult.id)}">${escapeHtml(adult.full_name || "Sin nombre")}</option>
-        `).join("")}
-    `
-    incidentOlderAdult.disabled = olderAdults.length === 0
-    assignedOlderAdultsLoaded = true
+    try {
+        const data = await window.CuidadoApi.fetchJson("/professional/older-adults", {
+            token: getToken(),
+            fallbackError: "No se pudieron cargar los adultos mayores asignados.",
+        })
+        const olderAdults = Array.isArray(data.older_adults) ? data.older_adults : []
 
-    if (!olderAdults.length) {
-        setIncidentFormMessage("No tienes adultos mayores asignados. Solicita una asignación al administrador.")
+        incidentOlderAdult.innerHTML = `
+            <option value="">Selecciona un adulto mayor</option>
+            ${olderAdults.map((adult) => {
+                const room = adult.room ? ` — Habitación ${adult.room}` : ""
+                return `<option value="${escapeHtml(adult.id)}">${escapeHtml((adult.full_name || "Sin nombre") + room)}</option>`
+            }).join("")}
+        `
+        incidentOlderAdult.disabled = olderAdults.length === 0
+        submitIncidentForm.disabled = olderAdults.length === 0
+        assignedOlderAdultsLoaded = olderAdults.length > 0
+
+        if (!olderAdults.length) {
+            setIncidentFormMessage("No tienes adultos mayores asignados. Solicita una asignación al administrador.")
+        }
+    } catch (error) {
+        incidentOlderAdult.innerHTML = '<option value="">No se pudo cargar la lista</option>'
+        incidentOlderAdult.disabled = true
+        submitIncidentForm.disabled = true
+        throw error
     }
 }
 
