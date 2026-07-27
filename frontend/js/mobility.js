@@ -74,10 +74,12 @@ function appendTextElement(parent, tagName, className, text) {
 function createExerciseCard(exercise) {
   const card = document.createElement("article")
   card.className = "mobility-card"
+  card.setAttribute("aria-labelledby", `mobilityExercise-${exercise.id}`)
 
   const header = document.createElement("div")
   header.className = "mobility-card-header"
-  appendTextElement(header, "h3", "", exercise.title)
+  const title = appendTextElement(header, "h3", "", exercise.title)
+  title.id = `mobilityExercise-${exercise.id}`
   appendTextElement(header, "span", "mobility-focus", exercise.focus)
   card.append(header)
 

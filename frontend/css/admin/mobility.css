@@ -32,6 +32,7 @@
   margin: 6px 0 0;
   color: var(--color-text-muted);
   font-size: 14px;
+  line-height: 1.5;
 }
 
 .mobility-back-link {
@@ -44,6 +45,11 @@
   background: #eef5ff;
   color: var(--color-primary);
   font-weight: 600;
+}
+
+.mobility-back-link:focus-visible {
+  outline: 3px solid rgba(22, 120, 243, 0.32);
+  outline-offset: 3px;
 }
 
 .mobility-content {
@@ -91,6 +97,7 @@
   border: 1px solid #e6edf7;
   border-radius: var(--radius-md);
   background: #f8fafc;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .mobility-card-header {
@@ -104,6 +111,7 @@
   margin: 0;
   color: var(--color-text-strong);
   font-size: 18px;
+  line-height: 1.3;
 }
 
 .mobility-focus {
@@ -114,6 +122,7 @@
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .mobility-details {
@@ -139,6 +148,7 @@
   color: var(--color-text-strong);
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .mobility-instructions-title {
@@ -173,4 +183,51 @@
   flex: 0 0 auto;
   margin-top: 1px;
   font-size: 17px;
+}
+
+@media screen and (max-width: 980px) {
+  .mobility-exercises {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .mobility-page {
+    padding: 24px 14px 34px;
+  }
+
+  .mobility-header,
+  .mobility-card-header {
+    flex-direction: column;
+  }
+
+  .mobility-back-link {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mobility-header h1 {
+    font-size: 30px;
+  }
+
+  .mobility-content,
+  .mobility-card {
+    padding: 14px;
+  }
+
+  .mobility-content-heading {
+    gap: 10px;
+  }
+
+  .mobility-content-heading > i {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .mobility-details {
+    grid-template-columns: 1fr;
+  }
 }
