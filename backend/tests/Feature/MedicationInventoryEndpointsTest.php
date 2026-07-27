@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Medication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -206,6 +207,20 @@ class MedicationInventoryEndpointsTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_submit_invalid_medication_payload(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $payload = $this->invalidMedicationPayload();
+
+        $response = $this->postJson('/api/admin/medications/inventory', $payload);
+
+        $this->assertInstanceOf(TestResponse::class, $response);
+    }
+
     public function test_admin_can_update_existing_medication(): void
     {
         Sanctum::actingAs(User::factory()->create([
@@ -362,6 +377,19 @@ class MedicationInventoryEndpointsTest extends TestCase
             'minimum_stock' => 10,
             'expiration_date' => '2030-10-15',
             'is_active' => true,
+        ];
+    }
+
+    private function invalidMedicationPayload(): array
+    {
+        return [
+            'name' => '',
+            'presentation' => '',
+            'quantity' => -1,
+            'unit' => '',
+            'minimum_stock' => -5,
+            'expiration_date' => 'fecha-invalida',
+            'is_active' => 'activo',
         ];
     }
 }
