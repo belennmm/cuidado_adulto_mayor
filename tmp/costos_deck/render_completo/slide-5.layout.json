@@ -1,0 +1,946 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/jpyq62",
+    "id": "jpyq62",
+    "slide": 5,
+    "layoutId": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ap4j21kv",
+      "id": "1",
+      "name": "sidebar",
+      "bbox": [
+        1152,
+        0,
+        128,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#721014",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xcfidw36",
+      "id": "2",
+      "name": "accent",
+      "bbox": [
+        1152,
+        0,
+        10,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#941319",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wb614b2l",
+      "id": "3",
+      "name": "title",
+      "bbox": [
+        20,
+        24,
+        1100,
+        72
+      ],
+      "geometry": "rect",
+      "text": "Paso 2 · Ajustar por Tecnología y Ambiente",
+      "textPreview": "Paso 2 · Ajustar por Tecnología y Ambiente",
+      "resolvedFontSize": 40,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 40,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Paso 2 · Ajustar por Tecnología y Ambiente"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Paso 2 · Ajustar por Tecnología y Ambiente",
+          "resolvedTextStyle": {
+            "fontSize": 40,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Paso 2 · Ajustar por Tecnología y Ambiente",
+              "fontSize": 40,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/jex0f6lc",
+      "id": "4",
+      "name": "rule",
+      "bbox": [
+        14,
+        108,
+        1115,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#151515",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/idoj61kr",
+      "id": "5",
+      "name": "footer",
+      "bbox": [
+        160,
+        676,
+        720,
+        24
+      ],
+      "geometry": "rect",
+      "text": "Planificación y Estimación · Organízate",
+      "textPreview": "Planificación y Estimación · Organízate",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Planificación y Estimación · Organízate"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Planificación y Estimación · Organízate",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Planificación y Estimación · Organízate",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/5gfihg3i",
+      "id": "6",
+      "name": "page",
+      "bbox": [
+        930,
+        676,
+        80,
+        24
+      ],
+      "geometry": "rect",
+      "text": "5",
+      "textPreview": "5",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "5"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "5",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "5",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kf618b2x",
+      "id": "7",
+      "name": "side-page",
+      "bbox": [
+        1170,
+        676,
+        88,
+        24
+      ],
+      "geometry": "rect",
+      "text": "5 de 9",
+      "textPreview": "5 de 9",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 15,
+        "typeface": "+mn-lt",
+        "color": "#FFFFFF",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "5 de 9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "5 de 9",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "color": "#FFFFFF",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "5 de 9",
+              "fontSize": 15,
+              "color": "#FFFFFF",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zid03ml8",
+      "id": "8",
+      "name": "pcua",
+      "bbox": [
+        75,
+        135,
+        980,
+        58
+      ],
+      "geometry": "rect",
+      "text": "PCUA = PCU × FCT × FA",
+      "textPreview": "PCUA = PCU × FCT × FA",
+      "resolvedFontSize": 30,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 30,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "PCUA = PCU × FCT × FA"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "PCUA = PCU × FCT × FA",
+          "resolvedTextStyle": {
+            "fontSize": 30,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "PCUA = PCU × FCT × FA",
+              "fontSize": 30,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "table",
+      "scope": "slide",
+      "aid": "tb/7uxozm1o",
+      "id": "9",
+      "bbox": [
+        42,
+        235,
+        1070,
+        250
+      ],
+      "text": "Factor | Fórmula | Aspectos relacionados\nFCT | 0.6 + 0.01 × Σ(peso × valor) | Distribución, rendimiento, reutilización, instalación, uso, portabilidad, cambio, concurrencia, seguridad, terceros y entrenamiento\nFA | 1.4 − 0.03 × Σ(peso × valor) | Experiencia, capacidad del analista, motivación, estabilidad de requisitos, dedicación y dificultad del lenguaje",
+      "textPreview": "Factor | Fórmula | Aspectos relacionados | FCT | 0.6 + 0.01 × Σ(peso × valor) | Distribución, rendimiento, reutilización, instalación, us...",
+      "rows": 3,
+      "cols": 3,
+      "cells": [
+        {
+          "index": 1,
+          "row": 1,
+          "column": 1,
+          "bbox": [
+            42,
+            235,
+            160,
+            83.33
+          ],
+          "text": "Factor",
+          "textPreview": "Factor",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Factor",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Factor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "row": 1,
+          "column": 2,
+          "bbox": [
+            202,
+            235,
+            315,
+            83.33
+          ],
+          "text": "Fórmula",
+          "textPreview": "Fórmula",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Fórmula",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Fórmula"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "row": 1,
+          "column": 3,
+          "bbox": [
+            517,
+            235,
+            595,
+            83.33
+          ],
+          "text": "Aspectos relacionados",
+          "textPreview": "Aspectos relacionados",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Aspectos relacionados",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Aspectos relacionados"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "row": 2,
+          "column": 1,
+          "bbox": [
+            42,
+            318.33,
+            160,
+            83.33
+          ],
+          "text": "FCT",
+          "textPreview": "FCT",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "FCT",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "FCT"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "row": 2,
+          "column": 2,
+          "bbox": [
+            202,
+            318.33,
+            315,
+            83.33
+          ],
+          "text": "0.6 + 0.01 × Σ(peso × valor)",
+          "textPreview": "0.6 + 0.01 × Σ(peso × valor)",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "0.6 + 0.01 × Σ(peso × valor)",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "0.6 + 0.01 × Σ(peso × valor)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "row": 2,
+          "column": 3,
+          "bbox": [
+            517,
+            318.33,
+            595,
+            83.33
+          ],
+          "text": "Distribución, rendimiento, reutilización, instalación, uso, portabilidad, cambio, concurrencia, seguridad, terceros y entrenamiento",
+          "textPreview": "Distribución, rendimiento, reutilización, instalación, uso, portabilidad, cambio, concurrencia, seguridad, terceros y entrenamiento",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Distribución, rendimiento, reutilización, instalación, uso, portabilidad, cambio, concurrencia, seguridad, terceros y entrenamiento",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Distribución, rendimiento, reutilización, instalación, uso, portabilidad, cambio, concurrencia, seguridad, terceros y entrenamiento"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "row": 3,
+          "column": 1,
+          "bbox": [
+            42,
+            401.67,
+            160,
+            83.33
+          ],
+          "text": "FA",
+          "textPreview": "FA",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "FA",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "FA"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "row": 3,
+          "column": 2,
+          "bbox": [
+            202,
+            401.67,
+            315,
+            83.33
+          ],
+          "text": "1.4 − 0.03 × Σ(peso × valor)",
+          "textPreview": "1.4 − 0.03 × Σ(peso × valor)",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "1.4 − 0.03 × Σ(peso × valor)",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "1.4 − 0.03 × Σ(peso × valor)"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "row": 3,
+          "column": 3,
+          "bbox": [
+            517,
+            401.67,
+            595,
+            83.33
+          ],
+          "text": "Experiencia, capacidad del analista, motivación, estabilidad de requisitos, dedicación y dificultad del lenguaje",
+          "textPreview": "Experiencia, capacidad del analista, motivación, estabilidad de requisitos, dedicación y dificultad del lenguaje",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Experiencia, capacidad del analista, motivación, estabilidad de requisitos, dedicación y dificultad del lenguaje",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Experiencia, capacidad del analista, motivación, estabilidad de requisitos, dedicación y dificultad del lenguaje"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/sruh87il",
+      "id": "10",
+      "name": "dot-520",
+      "bbox": [
+        22,
+        520,
+        30,
+        38
+      ],
+      "geometry": "rect",
+      "text": "⊙",
+      "textPreview": "⊙",
+      "resolvedFontSize": 27,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 27,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "⊙"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "⊙",
+          "resolvedTextStyle": {
+            "fontSize": 27,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "⊙",
+              "fontSize": 27,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ts3i1cz6",
+      "id": "11",
+      "name": "b-520",
+      "bbox": [
+        58,
+        518,
+        1050,
+        55
+      ],
+      "geometry": "rect",
+      "text": "Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto.",
+      "textPreview": "Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto.",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto.",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto.",
+              "fontSize": 24,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6psz6h0f",
+      "id": "12",
+      "name": "dot-585",
+      "bbox": [
+        22,
+        585,
+        30,
+        38
+      ],
+      "geometry": "rect",
+      "text": "⊙",
+      "textPreview": "⊙",
+      "resolvedFontSize": 26,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 26,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "⊙"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "⊙",
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "⊙",
+              "fontSize": 26,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7ql0z2h0",
+      "id": "13",
+      "name": "b-585",
+      "bbox": [
+        58,
+        583,
+        1050,
+        62
+      ],
+      "geometry": "rect",
+      "text": "En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con Laravel/JavaScript.",
+      "textPreview": "En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con Laravel/JavaScript.",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con"
+          },
+          {
+            "index": 2,
+            "text": "Laravel/JavaScript."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con Laravel/JavaScript.",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con Laravel/JavaScript.",
+              "fontSize": 23,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

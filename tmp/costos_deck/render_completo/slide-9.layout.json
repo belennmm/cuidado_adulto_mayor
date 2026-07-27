@@ -1,0 +1,1185 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/i3xpor",
+    "id": "i3xpor",
+    "slide": 9,
+    "layoutId": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/18zaxkbm",
+      "id": "1",
+      "name": "sidebar",
+      "bbox": [
+        1152,
+        0,
+        128,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#721014",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/e58rm5cb",
+      "id": "2",
+      "name": "accent",
+      "bbox": [
+        1152,
+        0,
+        10,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#941319",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/f6hsvatg",
+      "id": "3",
+      "name": "title",
+      "bbox": [
+        20,
+        24,
+        1100,
+        72
+      ],
+      "geometry": "rect",
+      "text": "Esquema Final del Presupuesto",
+      "textPreview": "Esquema Final del Presupuesto",
+      "resolvedFontSize": 40,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 40,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Esquema Final del Presupuesto"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Esquema Final del Presupuesto",
+          "resolvedTextStyle": {
+            "fontSize": 40,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Esquema Final del Presupuesto",
+              "fontSize": 40,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/obq9szud",
+      "id": "4",
+      "name": "rule",
+      "bbox": [
+        14,
+        108,
+        1115,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#151515",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pcja14by",
+      "id": "5",
+      "name": "footer",
+      "bbox": [
+        160,
+        676,
+        720,
+        24
+      ],
+      "geometry": "rect",
+      "text": "Planificación y Estimación · Organízate",
+      "textPreview": "Planificación y Estimación · Organízate",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Planificación y Estimación · Organízate"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Planificación y Estimación · Organízate",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Planificación y Estimación · Organízate",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/298rqpc7",
+      "id": "6",
+      "name": "page",
+      "bbox": [
+        930,
+        676,
+        80,
+        24
+      ],
+      "geometry": "rect",
+      "text": "9",
+      "textPreview": "9",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "9",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "9",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/nahszuts",
+      "id": "7",
+      "name": "side-page",
+      "bbox": [
+        1170,
+        676,
+        88,
+        24
+      ],
+      "geometry": "rect",
+      "text": "9 de 9",
+      "textPreview": "9 de 9",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 15,
+        "typeface": "+mn-lt",
+        "color": "#FFFFFF",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "9 de 9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "9 de 9",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "color": "#FFFFFF",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "9 de 9",
+              "fontSize": 15,
+              "color": "#FFFFFF",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/czatwzu9",
+      "id": "8",
+      "name": "lh-0",
+      "bbox": [
+        65,
+        145,
+        225,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Diseño",
+      "textPreview": "Diseño",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Diseño"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Diseño",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Diseño",
+              "fontSize": 24,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x0ja54bu",
+      "id": "9",
+      "name": "lb-0",
+      "bbox": [
+        300,
+        145,
+        775,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Análisis + arquitectura + base de datos + UX/UI + documentación",
+      "textPreview": "Análisis + arquitectura + base de datos + UX/UI + documentación",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Análisis + arquitectura + base de datos + UX/UI + documentación"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Análisis + arquitectura + base de datos + UX/UI + documentación",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Análisis + arquitectura + base de datos + UX/UI + documentación",
+              "fontSize": 22,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l8nqdgze",
+      "id": "10",
+      "name": "lr-0",
+      "bbox": [
+        65,
+        199,
+        1010,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#B8B8B8",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/k7ep4byt",
+      "id": "11",
+      "name": "lh-1",
+      "bbox": [
+        65,
+        221,
+        225,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Implementación",
+      "textPreview": "Implementación",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Implementación"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Implementación",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Implementación",
+              "fontSize": 24,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/z658b6h8",
+      "id": "12",
+      "name": "lb-1",
+      "bbox": [
+        300,
+        221,
+        775,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Frontend + backend + datos + autenticación + integración",
+      "textPreview": "Frontend + backend + datos + autenticación + integración",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Frontend + backend + datos + autenticación + integración"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Frontend + backend + datos + autenticación + integración",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Frontend + backend + datos + autenticación + integración",
+              "fontSize": 22,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/y5c721gn",
+      "id": "13",
+      "name": "lr-1",
+      "bbox": [
+        65,
+        275,
+        1010,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#B8B8B8",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9wnqh0za",
+      "id": "14",
+      "name": "lh-2",
+      "bbox": [
+        65,
+        297,
+        225,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Calidad",
+      "textPreview": "Calidad",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Calidad"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Calidad",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Calidad",
+              "fontSize": 24,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8vep8vyp",
+      "id": "15",
+      "name": "lb-2",
+      "bbox": [
+        300,
+        297,
+        775,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Pruebas + correcciones + revisión + retrabajo",
+      "textPreview": "Pruebas + correcciones + revisión + retrabajo",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Pruebas + correcciones + revisión + retrabajo"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Pruebas + correcciones + revisión + retrabajo",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Pruebas + correcciones + revisión + retrabajo",
+              "fontSize": 22,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7a58fqh4",
+      "id": "16",
+      "name": "lr-2",
+      "bbox": [
+        65,
+        351,
+        1010,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#B8B8B8",
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/m9w76lgz",
+      "id": "17",
+      "name": "lh-3",
+      "bbox": [
+        65,
+        373,
+        225,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Entrega",
+      "textPreview": "Entrega",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Entrega"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Entrega",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Entrega",
+              "fontSize": 24,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/p03q5wz6",
+      "id": "18",
+      "name": "lb-3",
+      "bbox": [
+        300,
+        373,
+        775,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Docker/servidor + configuración + migración + manuales + capacitación",
+      "textPreview": "Docker/servidor + configuración + migración + manuales + capacitación",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Docker/servidor + configuración + migración + manuales + capacitación"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Docker/servidor + configuración + migración + manuales + capacitación",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Docker/servidor + configuración + migración + manuales + capacitación",
+              "fontSize": 22,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ozupwryl",
+      "id": "19",
+      "name": "lr-3",
+      "bbox": [
+        65,
+        427,
+        1010,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#B8B8B8",
+      "lineWidth": 0
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gjypcr6h",
+      "id": "20",
+      "name": "lh-4",
+      "bbox": [
+        65,
+        449,
+        225,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Ciclo de vida",
+      "textPreview": "Ciclo de vida",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Ciclo de vida"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Ciclo de vida",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Ciclo de vida",
+              "fontSize": 24,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hk7qlw72",
+      "id": "21",
+      "name": "lb-4",
+      "bbox": [
+        300,
+        449,
+        775,
+        54
+      ],
+      "geometry": "rect",
+      "text": "Soporte + mantenimiento correctivo, adaptativo y evolutivo",
+      "textPreview": "Soporte + mantenimiento correctivo, adaptativo y evolutivo",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Soporte + mantenimiento correctivo, adaptativo y evolutivo"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Soporte + mantenimiento correctivo, adaptativo y evolutivo",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Soporte + mantenimiento correctivo, adaptativo y evolutivo",
+              "fontSize": 22,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/uhw7q1ob",
+      "id": "22",
+      "name": "lr-4",
+      "bbox": [
+        65,
+        503,
+        1010,
+        1
+      ],
+      "geometry": "rect",
+      "fillColor": "#B8B8B8",
+      "lineWidth": 0
+    },
+    {
+      "order": 23,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fi58jmpw",
+      "id": "23",
+      "name": "total",
+      "bbox": [
+        65,
+        555,
+        1010,
+        78
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFF3F3",
+      "lineColor": "#C71920",
+      "lineWidth": 2
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ony9gb6d",
+      "id": "24",
+      "name": "total-text",
+      "bbox": [
+        90,
+        567,
+        960,
+        50
+      ],
+      "geometry": "rect",
+      "text": "Costo total = costos directos + indirectos + contingencia + operación y mantenimiento",
+      "textPreview": "Costo total = costos directos + indirectos + contingencia + operación y mantenimiento",
+      "resolvedFontSize": 25,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 25,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Costo total = costos directos + indirectos + contingencia + operación y mantenimiento"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Costo total = costos directos + indirectos + contingencia + operación y mantenimiento",
+          "resolvedTextStyle": {
+            "fontSize": 25,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Costo total = costos directos + indirectos + contingencia + operación y mantenimiento",
+              "fontSize": 25,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

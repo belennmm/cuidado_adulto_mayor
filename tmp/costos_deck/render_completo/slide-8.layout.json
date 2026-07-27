@@ -1,0 +1,950 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/4gk70n",
+    "id": "4gk70n",
+    "slide": 8,
+    "layoutId": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/t43itoni",
+      "id": "1",
+      "name": "sidebar",
+      "bbox": [
+        1152,
+        0,
+        128,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#721014",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/61szy9o7",
+      "id": "2",
+      "name": "accent",
+      "bbox": [
+        1152,
+        0,
+        10,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#941319",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/r21gre5s",
+      "id": "3",
+      "name": "title",
+      "bbox": [
+        20,
+        24,
+        1100,
+        72
+      ],
+      "geometry": "rect",
+      "text": "Tiempo, Personas y Costo",
+      "textPreview": "Tiempo, Personas y Costo",
+      "resolvedFontSize": 40,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 40,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Tiempo, Personas y Costo"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Tiempo, Personas y Costo",
+          "resolvedTextStyle": {
+            "fontSize": 40,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Tiempo, Personas y Costo",
+              "fontSize": 40,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gruh4j69",
+      "id": "4",
+      "name": "rule",
+      "bbox": [
+        14,
+        108,
+        1115,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#151515",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1s3ixonu",
+      "id": "5",
+      "name": "footer",
+      "bbox": [
+        160,
+        676,
+        720,
+        24
+      ],
+      "geometry": "rect",
+      "text": "Planificación y Estimación · Organízate",
+      "textPreview": "Planificación y Estimación · Organízate",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Planificación y Estimación · Organízate"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Planificación y Estimación · Organízate",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Planificación y Estimación · Organízate",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/e5cz2to3",
+      "id": "6",
+      "name": "page",
+      "bbox": [
+        930,
+        676,
+        80,
+        24
+      ],
+      "geometry": "rect",
+      "text": "8",
+      "textPreview": "8",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "8"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "8",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "8",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/f6l0ve5o",
+      "id": "7",
+      "name": "side-page",
+      "bbox": [
+        1170,
+        676,
+        88,
+        24
+      ],
+      "geometry": "rect",
+      "text": "8 de 9",
+      "textPreview": "8 de 9",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 15,
+        "typeface": "+mn-lt",
+        "color": "#FFFFFF",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "8 de 9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "8 de 9",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "color": "#FFFFFF",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "8 de 9",
+              "fontSize": 15,
+              "color": "#FFFFFF",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "table",
+      "scope": "slide",
+      "aid": "tb/dsnqts3a",
+      "id": "8",
+      "bbox": [
+        60,
+        150,
+        1020,
+        335
+      ],
+      "text": "Indicador | Cálculo\nTiempo de desarrollo | TDES = esfuerzo total ÷ cantidad de personas\nTarifa horaria promedio | THP = salario promedio mensual ÷ 160\nCosto por H/H | C = esfuerzo total en H/H × K × THP\nCosto por H/M | C = esfuerzo total en H/M × K × salario promedio mensual\nCostos indirectos | K entre 1.5 y 2.0, según la referencia",
+      "textPreview": "Indicador | Cálculo | Tiempo de desarrollo | TDES = esfuerzo total ÷ cantidad de personas | Tarifa horaria promedio | THP = salario prome...",
+      "rows": 6,
+      "cols": 2,
+      "cells": [
+        {
+          "index": 1,
+          "row": 1,
+          "column": 1,
+          "bbox": [
+            60,
+            150,
+            355,
+            55.83
+          ],
+          "text": "Indicador",
+          "textPreview": "Indicador",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Indicador",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Indicador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "row": 1,
+          "column": 2,
+          "bbox": [
+            415,
+            150,
+            665,
+            55.83
+          ],
+          "text": "Cálculo",
+          "textPreview": "Cálculo",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Cálculo",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Cálculo"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "row": 2,
+          "column": 1,
+          "bbox": [
+            60,
+            205.83,
+            355,
+            55.83
+          ],
+          "text": "Tiempo de desarrollo",
+          "textPreview": "Tiempo de desarrollo",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Tiempo de desarrollo",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Tiempo de desarrollo"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "row": 2,
+          "column": 2,
+          "bbox": [
+            415,
+            205.83,
+            665,
+            55.83
+          ],
+          "text": "TDES = esfuerzo total ÷ cantidad de personas",
+          "textPreview": "TDES = esfuerzo total ÷ cantidad de personas",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "TDES = esfuerzo total ÷ cantidad de personas",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "TDES = esfuerzo total ÷ cantidad de personas"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "row": 3,
+          "column": 1,
+          "bbox": [
+            60,
+            261.67,
+            355,
+            55.83
+          ],
+          "text": "Tarifa horaria promedio",
+          "textPreview": "Tarifa horaria promedio",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Tarifa horaria promedio",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Tarifa horaria promedio"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "row": 3,
+          "column": 2,
+          "bbox": [
+            415,
+            261.67,
+            665,
+            55.83
+          ],
+          "text": "THP = salario promedio mensual ÷ 160",
+          "textPreview": "THP = salario promedio mensual ÷ 160",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "THP = salario promedio mensual ÷ 160",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "THP = salario promedio mensual ÷ 160"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "row": 4,
+          "column": 1,
+          "bbox": [
+            60,
+            317.5,
+            355,
+            55.83
+          ],
+          "text": "Costo por H/H",
+          "textPreview": "Costo por H/H",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Costo por H/H",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Costo por H/H"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "row": 4,
+          "column": 2,
+          "bbox": [
+            415,
+            317.5,
+            665,
+            55.83
+          ],
+          "text": "C = esfuerzo total en H/H × K × THP",
+          "textPreview": "C = esfuerzo total en H/H × K × THP",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "C = esfuerzo total en H/H × K × THP",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "C = esfuerzo total en H/H × K × THP"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "row": 5,
+          "column": 1,
+          "bbox": [
+            60,
+            373.33,
+            355,
+            55.83
+          ],
+          "text": "Costo por H/M",
+          "textPreview": "Costo por H/M",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Costo por H/M",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Costo por H/M"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "row": 5,
+          "column": 2,
+          "bbox": [
+            415,
+            373.33,
+            665,
+            55.83
+          ],
+          "text": "C = esfuerzo total en H/M × K × salario promedio mensual",
+          "textPreview": "C = esfuerzo total en H/M × K × salario promedio mensual",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "C = esfuerzo total en H/M × K × salario promedio mensual",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "C = esfuerzo total en H/M × K × salario promedio mensual"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "row": 6,
+          "column": 1,
+          "bbox": [
+            60,
+            429.17,
+            355,
+            55.83
+          ],
+          "text": "Costos indirectos",
+          "textPreview": "Costos indirectos",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Costos indirectos",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Costos indirectos"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "row": 6,
+          "column": 2,
+          "bbox": [
+            415,
+            429.17,
+            665,
+            55.83
+          ],
+          "text": "K entre 1.5 y 2.0, según la referencia",
+          "textPreview": "K entre 1.5 y 2.0, según la referencia",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "K entre 1.5 y 2.0, según la referencia",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "K entre 1.5 y 2.0, según la referencia"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hwjyl4na",
+      "id": "9",
+      "name": "dot-525",
+      "bbox": [
+        22,
+        525,
+        30,
+        38
+      ],
+      "geometry": "rect",
+      "text": "⊙",
+      "textPreview": "⊙",
+      "resolvedFontSize": 26,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 26,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "⊙"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "⊙",
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "⊙",
+              "fontSize": 26,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/h03e5gvu",
+      "id": "10",
+      "name": "b-525",
+      "bbox": [
+        58,
+        523,
+        1050,
+        55
+      ],
+      "geometry": "rect",
+      "text": "Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos.",
+      "textPreview": "Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos.",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos.",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos.",
+              "fontSize": 23,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gzudcbe9",
+      "id": "11",
+      "name": "dot-590",
+      "bbox": [
+        22,
+        590,
+        30,
+        38
+      ],
+      "geometry": "rect",
+      "text": "⊙",
+      "textPreview": "⊙",
+      "resolvedFontSize": 26,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 26,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "⊙"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "⊙",
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "⊙",
+              "fontSize": 26,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vylw36do",
+      "id": "12",
+      "name": "b-590",
+      "bbox": [
+        58,
+        588,
+        1050,
+        52
+      ],
+      "geometry": "rect",
+      "text": "Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo.",
+      "textPreview": "Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo.",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo.",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo.",
+              "fontSize": 23,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

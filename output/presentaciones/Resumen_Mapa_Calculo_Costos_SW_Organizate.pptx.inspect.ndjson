@@ -1,0 +1,158 @@
+{"kind":"deck","id":"pr/pgr1d2","name":"Deck"}
+{"kind":"layout","layoutId":"238359be-5d5c-4c02-8108-1efa6dedbf55","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"23d22e31-b430-4ad0-8c4b-d7e97f28c4ad","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/dtr1ha","slide":1,"title":"Cálculo de Costos del Software","textShapes":10}
+{"kind":"shape","id":"sh/knupwjex","slide":1,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/zmlo3exc","slide":1,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/y1c7u9wr","slide":1,"name":"title","text":"Cálculo de Costos del Software","textPreview":"Cálculo de Costos del Software","textChars":30,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/x03614f6","slide":1,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/czupszel","slide":1,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/by1ozux0","slide":1,"name":"page","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/axsnq9wv","slide":1,"name":"side-page","text":"1 de 9","textPreview":"1 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"textbox","id":"sh/hwnqd8fa","slide":1,"name":"subtitle","text":"Resumen y mapa conceptual aplicado a “Organízate”","textPreview":"Resumen y mapa conceptual aplicado a “Organízate”","textChars":49,"textLines":1,"bbox":[58,170,980,70]}
+{"kind":"textbox","id":"sh/wvep43e5","slide":1,"name":"dot-285","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,285,30,38]}
+{"kind":"textbox","id":"sh/ulonep8j","slide":1,"name":"b-285","text":"Estimar costos significa convertir alcance y funcionalidad en esfuerzo, tiempo, personas y dinero.","textPreview":"Estimar costos significa convertir alcance y funcionalidad en esfuerzo, tiempo, personas y dinero.","textChars":98,"textLines":1,"bbox":[58,283,1050,78]}
+{"kind":"textbox","id":"sh/f6x47u94","slide":1,"name":"dot-405","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,405,30,38]}
+{"kind":"textbox","id":"sh/g765gfqp","slide":1,"name":"b-405","text":"La factibilidad depende de restricciones organizativas, económicas, técnicas y de calendario.","textPreview":"La factibilidad depende de restricciones organizativas, económicas, técnicas y de calendario.","textChars":93,"textLines":1,"bbox":[58,403,1050,75]}
+{"kind":"shape","id":"sh/h8fm9kru","slide":1,"name":"formula","bbox":[64,555,950,68]}
+{"kind":"textbox","id":"sh/6h4na5s7","slide":1,"name":"formula-text","text":"Alcance → Tamaño → Esfuerzo → Tiempo y recursos → Costo total","textPreview":"Alcance → Tamaño → Esfuerzo → Tiempo y recursos → Costo total","textChars":61,"textLines":1,"bbox":[85,565,910,46]}
+{"kind":"notes","id":"nt/dtr1ha","slide":1,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/jlsltb","slide":2,"title":"Mapa del Proceso de Estimación","textShapes":21}
+{"kind":"shape","id":"sh/7u94fuh4","slide":2,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/svi58zip","slide":2,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/twrmh4za","slide":2,"name":"title","text":"Mapa del Proceso de Estimación","textPreview":"Mapa del Proceso de Estimación","textChars":30,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/uxkna90v","slide":2,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/fytojehg","slide":2,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/gz25cjy1","slide":2,"name":"page","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/h0b6lozm","slide":2,"name":"side-page","text":"2 de 9","textPreview":"2 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"shape","id":"sh/a1gnyp0r","slide":2,"name":"node-0","bbox":[92,145,900,62]}
+{"kind":"textbox","id":"sh/v2p47ahc","slide":2,"name":"head-0","text":"1. Alcance","textPreview":"1. Alcance","textChars":10,"textLines":1,"bbox":[112,152,210,48]}
+{"kind":"textbox","id":"sh/buxovmhw","slide":2,"name":"body-0","text":"Actores, casos de uso y requisitos","textPreview":"Actores, casos de uso y requisitos","textChars":34,"textLines":1,"bbox":[330,152,635,48]}
+{"kind":"textbox","id":"sh/a9o7mhgb","slide":2,"name":"arrow-0","text":"↓","textPreview":"↓","textChars":1,"textLines":1,"bbox":[1005,188,55,45]}
+{"kind":"shape","id":"sh/xwf6xczm","slide":2,"name":"node-1","bbox":[92,227,900,62]}
+{"kind":"textbox","id":"sh/cv6po7yh","slide":2,"name":"head-1","text":"2. Tamaño","textPreview":"2. Tamaño","textChars":9,"textLines":1,"bbox":[112,234,210,48]}
+{"kind":"textbox","id":"sh/n6xor2hk","slide":2,"name":"body-1","text":"PCU sin ajustar","textPreview":"PCU sin ajustar","textChars":15,"textLines":1,"bbox":[330,234,635,48]}
+{"kind":"textbox","id":"sh/2547ixgz","slide":2,"name":"arrow-1","text":"↓","textPreview":"↓","textChars":1,"textLines":1,"bbox":[1005,270,55,45]}
+{"kind":"shape","id":"sh/p8f6tczq","slide":2,"name":"node-2","bbox":[92,309,900,62]}
+{"kind":"textbox","id":"sh/o76pk7y5","slide":2,"name":"head-2","text":"3. Ajuste","textPreview":"3. Ajuste","textChars":9,"textLines":1,"bbox":[112,316,210,48]}
+{"kind":"textbox","id":"sh/f2don2ho","slide":2,"name":"body-2","text":"Complejidad técnica y ambiente","textPreview":"Complejidad técnica y ambiente","textChars":30,"textLines":1,"bbox":[330,316,635,48]}
+{"kind":"textbox","id":"sh/e14nexg3","slide":2,"name":"arrow-2","text":"↓","textPreview":"↓","textChars":1,"textLines":1,"bbox":[1005,352,55,45]}
+{"kind":"shape","id":"sh/ixk76d0v","slide":2,"name":"node-3","bbox":[92,391,900,62]}
+{"kind":"textbox","id":"sh/jyt8zi1g","slide":2,"name":"head-3","text":"4. Esfuerzo","textPreview":"4. Esfuerzo","textChars":11,"textLines":1,"bbox":[112,398,210,48]}
+{"kind":"textbox","id":"sh/4zmpsni1","slide":2,"name":"body-3","text":"PCUA × factor de conversión","textPreview":"PCUA × factor de conversión","textChars":27,"textLines":1,"bbox":[330,398,635,48]}
+{"kind":"textbox","id":"sh/50vq1sjm","slide":2,"name":"arrow-3","text":"↓","textPreview":"↓","textChars":1,"textLines":1,"bbox":[1005,434,55,45]}
+{"kind":"shape","id":"sh/q147ux07","slide":2,"name":"node-4","bbox":[92,473,900,62]}
+{"kind":"textbox","id":"sh/r2d8321s","slide":2,"name":"head-4","text":"5. Plan","textPreview":"5. Plan","textChars":7,"textLines":1,"bbox":[112,480,210,48]}
+{"kind":"textbox","id":"sh/s3mpw7ix","slide":2,"name":"body-4","text":"Distribución, personas y duración","textPreview":"Distribución, personas y duración","textChars":33,"textLines":1,"bbox":[330,480,635,48]}
+{"kind":"textbox","id":"sh/d4vq5cji","slide":2,"name":"arrow-4","text":"↓","textPreview":"↓","textChars":1,"textLines":1,"bbox":[1005,516,55,45]}
+{"kind":"shape","id":"sh/e547yh03","slide":2,"name":"node-5","bbox":[92,555,900,62]}
+{"kind":"textbox","id":"sh/f6x8721o","slide":2,"name":"head-5","text":"6. Costo","textPreview":"6. Costo","textChars":8,"textLines":1,"bbox":[112,562,210,48]}
+{"kind":"textbox","id":"sh/p0zaxg3q","slide":2,"name":"body-5","text":"Tarifas + indirectos + riesgos","textPreview":"Tarifas + indirectos + riesgos","textChars":30,"textLines":1,"bbox":[330,562,635,48]}
+{"kind":"notes","id":"nt/jlsltb","slide":2,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/rjy4gn","slide":3,"title":"Métodos y Variables que se Estiman","textShapes":8}
+{"kind":"shape","id":"sh/e14nydov","slide":3,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/1ov69snm","slide":3,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/0nm50n61","slide":3,"name":"title","text":"Métodos y Variables que se Estiman","textPreview":"Métodos y Variables que se Estiman","textChars":34,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/ryto3y5k","slide":3,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/qxknutoz","slide":3,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/d0v658na","slide":3,"name":"page","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/cz25w365","slide":3,"name":"side-page","text":"3 de 9","textPreview":"3 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"textbox","id":"sh/ato76xo3","slide":3,"name":"dot-445","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,445,30,38]}
+{"kind":"textbox","id":"sh/g3q10fed","slide":3,"name":"b-445","text":"Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo.","textPreview":"Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo.","textChars":98,"textLines":1,"bbox":[58,443,1050,68]}
+{"kind":"textbox","id":"sh/h4z2t0fy","slide":3,"name":"dot-545","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,545,30,38]}
+{"kind":"textbox","id":"sh/u18jy5w7","slide":3,"name":"b-545","text":"Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores técnicos identificables.","textPreview":"Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores técnicos identificables.","textChars":121,"textLines":1,"bbox":[58,543,1050,70]}
+{"kind":"table","id":"tb/q1gjytg7","slide":3,"name":"","rows":4,"cols":3,"preview":"Enfoque | Punto de partida | Uso","bbox":[42,155,1070,240]}
+{"kind":"notes","id":"nt/rjy4gn","slide":3,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/acywvj","slide":4,"title":"Paso 1 · Puntos de Casos de Uso","textShapes":6}
+{"kind":"shape","id":"sh/uxcn21kr","slide":4,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/hk3mxw32","slide":4,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/gzu54r2h","slide":4,"name":"title","text":"Paso 1 · Puntos de Casos de Uso","textPreview":"Paso 1 · Puntos de Casos de Uso","textChars":31,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/7u14rml0","slide":4,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/6tsnyhkf","slide":4,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/tw3mtw36","slide":4,"name":"page","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/8va50r2l","slide":4,"name":"side-page","text":"4 de 9","textPreview":"4 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"textbox","id":"sh/rq5o3q14","slide":4,"name":"formula","text":"PCU = FPA + FPCU","textPreview":"PCU = FPA + FPCU","textChars":16,"textLines":1,"bbox":[70,140,980,58]}
+{"kind":"textbox","id":"sh/07ap4n2x","slide":4,"name":"note","text":"FPA suma actores ponderados; FPCU suma casos de uso ponderados.","textPreview":"FPA suma actores ponderados; FPCU suma casos de uso ponderados.","textChars":63,"textLines":1,"bbox":[150,600,850,42]}
+{"kind":"table","id":"tb/f2103u1g","slide":4,"name":"","rows":7,"cols":3,"preview":"Componente | Clasificación | Peso","bbox":[55,225,1040,350]}
+{"kind":"notes","id":"nt/acywvj","slide":4,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/jpyq62","slide":5,"title":"Paso 2 · Ajustar por Tecnología y Ambiente","textShapes":9}
+{"kind":"shape","id":"sh/ap4j21kv","slide":5,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/xcfidw36","slide":5,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/wb614b2l","slide":5,"name":"title","text":"Paso 2 · Ajustar por Tecnología y Ambiente","textPreview":"Paso 2 · Ajustar por Tecnología y Ambiente","textChars":42,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/jex0f6lc","slide":5,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/idoj61kr","slide":5,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/5gfihg3i","slide":5,"name":"page","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/kf618b2x","slide":5,"name":"side-page","text":"5 de 9","textPreview":"5 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"textbox","id":"sh/zid03ml8","slide":5,"name":"pcua","text":"PCUA = PCU × FCT × FA","textPreview":"PCUA = PCU × FCT × FA","textChars":21,"textLines":1,"bbox":[75,135,980,58]}
+{"kind":"textbox","id":"sh/sruh87il","slide":5,"name":"dot-520","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,520,30,38]}
+{"kind":"textbox","id":"sh/ts3i1cz6","slide":5,"name":"b-520","text":"Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto.","textPreview":"Cada factor se valora de 0 a 5 según su relevancia o condición en el proyecto.","textChars":78,"textLines":1,"bbox":[58,518,1050,55]}
+{"kind":"textbox","id":"sh/6psz6h0f","slide":5,"name":"dot-585","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,585,30,38]}
+{"kind":"textbox","id":"sh/7ql0z2h0","slide":5,"name":"b-585","text":"En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con Laravel/JavaScript.","textPreview":"En “Organízate” influyen seguridad por roles, API, Docker, PostgreSQL, facilidad de uso y experiencia con Laravel/JavaScript.","textChars":125,"textLines":1,"bbox":[58,583,1050,62]}
+{"kind":"table","id":"tb/7uxozm1o","slide":5,"name":"","rows":3,"cols":3,"preview":"Factor | Fórmula | Aspectos relacionados","bbox":[42,235,1070,250]}
+{"kind":"notes","id":"nt/jpyq62","slide":5,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/svj3qm","slide":6,"title":"Paso 3 · Del PCUA al Esfuerzo","textShapes":7}
+{"kind":"shape","id":"sh/ad03atg3","slide":6,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/xgrm58fu","slide":6,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/wfilc3y9","slide":6,"name":"title","text":"Paso 3 · Del PCUA al Esfuerzo","textPreview":"Paso 3 · Del PCUA al Esfuerzo","textChars":29,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/nq94zyxc","slide":6,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/mpg36tg7","slide":6,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/9crm18fi","slide":6,"name":"page","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/8bil83yx","slide":6,"name":"side-page","text":"6 de 9","textPreview":"6 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"shape","id":"sh/zmpkvexg","slide":6,"name":"call","bbox":[65,145,970,80]}
+{"kind":"textbox","id":"sh/ylg329gv","slide":6,"name":"effort","text":"Esfuerzo funcional (E) = PCUA × FC","textPreview":"Esfuerzo funcional (E) = PCUA × FC","textChars":34,"textLines":1,"bbox":[90,158,920,48]}
+{"kind":"textbox","id":"sh/t47elo3m","slide":6,"name":"dot-545","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,545,30,38]}
+{"kind":"textbox","id":"sh/61wva9kb","slide":6,"name":"b-545","text":"El esfuerzo PCU cubre la funcionalidad; después se agregan análisis, diseño, pruebas y otras actividades.","textPreview":"El esfuerzo PCU cubre la funcionalidad; después se agregan análisis, diseño, pruebas y otras actividades.","textChars":105,"textLines":1,"bbox":[58,543,1050,60]}
+{"kind":"table","id":"tb/vyh0ni5c","slide":6,"name":"","rows":4,"cols":2,"preview":"Condición ambiental | Factor de conversión (FC)","bbox":[85,275,930,230]}
+{"kind":"notes","id":"nt/svj3qm","slide":6,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/joeoa6","slide":7,"title":"Distribución del Esfuerzo Total","textShapes":5}
+{"kind":"shape","id":"sh/upgf690n","slide":7,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/hsrehojy","slide":7,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/wrix8jid","slide":7,"name":"title","text":"Distribución del Esfuerzo Total","textPreview":"Distribución del Esfuerzo Total","textChars":31,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/7mpwbu1w","slide":7,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/mlgf2p0b","slide":7,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/9o7ed4j2","slide":7,"name":"page","text":"7","textPreview":"7","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/8nyx4zih","slide":7,"name":"side-page","text":"7 de 9","textPreview":"7 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"shape","id":"sh/yxwvyp0f","slide":7,"name":"relation","bbox":[115,560,920,62]}
+{"kind":"textbox","id":"sh/c3ap0zil","slide":7,"name":"relation-text","text":"Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40","textPreview":"Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40","textChars":85,"textLines":1,"bbox":[135,570,880,42]}
+{"kind":"table","id":"tb/a1cfid0b","slide":7,"name":"","rows":6,"cols":3,"preview":"Actividad | Porcentaje | Aplicación en Organízate","bbox":[40,160,1075,365]}
+{"kind":"notes","id":"nt/joeoa6","slide":7,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/4gk70n","slide":8,"title":"Tiempo, Personas y Costo","textShapes":8}
+{"kind":"shape","id":"sh/t43itoni","slide":8,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/61szy9o7","slide":8,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/r21gre5s","slide":8,"name":"title","text":"Tiempo, Personas y Costo","textPreview":"Tiempo, Personas y Costo","textChars":24,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/gruh4j69","slide":8,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/1s3ixonu","slide":8,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/e5cz2to3","slide":8,"name":"page","text":"8","textPreview":"8","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/f6l0ve5o","slide":8,"name":"side-page","text":"8 de 9","textPreview":"8 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"textbox","id":"sh/hwjyl4na","slide":8,"name":"dot-525","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,525,30,38]}
+{"kind":"textbox","id":"sh/h03e5gvu","slide":8,"name":"b-525","text":"Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos.","textPreview":"Agregar infraestructura, licencias, equipos, servidor, dominio, respaldos, energía, capacitación e impuestos.","textChars":109,"textLines":1,"bbox":[58,523,1050,55]}
+{"kind":"textbox","id":"sh/gzudcbe9","slide":8,"name":"dot-590","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[22,590,30,38]}
+{"kind":"textbox","id":"sh/vylw36do","slide":8,"name":"b-590","text":"Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo.","textPreview":"Agregar contingencia por cambios de alcance, retrasos, seguridad, fallos técnicos y retrabajo.","textChars":94,"textLines":1,"bbox":[58,588,1050,52]}
+{"kind":"table","id":"tb/dsnqts3a","slide":8,"name":"","rows":6,"cols":2,"preview":"Indicador | Cálculo","bbox":[60,150,1020,335]}
+{"kind":"notes","id":"nt/4gk70n","slide":8,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}
+{"kind":"slide","id":"sl/i3xpor","slide":9,"title":"Esquema Final del Presupuesto","textShapes":15}
+{"kind":"shape","id":"sh/18zaxkbm","slide":9,"name":"sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/e58rm5cb","slide":9,"name":"accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/f6hsvatg","slide":9,"name":"title","text":"Esquema Final del Presupuesto","textPreview":"Esquema Final del Presupuesto","textChars":29,"textLines":1,"bbox":[20,24,1100,72]}
+{"kind":"shape","id":"sh/obq9szud","slide":9,"name":"rule","bbox":[14,108,1115,3]}
+{"kind":"textbox","id":"sh/pcja14by","slide":9,"name":"footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,676,720,24]}
+{"kind":"textbox","id":"sh/298rqpc7","slide":9,"name":"page","text":"9","textPreview":"9","textChars":1,"textLines":1,"bbox":[930,676,80,24]}
+{"kind":"textbox","id":"sh/nahszuts","slide":9,"name":"side-page","text":"9 de 9","textPreview":"9 de 9","textChars":6,"textLines":1,"bbox":[1170,676,88,24]}
+{"kind":"textbox","id":"sh/czatwzu9","slide":9,"name":"lh-0","text":"Diseño","textPreview":"Diseño","textChars":6,"textLines":1,"bbox":[65,145,225,54]}
+{"kind":"textbox","id":"sh/x0ja54bu","slide":9,"name":"lb-0","text":"Análisis + arquitectura + base de datos + UX/UI + documentación","textPreview":"Análisis + arquitectura + base de datos + UX/UI + documentación","textChars":63,"textLines":1,"bbox":[300,145,775,54]}
+{"kind":"shape","id":"sh/l8nqdgze","slide":9,"name":"lr-0","bbox":[65,199,1010,1]}
+{"kind":"textbox","id":"sh/k7ep4byt","slide":9,"name":"lh-1","text":"Implementación","textPreview":"Implementación","textChars":14,"textLines":1,"bbox":[65,221,225,54]}
+{"kind":"textbox","id":"sh/z658b6h8","slide":9,"name":"lb-1","text":"Frontend + backend + datos + autenticación + integración","textPreview":"Frontend + backend + datos + autenticación + integración","textChars":56,"textLines":1,"bbox":[300,221,775,54]}
+{"kind":"shape","id":"sh/y5c721gn","slide":9,"name":"lr-1","bbox":[65,275,1010,1]}
+{"kind":"textbox","id":"sh/9wnqh0za","slide":9,"name":"lh-2","text":"Calidad","textPreview":"Calidad","textChars":7,"textLines":1,"bbox":[65,297,225,54]}
+{"kind":"textbox","id":"sh/8vep8vyp","slide":9,"name":"lb-2","text":"Pruebas + correcciones + revisión + retrabajo","textPreview":"Pruebas + correcciones + revisión + retrabajo","textChars":45,"textLines":1,"bbox":[300,297,775,54]}
+{"kind":"shape","id":"sh/7a58fqh4","slide":9,"name":"lr-2","bbox":[65,351,1010,1]}
+{"kind":"textbox","id":"sh/m9w76lgz","slide":9,"name":"lh-3","text":"Entrega","textPreview":"Entrega","textChars":7,"textLines":1,"bbox":[65,373,225,54]}
+{"kind":"textbox","id":"sh/p03q5wz6","slide":9,"name":"lb-3","text":"Docker/servidor + configuración + migración + manuales + capacitación","textPreview":"Docker/servidor + configuración + migración + manuales + capacitación","textChars":69,"textLines":1,"bbox":[300,373,775,54]}
+{"kind":"shape","id":"sh/ozupwryl","slide":9,"name":"lr-3","bbox":[65,427,1010,1]}
+{"kind":"textbox","id":"sh/gjypcr6h","slide":9,"name":"lh-4","text":"Ciclo de vida","textPreview":"Ciclo de vida","textChars":13,"textLines":1,"bbox":[65,449,225,54]}
+{"kind":"textbox","id":"sh/hk7qlw72","slide":9,"name":"lb-4","text":"Soporte + mantenimiento correctivo, adaptativo y evolutivo","textPreview":"Soporte + mantenimiento correctivo, adaptativo y evolutivo","textChars":58,"textLines":1,"bbox":[300,449,775,54]}
+{"kind":"shape","id":"sh/uhw7q1ob","slide":9,"name":"lr-4","bbox":[65,503,1010,1]}
+{"kind":"shape","id":"sh/fi58jmpw","slide":9,"name":"total","bbox":[65,555,1010,78]}
+{"kind":"textbox","id":"sh/ony9gb6d","slide":9,"name":"total-text","text":"Costo total = costos directos + indirectos + contingencia + operación y mantenimiento","textPreview":"Costo total = costos directos + indirectos + contingencia + operación y mantenimiento","textChars":85,"textLines":1,"bbox":[90,567,960,50]}
+{"kind":"notes","id":"nt/i3xpor","slide":9,"text":"[Sources]\n- Presentación: 08. Estimacion de tiempo y esfuerzo.Resumen.pptx.\n- Proyecto local Organízate: README.md, rutas/controladores, migraciones, pruebas, docker-compose.yml, frontend/package.json y backend/composer.json."}

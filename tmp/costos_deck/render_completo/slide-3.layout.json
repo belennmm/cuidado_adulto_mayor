@@ -1,0 +1,955 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/rjy4gn",
+    "id": "rjy4gn",
+    "slide": 3,
+    "layoutId": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/e14nydov",
+      "id": "1",
+      "name": "sidebar",
+      "bbox": [
+        1152,
+        0,
+        128,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#721014",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1ov69snm",
+      "id": "2",
+      "name": "accent",
+      "bbox": [
+        1152,
+        0,
+        10,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#941319",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0nm50n61",
+      "id": "3",
+      "name": "title",
+      "bbox": [
+        20,
+        24,
+        1100,
+        72
+      ],
+      "geometry": "rect",
+      "text": "Métodos y Variables que se Estiman",
+      "textPreview": "Métodos y Variables que se Estiman",
+      "resolvedFontSize": 40,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 40,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Métodos y Variables que se Estiman"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Métodos y Variables que se Estiman",
+          "resolvedTextStyle": {
+            "fontSize": 40,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Métodos y Variables que se Estiman",
+              "fontSize": 40,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ryto3y5k",
+      "id": "4",
+      "name": "rule",
+      "bbox": [
+        14,
+        108,
+        1115,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#151515",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qxknutoz",
+      "id": "5",
+      "name": "footer",
+      "bbox": [
+        160,
+        676,
+        720,
+        24
+      ],
+      "geometry": "rect",
+      "text": "Planificación y Estimación · Organízate",
+      "textPreview": "Planificación y Estimación · Organízate",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Planificación y Estimación · Organízate"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Planificación y Estimación · Organízate",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Planificación y Estimación · Organízate",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d0v658na",
+      "id": "6",
+      "name": "page",
+      "bbox": [
+        930,
+        676,
+        80,
+        24
+      ],
+      "geometry": "rect",
+      "text": "3",
+      "textPreview": "3",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "3"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "3",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "3",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cz25w365",
+      "id": "7",
+      "name": "side-page",
+      "bbox": [
+        1170,
+        676,
+        88,
+        24
+      ],
+      "geometry": "rect",
+      "text": "3 de 9",
+      "textPreview": "3 de 9",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 15,
+        "typeface": "+mn-lt",
+        "color": "#FFFFFF",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "3 de 9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "3 de 9",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "color": "#FFFFFF",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "3 de 9",
+              "fontSize": 15,
+              "color": "#FFFFFF",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "table",
+      "scope": "slide",
+      "aid": "tb/q1gjytg7",
+      "id": "8",
+      "bbox": [
+        42,
+        155,
+        1070,
+        240
+      ],
+      "text": "Enfoque | Punto de partida | Uso\nCOCOMO / Putnam | Tamaño en líneas de código | Esfuerzo, tiempo y costo\nPuntos de Función | Transacciones y archivos | Funcionalidad independiente del lenguaje\nPuntos de Casos de Uso | Actores, casos de uso y complejidad | Proyectos definidos mediante casos de uso",
+      "textPreview": "Enfoque | Punto de partida | Uso | COCOMO / Putnam | Tamaño en líneas de código | Esfuerzo, tiempo y costo | Puntos de Función | Transacc...",
+      "rows": 4,
+      "cols": 3,
+      "cells": [
+        {
+          "index": 1,
+          "row": 1,
+          "column": 1,
+          "bbox": [
+            42,
+            155,
+            270,
+            60
+          ],
+          "text": "Enfoque",
+          "textPreview": "Enfoque",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Enfoque",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Enfoque"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "row": 1,
+          "column": 2,
+          "bbox": [
+            312,
+            155,
+            350,
+            60
+          ],
+          "text": "Punto de partida",
+          "textPreview": "Punto de partida",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Punto de partida",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Punto de partida"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "row": 1,
+          "column": 3,
+          "bbox": [
+            662,
+            155,
+            450,
+            60
+          ],
+          "text": "Uso",
+          "textPreview": "Uso",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Uso",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Uso"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "row": 2,
+          "column": 1,
+          "bbox": [
+            42,
+            215,
+            270,
+            60
+          ],
+          "text": "COCOMO / Putnam",
+          "textPreview": "COCOMO / Putnam",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "COCOMO / Putnam",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "COCOMO / Putnam"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "row": 2,
+          "column": 2,
+          "bbox": [
+            312,
+            215,
+            350,
+            60
+          ],
+          "text": "Tamaño en líneas de código",
+          "textPreview": "Tamaño en líneas de código",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Tamaño en líneas de código",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Tamaño en líneas de código"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "row": 2,
+          "column": 3,
+          "bbox": [
+            662,
+            215,
+            450,
+            60
+          ],
+          "text": "Esfuerzo, tiempo y costo",
+          "textPreview": "Esfuerzo, tiempo y costo",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Esfuerzo, tiempo y costo",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Esfuerzo, tiempo y costo"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "row": 3,
+          "column": 1,
+          "bbox": [
+            42,
+            275,
+            270,
+            60
+          ],
+          "text": "Puntos de Función",
+          "textPreview": "Puntos de Función",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Puntos de Función",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Puntos de Función"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "row": 3,
+          "column": 2,
+          "bbox": [
+            312,
+            275,
+            350,
+            60
+          ],
+          "text": "Transacciones y archivos",
+          "textPreview": "Transacciones y archivos",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Transacciones y archivos",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Transacciones y archivos"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "row": 3,
+          "column": 3,
+          "bbox": [
+            662,
+            275,
+            450,
+            60
+          ],
+          "text": "Funcionalidad independiente del lenguaje",
+          "textPreview": "Funcionalidad independiente del lenguaje",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Funcionalidad independiente del lenguaje",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Funcionalidad independiente del lenguaje"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "row": 4,
+          "column": 1,
+          "bbox": [
+            42,
+            335,
+            270,
+            60
+          ],
+          "text": "Puntos de Casos de Uso",
+          "textPreview": "Puntos de Casos de Uso",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Puntos de Casos de Uso",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Puntos de Casos de Uso"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "row": 4,
+          "column": 2,
+          "bbox": [
+            312,
+            335,
+            350,
+            60
+          ],
+          "text": "Actores, casos de uso y complejidad",
+          "textPreview": "Actores, casos de uso y complejidad",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Actores, casos de uso y complejidad",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Actores, casos de uso y complejidad"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "row": 4,
+          "column": 3,
+          "bbox": [
+            662,
+            335,
+            450,
+            60
+          ],
+          "text": "Proyectos definidos mediante casos de uso",
+          "textPreview": "Proyectos definidos mediante casos de uso",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Proyectos definidos mediante casos de uso",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Proyectos definidos mediante casos de uso"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ato76xo3",
+      "id": "9",
+      "name": "dot-445",
+      "bbox": [
+        22,
+        445,
+        30,
+        38
+      ],
+      "geometry": "rect",
+      "text": "⊙",
+      "textPreview": "⊙",
+      "resolvedFontSize": 28,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 28,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "⊙"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "⊙",
+          "resolvedTextStyle": {
+            "fontSize": 28,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "⊙",
+              "fontSize": 28,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/g3q10fed",
+      "id": "10",
+      "name": "b-445",
+      "bbox": [
+        58,
+        443,
+        1050,
+        68
+      ],
+      "geometry": "rect",
+      "text": "Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo.",
+      "textPreview": "Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo.",
+      "resolvedFontSize": 25,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 25,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo.",
+          "resolvedTextStyle": {
+            "fontSize": 25,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Variables: tamaño del software; esfuerzo en H/H, H/D o H/M; duración; cantidad de personas; costo.",
+              "fontSize": 25,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/h4z2t0fy",
+      "id": "11",
+      "name": "dot-545",
+      "bbox": [
+        22,
+        545,
+        30,
+        38
+      ],
+      "geometry": "rect",
+      "text": "⊙",
+      "textPreview": "⊙",
+      "resolvedFontSize": 28,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 28,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "⊙"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "⊙",
+          "resolvedTextStyle": {
+            "fontSize": 28,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "⊙",
+              "fontSize": 28,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u18jy5w7",
+      "id": "12",
+      "name": "b-545",
+      "bbox": [
+        58,
+        543,
+        1050,
+        70
+      ],
+      "geometry": "rect",
+      "text": "Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores técnicos identificables.",
+      "textPreview": "Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores técnicos identificables.",
+      "resolvedFontSize": 25,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 25,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores"
+          },
+          {
+            "index": 2,
+            "text": "técnicos identificables."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores técnicos identificables.",
+          "resolvedTextStyle": {
+            "fontSize": 25,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Para “Organízate”, PCU es apropiado: existen tres roles, múltiples flujos funcionales y factores técnicos identificables.",
+              "fontSize": 25,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

@@ -1,0 +1,927 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/joeoa6",
+    "id": "joeoa6",
+    "slide": 7,
+    "layoutId": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#FFFFFF",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "23d22e31-b430-4ad0-8c4b-d7e97f28c4ad",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "238359be-5d5c-4c02-8108-1efa6dedbf55",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/upgf690n",
+      "id": "1",
+      "name": "sidebar",
+      "bbox": [
+        1152,
+        0,
+        128,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#721014",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hsrehojy",
+      "id": "2",
+      "name": "accent",
+      "bbox": [
+        1152,
+        0,
+        10,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#941319",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wrix8jid",
+      "id": "3",
+      "name": "title",
+      "bbox": [
+        20,
+        24,
+        1100,
+        72
+      ],
+      "geometry": "rect",
+      "text": "Distribución del Esfuerzo Total",
+      "textPreview": "Distribución del Esfuerzo Total",
+      "resolvedFontSize": 40,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 40,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Distribución del Esfuerzo Total"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Distribución del Esfuerzo Total",
+          "resolvedTextStyle": {
+            "fontSize": 40,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Distribución del Esfuerzo Total",
+              "fontSize": 40,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7mpwbu1w",
+      "id": "4",
+      "name": "rule",
+      "bbox": [
+        14,
+        108,
+        1115,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#151515",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mlgf2p0b",
+      "id": "5",
+      "name": "footer",
+      "bbox": [
+        160,
+        676,
+        720,
+        24
+      ],
+      "geometry": "rect",
+      "text": "Planificación y Estimación · Organízate",
+      "textPreview": "Planificación y Estimación · Organízate",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "left",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Planificación y Estimación · Organízate"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Planificación y Estimación · Organízate",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Planificación y Estimación · Organízate",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9o7ed4j2",
+      "id": "6",
+      "name": "page",
+      "bbox": [
+        930,
+        676,
+        80,
+        24
+      ],
+      "geometry": "rect",
+      "text": "7",
+      "textPreview": "7",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#151515",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "7"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "7",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#151515",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "7",
+              "fontSize": 18,
+              "color": "#151515",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8nyx4zih",
+      "id": "7",
+      "name": "side-page",
+      "bbox": [
+        1170,
+        676,
+        88,
+        24
+      ],
+      "geometry": "rect",
+      "text": "7 de 9",
+      "textPreview": "7 de 9",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 15,
+        "typeface": "+mn-lt",
+        "color": "#FFFFFF",
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "7 de 9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "7 de 9",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "color": "#FFFFFF",
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "7 de 9",
+              "fontSize": 15,
+              "color": "#FFFFFF",
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "table",
+      "scope": "slide",
+      "aid": "tb/a1cfid0b",
+      "id": "8",
+      "bbox": [
+        40,
+        160,
+        1075,
+        365
+      ],
+      "text": "Actividad | Porcentaje | Aplicación en Organízate\nAnálisis | 10 % | Requisitos, roles, reglas y criterios de aceptación\nDiseño | 20 % | Arquitectura, datos, API, seguridad, UX/UI\nImplementación | 40 % | Frontend, Laravel, PostgreSQL e integración\nPruebas | 15 % | Unitarias, DOM, endpoints, flujos y regresión\nOtras actividades | 15 % | Gestión, documentación, despliegue y coordinación",
+      "textPreview": "Actividad | Porcentaje | Aplicación en Organízate | Análisis | 10 % | Requisitos, roles, reglas y criterios de aceptación | Diseño | 20 %...",
+      "rows": 6,
+      "cols": 3,
+      "cells": [
+        {
+          "index": 1,
+          "row": 1,
+          "column": 1,
+          "bbox": [
+            40,
+            160,
+            250,
+            60.83
+          ],
+          "text": "Actividad",
+          "textPreview": "Actividad",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Actividad",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Actividad"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "row": 1,
+          "column": 2,
+          "bbox": [
+            290,
+            160,
+            170,
+            60.83
+          ],
+          "text": "Porcentaje",
+          "textPreview": "Porcentaje",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Porcentaje",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Porcentaje"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "row": 1,
+          "column": 3,
+          "bbox": [
+            460,
+            160,
+            655,
+            60.83
+          ],
+          "text": "Aplicación en Organízate",
+          "textPreview": "Aplicación en Organízate",
+          "fillColor": "#F5F5F5",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Aplicación en Organízate",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Aplicación en Organízate"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "row": 2,
+          "column": 1,
+          "bbox": [
+            40,
+            220.83,
+            250,
+            60.83
+          ],
+          "text": "Análisis",
+          "textPreview": "Análisis",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Análisis",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Análisis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "row": 2,
+          "column": 2,
+          "bbox": [
+            290,
+            220.83,
+            170,
+            60.83
+          ],
+          "text": "10 %",
+          "textPreview": "10 %",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "10 %",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "10 %"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "row": 2,
+          "column": 3,
+          "bbox": [
+            460,
+            220.83,
+            655,
+            60.83
+          ],
+          "text": "Requisitos, roles, reglas y criterios de aceptación",
+          "textPreview": "Requisitos, roles, reglas y criterios de aceptación",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Requisitos, roles, reglas y criterios de aceptación",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Requisitos, roles, reglas y criterios de aceptación"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "row": 3,
+          "column": 1,
+          "bbox": [
+            40,
+            281.67,
+            250,
+            60.83
+          ],
+          "text": "Diseño",
+          "textPreview": "Diseño",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Diseño",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Diseño"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "row": 3,
+          "column": 2,
+          "bbox": [
+            290,
+            281.67,
+            170,
+            60.83
+          ],
+          "text": "20 %",
+          "textPreview": "20 %",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "20 %",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "20 %"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "row": 3,
+          "column": 3,
+          "bbox": [
+            460,
+            281.67,
+            655,
+            60.83
+          ],
+          "text": "Arquitectura, datos, API, seguridad, UX/UI",
+          "textPreview": "Arquitectura, datos, API, seguridad, UX/UI",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Arquitectura, datos, API, seguridad, UX/UI",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Arquitectura, datos, API, seguridad, UX/UI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "row": 4,
+          "column": 1,
+          "bbox": [
+            40,
+            342.5,
+            250,
+            60.83
+          ],
+          "text": "Implementación",
+          "textPreview": "Implementación",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Implementación",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Implementación"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "row": 4,
+          "column": 2,
+          "bbox": [
+            290,
+            342.5,
+            170,
+            60.83
+          ],
+          "text": "40 %",
+          "textPreview": "40 %",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "40 %",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "40 %"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "row": 4,
+          "column": 3,
+          "bbox": [
+            460,
+            342.5,
+            655,
+            60.83
+          ],
+          "text": "Frontend, Laravel, PostgreSQL e integración",
+          "textPreview": "Frontend, Laravel, PostgreSQL e integración",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Frontend, Laravel, PostgreSQL e integración",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Frontend, Laravel, PostgreSQL e integración"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "row": 5,
+          "column": 1,
+          "bbox": [
+            40,
+            403.33,
+            250,
+            60.83
+          ],
+          "text": "Pruebas",
+          "textPreview": "Pruebas",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Pruebas",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Pruebas"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 14,
+          "row": 5,
+          "column": 2,
+          "bbox": [
+            290,
+            403.33,
+            170,
+            60.83
+          ],
+          "text": "15 %",
+          "textPreview": "15 %",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "15 %",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "15 %"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 15,
+          "row": 5,
+          "column": 3,
+          "bbox": [
+            460,
+            403.33,
+            655,
+            60.83
+          ],
+          "text": "Unitarias, DOM, endpoints, flujos y regresión",
+          "textPreview": "Unitarias, DOM, endpoints, flujos y regresión",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Unitarias, DOM, endpoints, flujos y regresión",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Unitarias, DOM, endpoints, flujos y regresión"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "row": 6,
+          "column": 1,
+          "bbox": [
+            40,
+            464.17,
+            250,
+            60.83
+          ],
+          "text": "Otras actividades",
+          "textPreview": "Otras actividades",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Otras actividades",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Otras actividades"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 17,
+          "row": 6,
+          "column": 2,
+          "bbox": [
+            290,
+            464.17,
+            170,
+            60.83
+          ],
+          "text": "15 %",
+          "textPreview": "15 %",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "15 %",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "15 %"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 18,
+          "row": 6,
+          "column": 3,
+          "bbox": [
+            460,
+            464.17,
+            655,
+            60.83
+          ],
+          "text": "Gestión, documentación, despliegue y coordinación",
+          "textPreview": "Gestión, documentación, despliegue y coordinación",
+          "paragraphs": [
+            {
+              "index": 1,
+              "text": "Gestión, documentación, despliegue y coordinación",
+              "runs": [
+                {
+                  "index": 1,
+                  "text": "Gestión, documentación, despliegue y coordinación"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/yxwvyp0f",
+      "id": "9",
+      "name": "relation",
+      "bbox": [
+        115,
+        560,
+        920,
+        62
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFF3F3",
+      "lineColor": "#C71920",
+      "lineWidth": 2
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c3ap0zil",
+      "id": "10",
+      "name": "relation-text",
+      "bbox": [
+        135,
+        570,
+        880,
+        42
+      ],
+      "geometry": "rect",
+      "text": "Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40",
+      "textPreview": "Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "anchor": 2,
+        "fontSize": 23,
+        "typeface": "+mn-lt",
+        "color": "#C71920",
+        "bold": true,
+        "alignment": "center",
+        "verticalAlignment": "middle",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40",
+          "resolvedTextStyle": {
+            "fontSize": 23,
+            "color": "#C71920",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Si implementación = 40 %, entonces esfuerzo total = esfuerzo de implementación ÷ 0.40",
+              "fontSize": 23,
+              "color": "#C71920",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

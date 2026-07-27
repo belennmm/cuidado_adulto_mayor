@@ -1,0 +1,111 @@
+{"kind":"deck","id":"pr/h67cif","name":"Deck"}
+{"kind":"layout","layoutId":"c7cb3ecf-eac0-45b3-a598-110a82061a27","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"24ac45df-b88d-47a8-abdf-b6d7d29efc5a","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/5p5fmm","slide":1,"title":"Cálculo de Costos del Software","textShapes":10}
+{"kind":"shape","id":"sh/yl8jm18z","slide":1,"name":"right-sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/lozixgra","slide":1,"name":"sidebar-accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/knq1obqp","slide":1,"name":"title","text":"Cálculo de Costos del Software","textPreview":"Cálculo de Costos del Software","textChars":30,"textLines":1,"bbox":[18,28,1100,68]}
+{"kind":"shape","id":"sh/7qh0zq9g","slide":1,"name":"title-rule-shadow","bbox":[12,111,1120,5]}
+{"kind":"shape","id":"sh/mp8jql8v","slide":1,"name":"title-rule","bbox":[12,110,1120,3]}
+{"kind":"textbox","id":"sh/9sji1grm","slide":1,"name":"course-footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,675,700,28]}
+{"kind":"textbox","id":"sh/8ra1sbq1","slide":1,"name":"page-number","text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[932,675,80,28]}
+{"kind":"textbox","id":"sh/nux0nm9c","slide":1,"name":"side-page-number","text":"1 de 6","textPreview":"1 de 6","textChars":6,"textLines":1,"bbox":[1170,675,88,28]}
+{"kind":"textbox","id":"sh/2tozehsr","slide":1,"name":"deck-subtitle","text":"Diseño e implementación de “Organízate”","textPreview":"Diseño e implementación de “Organízate”","textChars":39,"textLines":1,"bbox":[58,180,980,90]}
+{"kind":"textbox","id":"sh/sfqx47y5","slide":1,"name":"bullet-mark-300","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,300,38,42]}
+{"kind":"textbox","id":"sh/dgzyxcfq","slide":1,"name":"bullet-text-300","text":"El presupuesto debe cubrir todo el ciclo de vida, no solamente la programación.","textPreview":"El presupuesto debe cubrir todo el ciclo de vida, no solamente la programación.","textChars":79,"textLines":1,"bbox":[58,298,1040,88]}
+{"kind":"textbox","id":"sh/qd8f2xgz","slide":1,"name":"bullet-mark-420","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,420,38,42]}
+{"kind":"textbox","id":"sh/rehgv2xk","slide":1,"name":"bullet-text-420","text":"La estimación parte del alcance, las horas de trabajo, las tarifas y los riesgos.","textPreview":"La estimación parte del alcance, las horas de trabajo, las tarifas y los riesgos.","textChars":81,"textLines":1,"bbox":[58,418,1040,88]}
+{"kind":"shape","id":"sh/03ah8ry1","slide":1,"name":"opening-callout","bbox":[60,550,960,74]}
+{"kind":"textbox","id":"sh/14jy1cfm","slide":1,"name":"opening-formula","text":"Costo total = Diseño + Implementación + Pruebas + Despliegue + Contingencia","textPreview":"Costo total = Diseño + Implementación + Pruebas + Despliegue + Contingencia","textChars":75,"textLines":1,"bbox":[82,562,920,48]}
+{"kind":"notes","id":"nt/5p5fmm","slide":1,"text":"[Sources]\n- Proyecto local: README.md, docker-compose.yml, frontend/package.json y backend/composer.json.\n- Referencia visual proporcionada por el usuario."}
+{"kind":"slide","id":"sl/253k4v","slide":2,"title":"Distribución del Esfuerzo","textShapes":6}
+{"kind":"shape","id":"sh/tcrutwfq","slide":2,"name":"right-sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/69gvy1gz","slide":2,"name":"sidebar-accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/7apcr6xk","slide":2,"name":"title","text":"Distribución del Esfuerzo","textPreview":"Distribución del Esfuerzo","textChars":25,"textLines":1,"bbox":[18,28,1100,68]}
+{"kind":"shape","id":"sh/gfidoby1","slide":2,"name":"title-rule-shadow","bbox":[12,111,1120,5]}
+{"kind":"shape","id":"sh/h0rexgfm","slide":2,"name":"title-rule","bbox":[12,110,1120,3]}
+{"kind":"textbox","id":"sh/ud0v21gb","slide":2,"name":"course-footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,675,700,28]}
+{"kind":"textbox","id":"sh/ve9cv6xg","slide":2,"name":"page-number","text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[932,675,80,28]}
+{"kind":"textbox","id":"sh/wjyds7yx","slide":2,"name":"side-page-number","text":"2 de 6","textPreview":"2 de 6","textChars":6,"textLines":1,"bbox":[1170,675,88,28]}
+{"kind":"textbox","id":"sh/xk7ulczi","slide":2,"name":"bullet-mark-150","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,150,38,42]}
+{"kind":"textbox","id":"sh/l8jmdgv6","slide":2,"name":"bullet-text-150","text":"Una distribución de referencia reparte el esfuerzo total entre las principales actividades:","textPreview":"Una distribución de referencia reparte el esfuerzo total entre las principales actividades:","textChars":91,"textLines":1,"bbox":[58,148,1040,70]}
+{"kind":"table","id":"tb/z2xgzitk","slide":2,"name":"","rows":6,"cols":2,"preview":"Tipo de actividad | Porcentaje","bbox":[42,260,1070,330]}
+{"kind":"notes","id":"nt/253k4v","slide":2,"text":"[Sources]\n- Proyecto local: README.md, docker-compose.yml, frontend/package.json y backend/composer.json.\n- Referencia visual proporcionada por el usuario."}
+{"kind":"slide","id":"sl/m4n1gx","slide":3,"title":"Costos del Diseño","textShapes":7}
+{"kind":"shape","id":"sh/ri18fy1o","slide":3,"name":"right-sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/cjap8329","slide":3,"name":"sidebar-accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/dkjqhoju","slide":3,"name":"title","text":"Costos del Diseño","textPreview":"Costos del Diseño","textChars":17,"textLines":1,"bbox":[18,28,1100,68]}
+{"kind":"shape","id":"sh/2t8729k7","slide":3,"name":"title-rule-shadow","bbox":[12,111,1120,5]}
+{"kind":"shape","id":"sh/3u1obe1s","slide":3,"name":"title-rule","bbox":[12,110,1120,3]}
+{"kind":"textbox","id":"sh/4vap4j2d","slide":3,"name":"course-footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,675,700,28]}
+{"kind":"textbox","id":"sh/pwjqdojy","slide":3,"name":"page-number","text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[932,675,80,28]}
+{"kind":"textbox","id":"sh/mpc7ed0r","slide":3,"name":"side-page-number","text":"3 de 6","textPreview":"3 de 6","textChars":6,"textLines":1,"bbox":[1170,675,88,28]}
+{"kind":"textbox","id":"sh/nql8ni1w","slide":3,"name":"bullet-mark-145","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,145,38,42]}
+{"kind":"textbox","id":"sh/raxszuto","slide":3,"name":"bullet-text-145","text":"El diseño transforma los requisitos en una solución técnica y visual antes de programar.","textPreview":"El diseño transforma los requisitos en una solución técnica y visual antes de programar.","textChars":88,"textLines":1,"bbox":[58,143,1040,70]}
+{"kind":"textbox","id":"sh/tcfa14bu","slide":3,"name":"design-formula","text":"Costo de diseño = Σ (horas por actividad × tarifa del perfil)","textPreview":"Costo de diseño = Σ (horas por actividad × tarifa del perfil)","textChars":61,"textLines":1,"bbox":[190,610,770,42]}
+{"kind":"table","id":"tb/lcbm1gv2","slide":3,"name":"","rows":6,"cols":2,"preview":"Actividad | Entregable que se estima","bbox":[42,255,1070,340]}
+{"kind":"notes","id":"nt/m4n1gx","slide":3,"text":"[Sources]\n- Proyecto local: README.md, docker-compose.yml, frontend/package.json y backend/composer.json.\n- Referencia visual proporcionada por el usuario."}
+{"kind":"slide","id":"sl/airq8b","slide":4,"title":"Costos de Implementación","textShapes":18}
+{"kind":"shape","id":"sh/tw32honq","slide":4,"name":"right-sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/6tsjmt4z","slide":4,"name":"sidebar-accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/7u1kfy5k","slide":4,"name":"title","text":"Costos de Implementación","textPreview":"Costos de Implementación","textChars":24,"textLines":1,"bbox":[18,28,1100,68]}
+{"kind":"shape","id":"sh/gzu1s3m1","slide":4,"name":"title-rule-shadow","bbox":[12,111,1120,5]}
+{"kind":"shape","id":"sh/h032l83m","slide":4,"name":"title-rule","bbox":[12,110,1120,3]}
+{"kind":"textbox","id":"sh/uxcjqt4b","slide":4,"name":"course-footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,675,700,28]}
+{"kind":"textbox","id":"sh/vylkjy5g","slide":4,"name":"page-number","text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[932,675,80,28]}
+{"kind":"textbox","id":"sh/4nulw3md","slide":4,"name":"side-page-number","text":"4 de 6","textPreview":"4 de 6","textChars":6,"textLines":1,"bbox":[1170,675,88,28]}
+{"kind":"textbox","id":"sh/5on2p83y","slide":4,"name":"bullet-mark-145","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,145,38,42]}
+{"kind":"textbox","id":"sh/58765ora","slide":4,"name":"bullet-text-145","text":"La implementación concentra el mayor esfuerzo porque convierte el diseño en funciones operativas.","textPreview":"La implementación concentra el mayor esfuerzo porque convierte el diseño en funciones operativas.","textChars":97,"textLines":1,"bbox":[58,143,1040,74]}
+{"kind":"textbox","id":"sh/47ypwjap","slide":4,"name":"impl-head-Frontend","text":"Frontend","textPreview":"Frontend","textChars":8,"textLines":1,"bbox":[58,250,235,48]}
+{"kind":"textbox","id":"sh/j6po3e94","slide":4,"name":"impl-body-Frontend","text":"HTML, CSS, JavaScript, interfaces y consumo de la API","textPreview":"HTML, CSS, JavaScript, interfaces y consumo de la API","textChars":53,"textLines":1,"bbox":[300,250,790,48]}
+{"kind":"shape","id":"sh/i5w7utsz","slide":4,"name":"impl-rule-Frontend","bbox":[58,298,1030,1]}
+{"kind":"textbox","id":"sh/tc7698rm","slide":4,"name":"impl-head-Backend","text":"Backend","textPreview":"Backend","textChars":7,"textLines":1,"bbox":[58,309,235,48]}
+{"kind":"textbox","id":"sh/sbyp03a1","slide":4,"name":"impl-body-Backend","text":"PHP/Laravel, reglas de negocio, modelos y controladores","textPreview":"PHP/Laravel, reglas de negocio, modelos y controladores","textChars":55,"textLines":1,"bbox":[300,309,790,48]}
+{"kind":"shape","id":"sh/rapo7y9g","slide":4,"name":"impl-rule-Backend","bbox":[58,357,1030,1]}
+{"kind":"textbox","id":"sh/69g7ytsv","slide":4,"name":"impl-head-Datos","text":"Datos","textPreview":"Datos","textChars":5,"textLines":1,"bbox":[58,368,235,48]}
+{"kind":"textbox","id":"sh/9gn6x4r2","slide":4,"name":"impl-body-Datos","text":"PostgreSQL, migraciones, consultas, integridad y respaldos","textPreview":"PostgreSQL, migraciones, consultas, integridad y respaldos","textChars":58,"textLines":1,"bbox":[300,368,790,48]}
+{"kind":"shape","id":"sh/8fe5ozah","slide":4,"name":"impl-rule-Datos","bbox":[58,416,1030,1]}
+{"kind":"textbox","id":"sh/kbix03mp","slide":4,"name":"impl-head-Integración","text":"Integración","textPreview":"Integración","textChars":11,"textLines":1,"bbox":[58,427,235,48]}
+{"kind":"textbox","id":"sh/lwryt83a","slide":4,"name":"impl-body-Integración","text":"Autenticación, Laravel Sanctum y permisos por roles","textPreview":"Autenticación, Laravel Sanctum y permisos por roles","textChars":51,"textLines":1,"bbox":[300,427,790,48]}
+{"kind":"shape","id":"sh/y90fyt4j","slide":4,"name":"impl-rule-Integración","bbox":[58,475,1030,1]}
+{"kind":"textbox","id":"sh/za9gryl4","slide":4,"name":"impl-head-Infraestructura","text":"Infraestructura","textPreview":"Infraestructura","textChars":15,"textLines":1,"bbox":[58,486,235,48]}
+{"kind":"textbox","id":"sh/8z2x4nm1","slide":4,"name":"impl-body-Infraestructura","text":"Docker, Docker Compose, servidor y configuración","textPreview":"Docker, Docker Compose, servidor y configuración","textChars":48,"textLines":1,"bbox":[300,486,790,48]}
+{"kind":"shape","id":"sh/90byx836","slide":4,"name":"impl-rule-Infraestructura","bbox":[58,534,1030,1]}
+{"kind":"textbox","id":"sh/mxkf2d4v","slide":4,"name":"impl-head-Calidad","text":"Calidad","textPreview":"Calidad","textChars":7,"textLines":1,"bbox":[58,545,235,48]}
+{"kind":"textbox","id":"sh/7ytgvilg","slide":4,"name":"impl-body-Calidad","text":"Pruebas, corrección de errores, revisión y retrabajo","textPreview":"Pruebas, corrección de errores, revisión y retrabajo","textChars":52,"textLines":1,"bbox":[300,545,790,48]}
+{"kind":"shape","id":"sh/w32x8nmx","slide":4,"name":"impl-rule-Calidad","bbox":[58,593,1030,1]}
+{"kind":"notes","id":"nt/airq8b","slide":4,"text":"[Sources]\n- Proyecto local: README.md, docker-compose.yml, frontend/package.json y backend/composer.json.\n- Referencia visual proporcionada por el usuario."}
+{"kind":"slide","id":"sl/jnx42l","slide":5,"title":"Costos Relacionados y Riesgos","textShapes":7}
+{"kind":"shape","id":"sh/83at4r2t","slide":5,"name":"right-sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/721sv618","slide":5,"name":"sidebar-accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/61sb21kn","slide":5,"name":"title","text":"Costos Relacionados y Riesgos","textPreview":"Costos Relacionados y Riesgos","textChars":29,"textLines":1,"bbox":[18,28,1100,68]}
+{"kind":"shape","id":"sh/lgjatwji","slide":5,"name":"title-rule-shadow","bbox":[12,111,1120,5]}
+{"kind":"shape","id":"sh/kfat0r2x","slide":5,"name":"title-rule","bbox":[12,110,1120,3]}
+{"kind":"textbox","id":"sh/jehsrm1c","slide":5,"name":"course-footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,675,700,28]}
+{"kind":"textbox","id":"sh/yd8byhkr","slide":5,"name":"page-number","text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[932,675,80,28]}
+{"kind":"textbox","id":"sh/xczapcj6","slide":5,"name":"side-page-number","text":"5 de 6","textPreview":"5 de 6","textChars":6,"textLines":1,"bbox":[1170,675,88,28]}
+{"kind":"textbox","id":"sh/wbqtw72l","slide":5,"name":"bullet-mark-145","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,145,38,42]}
+{"kind":"textbox","id":"sh/ix0jypcn","slide":5,"name":"bullet-text-145","text":"El presupuesto final incorpora recursos que suelen quedar fuera de la estimación inicial.","textPreview":"El presupuesto final incorpora recursos que suelen quedar fuera de la estimación inicial.","textChars":89,"textLines":1,"bbox":[58,143,1040,70]}
+{"kind":"textbox","id":"sh/4zi10zud","slide":5,"name":"risk-formula","text":"Contingencia = (costos directos + indirectos) × porcentaje de riesgo","textPreview":"Contingencia = (costos directos + indirectos) × porcentaje de riesgo","textChars":68,"textLines":1,"bbox":[150,610,850,42]}
+{"kind":"table","id":"tb/s7yh0bu9","slide":5,"name":"","rows":6,"cols":2,"preview":"Grupo | Conceptos incluidos","bbox":[42,252,1070,342]}
+{"kind":"notes","id":"nt/jnx42l","slide":5,"text":"[Sources]\n- Proyecto local: README.md, docker-compose.yml, frontend/package.json y backend/composer.json.\n- Referencia visual proporcionada por el usuario."}
+{"kind":"slide","id":"sl/1jdk12","slide":6,"title":"Presupuesto Final","textShapes":13}
+{"kind":"shape","id":"sh/hgjits3m","slide":6,"name":"right-sidebar","bbox":[1152,0,128,720]}
+{"kind":"shape","id":"sh/udszid4b","slide":6,"name":"sidebar-accent","bbox":[1152,0,10,720]}
+{"kind":"textbox","id":"sh/ve10rilg","slide":6,"name":"title","text":"Presupuesto Final","textPreview":"Presupuesto Final","textChars":17,"textLines":1,"bbox":[18,28,1100,68]}
+{"kind":"shape","id":"sh/8bqhw3m5","slide":6,"name":"title-rule-shadow","bbox":[12,111,1120,5]}
+{"kind":"shape","id":"sh/9cjip83q","slide":6,"name":"title-rule","bbox":[12,110,1120,3]}
+{"kind":"textbox","id":"sh/m98zud4z","slide":6,"name":"course-footer","text":"Planificación y Estimación · Organízate","textPreview":"Planificación y Estimación · Organízate","textChars":39,"textLines":1,"bbox":[160,675,700,28]}
+{"kind":"textbox","id":"sh/7ah0nylk","slide":6,"name":"page-number","text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[932,675,80,28]}
+{"kind":"textbox","id":"sh/knqhs3mt","slide":6,"name":"side-page-number","text":"6 de 6","textPreview":"6 de 6","textChars":6,"textLines":1,"bbox":[1170,675,88,28]}
+{"kind":"textbox","id":"sh/lozil83e","slide":6,"name":"bullet-mark-145","text":"⊙","textPreview":"⊙","textChars":1,"textLines":1,"bbox":[18,145,38,42]}
+{"kind":"textbox","id":"sh/dsfm5krm","slide":6,"name":"bullet-text-145","text":"La estimación se valida descomponiendo el trabajo, asignando horas y revisando los riesgos.","textPreview":"La estimación se valida descomponiendo el trabajo, asignando horas y revisando los riesgos.","textChars":91,"textLines":1,"bbox":[58,143,1040,70]}
+{"kind":"textbox","id":"sh/cr6lcfq1","slide":6,"name":"step-242","text":"1. Definir alcance, entregables y exclusiones.","textPreview":"1. Definir alcance, entregables y exclusiones.","textChars":46,"textLines":1,"bbox":[78,242,1000,50]}
+{"kind":"textbox","id":"sh/rqx43a9g","slide":6,"name":"step-298","text":"2. Crear la estructura de desglose del trabajo (EDT/WBS).","textPreview":"2. Crear la estructura de desglose del trabajo (EDT/WBS).","textChars":57,"textLines":1,"bbox":[78,298,1000,50]}
+{"kind":"textbox","id":"sh/qpo3a58v","slide":6,"name":"step-354","text":"3. Estimar horas, tarifas, responsables y dependencias.","textPreview":"3. Estimar horas, tarifas, responsables y dependencias.","textChars":55,"textLines":1,"bbox":[78,354,1000,50]}
+{"kind":"textbox","id":"sh/povm10rq","slide":6,"name":"step-410","text":"4. Agregar infraestructura, pruebas, documentación y capacitación.","textPreview":"4. Agregar infraestructura, pruebas, documentación y capacitación.","textChars":66,"textLines":1,"bbox":[78,410,1000,50]}
+{"kind":"textbox","id":"sh/4nml8vq5","slide":6,"name":"step-466","text":"5. Incorporar costos indirectos, contingencia e impuestos.","textPreview":"5. Incorporar costos indirectos, contingencia e impuestos.","textChars":58,"textLines":1,"bbox":[78,466,1000,50]}
+{"kind":"textbox","id":"sh/3md4za9k","slide":6,"name":"step-522","text":"6. Actualizar el presupuesto con el avance y los cambios reales.","textPreview":"6. Actualizar el presupuesto con el avance y los cambios reales.","textChars":64,"textLines":1,"bbox":[78,522,1000,50]}
+{"kind":"shape","id":"sh/2l43658z","slide":6,"name":"final-callout","bbox":[78,585,980,66]}
+{"kind":"textbox","id":"sh/hkvmx0re","slide":6,"name":"final-formula","text":"TCO = Presupuesto inicial + Operación + Soporte + Mantenimiento","textPreview":"TCO = Presupuesto inicial + Operación + Soporte + Mantenimiento","textChars":63,"textLines":1,"bbox":[95,594,946,46]}
+{"kind":"notes","id":"nt/1jdk12","slide":6,"text":"[Sources]\n- Proyecto local: README.md, docker-compose.yml, frontend/package.json y backend/composer.json.\n- Referencia visual proporcionada por el usuario."}

@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -50,5 +48,10 @@ class User extends Authenticatable
     public function rutinas(): HasMany
     {
         return $this->hasMany(Rutina::class, 'created_by')->orderByDesc('created_at');
+    }
+
+    public function mobilityExercises(): HasMany
+    {
+        return $this->hasMany(MobilityExercise::class, 'created_by')->orderBy('sort_order');
     }
 }

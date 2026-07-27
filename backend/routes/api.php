@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
@@ -9,6 +8,7 @@ use App\Http\Controllers\FamilyCareController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\MedicationAdministrationController;
 use App\Http\Controllers\MedicationInventoryController;
+use App\Http\Controllers\MobilityExerciseController;
 use App\Http\Controllers\OlderAdultController;
 use App\Http\Controllers\ProfessionalCareController;
 use App\Http\Controllers\ProfessionalIncidentController;
@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfessionalRoutineNoteController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\RutinaController;
 use App\Http\Controllers\VacationRequestController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', function () {
     return response()->json(['ok' => true]);
@@ -43,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/rutinas/{rutina}/completar', [RutinaController::class, 'complete']);
     Route::put('/rutinas/{rutina}', [RutinaController::class, 'update']);
     Route::delete('/rutinas/{rutina}', [RutinaController::class, 'destroy']);
+    Route::get('/mobility-exercises', [MobilityExerciseController::class, 'index']);
+    Route::get('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'show']);
 
     Route::prefix('family')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
@@ -103,4 +106,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);
     Route::put('/older-adults/{olderAdult}', [OlderAdultController::class, 'update']);
     Route::delete('/older-adults/{olderAdult}', [OlderAdultController::class, 'destroy']);
+    Route::get('/mobility-exercises', [MobilityExerciseController::class, 'index']);
+    Route::post('/mobility-exercises', [MobilityExerciseController::class, 'store']);
+    Route::get('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'show']);
+    Route::put('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'update']);
+    Route::delete('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'destroy']);
 });
