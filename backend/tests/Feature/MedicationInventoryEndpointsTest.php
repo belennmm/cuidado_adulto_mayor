@@ -240,6 +240,13 @@ class MedicationInventoryEndpointsTest extends TestCase
                     'is_active',
                 ],
             ]);
+
+        $this->assertDatabaseCount('medications', 0);
+        $this->assertDatabaseMissing('medications', [
+            'presentation' => $payload['presentation'],
+            'quantity' => $payload['quantity'],
+            'minimum_stock' => $payload['minimum_stock'],
+        ]);
     }
 
     public function test_admin_can_update_existing_medication(): void
