@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Medication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -218,7 +217,29 @@ class MedicationInventoryEndpointsTest extends TestCase
 
         $response = $this->postJson('/api/admin/medications/inventory', $payload);
 
-        $this->assertInstanceOf(TestResponse::class, $response);
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'name',
+                'presentation',
+                'quantity',
+                'unit',
+                'minimum_stock',
+                'expiration_date',
+                'is_active',
+            ])
+            ->assertJsonStructure([
+                'message',
+                'errors' => [
+                    'name',
+                    'presentation',
+                    'quantity',
+                    'unit',
+                    'minimum_stock',
+                    'expiration_date',
+                    'is_active',
+                ],
+            ]);
     }
 
     public function test_admin_can_update_existing_medication(): void
