@@ -78,3 +78,99 @@
 .mobility-exercises:empty {
   min-height: 1px;
 }
+
+.mobility-exercises {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.mobility-card {
+  padding: 16px;
+  border: 1px solid #e6edf7;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.mobility-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobility-card h3 {
+  margin: 0;
+  color: #0a112f;
+  font-size: 18px;
+}
+
+.mobility-focus {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eef5ff;
+  color: #1d73f3;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mobility-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.mobility-details div {
+  padding: 10px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.mobility-details dt {
+  color: #70707a;
+  font-size: 12px;
+}
+
+.mobility-details dd {
+  margin: 3px 0 0;
+  color: #0a112f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mobility-instructions-title {
+  margin: 0 0 8px;
+  color: #0a112f;
+  font-size: 14px;
+}
+
+.mobility-instructions {
+  margin: 0;
+  padding-left: 20px;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.mobility-instructions li + li {
+  margin-top: 4px;
+}
+
+.mobility-precaution,
+.mobility-load-error {
+  display: flex;
+  gap: 7px;
+  margin: 16px 0 0;
+  color: #7a5511;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.mobility-precaution i {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  font-size: 17px;
+}
