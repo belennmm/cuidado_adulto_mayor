@@ -193,6 +193,17 @@ class MedicationInventoryEndpointsTest extends TestCase
             ->assertJsonPath('medication.assigned_patients', 0)
             ->assertJsonPath('medication.active_assignments', 0)
             ->assertJsonPath('medication.administrations_count', 0);
+
+        $this->assertDatabaseCount('medications', 1);
+        $this->assertDatabaseHas('medications', [
+            'name' => $payload['name'],
+            'presentation' => $payload['presentation'],
+            'quantity' => $payload['quantity'],
+            'unit' => $payload['unit'],
+            'minimum_stock' => $payload['minimum_stock'],
+            'expiration_date' => $payload['expiration_date'].' 00:00:00',
+            'is_active' => $payload['is_active'],
+        ]);
     }
 
     public function test_admin_can_update_existing_medication(): void
