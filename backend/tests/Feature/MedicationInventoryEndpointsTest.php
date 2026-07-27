@@ -153,6 +153,48 @@ class MedicationInventoryEndpointsTest extends TestCase
         $this->assertDatabaseCount('medications', 0);
     }
 
+    public function test_admin_can_create_medication(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'admin',
+            'is_approved' => true,
+        ]));
+
+        $payload = $this->validMedicationPayload();
+
+        $this->postJson('/api/admin/medications/inventory', $payload)
+            ->assertCreated()
+            ->assertJsonStructure([
+                'message',
+                'medication' => [
+                    'id',
+                    'name',
+                    'presentation',
+                    'quantity',
+                    'unit',
+                    'minimum_stock',
+                    'expiration_date',
+                    'is_active',
+                    'status',
+                    'status_label',
+                    'assigned_patients',
+                    'active_assignments',
+                    'administrations_count',
+                ],
+            ])
+            ->assertJsonPath('message', 'Medicamento agregado correctamente.')
+            ->assertJsonPath('medication.name', $payload['name'])
+            ->assertJsonPath('medication.presentation', $payload['presentation'])
+            ->assertJsonPath('medication.quantity', $payload['quantity'])
+            ->assertJsonPath('medication.unit', $payload['unit'])
+            ->assertJsonPath('medication.minimum_stock', $payload['minimum_stock'])
+            ->assertJsonPath('medication.expiration_date', $payload['expiration_date'])
+            ->assertJsonPath('medication.is_active', $payload['is_active'])
+            ->assertJsonPath('medication.assigned_patients', 0)
+            ->assertJsonPath('medication.active_assignments', 0)
+            ->assertJsonPath('medication.administrations_count', 0);
+    }
+
     public function test_admin_can_update_existing_medication(): void
     {
         Sanctum::actingAs(User::factory()->create([
