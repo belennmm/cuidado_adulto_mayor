@@ -44,5 +44,7 @@ class RoutineNoteValidationTest extends TestCase
             'id' => $olderAdult->id,
             'professional_caregiver_id' => $professional->id,
         ]);
+
+        $this->assertDatabaseCount('routine_notes', 0);
     }
 }
