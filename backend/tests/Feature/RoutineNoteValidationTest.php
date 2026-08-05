@@ -46,5 +46,7 @@ class RoutineNoteValidationTest extends TestCase
         ]);
 
         $this->assertDatabaseCount('routine_notes', 0);
+
+        $response = $this->postJson('/api/professional/routine-notes', []);
     }
 }
