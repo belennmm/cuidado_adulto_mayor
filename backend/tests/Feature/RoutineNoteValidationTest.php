@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -20,6 +21,14 @@ class RoutineNoteValidationTest extends TestCase
 
         Sanctum::actingAs($professional);
 
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Adulto Prueba Nota',
+            'room' => 'TEST-02',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
         $this->assertDatabaseHas('users', [
             'id' => $professional->id,
             'role' => 'profesional',
@@ -30,5 +39,10 @@ class RoutineNoteValidationTest extends TestCase
             ->assertOk()
             ->assertJsonPath('user.id', $professional->id)
             ->assertJsonPath('user.role', 'profesional');
+
+        $this->assertDatabaseHas('older_adults', [
+            'id' => $olderAdult->id,
+            'professional_caregiver_id' => $professional->id,
+        ]);
     }
 }
