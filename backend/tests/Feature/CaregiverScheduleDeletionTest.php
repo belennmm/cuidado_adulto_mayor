@@ -40,6 +40,14 @@ class CaregiverScheduleDeletionTest extends TestCase
 
         Sanctum::actingAs($admin);
 
-        $response = $this->deleteJson("/api/admin/schedules/{$schedule->id}");
+        $this->deleteJson("/api/admin/schedules/{$schedule->id}")
+            ->assertOk()
+            ->assertExactJson([
+                'message' => 'Turno eliminado correctamente.',
+            ]);
+
+        $this->assertDatabaseMissing('caregiver_schedules', [
+            'id' => $schedule->id,
+        ]);
     }
 }
