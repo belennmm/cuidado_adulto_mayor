@@ -34,6 +34,8 @@ class CaregiverScheduleInvalidFormatTest extends TestCase
         $this->postJson('/api/schedules', $payload)
             ->assertStatus(422)
             ->assertJsonValidationErrors('start_time');
+
+        $this->assertDatabaseCount('caregiver_schedules', 0);
     }
 
     public static function invalidStartTimes(): array
