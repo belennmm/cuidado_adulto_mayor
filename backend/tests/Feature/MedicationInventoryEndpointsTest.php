@@ -114,6 +114,38 @@ class MedicationInventoryEndpointsTest extends TestCase
             ->assertUnauthorized();
     }
 
+    public function test_guest_cannot_manage_medication_inventory(): void
+    {
+        $medication = Medication::create([
+            'name' => 'Losartan',
+            'presentation' => 'Tableta 50mg',
+            'quantity' => 24,
+            'unit' => 'tabletas',
+            'minimum_stock' => 5,
+            'expiration_date' => '2030-12-31',
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertUnauthorized();
+
+        $this->postJson('/api/admin/medications/inventory', $this->validMedicationPayload())
+            ->assertUnauthorized();
+
+        $this->putJson("/api/admin/medications/inventory/{$medication->id}", [
+            ...$this->validMedicationPayload(),
+            'name' => 'Losartan actualizado',
+        ])->assertUnauthorized();
+
+        $this->deleteJson("/api/admin/medications/inventory/{$medication->id}")
+            ->assertUnauthorized();
+
+        $this->assertDatabaseHas('medications', [
+            'id' => $medication->id,
+            'name' => 'Losartan',
+        ]);
+    }
+
     public function test_non_admin_cannot_list_medication_inventory(): void
     {
         Sanctum::actingAs(User::factory()->create([
@@ -124,6 +156,52 @@ class MedicationInventoryEndpointsTest extends TestCase
         $this->getJson('/api/admin/medications/inventory')
             ->assertForbidden()
             ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
+    }
+
+    public function test_non_admin_cannot_manage_medication_inventory(): void
+    {
+        Sanctum::actingAs(User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]));
+
+        $medication = Medication::create([
+            'name' => 'Losartan',
+            'presentation' => 'Tableta 50mg',
+            'quantity' => 24,
+            'unit' => 'tabletas',
+            'minimum_stock' => 5,
+            'expiration_date' => '2030-12-31',
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
+
+        $this->postJson('/api/admin/medications/inventory', $this->validMedicationPayload())
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
+
+        $this->putJson("/api/admin/medications/inventory/{$medication->id}", [
+            ...$this->validMedicationPayload(),
+            'name' => 'Losartan actualizado',
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
+
+        $this->deleteJson("/api/admin/medications/inventory/{$medication->id}")
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Solo un administrador puede realizar esta accion.');
+
+        $this->assertDatabaseHas('medications', [
+            'id' => $medication->id,
+            'name' => 'Losartan',
+        ]);
+
+        $this->assertDatabaseMissing('medications', [
+            'name' => 'Metformina',
+        ]);
     }
 
     public function test_admin_can_prepare_valid_medication_payload(): void
