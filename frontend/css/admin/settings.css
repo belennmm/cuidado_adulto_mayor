@@ -40,7 +40,7 @@
   padding: 0 14px;
   border-radius: 10px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
 }
 
 .settings-summary-grid {
@@ -175,7 +175,7 @@
 }
 
 .settings-toggle input:checked + .toggle-ui {
-  background: #1d73f3;
+  background: var(--color-primary);
 }
 
 .settings-toggle input:checked + .toggle-ui::after {
@@ -234,7 +234,7 @@
   justify-content: center;
   border-radius: 8px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 20px;
 }
 

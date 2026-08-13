@@ -53,7 +53,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1678f3;
+  color: var(--color-primary-strong);
   font-size: 24px;
   transition: 0.2s ease;
 }

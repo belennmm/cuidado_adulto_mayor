@@ -59,7 +59,7 @@
   padding: 0 12px;
   border-radius: 999px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 13px;
   font-weight: 600;
 }
@@ -99,7 +99,7 @@
   align-items: center;
   justify-content: center;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 21px;
 }
 
@@ -133,7 +133,7 @@
   padding: 0 9px;
   border-radius: 999px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -177,7 +177,7 @@
 
 .calendar-nav-button,
 .calendar-today-button {
-  background-color: #1d73f3;
+  background-color: var(--color-primary);
   color: #ffffff;
 }
 
@@ -208,7 +208,7 @@
 }
 
 .calendar-view-button.active {
-  background-color: #50b2df;
+  background-color: var(--color-secondary);
   color: #ffffff;
   box-shadow: 0 10px 18px rgba(80, 178, 223, 0.2);
 }
@@ -251,7 +251,7 @@
 
 .calendar-empty-state i {
   font-size: 30px;
-  color: #50b2df;
+  color: var(--color-secondary);
 }
 
 .calendar-loading-state,
@@ -285,7 +285,7 @@
   height: 42px;
   border-radius: 50%;
   border: 4px solid rgba(80, 178, 223, 0.22);
-  border-top-color: #50b2df;
+  border-top-color: var(--color-secondary);
   animation: shifts-calendar-spin 0.8s linear infinite;
 }
 
@@ -325,7 +325,7 @@
 }
 
 .month-day-cell.is-today {
-  border-color: #50b2df;
+  border-color: var(--color-secondary);
   box-shadow: 0 0 0 2px rgba(80, 178, 223, 0.12);
 }
 
@@ -391,7 +391,7 @@
 }
 
 .week-day-column.is-today {
-  border-color: #50b2df;
+  border-color: var(--color-secondary);
   box-shadow: 0 0 0 2px rgba(80, 178, 223, 0.12);
 }
 
@@ -490,7 +490,7 @@
 
 .status-assigned {
   background-color: #e7f3ff;
-  color: #1d73f3;
+  color: var(--color-primary);
 }
 
 .status-pending {
@@ -559,7 +559,7 @@
   border: none;
   border-radius: 12px;
   background-color: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -75,7 +75,7 @@
 
 .form-field select:focus,
 .form-field input:focus {
-  border-color: #1d73f3;
+  border-color: var(--color-primary);
 }
 
 .delete-shift-button {

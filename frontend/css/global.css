@@ -307,6 +307,15 @@ textarea {
 }
 
 :root {
+  /* Identidad visual: Jardín de los Abuelitos */
+  --color-brand-sage: #64a6f9;
+  --color-brand-sage-dark: #1678f3;
+  --color-brand-cream: #ebf3ff;
+  --color-brand-sky: #50b2df;
+  --color-brand-coral: #3091ff;
+  --color-brand-ivory: #ffffff;
+  --color-brand-navy: #0a112f;
+
   --font-family-base: "Outfit", sans-serif;
   --font-outfit: Outfit;
   --font-preahvihear: Preahvihear;
@@ -327,7 +336,7 @@ textarea {
   --color-danger: #d91f3d;
   --color-danger-soft: #f31665;
 
-  --color-text-strong: #0a112f;
+  --color-text-strong: var(--color-brand-navy);
   --color-text-base: #15191e;
   --color-text-muted: #70707a;
   --color-text-subtle: #9096a2;
@@ -408,10 +417,10 @@ textarea {
   --Greyscale-Grey-200: #e4e4e7;
   --Greyscale-Grey-400: #9096a2;
   --Greyscale-Grey-500: #70707a;
-  --Main-Color-Black: #0a112f;
+  --Main-Color-Black: var(--color-brand-navy);
   --Main-Color-White: #fff;
   --Others-White: #fff;
-  --Shades-of-Blue-Blue-96: #ebf3ff;
+  --Shades-of-Blue-Blue-96: var(--color-brand-cream);
 
   --gap-2: 2px;
   --gap-4: 4px;

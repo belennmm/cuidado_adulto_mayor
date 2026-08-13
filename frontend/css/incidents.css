@@ -45,7 +45,7 @@
 
 .incidents-date-input:focus {
     outline: none;
-    border-color: #1678f3;
+    border-color: var(--color-primary-strong);
     box-shadow: 0 0 0 3px rgba(22, 120, 243, 0.15);
 }
 
@@ -53,7 +53,7 @@
     min-width: 130px;
     height: 42px;
     border-radius: var(--radius-sm);
-    background-color: #1678f3;
+    background-color: var(--color-primary-strong);
     color: var(--color-text-inverse);
     display: inline-flex;
     align-items: center;
@@ -132,7 +132,7 @@
 
 .incident-status {
     background-color: #eef5ff;
-    color: #1678f3;
+    color: var(--color-primary-strong);
 }
 
 .incident-description,
@@ -258,7 +258,7 @@
 .incident-form-field select:focus,
 .incident-form-field textarea:focus {
     outline: none;
-    border-color: #1678f3;
+    border-color: var(--color-primary-strong);
     box-shadow: 0 0 0 3px rgba(22, 120, 243, 0.15);
 }
 
@@ -303,7 +303,7 @@
     justify-content: center;
     gap: 7px;
     border: 0;
-    background: #1678f3;
+    background: var(--color-primary-strong);
     color: #ffffff;
 }
 

@@ -12,7 +12,7 @@
 
 .mobility-eyebrow {
   margin: 0 0 4px;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -43,7 +43,7 @@
   padding: 0 14px;
   border-radius: 999px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -73,7 +73,7 @@
   height: 42px;
   border-radius: 10px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 24px;
 }
 
@@ -118,7 +118,7 @@
   padding: 5px 9px;
   border-radius: 999px;
   background: #eef5ff;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;

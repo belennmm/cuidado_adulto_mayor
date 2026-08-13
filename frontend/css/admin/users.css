@@ -148,7 +148,7 @@
   height: 40px;
   border: none;
   border-radius: var(--radius-md);
-  background-color: #1d73f3;
+  background-color: var(--color-primary);
   color: var(--color-text-inverse);
   font-family: var(--font-family-base);
   font-size: 16px;

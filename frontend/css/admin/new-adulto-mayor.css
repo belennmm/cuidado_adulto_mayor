@@ -43,7 +43,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-size: 20px;
   font-weight: 500;
 }
@@ -83,7 +83,7 @@
   margin: 0;
   font-size: 18px;
   font-weight: 500;
-  color: #1d73f3;
+  color: var(--color-primary);
 }
 
 .remove-medicine-button {

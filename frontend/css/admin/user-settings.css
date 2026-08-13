@@ -54,7 +54,7 @@
 .profile-summary-text p {
   margin: 0 0 6px;
   font-size: 16px;
-  color: #1d73f3;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
@@ -73,7 +73,7 @@
   margin: 0 0 22px;
   font-size: 24px;
   font-weight: 500;
-  color: #1d73f3;
+  color: var(--color-primary);
 }
 
 .form-grid {
