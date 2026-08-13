@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reminders', [ReminderController::class, 'index']);
         Route::get('/routine-notes', [ProfessionalRoutineNoteController::class, 'index']);
         Route::post('/routine-notes', [ProfessionalRoutineNoteController::class, 'store']);
+        Route::get('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'show']);
         Route::put('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'update']);
         Route::delete('/routine-notes/{routineNote}', [ProfessionalRoutineNoteController::class, 'destroy']);
         Route::get('/schedules', [ProfessionalCareController::class, 'schedules']);

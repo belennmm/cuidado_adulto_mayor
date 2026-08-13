@@ -26,6 +26,7 @@ class ProfessionalRoutineNoteController extends Controller
         $notes = RoutineNote::query()
             ->with('professionalCaregiver:id,name')
             ->where('older_adult_id', $olderAdult->id)
+            ->where('professional_caregiver_id', $user->id)
             ->whereBetween('note_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
             ->orderByDesc('note_date')
             ->orderByDesc('updated_at')
@@ -81,9 +82,22 @@ class ProfessionalRoutineNoteController extends Controller
         ], 201);
     }
 
+    public function show(Request $request, RoutineNote $routineNote): JsonResponse
+    {
+        $user = $this->ensureProfessionalUser($request);
+        $this->ownedNoteOrFail($user, $routineNote);
+
+        $routineNote->load('professionalCaregiver:id,name');
+
+        return response()->json([
+            'note' => $this->formatNote($routineNote),
+        ]);
+    }
+
     public function update(Request $request, RoutineNote $routineNote): JsonResponse
     {
         $user = $this->ensureProfessionalUser($request);
+        $this->ownedNoteOrFail($user, $routineNote);
 
         $data = $request->validate([
             'content' => 'required|string',
@@ -95,8 +109,6 @@ class ProfessionalRoutineNoteController extends Controller
                 'message' => 'La nota no puede estar vacia.',
             ], 422);
         }
-
-        $this->assignedOlderAdultOrFail($user, $routineNote->older_adult_id);
 
         $routineNote->update([
             'content' => $content,
@@ -113,7 +125,7 @@ class ProfessionalRoutineNoteController extends Controller
     public function destroy(Request $request, RoutineNote $routineNote): JsonResponse
     {
         $user = $this->ensureProfessionalUser($request);
-        $this->assignedOlderAdultOrFail($user, $routineNote->older_adult_id);
+        $this->ownedNoteOrFail($user, $routineNote);
 
         $routineNote->delete();
 
@@ -149,6 +161,19 @@ class ProfessionalRoutineNoteController extends Controller
 
         abort(response()->json([
             'message' => 'No tienes acceso a la informacion de este adulto mayor.',
+        ], 403));
+    }
+
+    private function ownedNoteOrFail(User $user, RoutineNote $routineNote): void
+    {
+        if ((int) $routineNote->professional_caregiver_id === (int) $user->id) {
+            $this->assignedOlderAdultOrFail($user, $routineNote->older_adult_id);
+
+            return;
+        }
+
+        abort(response()->json([
+            'message' => 'No tienes acceso a esta nota.',
         ], 403));
     }
 
