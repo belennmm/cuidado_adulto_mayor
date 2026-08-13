@@ -32,6 +32,21 @@
 .brand-panel { position:relative; z-index:1; display:flex; flex-direction:column; align-items:flex-start; width:min(100%,420px); margin:auto; padding:42px; }
 .brand-mark { display:grid; place-items:center; width:64px; height:64px; margin-bottom:30px; border-radius:20px; background:var(--login-cream); color:var(--login-navy); box-shadow:0 12px 28px rgba(23,45,74,.18); }
 .brand-mark i { font-size:31px; }
+.brand-logo-frame {
+  width: min(100%, 230px);
+  margin-bottom: 26px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 18px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 12px 28px rgba(10,17,47,.18);
+}
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 11px;
+}
 .brand-eyebrow { margin:0 0 10px; color:var(--login-cream); font-size:14px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
 .brand-panel h2 { max-width:380px; margin:0; color:#fff; font-family:var(--font-rounded-mplus-1c); font-size:clamp(2.25rem,4vw,3.6rem); font-weight:500; line-height:1.08; }
 .brand-copy { max-width:390px; margin:24px 0 30px; color:#f4f1e8; font-size:18px; line-height:1.55; }
@@ -40,6 +55,14 @@
 .brand-features i { color:var(--login-cream); font-size:18px; }
 @media screen and (max-width:1024px) { .brand-panel { align-items:center; width:min(100%,700px); padding:34px 24px; text-align:center; } .brand-mark { margin-bottom:18px; } .brand-panel h2,.brand-copy { max-width:620px; } .brand-copy { margin:14px 0 20px; } }
 @media screen and (max-width:560px) { .brand-panel { padding:20px 8px; } .brand-mark { width:52px; height:52px; margin-bottom:14px; border-radius:16px; } .brand-panel h2 { font-size:2rem; } .brand-copy { font-size:16px; } .brand-features { justify-content:center; } }
+
+@media screen and (max-width:1024px) {
+  .brand-logo-frame { width:200px; margin-bottom:18px; }
+}
+
+@media screen and (max-width:560px) {
+  .brand-logo-frame { width:170px; margin-bottom:14px; padding:6px; }
+}
 .login-form-child {
   height: 811px;
   width: 9px;
