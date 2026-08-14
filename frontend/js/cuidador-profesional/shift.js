@@ -4,10 +4,10 @@
     0: "Domingo",
     1: "Lunes",
     2: "Martes",
-    3: "Miercoles",
+    3: "Miércoles",
     4: "Jueves",
     5: "Viernes",
-    6: "Sabado",
+    6: "Sábado",
   }
 
   function renderSchedule(schedule) {
@@ -27,7 +27,7 @@
         <span class="row-icon"><i class="bx bxs-time"></i></span>
         <div class="schedule-content">
           <div>
-            <h3>${api.escapeHtml(days[schedule.day_of_week] || "Dia")}</h3>
+            <h3>${api.escapeHtml(days[schedule.day_of_week] || "Día")}</h3>
             <p>${api.escapeHtml(api.formatTime(schedule.start_time))} - ${api.escapeHtml(api.formatTime(schedule.end_time))}</p>
           </div>
           ${requestSummary}
