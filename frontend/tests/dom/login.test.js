@@ -25,7 +25,7 @@ describe("formulario de inicio de sesión", () => {
 
   it("muestra un mensaje y no llama la API cuando faltan credenciales", async () => {
     fireEvent.submit(document.querySelector("form"))
-    await vi.waitFor(() => expect(document.getElementById("loginMessage").textContent).toContain("Completa usuario"))
+    await vi.waitFor(() => expect(document.getElementById("loginMessage").textContent).toContain("Completa el correo electrónico"))
     expect(fetchJson).not.toHaveBeenCalled()
   })
 

@@ -42,7 +42,7 @@ async function redirectByRole(role) {
         window.location.assign(destination)
         return
     }
-    const message = "No se encontró acceso para este tipo de usuario"
+    const message = "No se encontró un acceso para este tipo de usuario"
     await showLoginPopup(message, { variant: "error" })
 }
 
@@ -75,7 +75,7 @@ if (loginForm) {
         const password = passwordInput ? passwordInput.value.trim() : ""
 
         if (!email || !password) {
-            await showLoginPopup("Completa usuario y contraseña", { variant: "error" })
+            await showLoginPopup("Completa el correo electrónico y la contraseña", { variant: "error" })
             return
         }
 
