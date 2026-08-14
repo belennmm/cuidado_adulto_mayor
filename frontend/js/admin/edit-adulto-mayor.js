@@ -75,6 +75,7 @@ function addMedicineCard(medicine = null) {
   const card = document.createElement("div")
   card.className = "medicine-card"
   card.dataset.index = medicineCount
+  card.dataset.medicationAssignmentId = medicine?.id || ""
 
   card.innerHTML = `
     <div class="medicine-card-header">
@@ -165,6 +166,9 @@ function getMedicineCardsPayload() {
       }
 
       return {
+        id: card.dataset.medicationAssignmentId
+          ? Number(card.dataset.medicationAssignmentId)
+          : null,
         name,
         dosage: dosage || null,
         schedule: schedule || null,

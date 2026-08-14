@@ -449,6 +449,26 @@
   transform: translateY(-1px);
 }
 
+.inventory-heading-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inventory-filter-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #55728e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.inventory-filter-label select {
+  min-width: 220px;
+}
+
 .inventory-secondary-button {
   padding: 0 18px;
   background-color: #e8eef8;
@@ -701,7 +721,9 @@
   color: #333333;
 }
 
-.inventory-form-group input {
+.inventory-form-group input,
+.inventory-form-group select,
+.inventory-filter-label select {
   width: 100%;
   min-height: 46px;
   border: 1px solid #d8d8d8;
@@ -713,6 +735,11 @@
   font-size: 15px;
   color: #555555;
   outline: none;
+}
+
+.inventory-form-group select,
+.inventory-filter-label select {
+  cursor: pointer;
 }
 
 .inventory-form-actions {
@@ -823,6 +850,12 @@
 
   .inventory-form-actions {
     justify-content: stretch;
+  }
+
+  .inventory-heading-actions,
+  .inventory-filter-label,
+  .inventory-filter-label select {
+    width: 100%;
   }
 
   .inventory-primary-button,

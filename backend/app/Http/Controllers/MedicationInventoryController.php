@@ -3,44 +3,70 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medication;
+use App\Models\OlderAdultMedication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class MedicationInventoryController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $data = $request->validate([
+            'older_adult_id' => ['nullable', 'integer', Rule::exists('older_adults', 'id')],
+        ]);
+
         return response()->json([
-            'inventory' => $this->inventoryItems(),
+            'inventory' => $this->inventoryItems($data['older_adult_id'] ?? null),
         ]);
     }
 
     public function store(Request $request): JsonResponse
     {
-        $data = $this->validateMedication($request);
+        $data = $this->validateInventoryItem($request);
 
-        $medication = Medication::create($data);
+        $inventoryItem = DB::transaction(function () use ($data) {
+            $medication = Medication::firstOrCreate(
+                ['name' => trim($data['name'])],
+                ['is_active' => true],
+            );
+
+            return OlderAdultMedication::create([
+                ...$this->assignmentData($data),
+                'medication_id' => $medication->id,
+            ]);
+        });
 
         return response()->json([
-            'message' => 'Medicamento agregado correctamente.',
-            'medication' => $this->formatMedication($medication->fresh()),
+            'message' => 'Medicamento agregado al inventario del adulto mayor.',
+            'medication' => $this->formatInventoryItem($inventoryItem->load(['medication', 'olderAdult'])),
         ], 201);
     }
 
-    public function update(Request $request, Medication $medication): JsonResponse
+    public function update(Request $request, OlderAdultMedication $inventoryItem): JsonResponse
     {
-        $data = $this->validateMedication($request, $medication);
+        $data = $this->validateInventoryItem($request, $inventoryItem);
 
-        $medication->update($data);
+        DB::transaction(function () use ($inventoryItem, $data) {
+            $medication = Medication::firstOrCreate(
+                ['name' => trim($data['name'])],
+                ['is_active' => true],
+            );
+
+            $inventoryItem->update([
+                ...$this->assignmentData($data),
+                'medication_id' => $medication->id,
+            ]);
+        });
 
         return response()->json([
-            'message' => 'Medicamento actualizado correctamente.',
-            'medication' => $this->formatMedication($medication->fresh()),
+            'message' => 'Inventario del adulto mayor actualizado correctamente.',
+            'medication' => $this->formatInventoryItem($inventoryItem->refresh()->load(['medication', 'olderAdult'])),
         ]);
     }
 
-    public function adjustStock(Request $request, Medication $medication): JsonResponse
+    public function adjustStock(Request $request, OlderAdultMedication $inventoryItem): JsonResponse
     {
         $data = $request->validate([
             'action' => ['required', 'in:increase,decrease'],
@@ -48,7 +74,7 @@ class MedicationInventoryController extends Controller
         ]);
 
         $amount = (int) $data['amount'];
-        $currentQuantity = (int) $medication->quantity;
+        $currentQuantity = (int) $inventoryItem->quantity;
         $nextQuantity = $data['action'] === 'increase'
             ? $currentQuantity + $amount
             : $currentQuantity - $amount;
@@ -59,91 +85,99 @@ class MedicationInventoryController extends Controller
             ], 422);
         }
 
-        $medication->update([
-            'quantity' => $nextQuantity,
-        ]);
+        $inventoryItem->update(['quantity' => $nextQuantity]);
 
         return response()->json([
             'message' => $data['action'] === 'increase'
                 ? 'Stock aumentado correctamente.'
                 : 'Stock reducido correctamente.',
-            'medication' => $this->formatMedication($medication->fresh()),
+            'medication' => $this->formatInventoryItem($inventoryItem->refresh()->load(['medication', 'olderAdult'])),
         ]);
     }
 
-    public function destroy(Medication $medication): JsonResponse
+    public function destroy(OlderAdultMedication $inventoryItem): JsonResponse
     {
-        $hasAssignments = $medication->olderAdultMedications()->exists();
-        $hasAdministrations = $medication->administrations()->exists();
-
-        if ($hasAssignments || $hasAdministrations) {
+        if ($inventoryItem->administrations()->exists()) {
             return response()->json([
-                'message' => 'No se puede eliminar este medicamento porque ya tiene asignaciones o administraciones registradas.',
+                'message' => 'No se puede eliminar este inventario porque tiene administraciones registradas.',
             ], 422);
         }
 
-        $medication->delete();
+        $inventoryItem->delete();
 
         return response()->json([
-            'message' => 'Medicamento eliminado correctamente.',
+            'message' => 'Medicamento eliminado del inventario del adulto mayor.',
         ]);
     }
 
-    private function validateMedication(Request $request, ?Medication $medication = null): array
+    private function validateInventoryItem(Request $request, ?OlderAdultMedication $inventoryItem = null): array
     {
         return $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('medications', 'name')->ignore($medication?->id),
-            ],
+            'older_adult_id' => ['required', 'integer', Rule::exists('older_adults', 'id')],
+            'name' => ['required', 'string', 'max:255'],
             'presentation' => ['required', 'string', 'max:255'],
             'quantity' => ['required', 'integer', 'min:0'],
             'unit' => ['required', 'string', 'max:80'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
             'expiration_date' => ['required', 'date'],
             'is_active' => ['sometimes', 'boolean'],
+            'dosage' => ['nullable', 'string', 'max:255'],
+            'schedule' => ['nullable', 'string', 'max:255'],
         ]);
     }
 
-    private function inventoryItems(): array
+    private function assignmentData(array $data): array
     {
-        return Medication::query()
-            ->with(['olderAdultMedications'])
+        return [
+            'older_adult_id' => $data['older_adult_id'],
+            'presentation' => $data['presentation'],
+            'quantity' => $data['quantity'],
+            'unit' => $data['unit'],
+            'minimum_stock' => $data['minimum_stock'],
+            'expiration_date' => $data['expiration_date'],
+            'is_active' => $data['is_active'] ?? true,
+            'dosage' => $data['dosage'] ?? null,
+            'schedule' => $data['schedule'] ?? null,
+        ];
+    }
+
+    private function inventoryItems(?int $olderAdultId = null): array
+    {
+        return OlderAdultMedication::query()
+            ->with(['medication', 'olderAdult'])
             ->withCount('administrations')
-            ->orderBy('name')
+            ->when($olderAdultId, fn ($query) => $query->where('older_adult_id', $olderAdultId))
+            ->orderBy('older_adult_id')
+            ->orderBy('medication_id')
             ->get()
-            ->map(fn (Medication $medication) => $this->formatMedication($medication))
+            ->map(fn (OlderAdultMedication $inventoryItem) => $this->formatInventoryItem($inventoryItem))
             ->values()
             ->all();
     }
 
-    private function formatMedication(Medication $medication): array
+    private function formatInventoryItem(OlderAdultMedication $inventoryItem): array
     {
-        $status = $medication->inventoryStatus();
-        $activeAssignments = $medication->relationLoaded('olderAdultMedications')
-            ? $medication->olderAdultMedications->filter(fn ($assignment) => (bool) $assignment->is_active)
-            : collect();
+        $status = $inventoryItem->inventoryStatus();
 
         return [
-            'id' => $medication->id,
-            'name' => $medication->name,
-            'presentation' => $medication->presentation,
-            'quantity' => (int) $medication->quantity,
-            'unit' => $medication->unit,
-            'minimum_stock' => (int) $medication->minimum_stock,
-            'expiration_date' => $medication->expiration_date?->toDateString(),
-            'is_active' => (bool) $medication->is_active,
+            'id' => $inventoryItem->id,
+            'medication_id' => $inventoryItem->medication_id,
+            'older_adult_id' => $inventoryItem->older_adult_id,
+            'older_adult_name' => $inventoryItem->olderAdult?->full_name,
+            'name' => $inventoryItem->medication?->name,
+            'presentation' => $inventoryItem->presentation,
+            'quantity' => (int) $inventoryItem->quantity,
+            'unit' => $inventoryItem->unit,
+            'minimum_stock' => (int) $inventoryItem->minimum_stock,
+            'expiration_date' => $inventoryItem->expiration_date?->toDateString(),
+            'is_active' => (bool) $inventoryItem->is_active,
+            'dosage' => $inventoryItem->dosage,
+            'schedule' => $inventoryItem->schedule,
             'status' => $status['key'],
             'status_label' => $status['label'],
-            'assigned_patients' => $activeAssignments
-                ->pluck('older_adult_id')
-                ->filter()
-                ->unique()
-                ->count(),
-            'active_assignments' => $activeAssignments->count(),
-            'administrations_count' => (int) ($medication->administrations_count ?? 0),
+            'assigned_patients' => 1,
+            'active_assignments' => $inventoryItem->is_active ? 1 : 0,
+            'administrations_count' => (int) ($inventoryItem->administrations_count ?? 0),
         ];
     }
 }

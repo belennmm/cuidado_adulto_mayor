@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MedicationAdministration;
-use App\Models\Medication;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
+use App\Models\MedicationAdministration;
 use App\Models\OlderAdult;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
@@ -226,7 +225,7 @@ class AdminDashboardController extends Controller
 
         return collect($buckets)
             ->map(fn ($value, $bucket) => [
-                'label' => str_pad((string) ($bucket * 3), 2, '0', STR_PAD_LEFT) . ':00',
+                'label' => str_pad((string) ($bucket * 3), 2, '0', STR_PAD_LEFT).':00',
                 'value' => $value,
             ])
             ->values()
@@ -235,34 +234,35 @@ class AdminDashboardController extends Controller
 
     private function medicationInventory(): array
     {
-        return Medication::query()
-            ->with(['olderAdultMedications.olderAdult:id,full_name'])
+        return OlderAdultMedication::query()
+            ->with([
+                'medication:id,name',
+                'olderAdult:id,full_name',
+            ])
             ->withCount('administrations')
-            ->orderBy('name')
+            ->orderBy('older_adult_id')
+            ->orderBy('medication_id')
             ->get()
-            ->map(function (Medication $medication) {
-                $status = $medication->inventoryStatus();
-                $activeAssignments = $medication->olderAdultMedications
-                    ->filter(fn (OlderAdultMedication $assignment) => (bool) $assignment->is_active);
+            ->map(function (OlderAdultMedication $inventoryItem) {
+                $status = $inventoryItem->inventoryStatus();
 
                 return [
-                    'id' => $medication->id,
-                    'name' => $medication->name,
-                    'presentation' => $medication->presentation,
-                    'quantity' => (int) $medication->quantity,
-                    'unit' => $medication->unit,
-                    'minimum_stock' => (int) $medication->minimum_stock,
-                    'expiration_date' => $medication->expiration_date?->toDateString(),
-                    'is_active' => (bool) $medication->is_active,
+                    'id' => $inventoryItem->id,
+                    'medication_id' => $inventoryItem->medication_id,
+                    'older_adult_id' => $inventoryItem->older_adult_id,
+                    'older_adult_name' => $inventoryItem->olderAdult?->full_name,
+                    'name' => $inventoryItem->medication?->name,
+                    'presentation' => $inventoryItem->presentation,
+                    'quantity' => (int) $inventoryItem->quantity,
+                    'unit' => $inventoryItem->unit,
+                    'minimum_stock' => (int) $inventoryItem->minimum_stock,
+                    'expiration_date' => $inventoryItem->expiration_date?->toDateString(),
+                    'is_active' => (bool) $inventoryItem->is_active,
                     'status' => $status['key'],
                     'status_label' => $status['label'],
-                    'assigned_patients' => $activeAssignments
-                        ->pluck('older_adult_id')
-                        ->filter()
-                        ->unique()
-                        ->count(),
-                    'active_assignments' => $activeAssignments->count(),
-                    'administrations_count' => $medication->administrations_count,
+                    'assigned_patients' => 1,
+                    'active_assignments' => $inventoryItem->is_active ? 1 : 0,
+                    'administrations_count' => (int) $inventoryItem->administrations_count,
                 ];
             })
             ->values()

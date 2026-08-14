@@ -99,9 +99,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/medication-statistics', [AdminDashboardController::class, 'medicationStatistics']);
     Route::get('/medications/inventory', [MedicationInventoryController::class, 'index']);
     Route::post('/medications/inventory', [MedicationInventoryController::class, 'store']);
-    Route::put('/medications/inventory/{medication}', [MedicationInventoryController::class, 'update']);
-    Route::patch('/medications/inventory/{medication}/stock', [MedicationInventoryController::class, 'adjustStock']);
-    Route::delete('/medications/inventory/{medication}', [MedicationInventoryController::class, 'destroy']);
+    Route::put('/medications/inventory/{inventoryItem}', [MedicationInventoryController::class, 'update']);
+    Route::patch('/medications/inventory/{inventoryItem}/stock', [MedicationInventoryController::class, 'adjustStock']);
+    Route::delete('/medications/inventory/{inventoryItem}', [MedicationInventoryController::class, 'destroy']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);

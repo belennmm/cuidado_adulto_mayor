@@ -17,6 +17,7 @@
     selectedMedicineId: null,
     items: [],
     inventory: [],
+    olderAdults: [],
     inventoryMode: "create",
     stockAction: "increase",
   }
@@ -191,23 +192,31 @@
     const inventoryList = document.getElementById("inventoryList")
     if (!inventoryList) return
 
-    if (!state.inventory.length) {
+    const selectedOlderAdultId = document.getElementById("inventoryOlderAdultFilter")?.value || ""
+    const visibleInventory = selectedOlderAdultId
+      ? state.inventory.filter((item) => String(item.older_adult_id) === selectedOlderAdultId)
+      : state.inventory
+
+    if (!visibleInventory.length) {
       inventoryList.innerHTML = `
         <div class="inventory-empty">
-          No hay medicamentos registrados en el inventario.
+          No hay medicamentos registrados para el adulto mayor seleccionado.
         </div>
       `
       return
     }
 
-    inventoryList.innerHTML = state.inventory
+    inventoryList.innerHTML = visibleInventory
       .map((item) => `
         <article class="inventory-item">
           <div class="inventory-item-main">
             <div class="inventory-item-heading">
               <div>
                 <strong>${escapeHtml(item.name)}</strong>
-                <div class="inventory-item-subtitle">${escapeHtml(item.presentation || "Sin presentacion")}</div>
+                <div class="inventory-item-subtitle">
+                  ${escapeHtml(item.older_adult_name || "Adulto mayor sin identificar")} &middot;
+                  ${escapeHtml(item.presentation || "Sin presentacion")}
+                </div>
               </div>
               <span class="inventory-status-badge ${statusClass(item.status)}">${escapeHtml(item.status_label)}</span>
             </div>
@@ -226,8 +235,8 @@
                 <span class="inventory-metric-value">${escapeHtml(formatDate(item.expiration_date))}</span>
               </div>
               <div class="inventory-metric">
-                <span class="inventory-metric-label">Uso actual</span>
-                <span class="inventory-metric-value">${escapeHtml(item.assigned_patients)} pacientes</span>
+                <span class="inventory-metric-label">Inventario de</span>
+                <span class="inventory-metric-value">${escapeHtml(item.older_adult_name || "Sin asignar")}</span>
               </div>
             </div>
           </div>
@@ -248,9 +257,32 @@
 
 
   async function loadFilterItems() {
-    const data = await fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(state.activeFilter)}`)
+    const [data, adultsData] = await Promise.all([
+      fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(state.activeFilter)}`),
+      fetchJson("/admin/older-adults"),
+    ])
     state.items = data.items || []
     state.inventory = data.inventory || []
+    state.olderAdults = adultsData.older_adults || []
+    renderOlderAdultOptions()
+  }
+
+  function renderOlderAdultOptions() {
+    const filter = document.getElementById("inventoryOlderAdultFilter")
+    const formSelect = document.getElementById("medicationOlderAdult")
+    const currentFilter = filter?.value || ""
+    const options = state.olderAdults
+      .map((adult) => `<option value="${escapeHtml(adult.id)}">${escapeHtml(adult.full_name)}</option>`)
+      .join("")
+
+    if (filter) {
+      filter.innerHTML = `<option value="">Todos</option>${options}`
+      filter.value = currentFilter
+    }
+
+    if (formSelect) {
+      formSelect.innerHTML = `<option value="">Selecciona un adulto mayor</option>${options}`
+    }
   }
 
   async function renderStats() {
@@ -302,6 +334,7 @@
     if (modal) modal.hidden = true
     if (form) form.reset()
     const medicationId = document.getElementById("medicationId")
+    const olderAdultInput = document.getElementById("medicationOlderAdult")
     if (medicationId) medicationId.value = ""
   }
 
@@ -318,7 +351,7 @@
     const minimumStockInput = document.getElementById("medicationMinimumStock")
     const expirationDateInput = document.getElementById("medicationExpirationDate")
 
-    if (!modal || !title || !submitButton || !medicationId || !nameInput || !presentationInput || !quantityInput || !unitInput || !minimumStockInput || !expirationDateInput) {
+    if (!modal || !title || !submitButton || !medicationId || !olderAdultInput || !nameInput || !presentationInput || !quantityInput || !unitInput || !minimumStockInput || !expirationDateInput) {
       return
     }
 
@@ -326,6 +359,7 @@
     submitButton.textContent = mode === "edit" ? "Guardar cambios" : "Guardar"
 
     medicationId.value = medication?.id || ""
+    olderAdultInput.value = medication?.older_adult_id || document.getElementById("inventoryOlderAdultFilter")?.value || ""
     nameInput.value = medication?.name || ""
     presentationInput.value = medication?.presentation || ""
     quantityInput.value = medication?.quantity ?? ""
@@ -374,6 +408,7 @@
 
     const medicationId = document.getElementById("medicationId")?.value
     const payload = {
+      older_adult_id: Number(document.getElementById("medicationOlderAdult")?.value || 0),
       name: document.getElementById("medicationName")?.value.trim(),
       presentation: document.getElementById("medicationPresentation")?.value.trim(),
       quantity: Number(document.getElementById("medicationQuantity")?.value || 0),
@@ -485,8 +520,14 @@
     })
 
     document.getElementById("openNewMedicationButton")?.addEventListener("click", () => {
+      if (!state.olderAdults.length) {
+        showInventoryFeedback("Primero registra un adulto mayor.", "error")
+        return
+      }
       openMedicationFormModal("create")
     })
+
+    document.getElementById("inventoryOlderAdultFilter")?.addEventListener("change", renderInventory)
 
     document.getElementById("inventoryList")?.addEventListener("click", async (event) => {
       const button = event.target.closest("[data-action][data-id]")

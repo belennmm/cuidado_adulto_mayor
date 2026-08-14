@@ -45,6 +45,11 @@ class AdminMedicationStatisticsTest extends TestCase
         $assignment = OlderAdultMedication::create([
             'older_adult_id' => $olderAdult->id,
             'medication_id' => $medication->id,
+            'presentation' => 'Tableta 50mg',
+            'quantity' => 18,
+            'unit' => 'tabletas',
+            'minimum_stock' => 5,
+            'expiration_date' => '2030-12-31',
             'dosage' => '1 tableta',
             'schedule' => '08:00',
             'days' => ['sabado'],
@@ -70,6 +75,9 @@ class AdminMedicationStatisticsTest extends TestCase
             ->assertJsonPath('items.0.totalUses', 1)
             ->assertJsonPath('items.0.patients', 1)
             ->assertJsonPath('inventory.0.name', 'Losartan')
+            ->assertJsonPath('inventory.0.older_adult_id', $olderAdult->id)
+            ->assertJsonPath('inventory.0.older_adult_name', 'Rosa Martinez')
+            ->assertJsonPath('inventory.0.quantity', 18)
             ->assertJsonPath('inventory.0.assigned_patients', 1);
 
         Carbon::setTestNow();

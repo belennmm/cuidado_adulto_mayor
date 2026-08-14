@@ -162,9 +162,18 @@
                 <h2>Inventario de medicamentos</h2>
               </div>
 
-              <button type="button" class="inventory-primary-button" id="openNewMedicationButton">
-                Nuevo medicamento
-              </button>
+              <div class="inventory-heading-actions">
+                <label class="inventory-filter-label" for="inventoryOlderAdultFilter">
+                  Adulto mayor
+                  <select id="inventoryOlderAdultFilter">
+                    <option value="">Todos</option>
+                  </select>
+                </label>
+
+                <button type="button" class="inventory-primary-button" id="openNewMedicationButton">
+                  Nuevo medicamento
+                </button>
+              </div>
             </div>
 
             <div class="inventory-feedback" id="inventoryFeedback" hidden></div>
@@ -192,6 +201,13 @@
           <input type="hidden" id="medicationId" name="medicationId" />
 
           <div class="inventory-form-grid">
+            <div class="inventory-form-group">
+              <label for="medicationOlderAdult">Adulto mayor</label>
+              <select id="medicationOlderAdult" name="medicationOlderAdult" required>
+                <option value="">Selecciona un adulto mayor</option>
+              </select>
+            </div>
+
             <div class="inventory-form-group">
               <label for="medicationName">Nombre</label>
               <input type="text" id="medicationName" name="medicationName" required />

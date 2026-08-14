@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Models\Medication;
+use App\Models\OlderAdultMedication;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -27,12 +27,12 @@ class MedicationInventoryStatusTest extends TestCase
         string $expectedKey
     ): void {
         $today = Carbon::parse('2026-07-17');
-        $medication = new Medication([
+        $inventoryItem = new OlderAdultMedication([
             'expiration_date' => $today->copy()->addDays($expirationOffset),
             'quantity' => $quantity,
             'minimum_stock' => $minimumStock,
         ]);
 
-        $this->assertSame($expectedKey, $medication->inventoryStatus($today)['key']);
+        $this->assertSame($expectedKey, $inventoryItem->inventoryStatus($today)['key']);
     }
 }

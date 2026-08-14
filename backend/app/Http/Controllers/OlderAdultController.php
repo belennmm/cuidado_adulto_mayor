@@ -7,8 +7,8 @@ use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class OlderAdultController extends Controller
 {
@@ -45,6 +45,7 @@ class OlderAdultController extends Controller
         $olderAdult = DB::transaction(function () use ($data, $medications) {
             $olderAdult = OlderAdult::create($data);
             $this->syncMedications($olderAdult, $medications);
+
             return $olderAdult->load(['medicationAssignments.medication', 'familyCaregiver', 'professionalCaregiver']);
         });
 
@@ -58,13 +59,16 @@ class OlderAdultController extends Controller
     {
         $data = $request->validate($this->rules());
         $data = $this->normalizeCaregiverAssignments($data);
+        $shouldSyncMedications = array_key_exists('medications', $data);
         $medications = $data['medications'] ?? [];
         unset($data['medications']);
         $data['status'] = $data['status'] ?? 'Estable';
 
-        DB::transaction(function () use ($olderAdult, $data, $medications) {
+        DB::transaction(function () use ($olderAdult, $data, $medications, $shouldSyncMedications) {
             $olderAdult->update($data);
-            $this->syncMedications($olderAdult, $medications);
+            if ($shouldSyncMedications) {
+                $this->syncMedications($olderAdult, $medications);
+            }
         });
 
         $olderAdult->refresh()->load(['medicationAssignments.medication', 'familyCaregiver', 'professionalCaregiver']);
@@ -114,7 +118,13 @@ class OlderAdultController extends Controller
             'medical_history' => 'nullable|string',
             'notes' => 'nullable|string',
             'medications' => 'nullable|array',
+            'medications.*.id' => 'nullable|integer|exists:older_adult_medications,id',
             'medications.*.name' => 'required|string|max:255',
+            'medications.*.presentation' => 'nullable|string|max:255',
+            'medications.*.quantity' => 'nullable|integer|min:0',
+            'medications.*.unit' => 'nullable|string|max:80',
+            'medications.*.minimum_stock' => 'nullable|integer|min:0',
+            'medications.*.expiration_date' => 'nullable|date',
             'medications.*.dosage' => 'nullable|string|max:255',
             'medications.*.schedule' => 'nullable|string|max:255',
             'medications.*.days' => 'nullable|array',
@@ -148,6 +158,11 @@ class OlderAdultController extends Controller
                     'id' => $assignment->id,
                     'medication_id' => $assignment->medication_id,
                     'name' => $assignment->medication?->name,
+                    'presentation' => $assignment->presentation,
+                    'quantity' => (int) $assignment->quantity,
+                    'unit' => $assignment->unit,
+                    'minimum_stock' => (int) $assignment->minimum_stock,
+                    'expiration_date' => $assignment->expiration_date?->toDateString(),
                     'dosage' => $assignment->dosage,
                     'schedule' => $assignment->schedule,
                     'days' => $assignment->days ?? [],
@@ -169,7 +184,7 @@ class OlderAdultController extends Controller
                 ->where('role', 'familiar')
                 ->where('is_approved', true)
                 ->find($familyCaregiverId);
-        } elseif (!empty($data['caregiver_family'])) {
+        } elseif (! empty($data['caregiver_family'])) {
             $familyCaregiver = User::query()
                 ->where('role', 'familiar')
                 ->where('is_approved', true)
@@ -185,7 +200,7 @@ class OlderAdultController extends Controller
 
     private function syncMedications(OlderAdult $olderAdult, array $medications): void
     {
-        $olderAdult->medicationAssignments()->delete();
+        $keptAssignmentIds = [];
 
         foreach ($medications as $medicationData) {
             $name = trim((string) ($medicationData['name'] ?? ''));
@@ -199,25 +214,51 @@ class OlderAdultController extends Controller
                 ['is_active' => true]
             );
 
-            $olderAdult->medicationAssignments()->create([
+            $assignmentData = [
                 'medication_id' => $medication->id,
                 'dosage' => $this->nullableString($medicationData['dosage'] ?? null),
                 'schedule' => $this->nullableString($medicationData['schedule'] ?? null),
                 'days' => $this->normalizeDays($medicationData['days'] ?? []),
                 'notes' => $this->nullableString($medicationData['notes'] ?? null),
                 'is_active' => true,
-            ]);
+            ];
+
+            $assignmentId = $medicationData['id'] ?? null;
+            $assignment = $assignmentId
+                ? $olderAdult->medicationAssignments()->find($assignmentId)
+                : null;
+
+            if ($assignment) {
+                $assignment->update($assignmentData);
+            } else {
+                $assignment = $olderAdult->medicationAssignments()->create([
+                    ...$assignmentData,
+                    'presentation' => $this->nullableString($medicationData['presentation'] ?? null),
+                    'quantity' => (int) ($medicationData['quantity'] ?? 0),
+                    'unit' => $this->nullableString($medicationData['unit'] ?? null) ?? 'unidades',
+                    'minimum_stock' => (int) ($medicationData['minimum_stock'] ?? 0),
+                    'expiration_date' => $medicationData['expiration_date'] ?? null,
+                ]);
+            }
+
+            $keptAssignmentIds[] = $assignment->id;
         }
+
+        $olderAdult->medicationAssignments()
+            ->when($keptAssignmentIds, fn ($query) => $query->whereNotIn('id', $keptAssignmentIds))
+            ->when(! $keptAssignmentIds, fn ($query) => $query)
+            ->delete();
     }
 
     private function normalizeDays(mixed $days): array
     {
-        if (!is_array($days)) {
+        if (! is_array($days)) {
             return [];
         }
 
         return array_values(array_filter(array_map(function ($day) {
             $value = trim((string) $day);
+
             return $value !== '' ? $value : null;
         }, $days)));
     }
@@ -225,6 +266,7 @@ class OlderAdultController extends Controller
     private function nullableString(mixed $value): ?string
     {
         $stringValue = trim((string) ($value ?? ''));
+
         return $stringValue !== '' ? $stringValue : null;
     }
 }
