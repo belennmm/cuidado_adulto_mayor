@@ -34,6 +34,8 @@ class CaregiverScheduleEndTimeValidationTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath('message', 'El horario es inválido.')
             ->assertJsonValidationErrors('end_time');
+
+        $this->assertDatabaseCount('caregiver_schedules', 0);
     }
 
     public function test_schedule_cannot_be_updated_with_end_time_before_start_time(): void
@@ -71,5 +73,19 @@ class CaregiverScheduleEndTimeValidationTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath('message', 'El horario es inválido.')
             ->assertJsonValidationErrors('end_time');
+
+        $this->assertDatabaseHas('caregiver_schedules', [
+            'id' => $schedule->id,
+            'day_of_week' => 4,
+            'start_time' => '08:00:00',
+            'end_time' => '16:00:00',
+            'notes' => 'Horario original',
+        ]);
+
+        $this->assertDatabaseMissing('caregiver_schedules', [
+            'id' => $schedule->id,
+            'start_time' => '18:00:00',
+            'end_time' => '10:00:00',
+        ]);
     }
 }
