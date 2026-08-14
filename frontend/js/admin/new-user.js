@@ -229,7 +229,7 @@ async function showRequestDetails(userId) {
     `Teléfono: ${request.phone || "Sin teléfono"}`,
     `Locacion: ${request.location || "Sin locacion"}`,
     `Fecha de nacimiento: ${request.birthdate || "Sin fecha"}`
-  ].join("\n"), { title: "Informacion de solicitud" })
+  ].join("\n"), { title: "Información de solicitud" })
 }
 
 if (togglePassword && passwordInput) {

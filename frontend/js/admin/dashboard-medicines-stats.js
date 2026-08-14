@@ -1,6 +1,6 @@
 (() => {
   const FILTER_LABELS = {
-    day: "Dia",
+    day: "Día",
     month: "Mes",
     year: "Ano",
   }

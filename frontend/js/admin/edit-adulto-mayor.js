@@ -127,7 +127,7 @@ function addMedicineCard(medicine = null) {
     </div>
 
     <div class="days-group">
-      <label>Dias de administracion</label>
+      <label>Días de administración</label>
       <div class="days-options">
         ${createDayOptions(medicineCount, medicine?.days || [])}
       </div>

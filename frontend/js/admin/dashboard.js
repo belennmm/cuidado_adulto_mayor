@@ -60,7 +60,7 @@ function renderLatestRoutines(routines) {
   if (!routineList) return
 
   if (!routines.length) {
-    renderRoutineEmpty("Todavia no hay cambios registrados en rutinas.")
+    renderRoutineEmpty("Todavía no hay cambios registrados en rutinas.")
     return
   }
 

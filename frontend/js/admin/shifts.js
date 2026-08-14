@@ -120,7 +120,7 @@ function renderVacations() {
   if (!vacationsData.length) {
     vacationsTableBody.innerHTML = `
       <div class="empty-state">
-        Todavia no hay solicitudes de vacaciones.
+        Todavía no hay solicitudes de vacaciones.
       </div>
     `
     return
@@ -183,7 +183,7 @@ function renderSchedules() {
   if (!schedulesData.length) {
     shiftsTableBody.innerHTML = `
       <div class="empty-state">
-        Todavia no hay turnos asignados.
+        Todavía no hay turnos asignados.
       </div>
     `
     return
@@ -202,8 +202,8 @@ function renderSchedules() {
         </div>
       </div>
 
-      <div class="shift-cell" data-label="Dia">
-        ${escapeHtml(DAY_LABELS[schedule.day_of_week] || "Sin dia")}
+      <div class="shift-cell" data-label="Día">
+        ${escapeHtml(DAY_LABELS[schedule.day_of_week] || "Sin día")}
       </div>
 
       <div class="shift-cell" data-label="Horario">
