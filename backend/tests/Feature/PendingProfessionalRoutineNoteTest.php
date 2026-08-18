@@ -48,4 +48,28 @@ class PendingProfessionalRoutineNoteTest extends TestCase
                 'Esta informacion solo esta disponible para cuidadores profesionales aprobados.'
             );
     }
+
+    public function test_pending_professional_cannot_create_routine_notes(): void
+    {
+        $content = 'Esta nota no debe guardarse.';
+
+        // SCRUM-612 y SCRUM-613: intentar crear una nota y recibir 403.
+        $this->postJson('/api/professional/routine-notes', [
+            'older_adult_id' => $this->olderAdult->id,
+            'content' => $content,
+        ])
+            ->assertForbidden()
+            ->assertJsonPath(
+                'message',
+                'Esta informacion solo esta disponible para cuidadores profesionales aprobados.'
+            );
+
+        // SCRUM-614: confirmar que no se creo informacion.
+        $this->assertDatabaseCount('routine_notes', 0);
+        $this->assertDatabaseMissing('routine_notes', [
+            'older_adult_id' => $this->olderAdult->id,
+            'professional_caregiver_id' => $this->pendingProfessional->id,
+            'content' => $content,
+        ]);
+    }
 }
