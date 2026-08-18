@@ -35,4 +35,17 @@ class PendingProfessionalRoutineNoteTest extends TestCase
 
         Sanctum::actingAs($this->pendingProfessional);
     }
+
+    public function test_pending_professional_cannot_list_routine_notes(): void
+    {
+        // SCRUM-612 y SCRUM-613: intentar listar notas y recibir 403.
+        $this->getJson(
+            "/api/professional/routine-notes?older_adult_id={$this->olderAdult->id}"
+        )
+            ->assertForbidden()
+            ->assertJsonPath(
+                'message',
+                'Esta informacion solo esta disponible para cuidadores profesionales aprobados.'
+            );
+    }
 }
