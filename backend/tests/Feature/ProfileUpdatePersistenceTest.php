@@ -47,7 +47,11 @@ class ProfileUpdatePersistenceTest extends TestCase
             'email' => $payload['email'],
             'phone' => $payload['phone'],
             'location' => $payload['location'],
-            'birthdate' => $payload['birthdate'],
         ]);
+
+        $this->assertSame(
+            $payload['birthdate'],
+            $user->fresh()->birthdate?->toDateString()
+        );
     }
 }
