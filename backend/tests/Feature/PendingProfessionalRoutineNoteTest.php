@@ -11,13 +11,28 @@ use Tests\TestCase;
 
 class PendingProfessionalRoutineNoteTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    use RefreshDatabase;
 
-        $response->assertStatus(200);
+    private User $pendingProfessional;
+
+    private OlderAdult $olderAdult;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // SCRUM-611: crear un profesional no aprobado.
+        $this->pendingProfessional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => false,
+        ]);
+
+        $this->olderAdult = OlderAdult::create([
+            'full_name' => 'Adulto de prueba',
+            'professional_caregiver_id' => $this->pendingProfessional->id,
+            'created_by' => $this->pendingProfessional->id,
+        ]);
+
+        Sanctum::actingAs($this->pendingProfessional);
     }
 }
