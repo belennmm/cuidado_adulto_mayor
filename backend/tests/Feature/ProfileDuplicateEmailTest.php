@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ProfileDuplicateEmailTest extends TestCase
@@ -24,6 +25,12 @@ class ProfileDuplicateEmailTest extends TestCase
             'is_approved' => true,
         ]);
 
-        // Paso 2: intentar asignar al primer usuario el correo del segundo.
+        Sanctum::actingAs($firstUser);
+
+        $response = $this->putJson('/api/me', [
+            'email' => $secondUser->email,
+        ]);
+
+        // Paso 3: verificar que la respuesta sea HTTP 422.
     }
 }
