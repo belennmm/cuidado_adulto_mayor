@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+if [ ! -f .env ] && [ -f .env.example ]; then
+    cp .env.example .env
+fi
+
 if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
