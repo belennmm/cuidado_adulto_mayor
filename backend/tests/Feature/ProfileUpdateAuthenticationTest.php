@@ -12,7 +12,7 @@ class ProfileUpdateAuthenticationTest extends TestCase
 
     public function test_guest_cannot_update_a_profile(): void
     {
-        User::factory()->create([
+        $user = User::factory()->create([
             'name' => 'Ana Cuidadora',
             'email' => 'ana@example.com',
             'phone' => '55551234',
@@ -31,6 +31,12 @@ class ProfileUpdateAuthenticationTest extends TestCase
 
         $response->assertUnauthorized();
 
-        // Paso 3: confirmar que el perfil no sufrió cambios.
+        $user->refresh();
+
+        $this->assertSame('Ana Cuidadora', $user->name);
+        $this->assertSame('ana@example.com', $user->email);
+        $this->assertSame('55551234', $user->phone);
+        $this->assertSame('Zona 1', $user->location);
+        $this->assertSame('1980-05-10', $user->birthdate?->toDateString());
     }
 }
