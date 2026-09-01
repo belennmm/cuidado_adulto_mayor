@@ -102,13 +102,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    window.CareNotifications?.init({
-      role: "professional",
-      endpoint: "/professional/overview",
-      fetchJson: api.fetchJson,
-      mountSelector: ".professional-actions",
-      routineUrl: "./routines.html",
-    })
     loadDashboard()
   })
 })()

@@ -102,13 +102,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    window.CareNotifications?.init({
-      role: "family",
-      endpoint: "/family/overview",
-      fetchJson: api.fetchJson,
-      mountSelector: ".family-page-header",
-      routineUrl: "./routine.html",
-    })
     loadDashboard()
   })
 })()

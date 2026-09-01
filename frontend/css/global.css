@@ -285,6 +285,23 @@ textarea {
   font-weight: 800;
 }
 
+.care-alarm-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.care-alarm-snooze {
+  min-height: 40px;
+  padding: 9px 13px;
+  border: 1px solid #bf1d38;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #9f1830;
+  cursor: pointer;
+  font-weight: 800;
+}
+
 @media screen and (max-width: 560px) {
   .care-alarm {
     grid-template-columns: auto minmax(0, 1fr);
@@ -292,9 +309,10 @@ textarea {
     bottom: 16px;
   }
 
-  .care-alarm-stop {
+  .care-alarm-actions {
     grid-column: 1 / -1;
-    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 }
 

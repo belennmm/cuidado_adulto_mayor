@@ -3,6 +3,7 @@
   const ALARM_CHECK_INTERVAL = 15000
   const storagePrefix = "care-notifications-seen"
   const alarmStoragePrefix = "care-notifications-alarmed"
+  const snoozeStoragePrefix = "care-notifications-snoozed"
   const soundStorageKey = "care-notifications-sound"
   const instances = new Map()
   let audioContext = null
@@ -34,6 +35,18 @@
 
   function writeAlarmed(role, date, alarmed) {
     localStorage.setItem(`${alarmStoragePrefix}:${role}:${date}`, JSON.stringify([...alarmed]))
+  }
+
+  function readSnoozed(role, date) {
+    try {
+      return JSON.parse(localStorage.getItem(`${snoozeStoragePrefix}:${role}:${date}`)) || {}
+    } catch {
+      return {}
+    }
+  }
+
+  function writeSnoozed(role, date, snoozed) {
+    localStorage.setItem(`${snoozeStoragePrefix}:${role}:${date}`, JSON.stringify(snoozed))
   }
 
   function formatTime(value) {
@@ -224,7 +237,7 @@
     window.setTimeout(() => toast.remove(), 6500)
   }
 
-  function showAlarm(alert) {
+  function showAlarm(instance, alert) {
     const existing = document.querySelector(".care-alarm")
     if (existing) existing.remove()
 
@@ -236,8 +249,28 @@
         <strong>Hora del medicamento</strong>
         <span>${escapeHtml(alert.body)}</span>
       </div>
-      <button type="button" class="care-alarm-stop">Detener</button>
+      <div class="care-alarm-actions">
+        <button type="button" class="care-alarm-snooze">Posponer 5 min</button>
+        <button type="button" class="care-alarm-stop">Detener</button>
+      </div>
     `
+
+    alarm.querySelector(".care-alarm-snooze")?.addEventListener("click", () => {
+      const dataDate = instance.latestData?.date || new Date().toISOString().slice(0, 10)
+      const snoozed = readSnoozed(instance.role, dataDate)
+      const alarmed = readAlarmed(instance.role, dataDate)
+
+      snoozed[alert.alarmKey] = Date.now() + (5 * 60 * 1000)
+      alarmed.delete(alert.alarmKey)
+      writeSnoozed(instance.role, dataDate, snoozed)
+      writeAlarmed(instance.role, dataDate, alarmed)
+      stopAlarmSound()
+      alarm.remove()
+      showToast([{
+        title: "Recordatorio pospuesto",
+        body: "La alarma volverá a sonar en 5 minutos.",
+      }])
+    })
 
     alarm.querySelector(".care-alarm-stop")?.addEventListener("click", () => {
       stopAlarmSound()
@@ -250,21 +283,33 @@
   function checkDueAlarms(instance) {
     const dataDate = instance.latestData?.date || new Date().toISOString().slice(0, 10)
     const alarmed = readAlarmed(instance.role, dataDate)
+    const snoozed = readSnoozed(instance.role, dataDate)
     const nowMinutes = currentMinutes()
+    const now = Date.now()
 
     const dueAlerts = instance.currentAlerts.filter((alert) => (
       alert.type === "medication"
       && Number.isInteger(alert.dueMinutes)
-      && nowMinutes >= alert.dueMinutes
-      && nowMinutes <= alert.dueMinutes + 1
-      && !alarmed.has(alert.alarmKey)
+      && (
+        (snoozed[alert.alarmKey] && now >= Number(snoozed[alert.alarmKey]))
+        || (
+          !snoozed[alert.alarmKey]
+          && nowMinutes >= alert.dueMinutes
+          && nowMinutes <= alert.dueMinutes + 1
+          && !alarmed.has(alert.alarmKey)
+        )
+      )
     ))
 
     if (!dueAlerts.length) return
 
-    dueAlerts.forEach((alert) => alarmed.add(alert.alarmKey))
+    dueAlerts.forEach((alert) => {
+      alarmed.add(alert.alarmKey)
+      delete snoozed[alert.alarmKey]
+    })
     writeAlarmed(instance.role, dataDate, alarmed)
-    showAlarm(dueAlerts[0])
+    writeSnoozed(instance.role, dataDate, snoozed)
+    showAlarm(instance, dueAlerts[0])
     playAlarmSound()
   }
 
@@ -465,6 +510,7 @@
         document.addEventListener("keydown", unlockAudio, { once: true })
         this.timer = window.setInterval(() => this.poll(), POLL_INTERVAL)
         this.alarmTimer = window.setInterval(() => checkDueAlarms(this), ALARM_CHECK_INTERVAL)
+        this.poll()
       },
     }
 
@@ -488,5 +534,30 @@
   window.CareNotifications = {
     init,
     handleData,
+  }
+
+  function initForCurrentPage() {
+    const path = window.location.pathname.toLowerCase()
+    const isProfessional = path.includes("/pages/cuidador-profesional/")
+    const isFamily = path.includes("/pages/cuidador-familiar/")
+    if (!isProfessional && !isFamily) return
+
+    const role = isProfessional ? "professional" : "family"
+    const endpoint = isProfessional ? "/professional/overview" : "/family/overview"
+    const routineUrl = isProfessional ? "./routines.html" : "./routine.html"
+
+    init({
+      role,
+      endpoint,
+      fetchJson: (url) => window.CuidadoApi.fetchJson(url),
+      mountSelector: isProfessional ? ".professional-actions" : ".family-page-header",
+      routineUrl,
+    })
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initForCurrentPage)
+  } else {
+    initForCurrentPage()
   }
 })()
