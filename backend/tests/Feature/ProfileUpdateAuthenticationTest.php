@@ -29,6 +29,8 @@ class ProfileUpdateAuthenticationTest extends TestCase
             'birthdate' => '1990-01-01',
         ]);
 
-        // Paso 2: verificar que la respuesta sea HTTP 401.
+        $response->assertUnauthorized();
+
+        // Paso 3: confirmar que el perfil no sufrió cambios.
     }
 }
