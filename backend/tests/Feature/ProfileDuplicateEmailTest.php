@@ -35,6 +35,8 @@ class ProfileDuplicateEmailTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['email']);
 
-        // Paso 4: confirmar que el primer usuario conserva su correo original.
+        $firstUser->refresh();
+
+        $this->assertSame('ana@example.com', $firstUser->email);
     }
 }
