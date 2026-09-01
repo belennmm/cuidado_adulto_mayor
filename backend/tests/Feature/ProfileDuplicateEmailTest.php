@@ -31,6 +31,10 @@ class ProfileDuplicateEmailTest extends TestCase
             'email' => $secondUser->email,
         ]);
 
-        // Paso 3: verificar que la respuesta sea HTTP 422.
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['email']);
+
+        // Paso 4: confirmar que el primer usuario conserva su correo original.
     }
 }
