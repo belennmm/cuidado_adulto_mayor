@@ -1,0 +1,309 @@
+﻿{
+    "root_group":  {
+                       "checks":  {
+                                      "professional: professional_overview responde 200":  {
+                                                                                               "name":  "professional: professional_overview responde 200",
+                                                                                               "path":  "::professional: professional_overview responde 200",
+                                                                                               "id":  "5c6a4fd80154a9a8d2973d69240875b8",
+                                                                                               "passes":  7630,
+                                                                                               "fails":  0
+                                                                                           },
+                                      "professional: professional_overview devuelve JSON":  {
+                                                                                                "name":  "professional: professional_overview devuelve JSON",
+                                                                                                "path":  "::professional: professional_overview devuelve JSON",
+                                                                                                "id":  "12fd79cc43ed0a5fead652a829553f0c",
+                                                                                                "passes":  7630,
+                                                                                                "fails":  0
+                                                                                            },
+                                      "professional: professional_older_adults responde 200":  {
+                                                                                                   "name":  "professional: professional_older_adults responde 200",
+                                                                                                   "path":  "::professional: professional_older_adults responde 200",
+                                                                                                   "id":  "07fc5b289f002347bc55a7b8a835cddc",
+                                                                                                   "passes":  7630,
+                                                                                                   "fails":  0
+                                                                                               },
+                                      "professional: professional_older_adults devuelve JSON":  {
+                                                                                                    "name":  "professional: professional_older_adults devuelve JSON",
+                                                                                                    "path":  "::professional: professional_older_adults devuelve JSON",
+                                                                                                    "id":  "f26776c805a2ab18c27a970d79ffdd6c",
+                                                                                                    "passes":  7630,
+                                                                                                    "fails":  0
+                                                                                                },
+                                      "professional: professional_routines responde 200":  {
+                                                                                               "path":  "::professional: professional_routines responde 200",
+                                                                                               "id":  "f2cf941e7714a75c9aaa102e1fa17b7e",
+                                                                                               "passes":  7630,
+                                                                                               "fails":  0,
+                                                                                               "name":  "professional: professional_routines responde 200"
+                                                                                           },
+                                      "professional: professional_routines devuelve JSON":  {
+                                                                                                "id":  "579c2123070bb71ce0826c22c69eed9d",
+                                                                                                "passes":  7630,
+                                                                                                "fails":  0,
+                                                                                                "name":  "professional: professional_routines devuelve JSON",
+                                                                                                "path":  "::professional: professional_routines devuelve JSON"
+                                                                                            },
+                                      "family: family_overview responde 200":  {
+                                                                                   "name":  "family: family_overview responde 200",
+                                                                                   "path":  "::family: family_overview responde 200",
+                                                                                   "id":  "59da1793788b27e5e2f03ac6d84cfdd0",
+                                                                                   "passes":  4407,
+                                                                                   "fails":  0
+                                                                               },
+                                      "family: family_overview devuelve JSON":  {
+                                                                                    "name":  "family: family_overview devuelve JSON",
+                                                                                    "path":  "::family: family_overview devuelve JSON",
+                                                                                    "id":  "aa7eb73f23a35435336d0827c3ac3c6a",
+                                                                                    "passes":  4407,
+                                                                                    "fails":  0
+                                                                                },
+                                      "family: family_older_adults responde 200":  {
+                                                                                       "name":  "family: family_older_adults responde 200",
+                                                                                       "path":  "::family: family_older_adults responde 200",
+                                                                                       "id":  "c101095c993792d255bbc864ea1a660a",
+                                                                                       "passes":  4406,
+                                                                                       "fails":  1
+                                                                                   },
+                                      "family: family_older_adults devuelve JSON":  {
+                                                                                        "path":  "::family: family_older_adults devuelve JSON",
+                                                                                        "id":  "c9b6271ef7cb7e2785bc6e343fa4422a",
+                                                                                        "passes":  4406,
+                                                                                        "fails":  1,
+                                                                                        "name":  "family: family_older_adults devuelve JSON"
+                                                                                    },
+                                      "family: family_incidents responde 200":  {
+                                                                                    "fails":  0,
+                                                                                    "name":  "family: family_incidents responde 200",
+                                                                                    "path":  "::family: family_incidents responde 200",
+                                                                                    "id":  "ca5a352c8134c66e4ff3a8f996272730",
+                                                                                    "passes":  4407
+                                                                                },
+                                      "family: family_incidents devuelve JSON":  {
+                                                                                     "name":  "family: family_incidents devuelve JSON",
+                                                                                     "path":  "::family: family_incidents devuelve JSON",
+                                                                                     "id":  "260dab768975c1f2b6dacd673e089f01",
+                                                                                     "passes":  4407,
+                                                                                     "fails":  0
+                                                                                 },
+                                      "admin: admin_dashboard responde 200":  {
+                                                                                  "name":  "admin: admin_dashboard responde 200",
+                                                                                  "path":  "::admin: admin_dashboard responde 200",
+                                                                                  "id":  "d28efdbbfd19d8a2f97a30929e96778c",
+                                                                                  "passes":  3068,
+                                                                                  "fails":  0
+                                                                              },
+                                      "admin: admin_dashboard devuelve JSON":  {
+                                                                                   "name":  "admin: admin_dashboard devuelve JSON",
+                                                                                   "path":  "::admin: admin_dashboard devuelve JSON",
+                                                                                   "id":  "e4b1df11823a6ed45aee2a425d1de718",
+                                                                                   "passes":  3068,
+                                                                                   "fails":  0
+                                                                               },
+                                      "admin: medication_statistics responde 200":  {
+                                                                                        "name":  "admin: medication_statistics responde 200",
+                                                                                        "path":  "::admin: medication_statistics responde 200",
+                                                                                        "id":  "994d7fbacc32e276f6670a3cc1ddbccd",
+                                                                                        "passes":  3068,
+                                                                                        "fails":  0
+                                                                                    },
+                                      "admin: medication_statistics devuelve JSON":  {
+                                                                                         "name":  "admin: medication_statistics devuelve JSON",
+                                                                                         "path":  "::admin: medication_statistics devuelve JSON",
+                                                                                         "id":  "bcf626cc1278974f83736408feb697ed",
+                                                                                         "passes":  3068,
+                                                                                         "fails":  0
+                                                                                     },
+                                      "admin: schedule_calendar responde 200":  {
+                                                                                    "name":  "admin: schedule_calendar responde 200",
+                                                                                    "path":  "::admin: schedule_calendar responde 200",
+                                                                                    "id":  "868b7f9d9509aea49cf093710866e292",
+                                                                                    "passes":  3068,
+                                                                                    "fails":  0
+                                                                                },
+                                      "admin: schedule_calendar devuelve JSON":  {
+                                                                                     "id":  "84287f5c435e0d5d54e4dc76ccf465d4",
+                                                                                     "passes":  3068,
+                                                                                     "fails":  0,
+                                                                                     "name":  "admin: schedule_calendar devuelve JSON",
+                                                                                     "path":  "::admin: schedule_calendar devuelve JSON"
+                                                                                 }
+                                  },
+                       "name":  "",
+                       "path":  "",
+                       "id":  "d41d8cd98f00b204e9800998ecf8427e",
+                       "groups":  {
+                                      "setup":  {
+                                                    "name":  "setup",
+                                                    "path":  "::setup",
+                                                    "id":  "5c0f8025f7e0b6654089e5b00e950f1a",
+                                                    "groups":  {
+
+                                                               },
+                                                    "checks":  {
+                                                                   "admin: login responde 200":  {
+                                                                                                     "id":  "36a99106d93289622a2778a809880132",
+                                                                                                     "passes":  1,
+                                                                                                     "fails":  0,
+                                                                                                     "name":  "admin: login responde 200",
+                                                                                                     "path":  "::setup::admin: login responde 200"
+                                                                                                 },
+                                                                   "admin: login devuelve token":  {
+                                                                                                       "name":  "admin: login devuelve token",
+                                                                                                       "path":  "::setup::admin: login devuelve token",
+                                                                                                       "id":  "920944a648dfeb973005dbffd93f8712",
+                                                                                                       "passes":  1,
+                                                                                                       "fails":  0
+                                                                                                   },
+                                                                   "professional: login responde 200":  {
+                                                                                                            "fails":  0,
+                                                                                                            "name":  "professional: login responde 200",
+                                                                                                            "path":  "::setup::professional: login responde 200",
+                                                                                                            "id":  "60c4f45f11f9f5c1fa36cea46d1c0686",
+                                                                                                            "passes":  1
+                                                                                                        },
+                                                                   "professional: login devuelve token":  {
+                                                                                                              "path":  "::setup::professional: login devuelve token",
+                                                                                                              "id":  "646c9a0c769bc8d24dd33797e3ca3b7b",
+                                                                                                              "passes":  1,
+                                                                                                              "fails":  0,
+                                                                                                              "name":  "professional: login devuelve token"
+                                                                                                          },
+                                                                   "family: login responde 200":  {
+                                                                                                      "path":  "::setup::family: login responde 200",
+                                                                                                      "id":  "0a80ac14761e065b3d66d0eaaba99949",
+                                                                                                      "passes":  1,
+                                                                                                      "fails":  0,
+                                                                                                      "name":  "family: login responde 200"
+                                                                                                  },
+                                                                   "family: login devuelve token":  {
+                                                                                                        "name":  "family: login devuelve token",
+                                                                                                        "path":  "::setup::family: login devuelve token",
+                                                                                                        "id":  "103c9a4680a704cd011e810c265ba2d6",
+                                                                                                        "passes":  1,
+                                                                                                        "fails":  0
+                                                                                                    }
+                                                               }
+                                                }
+                                  }
+                   },
+    "metrics":  {
+                    "vus_max":  {
+                                    "value":  150,
+                                    "min":  150,
+                                    "max":  150
+                                },
+                    "http_req_duration{expected_response:true}":  {
+                                                                      "p(95)":  63.00022619999998,
+                                                                      "avg":  37.60953898907685,
+                                                                      "min":  11.73733,
+                                                                      "med":  30.720403,
+                                                                      "max":  1262.84592,
+                                                                      "p(90)":  51.007746600000004
+                                                                  },
+                    "http_req_waiting":  {
+                                             "avg":  37.23626585389945,
+                                             "min":  0,
+                                             "med":  30.3543825,
+                                             "max":  1262.630069,
+                                             "p(90)":  50.625818100000004,
+                                             "p(95)":  62.691691900000016
+                                         },
+                    "http_req_blocked":  {
+                                             "avg":  0.05970902687673759,
+                                             "min":  0,
+                                             "med":  0.005248,
+                                             "max":  35.083897,
+                                             "p(90)":  0.010329300000000003,
+                                             "p(95)":  0.01260115
+                                         },
+                    "http_req_tls_handshaking":  {
+                                                     "max":  0,
+                                                     "p(90)":  0,
+                                                     "p(95)":  0,
+                                                     "avg":  0,
+                                                     "min":  0,
+                                                     "med":  0
+                                                 },
+                    "http_req_sending":  {
+                                             "max":  3.333024,
+                                             "p(90)":  0.053226200000000015,
+                                             "p(95)":  0.0743879,
+                                             "avg":  0.025682898186151135,
+                                             "min":  0,
+                                             "med":  0.0167075
+                                         },
+                    "http_req_connecting":  {
+                                                "min":  0,
+                                                "med":  0,
+                                                "max":  35.024597,
+                                                "p(90)":  0,
+                                                "p(95)":  0,
+                                                "avg":  0.05146152107330422
+                                            },
+                    "iterations":  {
+                                       "count":  15105,
+                                       "rate":  23.63560867379844
+                                   },
+                    "http_reqs":  {
+                                      "count":  45318,
+                                      "rate":  70.91152028329677
+                                  },
+                    "iteration_duration":  {
+                                               "avg":  3107.2013837752525,
+                                               "min":  3041.567024,
+                                               "med":  3100.308795,
+                                               "max":  33058.93951,
+                                               "p(90)":  3142.6121283999996,
+                                               "p(95)":  3156.9263216
+                                           },
+                    "http_req_duration":  {
+                                              "avg":  37.60870908619082,
+                                              "min":  0,
+                                              "med":  30.7203995,
+                                              "max":  1262.84592,
+                                              "p(90)":  51.00750670000001,
+                                              "p(95)":  62.99991990000001,
+                                              "thresholds":  {
+                                                                 "p(95)\u003c800":  false,
+                                                                 "p(99)\u003c1500":  false
+                                                             }
+                                          },
+                    "data_received":  {
+                                          "count":  30634459,
+                                          "rate":  47935.39125173933
+                                      },
+                    "http_req_receiving":  {
+                                               "med":  0.187449,
+                                               "max":  673.122777,
+                                               "p(90)":  0.6713160000000004,
+                                               "p(95)":  0.9451804,
+                                               "avg":  0.3467603341056513,
+                                               "min":  0
+                                           },
+                    "vus":  {
+                                "value":  1,
+                                "min":  1,
+                                "max":  150
+                            },
+                    "checks":  {
+                                   "passes":  90634,
+                                   "fails":  2,
+                                   "thresholds":  {
+                                                      "rate\u003e0.99":  false
+                                                  },
+                                   "value":  0.9999779337128735
+                               },
+                    "data_sent":  {
+                                      "count":  9556421,
+                                      "rate":  14953.447671504107
+                                  },
+                    "http_req_failed":  {
+                                            "passes":  1,
+                                            "fails":  45317,
+                                            "thresholds":  {
+                                                               "rate\u003c0.01":  false
+                                                           },
+                                            "value":  0.00002206628712652809
+                                        }
+                }
+}
