@@ -38,10 +38,6 @@ async function confirmPopup(message, options = {}) {
   return false
 }
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function isApproved(value) {
   return value === true || value === 1 || value === "1" || value === "true" || value === "t"
 }
@@ -86,14 +82,6 @@ function renderRequestState(message, className = "empty-requests") {
   `
 }
 
-async function fetchJson(path, options = {}) {
-  return window.CuidadoApi.fetchJson(path, {
-    ...options,
-    token: getToken(),
-    fallbackError: "No se pudo completar la solicitud.",
-  })
-}
-
 function setFormDisabled(disabled) {
   newUserForm?.querySelectorAll("input, select, button").forEach((element) => {
     element.disabled = disabled
@@ -112,9 +100,7 @@ function clearForm() {
 }
 
 async function createUser() {
-  const token = getToken()
-
-  if (!token) {
+  if (!window.CuidadoApi.getToken(["admin"])) {
     await showPopup("Inicia sesión como administrador para crear usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
@@ -138,9 +124,11 @@ async function createUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson("/admin/users", {
+    const data = await window.CuidadoApi.fetchJson("/admin/users", {
       method: "POST",
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
     })
 
     await showPopup(data.message || "Usuario creado correctamente.", { variant: "success" })
@@ -154,9 +142,7 @@ async function createUser() {
 }
 
 async function loadPendingRequests() {
-  const token = getToken()
-
-  if (!token) {
+  if (!window.CuidadoApi.getToken(["admin"])) {
     renderRequestState("Inicia sesión como administrador para ver las solicitudes.")
     return
   }
@@ -164,7 +150,10 @@ async function loadPendingRequests() {
   renderRequestState("Cargando solicitudes...", "loading-requests")
 
   try {
-    const data = await fetchJson("/admin/users", { token })
+    const data = await window.CuidadoApi.fetchJson("/admin/users", {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
+    })
 
     pendingRequests = (data.users || []).filter((user) => {
       return user.role !== "admin" && !isApproved(user.is_approved)
@@ -177,12 +166,11 @@ async function loadPendingRequests() {
 }
 
 async function approveRequest(userId) {
-  const token = getToken()
-
   try {
-    const data = await fetchJson(`/admin/users/${userId}/approve`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/approve`, {
       method: "PATCH",
-      token,
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
     })
 
     await showPopup(data.message || "Usuario aprobado correctamente.", { variant: "success" })
@@ -202,12 +190,11 @@ async function rejectRequest(userId) {
     return
   }
 
-  const token = getToken()
-
   try {
-    const data = await fetchJson(`/admin/users/${userId}/reject`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/reject`, {
       method: "DELETE",
-      token,
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
     })
 
     await showPopup(data.message || "Solicitud rechazada correctamente.", { variant: "success" })
