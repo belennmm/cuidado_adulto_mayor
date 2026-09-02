@@ -24,6 +24,9 @@ describe("AuthSession", () => {
     window.AuthSession.clearSession("familiar")
 
     expect(window.AuthSession.getToken(["familiar"])).toBe("")
+    expect(window.AuthSession.getUser(["familiar"])).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.cuidador_familiar.token")).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.cuidador_familiar.user")).toBeNull()
     expect(sessionStorage.length).toBe(0)
   })
 })

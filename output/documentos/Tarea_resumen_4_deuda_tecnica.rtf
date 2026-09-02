@@ -1,0 +1,40 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Arial;}}
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+\fs24
+\pard\qc\b\fs32 Tarea de resumen 4: Deuda t\u233?cnica y refactorizaci\u243?n\b0\fs24\par
+\pard\sa180 Proyecto: Organ\u237?zate - Plataforma para el cuidado de adultos mayores\par
+\sa240 Nombre: ______________________________\par
+
+\b 1. \u191?Qu\u233? es la deuda t\u233?cnica y c\u243?mo se puede reducir?\b0\par
+\sa120 La deuda t\u233?cnica es el costo futuro de corregir, adaptar o mantener decisiones de desarrollo tomadas para entregar una soluci\u243?n r\u225?pida. No siempre implica que el sistema falle hoy: puede funcionar, pero quedar con c\u243?digo dif\u237?cil de entender, duplicado, poco probado o mal documentado. La "deuda" genera intereses cuando un cambio sencillo toma m\u225?s tiempo, aumenta el riesgo de errores o encarece las nuevas funciones.\par
+\sa120 En Organ\u237?zate, reducirla significa registrar cada deuda conocida en el backlog con impacto y prioridad; aplicar revisiones de c\u243?digo; conservar pruebas automatizadas antes de cambiar componentes sensibles; evitar duplicar l\u243?gica; documentar los contratos de la API; y reservar capacidad de cada sprint para mantenimiento. La refactorizaci\u243?n debe hacerse en pasos peque\u241?os, verificando que el comportamiento visible no cambie.\par
+
+\b 2. Ejemplos de deuda t\u233?cnica en el proyecto\b0\par
+\sa120\b a) L\u243?gica repetida en el frontend.\b0\~ Varios archivos de administraci\u243?n declaran funciones casi id\u233?nticas como getToken(), escapeHtml() y fetchJson(). Por ejemplo, aparecen en frontend/js/admin/dashboard.js, frontend/js/admin/adultos-mayores.js y frontend/js/admin/dashboard-medicines-stats.js. Esto es deuda porque una mejora de seguridad, formato o manejo de errores debe replicarse en cada archivo y alguna copia puede quedar desactualizada.\par
+\sa120\b b) Archivo con demasiadas responsabilidades.\b0\~ frontend/js/admin/dashboard-medicines-stats.js concentra autenticaci\u243?n, carga de estad\u237?sticas, renderizado de gr\u225?ficas, inventario, formularios modales, ajustes de stock y eventos. El archivo puede funcionar, pero su tama\u241?o y acoplamiento hacen m\u225?s costoso probar o modificar una parte sin afectar otra.\par
+\sa120\b c) Controlador complejo.\b0\~ backend/app/Http/Controllers/CaregiverScheduleController.php incluye validaci\u243?n, autorizaci\u243?n, persistencia, formateo y c\u225?lculos de calendario. Esta concentraci\u243?n dificulta aislar las reglas de turnos y reutilizarlas en otros puntos de la aplicaci\u243?n.\par
+\sa120\b d) Configuraci\u243?n y convenciones distribuidas.\b0\~ Aunque frontend/js/api-config.js centraliza parte de la comunicaci\u243?n con la API, algunas p\u225?ginas vuelven a envolver la misma llamada con sus propias variantes. Sin una capa com\u250?n bien definida, la autenticaci\u243?n y los mensajes de error pueden divergir entre pantallas.\par
+
+\b 3. M\u233?todos de refactorizaci\u243?n factibles y plan de aplicaci\u243?n\b0\par
+\sa120\b 3.1 Extraer funciones y crear utilidades compartidas.\b0\~ Se aplicar\u225? Extract Function/Method: mover fragmentos con una sola responsabilidad a funciones con nombres claros. Primero se crear\u225? un m\u243?dulo compartido, por ejemplo frontend/js/ui-utils.js, para escapeHtml(), formatDate() y navegaci\u243?n segura. La autenticaci\u243?n y las solicitudes HTTP se mantendr\u225?n en api-config.js. Despu\u233?s, cada p\u225?gina importar\u225? o consumir\u225? esas utilidades en vez de tener copias. Se ejecutar\u225?n las pruebas del frontend y se probar\u225?n manualmente los flujos de dashboard y adultos mayores despu\u233?s de cada migraci\u243?n.\par
+\sa120\b 3.2 Separar el m\u243?dulo de medicamentos por responsabilidad.\b0\~ Se dividir\u225? dashboard-medicines-stats.js en: medication-api.js (peticiones), medication-state.js (estado y selecci\u243?n), medication-renderers.js (inventario, ranking y gr\u225?fica) y medication-events.js (eventos y modales). La p\u225?gina conservar\u225? un archivo peque\u241?o de inicializaci\u243?n. El cambio se har\u225? gradualmente: extraer una funci\u243?n, ejecutar pruebas, abrir la pantalla y confirmar que las mismas operaciones CRUD e inventario contin\u250?an disponibles.\par
+\sa120\b 3.3 Extraer servicios del controlador de turnos.\b0\~ En Laravel se crear\u225?n servicios como ScheduleValidationService, ScheduleCalendarService y SchedulePresenter. El controlador solo recibir\u225? la solicitud, delegar\u225? al servicio y devolver\u225? la respuesta JSON. Primero se cubrir\u225?n con pruebas los casos actuales: crear, actualizar, solicitar cambio, aprobar/rechazar y generar calendario. Luego se mover\u225? una responsabilidad por vez sin alterar rutas ni formato de respuesta.\par
+\sa120\b 3.4 Simplificar condicionales y eliminar valores m\u225?gicos.\b0\~ Para estados repetidos de inventario, roles y turnos se usar\u225?n constantes o enums del dominio, en lugar de literales dispersos. Condicionales anidados que describen una regla de negocio se reemplazar\u225?n por funciones con guard clauses y nombres expl\u237?citos. Esto mejora la lectura y reduce inconsistencias entre el frontend y el backend.\par
+
+\b Plan de control y priorizaci\u243?n\b0\par
+\sa120 1. Crear una tarjeta por cada deuda con causa, archivos afectados, riesgo y criterio de salida.\par
+\sa120 2. Priorizar primero la duplicaci\u243?n de utilidades y las pruebas de los flujos de medicamentos/turnos, porque son cambios localizados y de bajo riesgo.\par
+\sa120 3. Refactorizar en ramas peque\u241?as; no mezclar nuevas funcionalidades con la limpieza estructural.\par
+\sa120 4. Ejecutar pruebas automatizadas, revisi\u243?n por pares y verificaci\u243?n manual de los flujos afectados antes de integrar.\par
+\sa120 5. Medir el resultado: menos c\u243?digo duplicado, archivos m\u225?s peque\u241?os, menor complejidad de los controladores y menor tiempo para corregir o ampliar funciones.\par
+
+\b Conclusi\u243?n\b0\par
+\sa120 La deuda t\u233?cnica no se elimina de una vez ni equivale autom\u225?ticamente a un error. En Organ\u237?zate debe gestionarse como un riesgo de calidad: identificarla, priorizarla seg\u250?n el impacto sobre el cuidado de los adultos mayores y pagarla continuamente con refactorizaciones verificadas. As\u237?, el sistema conserva sus funciones actuales mientras gana mantenibilidad, seguridad y capacidad de crecimiento.\par
+
+\b Fuentes consultadas\b0\par
+\sa120 Material proporcionado: Deuda t\u233?cnica y refactorizaci\u243?n.pptx, diapositivas 3, 17-20 y 22-40.\par
+\sa120 Martin Fowler, Catalog of Refactorings: https://refactoring.com/catalog/index.html\par
+\sa120 Martin Fowler, Code Smell: https://martinfowler.com/bliki/CodeSmell.html\par
+\sa120 Refactoring.Guru, Extract Method: https://refactoring.guru/extract-method\par
+}
