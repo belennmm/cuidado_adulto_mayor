@@ -22,11 +22,9 @@ Route::get('/ping', function () {
     return response()->json(['ok' => true]);
 });
 
-Route::get('/dashboard-summary', [AdminDashboardController::class, 'summary']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('/users', [AdminUserController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);

@@ -14,7 +14,7 @@ async function loadAdminReminder() {
   if (!adminReminderText) return
 
   try {
-    const data = await window.CuidadoApi.fetchJson("/dashboard-summary", {
+    const data = await window.CuidadoApi.fetchJson("/admin/dashboard-summary", {
       expectedRoles: ["admin"],
       fallbackError: "No se pudo cargar el estado de hoy.",
     })

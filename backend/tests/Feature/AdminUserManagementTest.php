@@ -14,6 +14,13 @@ class AdminUserManagementTest extends TestCase
     public function test_guest_is_rejected_by_sanctum_on_admin_routes(): void
     {
         $this->getJson('/api/admin/users')->assertUnauthorized();
+        $this->getJson('/api/admin/dashboard-summary')->assertUnauthorized();
+    }
+
+    public function test_legacy_public_admin_endpoints_are_not_available(): void
+    {
+        $this->getJson('/api/users')->assertNotFound();
+        $this->getJson('/api/dashboard-summary')->assertNotFound();
     }
 
     public function test_non_admin_is_rejected_by_admin_middleware(): void

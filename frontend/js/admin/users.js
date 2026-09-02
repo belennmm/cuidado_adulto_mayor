@@ -50,8 +50,8 @@ function escapeHtml(value) {
 
 async function loadUsers() {
   try {
-    const data = await window.CuidadoApi.fetchJson("/users", {
-      auth: false,
+    const data = await window.CuidadoApi.fetchJson("/admin/users", {
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los usuarios.",
     })
 
