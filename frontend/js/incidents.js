@@ -14,9 +14,7 @@ const submitIncidentForm = document.getElementById("submitIncidentForm")
 
 let assignedOlderAdultsLoaded = false
 
-function getToken() {
-    return (window.AuthSession?.getToken() || "")
-}
+const INCIDENT_ROLES = ["admin", "profesional", "cuidador_profesional"]
 
 async function showPopup(message, options = {}) {
     if (window.showAdminAlert) {
@@ -103,7 +101,7 @@ async function loadAssignedOlderAdults() {
 
     try {
         const data = await window.CuidadoApi.fetchJson("/professional/older-adults", {
-            token: getToken(),
+            expectedRoles: INCIDENT_ROLES,
             fallbackError: "No se pudieron cargar los adultos mayores asignados.",
         })
         const olderAdults = Array.isArray(data.older_adults) ? data.older_adults : []
@@ -184,8 +182,8 @@ async function saveIncident(event) {
     try {
         const data = await window.CuidadoApi.fetchJson("/professional/incidents", {
             method: "POST",
-            token: getToken(),
             body: JSON.stringify(payload),
+            expectedRoles: INCIDENT_ROLES,
             fallbackError: "No se pudo registrar el incidente.",
         })
         incidentWasSaved = true
@@ -281,7 +279,7 @@ function renderIncidents(incidents) {
 }
 
 async function loadTodayIncidents(requestedDate = "") {
-    const token = getToken()
+    const token = window.CuidadoApi.getToken(INCIDENT_ROLES)
 
     if (!token) {
         const message = "Inicia sesión para ver los incidentes del día."
@@ -299,7 +297,7 @@ async function loadTodayIncidents(requestedDate = "") {
         }
 
         const data = await window.CuidadoApi.fetchJson(`/incidents${params.toString() ? `?${params.toString()}` : ""}`, {
-            token,
+            expectedRoles: INCIDENT_ROLES,
             fallbackError: "No se pudieron cargar los incidentes.",
         })
 
