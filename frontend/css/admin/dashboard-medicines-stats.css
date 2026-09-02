@@ -469,6 +469,12 @@
   min-width: 220px;
 }
 
+.inventory-selection-status {
+  margin: 0 0 16px;
+  color: #55728e;
+  font-size: 14px;
+}
+
 .inventory-secondary-button {
   padding: 0 18px;
   background-color: #e8eef8;

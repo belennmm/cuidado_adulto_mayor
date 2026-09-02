@@ -164,9 +164,9 @@
 
               <div class="inventory-heading-actions">
                 <label class="inventory-filter-label" for="inventoryOlderAdultFilter">
-                  Adulto mayor
-                  <select id="inventoryOlderAdultFilter">
-                    <option value="">Todos</option>
+                  Seleccionar adulto mayor
+                  <select id="inventoryOlderAdultFilter" aria-describedby="inventoryAdultSelectionHelp inventoryAdultSelectionStatus">
+                    <option value="">Todos los adultos mayores</option>
                   </select>
                 </label>
 
@@ -176,6 +176,12 @@
               </div>
             </div>
 
+            <p class="inventory-selection-status" id="inventoryAdultSelectionStatus" aria-live="polite">
+              Mostrando medicamentos de todos los adultos mayores.
+            </p>
+            <p class="sr-only" id="inventoryAdultSelectionHelp">
+              Selecciona un adulto mayor para consultar únicamente sus medicamentos registrados.
+            </p>
             <div class="inventory-feedback" id="inventoryFeedback" hidden></div>
             <div class="inventory-list" id="inventoryList">
               <div class="inventory-placeholder">Cargando inventario...</div>
