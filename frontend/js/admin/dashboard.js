@@ -10,10 +10,6 @@ const changesCount = document.getElementById("changesCount")
 const routineList = document.getElementById("routineList")
 const medicineText = document.querySelector(".medicine-text")
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -21,14 +17,6 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;")
-}
-
-async function fetchJson(path, options = {}) {
-  return window.CuidadoApi.fetchJson(path, {
-    ...options,
-    token: getToken(),
-    fallbackError: "No se pudo cargar la información.",
-  })
 }
 
 function formatShortDate(value) {
@@ -102,7 +90,10 @@ async function loadLatestRoutineChanges() {
   renderRoutineEmpty("Cargando cambios de rutinas...")
 
   try {
-    const data = await fetchJson("/rutinas")
+    const data = await window.CuidadoApi.fetchJson("/rutinas", {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo cargar la información.",
+    })
     const routines = (data.rutinas || [])
       .slice()
       .sort((first, second) => {
@@ -120,7 +111,10 @@ async function loadLatestRoutineChanges() {
 
 async function loadDashboardSummary() {
   try {
-    const data = await fetchJson("/dashboard-summary")
+    const data = await window.CuidadoApi.fetchJson("/dashboard-summary", {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo cargar la información.",
+    })
 
     if (olderAdultsCount) olderAdultsCount.textContent = data.stats?.older_adults ?? 0
     if (caregiversCount) caregiversCount.textContent = data.stats?.caregivers ?? 0
