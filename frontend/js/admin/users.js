@@ -3,10 +3,6 @@ const usersTableBody = document.getElementById("usersTableBody")
 
 let usersData = []
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 async function showPopup(message, options = {}) {
   if (window.showAdminAlert) {
     await window.showAdminAlert(message, options)
@@ -54,8 +50,8 @@ function escapeHtml(value) {
 
 async function loadUsers() {
   try {
-    const data = await window.CuidadoApi.fetchJson("/users", {
-      auth: false,
+    const data = await window.CuidadoApi.fetchJson("/admin/users", {
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los usuarios.",
     })
 
@@ -71,7 +67,7 @@ async function loadUsers() {
 }
 
 async function approveUser(userId) {
-  const token = getToken()
+  const token = window.CuidadoApi.getToken(["admin"])
 
   if (!token) {
     await showPopup("Inicia sesión para aprobar usuarios.", { variant: "error" })
@@ -81,7 +77,7 @@ async function approveUser(userId) {
   try {
     const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/approve`, {
       method: "PATCH",
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudo aprobar el usuario.",
     })
 

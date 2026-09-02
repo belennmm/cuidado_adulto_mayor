@@ -30,10 +30,6 @@
     }
   }
 
-  function getToken() {
-    return (window.AuthSession?.getToken() || "")
-  }
-
   function navigateToLogin() {
     if (window.navigateWithLoading) {
       window.navigateWithLoading("../../index.html")
@@ -52,19 +48,10 @@
       .replaceAll("'", "&#039;")
   }
 
-  async function fetchJson(path, options = {}) {
-    const token = getToken()
-
-    if (!token) {
-      throw new Error("Inicia sesión como administrador para ver esta información.")
-    }
-
-    return window.CuidadoApi.fetchJson(path, {
-      ...options,
-      token,
-      fallbackError: "No se pudo completar la solicitud.",
-    })
-  }
+  const ADMIN_REQUEST_OPTIONS = Object.freeze({
+    expectedRoles: ["admin"],
+    fallbackError: "No se pudo completar la solicitud.",
+  })
 
 
   function updateFilterButtons() {
@@ -258,8 +245,11 @@
 
   async function loadFilterItems() {
     const [data, adultsData] = await Promise.all([
-      fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(state.activeFilter)}`),
-      fetchJson("/admin/older-adults"),
+      window.CuidadoApi.fetchJson(
+        `/admin/medication-statistics?filter=${encodeURIComponent(state.activeFilter)}`,
+        ADMIN_REQUEST_OPTIONS,
+      ),
+      window.CuidadoApi.fetchJson("/admin/older-adults", ADMIN_REQUEST_OPTIONS),
     ])
     state.items = data.items || []
     state.inventory = data.inventory || []
@@ -423,7 +413,8 @@
         : "/admin/medications/inventory"
       const method = medicationId ? "PUT" : "POST"
 
-      const data = await fetchJson(path, {
+      const data = await window.CuidadoApi.fetchJson(path, {
+        ...ADMIN_REQUEST_OPTIONS,
         method,
         body: JSON.stringify(payload),
       })
@@ -444,7 +435,8 @@
     const amount = Number(document.getElementById("stockAmount")?.value || 0)
 
     try {
-      const data = await fetchJson(`/admin/medications/inventory/${encodeURIComponent(medicationId)}/stock`, {
+      const data = await window.CuidadoApi.fetchJson(`/admin/medications/inventory/${encodeURIComponent(medicationId)}/stock`, {
+        ...ADMIN_REQUEST_OPTIONS,
         method: "PATCH",
         body: JSON.stringify({
           action,
@@ -484,7 +476,8 @@
       if (!confirmed) return
 
       try {
-        const data = await fetchJson(`/admin/medications/inventory/${encodeURIComponent(medication.id)}`, {
+        const data = await window.CuidadoApi.fetchJson(`/admin/medications/inventory/${encodeURIComponent(medication.id)}`, {
+          ...ADMIN_REQUEST_OPTIONS,
           method: "DELETE",
         })
 
@@ -556,7 +549,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-  const token = getToken()
+  const token = window.CuidadoApi.getToken(["admin"])
   const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
   const role = String(user?.role || "").trim().toLowerCase()
 

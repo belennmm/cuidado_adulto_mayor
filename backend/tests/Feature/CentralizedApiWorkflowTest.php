@@ -33,7 +33,6 @@ class CentralizedApiWorkflowTest extends TestCase
         $context = $this->makeCareContext();
         $token = $this->loginAndGetToken($context['admin']->email);
 
-        $this->withToken($token)->getJson('/api/users')->assertOk();
         $this->withToken($token)->getJson('/api/admin/users')->assertOk();
         $this->withToken($token)->getJson('/api/admin/older-adults')->assertOk();
         $this->withToken($token)->getJson("/api/admin/older-adults/{$context['olderAdult']->id}")->assertOk();

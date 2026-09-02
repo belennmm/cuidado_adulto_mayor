@@ -25,8 +25,8 @@ class AdminDashboardController extends Controller
             ->where(function ($query) use ($todayName) {
                 $query
                     ->whereNull('days')
-                    ->orWhereRaw("json_array_length(COALESCE(days::json, '[]'::json)) = 0")
-                    ->orWhereRaw('? = ANY (SELECT json_array_elements_text(days::json))', [$todayName]);
+                    ->orWhereJsonLength('days', 0)
+                    ->orWhereJsonContains('days', $todayName);
             })
             ->pluck('id');
 

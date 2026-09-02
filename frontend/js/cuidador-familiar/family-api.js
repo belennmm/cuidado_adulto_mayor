@@ -7,10 +7,6 @@
     }
   }
 
-  function getToken() {
-    return (window.AuthSession?.getToken() || "")
-  }
-
   function getUser() {
     return safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null)) || {}
   }
@@ -32,7 +28,7 @@
   async function fetchJson(path, options = {}) {
     return window.CuidadoApi.fetchJson(path, {
       ...options,
-      token: getToken(),
+      expectedRoles: ["familiar", "cuidador_familiar"],
       fallbackError: "No se pudo cargar la información.",
     })
   }

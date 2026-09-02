@@ -1,8 +1,4 @@
 (() => {
-  function getToken() {
-    return (window.AuthSession?.getToken() || "")
-  }
-
   function escapeHtml(value) {
     return String(value ?? "")
       .replaceAll("&", "&amp;")
@@ -15,7 +11,7 @@
   async function fetchJson(path, options = {}) {
     return window.CuidadoApi.fetchJson(path, {
       ...options,
-      token: getToken(),
+      expectedRoles: ["profesional", "cuidador_profesional"],
       fallbackError: "No se pudo cargar la información.",
     })
   }

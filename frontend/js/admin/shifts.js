@@ -22,9 +22,10 @@ let caregiversData = []
 let schedulesData = []
 let vacationsData = []
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
+const ADMIN_REQUEST_OPTIONS = Object.freeze({
+  expectedRoles: ["admin"],
+  fallbackError: "No se pudo completar la acción.",
+})
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -69,28 +70,20 @@ function formatTimeRange(schedule) {
   return `${normalizeTime(schedule.start_time)} - ${normalizeTime(schedule.end_time)}`
 }
 
-async function fetchJson(path, options = {}) {
-  return window.CuidadoApi.fetchJson(path, {
-    ...options,
-    token: getToken(),
-    fallbackError: "No se pudo completar la acción.",
-  })
-}
-
 async function loadCaregivers() {
-  const data = await fetchJson("/admin/professional-caregivers")
+  const data = await window.CuidadoApi.fetchJson("/admin/professional-caregivers", ADMIN_REQUEST_OPTIONS)
   caregiversData = data.users || []
   renderCaregiverOptions()
 }
 
 async function loadSchedules() {
-  const data = await fetchJson("/admin/schedules")
+  const data = await window.CuidadoApi.fetchJson("/admin/schedules", ADMIN_REQUEST_OPTIONS)
   schedulesData = data.schedules || []
   renderSchedules()
 }
 
 async function loadVacations() {
-  const data = await fetchJson("/admin/vacation-requests")
+  const data = await window.CuidadoApi.fetchJson("/admin/vacation-requests", ADMIN_REQUEST_OPTIONS)
   vacationsData = data.vacation_requests || []
   renderVacations()
 }
@@ -282,7 +275,8 @@ async function saveSchedule(event) {
       throw new Error("Selecciona un cuidador.")
     }
 
-    const data = await fetchJson("/admin/schedules", {
+    const data = await window.CuidadoApi.fetchJson("/admin/schedules", {
+      ...ADMIN_REQUEST_OPTIONS,
       method: "POST",
       body: JSON.stringify(payload),
     })
@@ -312,7 +306,8 @@ async function deleteSchedule(scheduleId) {
   }
 
   try {
-    const data = await fetchJson(`/admin/schedules/${scheduleId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/${scheduleId}`, {
+      ...ADMIN_REQUEST_OPTIONS,
       method: "DELETE",
     })
 
@@ -341,7 +336,8 @@ async function resolveChangeRequest(scheduleId, action) {
   }
 
   try {
-    const data = await fetchJson(`/admin/schedules/${scheduleId}/change-request/${action}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/${scheduleId}/change-request/${action}`, {
+      ...ADMIN_REQUEST_OPTIONS,
       method: "PATCH",
     })
 
@@ -370,7 +366,8 @@ async function resolveVacationRequest(requestId, action) {
   }
 
   try {
-    const data = await fetchJson(`/admin/vacation-requests/${requestId}/${action}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/vacation-requests/${requestId}/${action}`, {
+      ...ADMIN_REQUEST_OPTIONS,
       method: "PATCH",
     })
 

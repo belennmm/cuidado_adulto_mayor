@@ -10,17 +10,12 @@ const adminDefaultPageLabels = {
   "./incidents.html": "Incidentes",
 }
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 async function loadAdminReminder() {
   if (!adminReminderText) return
 
   try {
-    const token = getToken()
-    const data = await window.CuidadoApi.fetchJson("/dashboard-summary", {
-      token,
+    const data = await window.CuidadoApi.fetchJson("/admin/dashboard-summary", {
+      expectedRoles: ["admin"],
       fallbackError: "No se pudo cargar el estado de hoy.",
     })
 

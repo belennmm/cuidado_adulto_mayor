@@ -4,10 +4,6 @@
   let currentRoutines = []
   let editingRoutineId = null
 
-  function getToken() {
-    return (window.AuthSession?.getToken() || "")
-  }
-
   function escapeHtml(value) {
     return String(value ?? "")
       .replaceAll("&", "&amp;")
@@ -37,20 +33,6 @@
     }
 
     console.warn(message)
-  }
-
-  async function fetchJson(path, options = {}) {
-    const token = getToken()
-
-    if (!token) {
-      throw new Error("Inicia sesión como administrador para gestionar rutinas.")
-    }
-
-    return window.CuidadoApi.fetchJson(path, {
-      ...options,
-      token,
-      fallbackError: "No se pudo completar la acción.",
-    })
   }
 
   function getRequestedAdultId() {
@@ -182,7 +164,10 @@
   }
 
   async function loadAdults() {
-    const data = await fetchJson("/admin/older-adults")
+    const data = await window.CuidadoApi.fetchJson("/admin/older-adults", {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la acción.",
+    })
     olderAdults = data.older_adults || []
   }
 
@@ -197,8 +182,14 @@
     }
 
     const [routineData, adultData] = await Promise.all([
-      fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
-      fetchJson(`/admin/older-adults/${encodeURIComponent(activeOlderAdultId)}`),
+      window.CuidadoApi.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`, {
+        expectedRoles: ["admin"],
+        fallbackError: "No se pudo completar la acción.",
+      }),
+      window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(activeOlderAdultId)}`, {
+        expectedRoles: ["admin"],
+        fallbackError: "No se pudo completar la acción.",
+      }),
     ])
     const adult = adultData.older_adult || olderAdults.find((item) => String(item.id) === String(activeOlderAdultId))
 
@@ -229,12 +220,16 @@
     }
 
     try {
+      if (!window.CuidadoApi.getToken(["admin"])) {
+        throw new Error("Inicia sesión como administrador para gestionar rutinas.")
+      }
+
       if (saveButton) {
         saveButton.disabled = true
         saveButton.textContent = "Guardando..."
       }
 
-      await fetchJson(editingRoutineId ? `/rutinas/${editingRoutineId}` : "/rutinas", {
+      await window.CuidadoApi.fetchJson(editingRoutineId ? `/rutinas/${editingRoutineId}` : "/rutinas", {
         method: editingRoutineId ? "PUT" : "POST",
         body: JSON.stringify({
           nombre,
@@ -242,6 +237,8 @@
           actividades,
           ...(editingRoutineId ? {} : { older_adult_id: activeOlderAdultId }),
         }),
+        expectedRoles: ["admin"],
+        fallbackError: "No se pudo completar la acción.",
       })
 
       const wasEditing = Boolean(editingRoutineId)
@@ -291,7 +288,15 @@
     if (!confirmed) return
 
     try {
-      await fetchJson(`/rutinas/${routineId}`, { method: "DELETE" })
+      if (!window.CuidadoApi.getToken(["admin"])) {
+        throw new Error("Inicia sesión como administrador para gestionar rutinas.")
+      }
+
+      await window.CuidadoApi.fetchJson(`/rutinas/${routineId}`, {
+        method: "DELETE",
+        expectedRoles: ["admin"],
+        fallbackError: "No se pudo completar la acción.",
+      })
 
       if (String(editingRoutineId) === String(routineId)) resetForm()
       const message = "Rutina eliminada correctamente."
@@ -306,6 +311,10 @@
 
   async function initialize() {
     try {
+      if (!window.CuidadoApi.getToken(["admin"])) {
+        throw new Error("Inicia sesión como administrador para gestionar rutinas.")
+      }
+
       await loadAdults()
 
       if (!olderAdults.length) {

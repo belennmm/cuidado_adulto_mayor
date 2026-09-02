@@ -143,10 +143,6 @@ function addMedicineCard(medicine = null) {
   medicinesList.appendChild(card)
 }
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function getValue(input) {
   return input && typeof input.value === "string" && input.value.trim() !== "" ? input.value.trim() : null
 }
@@ -198,20 +194,6 @@ function buildPayload() {
   }
 }
 
-async function apiRequest(path, options = {}) {
-  const token = getToken()
-
-  if (!token) {
-    throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
-  }
-
-  return window.CuidadoApi.fetchJson(path, {
-    ...options,
-    token,
-    fallbackError: "No se pudo completar la operacion.",
-  })
-}
-
 function fillForm(olderAdult) {
   fullName.value = olderAdult.full_name || ""
   age.value = olderAdult.age || ""
@@ -244,13 +226,11 @@ function fillForm(olderAdult) {
 async function loadFamilyCaregivers(selectedId = null) {
   if (!caregiverFamily) return
 
-  const token = getToken()
-
-  if (!token) return
+  if (!window.CuidadoApi.getToken(["admin"])) return
 
   try {
     const data = await window.CuidadoApi.fetchJson("/admin/family-caregivers", {
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los cuidadores familiares.",
     })
 
@@ -273,13 +253,11 @@ async function loadFamilyCaregivers(selectedId = null) {
 async function loadProfessionalCaregivers(selectedId = null) {
   if (!professionalCaregiver) return
 
-  const token = getToken()
-
-  if (!token) return
+  if (!window.CuidadoApi.getToken(["admin"])) return
 
   try {
     const data = await window.CuidadoApi.fetchJson("/admin/professional-caregivers", {
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los cuidadores profesionales.",
     })
 
@@ -307,7 +285,14 @@ async function loadOlderAdult() {
   }
 
   try {
-    const data = await apiRequest(`/admin/older-adults/${olderAdultId}`)
+    if (!window.CuidadoApi.getToken(["admin"])) {
+      throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
+    }
+
+    const data = await window.CuidadoApi.fetchJson(`/admin/older-adults/${olderAdultId}`, {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la operacion.",
+    })
     await Promise.all([
       loadFamilyCaregivers(data.older_adult?.family_caregiver_id),
       loadProfessionalCaregivers(data.older_adult?.professional_caregiver_id),
@@ -326,15 +311,27 @@ async function updateOlderAdult() {
     throw new Error("Ingresa el nombre completo del adulto mayor.")
   }
 
-  return apiRequest(`/admin/older-adults/${olderAdultId}`, {
+  if (!window.CuidadoApi.getToken(["admin"])) {
+    throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
+  }
+
+  return window.CuidadoApi.fetchJson(`/admin/older-adults/${olderAdultId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
+    expectedRoles: ["admin"],
+    fallbackError: "No se pudo completar la operacion.",
   })
 }
 
 async function deleteOlderAdult() {
-  return apiRequest(`/admin/older-adults/${olderAdultId}`, {
+  if (!window.CuidadoApi.getToken(["admin"])) {
+    throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
+  }
+
+  return window.CuidadoApi.fetchJson(`/admin/older-adults/${olderAdultId}`, {
     method: "DELETE",
+    expectedRoles: ["admin"],
+    fallbackError: "No se pudo completar la operacion.",
   })
 }
 

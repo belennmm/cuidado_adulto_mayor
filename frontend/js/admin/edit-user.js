@@ -36,20 +36,8 @@ async function showPopup(message, options = {}) {
   console.warn(message)
 }
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function isApproved(value) {
   return value === true || value === 1 || value === "1" || value === "true" || value === "t"
-}
-
-async function fetchJson(path, options = {}) {
-  return window.CuidadoApi.fetchJson(path, {
-    ...options,
-    token: getToken(),
-    fallbackError: "No se pudo completar la solicitud.",
-  })
 }
 
 function setFormDisabled(disabled) {
@@ -86,7 +74,7 @@ async function loadUser() {
     return
   }
 
-  if (!getToken()) {
+  if (!window.CuidadoApi.getToken(["admin"])) {
     await showPopup("Inicia sesión como administrador para editar usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
@@ -95,7 +83,10 @@ async function loadUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`/admin/users/${userId}`)
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}`, {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
+    })
 
     fillForm(data.user)
   } catch (error) {
@@ -135,9 +126,11 @@ async function saveUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`/admin/users/${userId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}`, {
       method: "PUT",
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
     })
 
     await showPopup(data.message || "Usuario actualizado correctamente.", { variant: "success" })
@@ -157,7 +150,11 @@ async function deleteUser() {
   setFormDisabled(true)
 
   try {
-    const data = await fetchJson(`/admin/users/${userId}`, { method: "DELETE" })
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}`, {
+      method: "DELETE",
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo completar la solicitud.",
+    })
 
     await showPopup(data.message || "Usuario eliminado correctamente.", { variant: "success" })
     navigateTo("./users.html")

@@ -18,10 +18,6 @@ const profileEmail = document.getElementById("profileEmail")
 
 const togglePasswordButtons = document.querySelectorAll(".toggle-password")
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function roleLabel(value) {
   const labels = {
     admin: "Administrador",
@@ -44,20 +40,6 @@ function setMessage(message, isError = false) {
 
   accountSettingsMessage.textContent = message || ""
   accountSettingsMessage.classList.toggle("is-error", isError)
-}
-
-async function fetchJson(path, options = {}) {
-  const token = getToken()
-
-  if (!token) {
-    throw new Error("Inicia sesión para ver tu perfil.")
-  }
-
-  return window.CuidadoApi.fetchJson(path, {
-    ...options,
-    token,
-    fallbackError: "No se pudo guardar el perfil.",
-  })
 }
 
 function fillUser(user) {
@@ -85,7 +67,14 @@ function clearPasswordFields() {
 async function loadProfile() {
   try {
     setMessage("")
-    const data = await fetchJson("/me")
+    if (!window.CuidadoApi.getToken(["admin"])) {
+      throw new Error("Inicia sesión para ver tu perfil.")
+    }
+
+    const data = await window.CuidadoApi.fetchJson("/me", {
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo guardar el perfil.",
+    })
     fillUser(data.user || {})
   } catch (error) {
     setMessage(error.message, true)
@@ -123,9 +112,11 @@ async function saveProfile() {
       submitButton.textContent = "Guardando..."
     }
 
-    const data = await fetchJson("/me", {
+    const data = await window.CuidadoApi.fetchJson("/me", {
       method: "PUT",
       body: JSON.stringify(payload),
+      expectedRoles: ["admin"],
+      fallbackError: "No se pudo guardar el perfil.",
     })
 
     fillUser(data.user || {})
