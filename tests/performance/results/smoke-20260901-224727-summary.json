@@ -1,0 +1,307 @@
+{
+  "root_group": {
+    "groups": {
+      "setup": {
+        "name": "setup",
+        "path": "::setup",
+        "id": "5c0f8025f7e0b6654089e5b00e950f1a",
+        "groups": {},
+        "checks": {
+          "admin: login responde 200": {
+            "id": "36a99106d93289622a2778a809880132",
+            "passes": 1,
+            "fails": 0,
+            "name": "admin: login responde 200",
+            "path": "::setup::admin: login responde 200"
+          },
+          "admin: login devuelve token": {
+            "name": "admin: login devuelve token",
+            "path": "::setup::admin: login devuelve token",
+            "id": "920944a648dfeb973005dbffd93f8712",
+            "passes": 1,
+            "fails": 0
+          },
+          "professional: login responde 200": {
+            "name": "professional: login responde 200",
+            "path": "::setup::professional: login responde 200",
+            "id": "60c4f45f11f9f5c1fa36cea46d1c0686",
+            "passes": 1,
+            "fails": 0
+          },
+          "professional: login devuelve token": {
+            "passes": 1,
+            "fails": 0,
+            "name": "professional: login devuelve token",
+            "path": "::setup::professional: login devuelve token",
+            "id": "646c9a0c769bc8d24dd33797e3ca3b7b"
+          },
+          "family: login responde 200": {
+            "name": "family: login responde 200",
+            "path": "::setup::family: login responde 200",
+            "id": "0a80ac14761e065b3d66d0eaaba99949",
+            "passes": 1,
+            "fails": 0
+          },
+          "family: login devuelve token": {
+            "path": "::setup::family: login devuelve token",
+            "id": "103c9a4680a704cd011e810c265ba2d6",
+            "passes": 1,
+            "fails": 0,
+            "name": "family: login devuelve token"
+          }
+        }
+      }
+    },
+    "checks": {
+      "admin: admin_dashboard responde 200": {
+        "path": "::admin: admin_dashboard responde 200",
+        "id": "d28efdbbfd19d8a2f97a30929e96778c",
+        "passes": 1,
+        "fails": 0,
+        "name": "admin: admin_dashboard responde 200"
+      },
+      "admin: admin_dashboard devuelve JSON": {
+        "name": "admin: admin_dashboard devuelve JSON",
+        "path": "::admin: admin_dashboard devuelve JSON",
+        "id": "e4b1df11823a6ed45aee2a425d1de718",
+        "passes": 1,
+        "fails": 0
+      },
+      "admin: medication_statistics responde 200": {
+        "passes": 1,
+        "fails": 0,
+        "name": "admin: medication_statistics responde 200",
+        "path": "::admin: medication_statistics responde 200",
+        "id": "994d7fbacc32e276f6670a3cc1ddbccd"
+      },
+      "admin: medication_statistics devuelve JSON": {
+        "fails": 0,
+        "name": "admin: medication_statistics devuelve JSON",
+        "path": "::admin: medication_statistics devuelve JSON",
+        "id": "bcf626cc1278974f83736408feb697ed",
+        "passes": 1
+      },
+      "admin: schedule_calendar responde 200": {
+        "name": "admin: schedule_calendar responde 200",
+        "path": "::admin: schedule_calendar responde 200",
+        "id": "868b7f9d9509aea49cf093710866e292",
+        "passes": 1,
+        "fails": 0
+      },
+      "admin: schedule_calendar devuelve JSON": {
+        "name": "admin: schedule_calendar devuelve JSON",
+        "path": "::admin: schedule_calendar devuelve JSON",
+        "id": "84287f5c435e0d5d54e4dc76ccf465d4",
+        "passes": 1,
+        "fails": 0
+      },
+      "professional: professional_overview responde 200": {
+        "passes": 1,
+        "fails": 0,
+        "name": "professional: professional_overview responde 200",
+        "path": "::professional: professional_overview responde 200",
+        "id": "5c6a4fd80154a9a8d2973d69240875b8"
+      },
+      "professional: professional_overview devuelve JSON": {
+        "name": "professional: professional_overview devuelve JSON",
+        "path": "::professional: professional_overview devuelve JSON",
+        "id": "12fd79cc43ed0a5fead652a829553f0c",
+        "passes": 1,
+        "fails": 0
+      },
+      "professional: professional_older_adults responde 200": {
+        "fails": 0,
+        "name": "professional: professional_older_adults responde 200",
+        "path": "::professional: professional_older_adults responde 200",
+        "id": "07fc5b289f002347bc55a7b8a835cddc",
+        "passes": 1
+      },
+      "professional: professional_older_adults devuelve JSON": {
+        "path": "::professional: professional_older_adults devuelve JSON",
+        "id": "f26776c805a2ab18c27a970d79ffdd6c",
+        "passes": 1,
+        "fails": 0,
+        "name": "professional: professional_older_adults devuelve JSON"
+      },
+      "professional: professional_routines responde 200": {
+        "name": "professional: professional_routines responde 200",
+        "path": "::professional: professional_routines responde 200",
+        "id": "f2cf941e7714a75c9aaa102e1fa17b7e",
+        "passes": 1,
+        "fails": 0
+      },
+      "professional: professional_routines devuelve JSON": {
+        "name": "professional: professional_routines devuelve JSON",
+        "path": "::professional: professional_routines devuelve JSON",
+        "id": "579c2123070bb71ce0826c22c69eed9d",
+        "passes": 1,
+        "fails": 0
+      },
+      "family: family_overview responde 200": {
+        "name": "family: family_overview responde 200",
+        "path": "::family: family_overview responde 200",
+        "id": "59da1793788b27e5e2f03ac6d84cfdd0",
+        "passes": 1,
+        "fails": 0
+      },
+      "family: family_overview devuelve JSON": {
+        "name": "family: family_overview devuelve JSON",
+        "path": "::family: family_overview devuelve JSON",
+        "id": "aa7eb73f23a35435336d0827c3ac3c6a",
+        "passes": 1,
+        "fails": 0
+      },
+      "family: family_older_adults responde 200": {
+        "name": "family: family_older_adults responde 200",
+        "path": "::family: family_older_adults responde 200",
+        "id": "c101095c993792d255bbc864ea1a660a",
+        "passes": 1,
+        "fails": 0
+      },
+      "family: family_older_adults devuelve JSON": {
+        "name": "family: family_older_adults devuelve JSON",
+        "path": "::family: family_older_adults devuelve JSON",
+        "id": "c9b6271ef7cb7e2785bc6e343fa4422a",
+        "passes": 1,
+        "fails": 0
+      },
+      "family: family_incidents responde 200": {
+        "name": "family: family_incidents responde 200",
+        "path": "::family: family_incidents responde 200",
+        "id": "ca5a352c8134c66e4ff3a8f996272730",
+        "passes": 1,
+        "fails": 0
+      },
+      "family: family_incidents devuelve JSON": {
+        "path": "::family: family_incidents devuelve JSON",
+        "id": "260dab768975c1f2b6dacd673e089f01",
+        "passes": 1,
+        "fails": 0,
+        "name": "family: family_incidents devuelve JSON"
+      }
+    },
+    "name": "",
+    "path": "",
+    "id": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "metrics": {
+    "data_received": {
+      "count": 8364,
+      "rate": 1193.9423856481164
+    },
+    "http_req_connecting": {
+      "med": 0,
+      "max": 2.399356,
+      "p(90)": 0.9878841000000005,
+      "p(95)": 1.683417149999999,
+      "avg": 0.2914170833333333,
+      "min": 0
+    },
+    "data_sent": {
+      "rate": 374.57016020333066,
+      "count": 2624
+    },
+    "http_req_duration": {
+      "p(95)": 183.08204084999997,
+      "avg": 82.65250816666666,
+      "min": 33.914574,
+      "med": 51.156338000000005,
+      "max": 208.770997,
+      "p(90)": 161.874392,
+      "thresholds": {
+        "p(95)<800": false,
+        "p(99)<1500": false
+      }
+    },
+    "checks": {
+      "passes": 24,
+      "fails": 0,
+      "thresholds": {
+        "rate>0.99": false
+      },
+      "value": 1
+    },
+    "http_req_failed": {
+      "passes": 0,
+      "fails": 12,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    },
+    "http_req_tls_handshaking": {
+      "p(90)": 0,
+      "p(95)": 0,
+      "avg": 0,
+      "min": 0,
+      "med": 0,
+      "max": 0
+    },
+    "http_req_sending": {
+      "med": 0.0482705,
+      "max": 0.101364,
+      "p(90)": 0.0791216,
+      "p(95)": 0.08917434999999999,
+      "avg": 0.04635625000000001,
+      "min": 0.010094
+    },
+    "http_req_receiving": {
+      "max": 1.629881,
+      "p(90)": 0.18081230000000004,
+      "p(95)": 0.835749199999999,
+      "avg": 0.23570891666666663,
+      "min": 0.084798,
+      "med": 0.10238900000000001
+    },
+    "vus": {
+      "min": 1,
+      "max": 1,
+      "value": 1
+    },
+    "iteration_duration": {
+      "avg": 2156.63442,
+      "min": 2129.236109,
+      "med": 2133.959566,
+      "max": 2206.707585,
+      "p(90)": 2192.1579812,
+      "p(95)": 2199.4327831
+    },
+    "http_req_blocked": {
+      "p(90)": 2.209575700000001,
+      "p(95)": 2.7674942999999996,
+      "avg": 0.4744844166666668,
+      "min": 0.001791,
+      "med": 0.009586,
+      "max": 3.152887
+    },
+    "http_req_waiting": {
+      "p(95)": 182.94481419999997,
+      "avg": 82.370443,
+      "min": 33.814025,
+      "med": 50.222282,
+      "max": 208.582028,
+      "p(90)": 161.7781546
+    },
+    "iterations": {
+      "count": 3,
+      "rate": 0.42824332340319815
+    },
+    "http_reqs": {
+      "count": 12,
+      "rate": 1.7129732936127926
+    },
+    "http_req_duration{expected_response:true}": {
+      "min": 33.914574,
+      "med": 51.156338000000005,
+      "max": 208.770997,
+      "p(90)": 161.874392,
+      "p(95)": 183.08204084999997,
+      "avg": 82.65250816666666
+    },
+    "vus_max": {
+      "value": 1,
+      "min": 1,
+      "max": 1
+    }
+  }
+}
