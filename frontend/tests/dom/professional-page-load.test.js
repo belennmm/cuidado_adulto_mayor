@@ -24,4 +24,26 @@ describe("preparación de la página profesional", () => {
     expect(getToken).toHaveBeenCalledWith(professionalRoles)
     expect(getUser).toHaveBeenCalledWith(professionalRoles)
   })
+
+  it("mantiene disponible el contenido protegido para un profesional autenticado", async () => {
+    document.body.innerHTML = '<main id="professionalContent">Panel profesional</main>'
+    await import("../../js/auth-session.js")
+    window.AuthSession.saveSession("professional-token", { id: 14, role: "profesional" })
+
+    await import("../../js/auth-guard-profesional.js")
+    document.dispatchEvent(new Event("DOMContentLoaded"))
+
+    expect(document.getElementById("professionalContent")?.textContent).toBe("Panel profesional")
+  })
+
+  it("no redirige al profesional cuando su sesión es válida", async () => {
+    window.navigateWithLoading = vi.fn()
+    await import("../../js/auth-session.js")
+    window.AuthSession.saveSession("professional-token", { id: 14, role: "profesional" })
+
+    await import("../../js/auth-guard-profesional.js")
+    document.dispatchEvent(new Event("DOMContentLoaded"))
+
+    expect(window.navigateWithLoading).not.toHaveBeenCalled()
+  })
 })
