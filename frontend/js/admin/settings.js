@@ -8,10 +8,6 @@
     careAlerts: true,
   }
 
-  function getToken() {
-    return (window.AuthSession?.getToken() || "")
-  }
-
   function setText(id, value) {
     const element = document.getElementById(id)
     if (element) element.textContent = value ?? ""
@@ -61,19 +57,6 @@
     }
   }
 
-  async function fetchJson(path) {
-    const token = getToken()
-
-    if (!token) {
-      throw new Error("Inicia sesión como administrador para ver configuración.")
-    }
-
-    return window.CuidadoApi.fetchJson(path, {
-      token,
-      fallbackError: "No se pudo cargar la configuración.",
-    })
-  }
-
   function roleLabel(role) {
     const labels = {
       admin: "Administrador",
@@ -92,9 +75,19 @@
 
   async function loadAdminData() {
     try {
+      if (!window.CuidadoApi.getToken(["admin"])) {
+        throw new Error("Inicia sesión como administrador para ver configuración.")
+      }
+
       const [meData, summaryData] = await Promise.all([
-        fetchJson("/me"),
-        fetchJson("/admin/dashboard-summary"),
+        window.CuidadoApi.fetchJson("/me", {
+          expectedRoles: ["admin"],
+          fallbackError: "No se pudo cargar la configuración.",
+        }),
+        window.CuidadoApi.fetchJson("/admin/dashboard-summary", {
+          expectedRoles: ["admin"],
+          fallbackError: "No se pudo cargar la configuración.",
+        }),
       ])
 
       const user = meData.user || {}
