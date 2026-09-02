@@ -54,10 +54,6 @@
     window.location.assign("../../index.html")
   }
 
-  function getToken() {
-    return (window.AuthSession?.getToken() || "")
-  }
-
   function startOfDay(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate())
   }
@@ -173,9 +169,7 @@
   }
 
   async function fetchCalendarShifts() {
-    const token = getToken()
-
-    if (!token) {
+    if (!window.CuidadoApi.getToken(["admin"])) {
       throw new Error("Inicia sesión como administrador para ver el calendario.")
     }
 
@@ -186,7 +180,7 @@
     })
 
     const data = await window.CuidadoApi.fetchJson(`/admin/schedules/calendar?${params.toString()}`, {
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudo cargar el calendario de turnos.",
     })
 
@@ -517,7 +511,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const token = (window.AuthSession?.getToken() || "")
+    const token = window.CuidadoApi.getToken(["admin"])
     const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
     const role = String(user?.role || "").trim().toLowerCase()
 
