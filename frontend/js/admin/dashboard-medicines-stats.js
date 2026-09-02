@@ -18,6 +18,7 @@
     items: [],
     inventory: [],
     olderAdults: [],
+    selectedOlderAdultId: new URLSearchParams(window.location.search).get("older_adult_id") || "",
     inventoryMode: "create",
     stockAction: "increase",
   }
@@ -239,6 +240,26 @@
       .join("")
   }
 
+  function updateOlderAdultSelection(selectedOlderAdultId) {
+    state.selectedOlderAdultId = selectedOlderAdultId
+    const selectedAdult = state.olderAdults.find((adult) => String(adult.id) === String(selectedOlderAdultId))
+    const selectionStatus = document.getElementById("inventoryAdultSelectionStatus")
+
+    if (selectionStatus) {
+      selectionStatus.textContent = selectedAdult
+        ? `Mostrando medicamentos de ${selectedAdult.full_name}.`
+        : "Mostrando medicamentos de todos los adultos mayores."
+    }
+
+    const url = new URL(window.location.href)
+    if (selectedAdult) {
+      url.searchParams.set("older_adult_id", String(selectedAdult.id))
+    } else {
+      url.searchParams.delete("older_adult_id")
+    }
+    window.history.replaceState(window.history.state, "", url)
+  }
+
 
 
 
@@ -260,14 +281,15 @@
   function renderOlderAdultOptions() {
     const filter = document.getElementById("inventoryOlderAdultFilter")
     const formSelect = document.getElementById("medicationOlderAdult")
-    const currentFilter = filter?.value || ""
+    const currentFilter = state.selectedOlderAdultId
     const options = state.olderAdults
       .map((adult) => `<option value="${escapeHtml(adult.id)}">${escapeHtml(adult.full_name)}</option>`)
       .join("")
 
     if (filter) {
-      filter.innerHTML = `<option value="">Todos</option>${options}`
-      filter.value = currentFilter
+      filter.innerHTML = `<option value="">Todos los adultos mayores</option>${options}`
+      filter.value = state.olderAdults.some((adult) => String(adult.id) === String(currentFilter)) ? currentFilter : ""
+      updateOlderAdultSelection(filter.value)
     }
 
     if (formSelect) {
@@ -520,7 +542,10 @@
       openMedicationFormModal("create")
     })
 
-    document.getElementById("inventoryOlderAdultFilter")?.addEventListener("change", renderInventory)
+    document.getElementById("inventoryOlderAdultFilter")?.addEventListener("change", (event) => {
+      updateOlderAdultSelection(event.target.value)
+      renderInventory()
+    })
 
     document.getElementById("inventoryList")?.addEventListener("click", async (event) => {
       const button = event.target.closest("[data-action][data-id]")
