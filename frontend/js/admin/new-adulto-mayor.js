@@ -122,10 +122,6 @@ function addMedicineCard(medicine = null) {
   medicinesList.appendChild(card)
 }
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function getValue(formData, key) {
   const value = formData.get(key)
   return typeof value === "string" && value.trim() !== "" ? value.trim() : null
@@ -178,13 +174,11 @@ function buildPayload(formData) {
 async function loadFamilyCaregivers() {
   if (!caregiverFamily) return
 
-  const token = getToken()
-
-  if (!token) return
+  if (!window.CuidadoApi.getToken(["admin"])) return
 
   try {
     const data = await window.CuidadoApi.fetchJson("/admin/family-caregivers", {
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los cuidadores familiares.",
     })
 
@@ -204,13 +198,11 @@ async function loadFamilyCaregivers() {
 async function loadProfessionalCaregivers() {
   if (!professionalCaregiver) return
 
-  const token = getToken()
-
-  if (!token) return
+  if (!window.CuidadoApi.getToken(["admin"])) return
 
   try {
     const data = await window.CuidadoApi.fetchJson("/admin/professional-caregivers", {
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los cuidadores profesionales.",
     })
 
@@ -228,16 +220,14 @@ async function loadProfessionalCaregivers() {
 }
 
 async function createOlderAdult(payload) {
-  const token = getToken()
-
-  if (!token) {
+  if (!window.CuidadoApi.getToken(["admin"])) {
     throw new Error("Inicia sesión como administrador para crear adultos mayores.")
   }
 
   return window.CuidadoApi.fetchJson("/admin/older-adults", {
     method: "POST",
-    token,
     body: JSON.stringify(payload),
+    expectedRoles: ["admin"],
     fallbackError: "No se pudo crear el adulto mayor.",
   })
 }
