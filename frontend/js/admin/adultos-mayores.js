@@ -3,10 +3,6 @@ const olderAdultsTableBody = document.getElementById("olderAdultsTableBody")
 
 let olderAdultsData = []
 
-function getToken() {
-  return (window.AuthSession?.getToken() || "")
-}
-
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -28,7 +24,7 @@ function getStatusClass(status) {
 }
 
 async function loadOlderAdults() {
-  const token = getToken()
+  const token = window.CuidadoApi.getToken(["admin"])
 
   if (!token) {
     renderEmpty("Inicia sesión como administrador para ver adultos mayores.")
@@ -37,7 +33,7 @@ async function loadOlderAdults() {
 
   try {
     const data = await window.CuidadoApi.fetchJson("/admin/older-adults", {
-      token,
+      expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los adultos mayores.",
     })
 
