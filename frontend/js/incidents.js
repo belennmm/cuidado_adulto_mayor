@@ -15,6 +15,30 @@ const submitIncidentForm = document.getElementById("submitIncidentForm")
 let assignedOlderAdultsLoaded = false
 
 const INCIDENT_ROLES = ["admin", "profesional", "cuidador_profesional"]
+const PROFESSIONAL_INCIDENT_ROLES = ["profesional", "cuidador_profesional"]
+
+function normalizeRole(role) {
+    return String(role || "").trim().toLowerCase()
+}
+
+function isAdminContext() {
+    const path = window.location.pathname.toLowerCase()
+    const role = normalizeRole(window.AuthSession?.getUser(INCIDENT_ROLES)?.role)
+
+    return path.includes("/pages/admin/") || role === "admin" || role === "administrador"
+}
+
+function getContextRoles() {
+    return isAdminContext() ? ["admin"] : PROFESSIONAL_INCIDENT_ROLES
+}
+
+function getOlderAdultsEndpoint() {
+    return isAdminContext() ? "/admin/older-adults" : "/professional/older-adults"
+}
+
+function getCreateIncidentEndpoint() {
+    return isAdminContext() ? "/admin/incidents" : "/professional/incidents"
+}
 
 async function showPopup(message, options = {}) {
     if (window.showAdminAlert) {
@@ -100,9 +124,9 @@ async function loadAssignedOlderAdults() {
     submitIncidentForm.disabled = true
 
     try {
-        const data = await window.CuidadoApi.fetchJson("/professional/older-adults", {
-            expectedRoles: INCIDENT_ROLES,
-            fallbackError: "No se pudieron cargar los adultos mayores asignados.",
+        const data = await window.CuidadoApi.fetchJson(getOlderAdultsEndpoint(), {
+            expectedRoles: getContextRoles(),
+            fallbackError: "No se pudieron cargar los adultos mayores.",
         })
         const olderAdults = Array.isArray(data.older_adults) ? data.older_adults : []
 
@@ -118,7 +142,10 @@ async function loadAssignedOlderAdults() {
         assignedOlderAdultsLoaded = olderAdults.length > 0
 
         if (!olderAdults.length) {
-            setIncidentFormMessage("No tienes adultos mayores asignados. Solicita una asignación al administrador.")
+            const message = isAdminContext()
+                ? "No hay adultos mayores registrados para asignar al incidente."
+                : "No tienes adultos mayores asignados. Solicita una asignación al administrador."
+            setIncidentFormMessage(message)
         }
     } catch (error) {
         incidentOlderAdult.innerHTML = '<option value="">No se pudo cargar la lista</option>'
@@ -180,10 +207,10 @@ async function saveIncident(event) {
     let incidentWasSaved = false
 
     try {
-        const data = await window.CuidadoApi.fetchJson("/professional/incidents", {
+        const data = await window.CuidadoApi.fetchJson(getCreateIncidentEndpoint(), {
             method: "POST",
             body: JSON.stringify(payload),
-            expectedRoles: INCIDENT_ROLES,
+            expectedRoles: getContextRoles(),
             fallbackError: "No se pudo registrar el incidente.",
         })
         incidentWasSaved = true
