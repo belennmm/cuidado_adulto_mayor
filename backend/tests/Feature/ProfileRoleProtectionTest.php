@@ -37,4 +37,31 @@ class ProfileRoleProtectionTest extends TestCase
             'role' => 'profesional',
         ]);
     }
+
+    public function test_family_caregiver_cannot_change_role_from_profile_update(): void
+    {
+        $familyCaregiver = User::factory()->create([
+            'name' => 'Maria Gonzalez',
+            'email' => 'maria@example.com',
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+
+        Sanctum::actingAs($familyCaregiver);
+
+        $this->putJson('/api/me', [
+            'name' => 'Maria Gonzalez Actualizada',
+            'email' => 'maria.actualizada@example.com',
+            'role' => 'admin',
+        ])
+            ->assertOk()
+            ->assertJsonPath('user.role', 'familiar');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $familyCaregiver->id,
+            'name' => 'Maria Gonzalez Actualizada',
+            'email' => 'maria.actualizada@example.com',
+            'role' => 'familiar',
+        ]);
+    }
 }
