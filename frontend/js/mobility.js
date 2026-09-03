@@ -1,65 +1,78 @@
 export const localMobilityExercises = Object.freeze([
   {
-    id: "cuello-suave",
-    title: "Movilidad suave de cuello",
-    focus: "Cuello y hombros",
-    duration: "2 minutos",
-    repetitions: "5 repeticiones por lado",
-    instructions: [
-      "Siéntate con la espalda apoyada y los pies firmes en el suelo.",
-      "Gira lentamente la cabeza hacia un lado sin forzar el movimiento.",
-      "Vuelve al centro y repite hacia el otro lado.",
+    id: "estiramiento-superior-1",
+    nombre: "Estiramientos de miembro superior 1",
+    area: "Hombros y brazos",
+    tipo: "Estiramiento guiado",
+    comorealizarlo: [
+      "De pie o sentado, levanta el brazo derecho hacia el lado.",
+      "Coloca la mano izquierda sobre el codo derecho.",
+      "Presiona suavemente el codo hacia el lado izquierdo, sintiendo el estiramiento en el hombro.",
+      "Mantén la posición durante 20-30 segundos.",
+      "Relaja y repite del otro lado."
     ],
-    precaution: "Suspende el ejercicio si aparece dolor, mareo o molestia.",
+    recomendacion: "Realiza este ejercicio 2-3 veces al día. Evita rebotes bruscos y estira solo hasta sentir una leve molestia, nunca dolor.",
+    fuente: "Hospital Universitario de Fuenlabrada",
+    videoId: "qw0coMbqROo"
   },
   {
-    id: "hombros-circulos",
-    title: "Círculos de hombros",
-    focus: "Hombros y parte superior de la espalda",
-    duration: "3 minutos",
-    repetitions: "8 círculos hacia cada dirección",
-    instructions: [
-      "Mantén una postura cómoda, sentado o de pie con apoyo cercano.",
-      "Eleva los hombros y llévalos suavemente hacia atrás y abajo.",
-      "Cambia de dirección después de completar las repeticiones.",
+    id: "cervical-activa-1",
+    nombre: "Ejercicios activos de columna cervical 1",
+    area: "Cuello",
+    tipo: "Movilidad guiada",
+    comorealizarlo: [
+      "De pie o sentado con la espalda recta.",
+      "Lentamente gira la cabeza hacia el lado derecho, intentando llevar la barbilla hacia el hombro.",
+      "Mantén la posición 15-20 segundos.",
+      "Lentamente gira la cabeza hacia el lado izquierdo.",
+      "Mantén la posición 15-20 segundos.",
+      "Repite 5 veces de cada lado."
     ],
-    precaution: "Realiza movimientos lentos y sin elevar los hombros con tensión.",
+    recomendacion: "Realiza este movimiento suavemente sin forzar. Si sientes mareos, detente inmediatamente y consulta con un profesional.",
+    fuente: "Hospital Universitario de Fuenlabrada",
+    videoId: "0bWCkSuNmac"
   },
   {
-    id: "tobillos-flexion",
-    title: "Flexión de tobillos",
-    focus: "Tobillos y piernas",
-    duration: "3 minutos",
-    repetitions: "10 repeticiones por pie",
-    instructions: [
-      "Siéntate en una silla estable con los pies apoyados.",
-      "Eleva la punta de un pie manteniendo el talón en el suelo.",
-      "Luego eleva el talón y repite alternando ambos pies.",
+    id: "cervical-activa-2",
+    nombre: "Ejercicios activos de columna cervical 2",
+    area: "Cuello y columna",
+    tipo: "Movilidad guiada",
+    comorealizarlo: [
+      "De pie o sentado con la espalda recta.",
+      "Lentamente inclina la cabeza hacia adelante, llevando la barbilla hacia el pecho.",
+      "Mantén la posición 15-20 segundos.",
+      "Lentamente levanta la cabeza a la posición inicial.",
+      "Inclina la cabeza hacia atrás suavemente, mirando hacia arriba.",
+      "Mantén 15-20 segundos y regresa a la posición inicial.",
+      "Repite 5 veces de cada movimiento."
     ],
-    precaution: "Usa calzado antideslizante y mantén la silla sobre una superficie firme.",
+    recomendacion: "Evita movimientos bruscos. Este ejercicio ayuda a mejorar la flexibilidad del cuello. Respira lentamente durante toda la ejecución.",
+    fuente: "Hospital Universitario de Fuenlabrada",
+    videoId: "i43K-q15d5k"
   },
   {
-    id: "marcha-sentada",
-    title: "Marcha sentada",
-    focus: "Caderas y piernas",
-    duration: "3 minutos",
-    repetitions: "10 elevaciones por pierna",
-    instructions: [
-      "Siéntate hacia el fondo de una silla estable.",
-      "Eleva una rodilla de forma controlada y bájala lentamente.",
-      "Alterna las piernas manteniendo el abdomen relajado.",
+    id: "estiramiento-inferior-1",
+    nombre: "Estiramientos de miembro inferior 1",
+    area: "Piernas",
+    tipo: "Estiramiento guiado",
+    comorealizarlo: [
+      "Sentado en una silla, extiende la pierna derecha hacia adelante.",
+      "Inclina el tronco hacia adelante desde las caderas, manteniendo la espalda recta.",
+      "Siente el estiramiento en la parte posterior del muslo.",
+      "Mantén la posición 20-30 segundos.",
+      "Relaja y repite con la pierna izquierda.",
+      "Realiza 3 series de cada lado."
     ],
-    precaution: "Cuenta con supervisión si existe riesgo de pérdida de equilibrio.",
+    recomendacion: "Este estiramiento es ideal para mejorar la flexibilidad de las piernas. No hagas rebotes y estira solo hasta sentir una leve molestia.",
+    fuente: "Hospital Universitario de Fuenlabrada",
+    videoId: "ElaXEroNFw4"
   },
 ])
-
-const PLACEHOLDER_VIDEO_ID = "qw0coMbqROo"
-const PLACEHOLDER_VIDEO_TITLE = "Estiramientos de miembro superior 1"
 
 export async function getMobilityExercises() {
   return localMobilityExercises.map((exercise) => ({
     ...exercise,
-    instructions: [...exercise.instructions],
+    comorealizarlo: [...exercise.comorealizarlo],
   }))
 }
 
@@ -75,7 +88,7 @@ function createVideoButton(exercise) {
   const button = document.createElement("button")
   button.type = "button"
   button.className = "mobility-video-btn"
-  button.setAttribute("aria-label", `Ver video del ejercicio: ${exercise.title}`)
+  button.setAttribute("aria-label", `Ver video del ejercicio: ${exercise.nombre}`)
   button.setAttribute("title", "Ver video guiado")
   
   const icon = document.createElement("i")
@@ -86,7 +99,7 @@ function createVideoButton(exercise) {
   
   button.addEventListener("click", (e) => {
     e.preventDefault()
-    openVideoModal(exercise.title)
+    openVideoModal(exercise)
   })
   
   return button
@@ -97,47 +110,56 @@ function createExerciseCard(exercise) {
   card.className = "mobility-card"
   card.setAttribute("aria-labelledby", `mobilityExercise-${exercise.id}`)
 
-  const header = document.createElement("div")
-  header.className = "mobility-card-header"
-  const title = appendTextElement(header, "h3", "", exercise.title)
+  // Título
+  const title = appendTextElement(card, "h3", "", exercise.nombre)
   title.id = `mobilityExercise-${exercise.id}`
-  appendTextElement(header, "span", "mobility-focus", exercise.focus)
-  card.append(header)
 
-  const details = document.createElement("dl")
-  details.className = "mobility-details"
-  ;[
-    ["Duración", exercise.duration],
-    ["Repeticiones", exercise.repetitions],
-  ].forEach(([label, value]) => {
-    const detail = document.createElement("div")
-    appendTextElement(detail, "dt", "", label)
-    appendTextElement(detail, "dd", "", value)
-    details.append(detail)
-  })
-  card.append(details)
+  // Área y Tipo en bloques separados (similar a mobility-details)
+  const infoGrid = document.createElement("div")
+  infoGrid.className = "mobility-details"
+  
+  const areaBlock = document.createElement("div")
+  appendTextElement(areaBlock, "dt", "", "Área")
+  appendTextElement(areaBlock, "dd", "", exercise.area)
+  infoGrid.append(areaBlock)
+  
+  const tipoBlock = document.createElement("div")
+  appendTextElement(tipoBlock, "dt", "", "Tipo")
+  appendTextElement(tipoBlock, "dd", "", exercise.tipo)
+  infoGrid.append(tipoBlock)
+  
+  card.append(infoGrid)
 
+  // Cómo realizarlo
   appendTextElement(card, "h4", "mobility-instructions-title", "Cómo realizarlo")
   const instructions = document.createElement("ol")
   instructions.className = "mobility-instructions"
-  exercise.instructions.forEach((instruction) => appendTextElement(instructions, "li", "", instruction))
+  exercise.comorealizarlo.forEach((instruction) => appendTextElement(instructions, "li", "", instruction))
   card.append(instructions)
 
-  const precaution = document.createElement("p")
-  precaution.className = "mobility-precaution"
+  // Recomendación con icono (similar a mobility-precaution)
+  const recommendation = document.createElement("p")
+  recommendation.className = "mobility-precaution"
   const icon = document.createElement("i")
   icon.className = "bx bx-info-circle"
   icon.setAttribute("aria-hidden", "true")
-  precaution.append(icon, document.createTextNode(exercise.precaution))
-  card.append(precaution)
+  recommendation.append(icon, document.createTextNode(exercise.recomendacion))
+  card.append(recommendation)
 
+  // Fuente discreta
+  const source = document.createElement("p")
+  source.className = "mobility-source"
+  source.textContent = exercise.fuente
+  card.append(source)
+
+  // Botón de video
   const videoBtn = createVideoButton(exercise)
   card.append(videoBtn)
 
   return card
 }
 
-function openVideoModal(exerciseTitle) {
+function openVideoModal(exercise) {
   let modal = document.getElementById("videoModal")
   if (!modal) {
     createVideoModal()
@@ -146,7 +168,13 @@ function openVideoModal(exerciseTitle) {
   
   const titleElement = modal.querySelector(".video-modal-title")
   if (titleElement) {
-    titleElement.textContent = exerciseTitle
+    titleElement.textContent = exercise.nombre
+  }
+  
+  const iframe = modal.querySelector("iframe")
+  if (iframe) {
+    iframe.src = `https://www.youtube.com/embed/${exercise.videoId}?si=Gq6MbZVyFc6VBSXx`
+    iframe.title = `Video: ${exercise.nombre}`
   }
   
   modal.classList.add("active")
@@ -163,11 +191,7 @@ function closeVideoModal() {
     
     const iframe = modal.querySelector("iframe")
     if (iframe) {
-      const currentSrc = iframe.src
       iframe.src = ""
-      setTimeout(() => {
-        iframe.src = currentSrc
-      }, 0)
     }
   }
 }
@@ -213,8 +237,8 @@ function createVideoModal() {
   const iframe = document.createElement("iframe")
   iframe.width = "560"
   iframe.height = "315"
-  iframe.src = `https://www.youtube.com/embed/${PLACEHOLDER_VIDEO_ID}?si=Gq6MbZVyFc6VBSXx`
-  iframe.title = PLACEHOLDER_VIDEO_TITLE
+  iframe.src = ""
+  iframe.title = ""
   iframe.setAttribute("frameborder", "0")
   iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share")
   iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin")
