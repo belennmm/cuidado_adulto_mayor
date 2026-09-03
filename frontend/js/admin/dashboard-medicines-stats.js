@@ -574,23 +574,17 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-  const token = window.CuidadoApi.getToken(["admin"])
-  const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
-  const role = String(user?.role || "").trim().toLowerCase()
+    const token = window.CuidadoApi.getToken(["admin"])
+    const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
+    const role = String(user?.role || "").trim().toLowerCase()
 
-  if (!token || role !== "admin") {
-    navigateToLogin()
-    return
-  }
+    if (!token || role !== "admin") {
+      navigateToLogin()
+      return
+    }
 
-  bindEvents()
+    bindEvents()
 
-
-  if (dayButton) {
-    dayButton.click()
-    return
-  }
-
-  await renderStats()
-})
+    await renderStats()
+  })
 })()
