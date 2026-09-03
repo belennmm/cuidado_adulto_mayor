@@ -53,9 +53,9 @@ export const localMobilityExercises = Object.freeze([
   },
 ])
 
-/**
- * Punto de integración futuro: sustituir los datos locales por una llamada a la API.
- */
+const PLACEHOLDER_VIDEO_ID = "qw0coMbqROo"
+const PLACEHOLDER_VIDEO_TITLE = "Estiramientos de miembro superior 1"
+
 export async function getMobilityExercises() {
   return localMobilityExercises.map((exercise) => ({
     ...exercise,
@@ -69,6 +69,27 @@ function appendTextElement(parent, tagName, className, text) {
   element.textContent = text
   parent.append(element)
   return element
+}
+
+function createVideoButton(exercise) {
+  const button = document.createElement("button")
+  button.type = "button"
+  button.className = "mobility-video-btn"
+  button.setAttribute("aria-label", `Ver video del ejercicio: ${exercise.title}`)
+  button.setAttribute("title", "Ver video guiado")
+  
+  const icon = document.createElement("i")
+  icon.className = "bx bx-play"
+  icon.setAttribute("aria-hidden", "true")
+  
+  button.append(icon, document.createTextNode("Ver video"))
+  
+  button.addEventListener("click", (e) => {
+    e.preventDefault()
+    openVideoModal(exercise.title)
+  })
+  
+  return button
 }
 
 function createExerciseCard(exercise) {
@@ -110,7 +131,113 @@ function createExerciseCard(exercise) {
   precaution.append(icon, document.createTextNode(exercise.precaution))
   card.append(precaution)
 
+  const videoBtn = createVideoButton(exercise)
+  card.append(videoBtn)
+
   return card
+}
+
+function openVideoModal(exerciseTitle) {
+  let modal = document.getElementById("videoModal")
+  if (!modal) {
+    createVideoModal()
+    modal = document.getElementById("videoModal")
+  }
+  
+  const titleElement = modal.querySelector(".video-modal-title")
+  if (titleElement) {
+    titleElement.textContent = exerciseTitle
+  }
+  
+  modal.classList.add("active")
+  modal.setAttribute("aria-hidden", "false")
+  document.body.style.overflow = "hidden"
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById("videoModal")
+  if (modal) {
+    modal.classList.remove("active")
+    modal.setAttribute("aria-hidden", "true")
+    document.body.style.overflow = ""
+    
+    const iframe = modal.querySelector("iframe")
+    if (iframe) {
+      const currentSrc = iframe.src
+      iframe.src = ""
+      setTimeout(() => {
+        iframe.src = currentSrc
+      }, 0)
+    }
+  }
+}
+
+function createVideoModal() {
+  const modal = document.createElement("div")
+  modal.id = "videoModal"
+  modal.className = "video-modal-overlay"
+  modal.setAttribute("aria-hidden", "true")
+  modal.setAttribute("role", "dialog")
+  modal.setAttribute("aria-labelledby", "videoModalTitle")
+  
+  const modalContent = document.createElement("div")
+  modalContent.className = "video-modal-content"
+  modalContent.setAttribute("role", "document")
+  
+  const modalHeader = document.createElement("div")
+  modalHeader.className = "video-modal-header"
+  
+  const title = document.createElement("h2")
+  title.id = "videoModalTitle"
+  title.className = "video-modal-title"
+  title.textContent = ""
+  
+  const closeBtn = document.createElement("button")
+  closeBtn.type = "button"
+  closeBtn.className = "video-modal-close"
+  closeBtn.setAttribute("aria-label", "Cerrar video")
+  closeBtn.setAttribute("title", "Cerrar")
+  
+  const closeIcon = document.createElement("i")
+  closeIcon.className = "bx bx-x"
+  closeIcon.setAttribute("aria-hidden", "true")
+  
+  closeBtn.append(closeIcon)
+  closeBtn.addEventListener("click", closeVideoModal)
+  
+  modalHeader.append(title, closeBtn)
+  
+  const videoContainer = document.createElement("div")
+  videoContainer.className = "video-modal-video-container"
+  
+  const iframe = document.createElement("iframe")
+  iframe.width = "560"
+  iframe.height = "315"
+  iframe.src = `https://www.youtube.com/embed/${PLACEHOLDER_VIDEO_ID}?si=Gq6MbZVyFc6VBSXx`
+  iframe.title = PLACEHOLDER_VIDEO_TITLE
+  iframe.setAttribute("frameborder", "0")
+  iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share")
+  iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin")
+  iframe.setAttribute("allowfullscreen", "")
+  
+  videoContainer.append(iframe)
+  
+  modalContent.append(modalHeader, videoContainer)
+  modal.append(modalContent)
+  
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      closeVideoModal()
+    }
+  })
+  
+  document.body.append(modal)
+  
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) {
+      closeVideoModal()
+    }
+  })
 }
 
 export function renderMobilityExercises(container, exercises) {
