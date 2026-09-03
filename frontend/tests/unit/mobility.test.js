@@ -8,20 +8,27 @@ describe("ejercicios de movilidad", () => {
     expect(exercises).toHaveLength(localMobilityExercises.length)
     expect(exercises[0]).toMatchObject({
       id: expect.any(String),
-      title: expect.any(String),
-      instructions: expect.any(Array),
-      precaution: expect.any(String),
+      nombre: expect.any(String),
+      comorealizarlo: expect.any(Array),
+      recomendacion: expect.any(String),
     })
     expect(exercises[0]).not.toBe(localMobilityExercises[0])
+    expect(exercises[0].comorealizarlo).not.toBe(localMobilityExercises[0].comorealizarlo)
   })
 
   it("genera una tarjeta por cada ejercicio", () => {
     const container = document.createElement("div")
 
-    renderMobilityExercises(container, localMobilityExercises.slice(0, 2))
+    const exercises = localMobilityExercises.slice(0, 2)
+    const instructionCount = exercises.reduce(
+      (total, exercise) => total + exercise.comorealizarlo.length,
+      0,
+    )
+
+    renderMobilityExercises(container, exercises)
 
     expect(container.querySelectorAll(".mobility-card")).toHaveLength(2)
-    expect(container.querySelector("h3").textContent).toBe("Movilidad suave de cuello")
-    expect(container.querySelectorAll(".mobility-instructions li")).toHaveLength(6)
+    expect(container.querySelector("h3").textContent).toBe(exercises[0].nombre)
+    expect(container.querySelectorAll(".mobility-instructions li")).toHaveLength(instructionCount)
   })
 })
