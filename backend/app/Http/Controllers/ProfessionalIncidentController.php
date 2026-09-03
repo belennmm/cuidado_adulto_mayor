@@ -44,7 +44,7 @@ class ProfessionalIncidentController extends Controller
             ]);
         }
 
-        if ((int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
+        if (!$this->isAdmin($user?->role) && (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
             return response()->json([
                 'message' => 'No tienes acceso para registrar incidentes de este adulto mayor.',
             ], 403);
@@ -148,6 +148,10 @@ class ProfessionalIncidentController extends Controller
     {
         $normalized = $this->normalizeText($role);
 
+        if ($this->isAdmin($normalized)) {
+            return;
+        }
+
         if (!in_array($normalized, ['profesional', 'cuidador_profesional'], true)) {
             abort(response()->json([
                 'message' => 'No tienes acceso para registrar incidentes.',
@@ -168,5 +172,10 @@ class ProfessionalIncidentController extends Controller
             ->lower()
             ->trim()
             ->toString();
+    }
+
+    private function isAdmin(mixed $role): bool
+    {
+        return in_array($this->normalizeText($role), ['admin', 'administrador'], true);
     }
 }

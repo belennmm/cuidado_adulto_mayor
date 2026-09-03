@@ -100,6 +100,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::put('/medications/inventory/{inventoryItem}', [MedicationInventoryController::class, 'update']);
     Route::patch('/medications/inventory/{inventoryItem}/stock', [MedicationInventoryController::class, 'adjustStock']);
     Route::delete('/medications/inventory/{inventoryItem}', [MedicationInventoryController::class, 'destroy']);
+    Route::post('/incidents', [ProfessionalIncidentController::class, 'store']);
     Route::get('/older-adults', [OlderAdultController::class, 'index']);
     Route::post('/older-adults', [OlderAdultController::class, 'store']);
     Route::get('/older-adults/{olderAdult}', [OlderAdultController::class, 'show']);
