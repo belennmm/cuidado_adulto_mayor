@@ -73,4 +73,56 @@ class ProfileRelationshipPreservationTest extends TestCase
             'created_by' => $professional->id,
         ]);
     }
+
+    public function test_profile_update_only_changes_allowed_profile_fields(): void
+    {
+        $professional = User::factory()->create([
+            'name' => 'Mario Lopez',
+            'email' => 'mario@example.com',
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+
+        Sanctum::actingAs($professional);
+
+        $this->putJson('/api/me', [
+            'name' => 'Mario Lopez Actualizado',
+            'email' => 'mario.actualizado@example.com',
+            'phone' => '5555-0101',
+            'location' => 'Zona 10',
+            'birthdate' => '1990-05-24',
+            'role' => 'admin',
+            'is_approved' => false,
+            'professional_caregiver_id' => null,
+            'created_by' => null,
+        ])
+            ->assertOk()
+            ->assertJsonPath('user.name', 'Mario Lopez Actualizado')
+            ->assertJsonPath('user.email', 'mario.actualizado@example.com')
+            ->assertJsonPath('user.role', 'profesional')
+            ->assertJsonPath('user.is_approved', true);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $professional->id,
+            'name' => 'Mario Lopez Actualizado',
+            'email' => 'mario.actualizado@example.com',
+            'phone' => '5555-0101',
+            'location' => 'Zona 10',
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+
+        $this->assertDatabaseHas('older_adults', [
+            'id' => $olderAdult->id,
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+    }
 }
