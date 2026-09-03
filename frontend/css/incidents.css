@@ -12,6 +12,43 @@
     flex-wrap: wrap;
 }
 
+.incidents-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.incidents-actions .dashboard-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 152px;
+    height: 42px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 24px;
+    background: linear-gradient(90deg, #4d8dff 0%, #6d97ff 100%);
+    color: #ffffff;
+    cursor: pointer;
+    font-family: var(--font-family-base);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    box-sizing: border-box;
+    box-shadow: 0 12px 24px rgba(43, 108, 255, 0.28);
+}
+
+.incidents-actions .dashboard-button:hover {
+    opacity: 0.95;
+}
+
+.incidents-actions .dashboard-button:focus-visible {
+    outline: 3px solid rgba(22, 120, 243, 0.25);
+    outline-offset: 3px;
+}
+
 .incidents-title {
     margin: 0;
     font-size: 26px;
