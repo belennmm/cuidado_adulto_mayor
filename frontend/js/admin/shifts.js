@@ -27,14 +27,7 @@ const ADMIN_REQUEST_OPTIONS = Object.freeze({
   fallbackError: "No se pudo completar la acción.",
 })
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
-}
+const escapeHtml = window.CuidadoUi.escapeHtml
 
 function setMessage(message, isError = false) {
   shiftMessage.textContent = message
@@ -54,11 +47,7 @@ function normalizeTime(value) {
   return String(value || "").slice(0, 5)
 }
 
-function formatDate(value) {
-  if (!value) return "Sin fecha"
-  const [year, month, day] = value.split("-")
-  return `${day}/${month}/${year}`
-}
+const formatDate = window.CuidadoUi.formatNumericDate
 
 function statusLabel(status) {
   if (status === "approved") return "Aprobada"

@@ -14,6 +14,7 @@ afterEach(() => {
   delete window.AuthSession
   delete window.CuidadoApi
   delete window.CuidadoConfig
+  delete window.CuidadoUi
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
   delete window.showAdminAlert

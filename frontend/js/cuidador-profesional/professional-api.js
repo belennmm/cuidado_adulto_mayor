@@ -1,12 +1,5 @@
 (() => {
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;")
-  }
+  const escapeHtml = window.CuidadoUi.escapeHtml
 
   async function fetchJson(path, options = {}) {
     return window.CuidadoApi.fetchJson(path, {
@@ -16,43 +9,10 @@
     })
   }
 
-  function formatDate(value) {
-    if (!value) return "Hoy"
-    const [year, month, day] = value.split("-")
-    const date = new Date(Number(year), Number(month) - 1, Number(day))
-
-    return new Intl.DateTimeFormat("es-GT", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(date)
-  }
-
-  function formatShortDate(value) {
-    if (!value) return "Sin fecha"
-    const [year, month, day] = value.split("-")
-    const date = new Date(Number(year), Number(month) - 1, Number(day))
-
-    return new Intl.DateTimeFormat("es-GT", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date)
-  }
-
-  function formatTime(value) {
-    if (!value) return "Sin hora"
-    return String(value).slice(0, 5)
-  }
-
-  function normalize(value) {
-    return String(value || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .trim()
-  }
+  const formatDate = window.CuidadoUi.formatLongDate
+  const formatShortDate = window.CuidadoUi.formatShortDate
+  const formatTime = window.CuidadoUi.formatTime
+  const normalize = window.CuidadoUi.normalizeText
 
   function getStatusClass(status) {
     const normalized = normalize(status)
@@ -77,11 +37,8 @@
     `
   }
 
-  function setText(id, value, fallback = "0") {
-    const element = document.getElementById(id)
-    if (!element) return
-    element.textContent = value ?? fallback
-  }
+  const setText = (id, value, fallback = "0") =>
+    window.CuidadoUi.setText(id, value, fallback)
 
   window.ProfessionalCare = {
     escapeHtml,
