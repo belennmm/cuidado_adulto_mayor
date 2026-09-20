@@ -37,4 +37,24 @@ describe("CuidadoUi", () => {
     expect(window.CuidadoUi.setText("total", null, "Sin datos")?.textContent).toBe("Sin datos")
     expect(window.CuidadoUi.setText("inexistente", "texto")).toBeNull()
   })
+
+  it("presenta mensajes y actualiza sus clases de estado", () => {
+    document.body.innerHTML = '<p id="message"></p>'
+
+    const message = window.CuidadoUi.setMessage("message", "No se pudo guardar", {
+      type: "error",
+      errorClass: "error",
+      successClass: "success",
+    })
+    expect(message?.textContent).toBe("No se pudo guardar")
+    expect(message?.classList.contains("error")).toBe(true)
+
+    window.CuidadoUi.setMessage(message, "Guardado", {
+      type: "success",
+      errorClass: "error",
+      successClass: "success",
+    })
+    expect(message?.classList.contains("error")).toBe(false)
+    expect(message?.classList.contains("success")).toBe(true)
+  })
 })

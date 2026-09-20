@@ -25,10 +25,9 @@ function usernameFromEmail(value) {
 }
 
 function setMessage(message, isError = false) {
-  if (!accountSettingsMessage) return
-
-  accountSettingsMessage.textContent = message || ""
-  accountSettingsMessage.classList.toggle("is-error", isError)
+  window.CuidadoUi.setMessage(accountSettingsMessage, message, {
+    type: isError ? "error" : "",
+  })
 }
 
 function fillUser(user) {

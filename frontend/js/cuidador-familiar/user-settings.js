@@ -6,12 +6,11 @@
   }
 
   function setMessage(message, type = "") {
-    const messageElement = getField("settingsMessage")
-    if (!messageElement) return
-
-    messageElement.textContent = message
-    messageElement.classList.remove("success", "error")
-    if (type) messageElement.classList.add(type)
+    window.CuidadoUi.setMessage("settingsMessage", message, {
+      type,
+      errorClass: "error",
+      successClass: "success",
+    })
   }
 
   function fillProfile(user) {

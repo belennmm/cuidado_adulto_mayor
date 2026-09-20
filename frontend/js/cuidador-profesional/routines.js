@@ -21,21 +21,19 @@
   const setText = window.CuidadoUi.setText
 
   function setMessage(message, isError = false) {
-    const element = document.getElementById("routineNoteMessage")
-    if (!element) return
-
-    element.textContent = message || ""
-    element.classList.toggle("is-error", isError)
-    element.classList.toggle("is-success", Boolean(message) && !isError)
+    window.CuidadoUi.setMessage("routineNoteMessage", message, {
+      type: isError ? "error" : "",
+      successClass: "is-success",
+      successWhenMessage: true,
+    })
   }
 
   function setCustomRoutineMessage(message, isError = false) {
-    const element = document.getElementById("customRoutineMessage")
-    if (!element) return
-
-    element.textContent = message || ""
-    element.classList.toggle("is-error", isError)
-    element.classList.toggle("is-success", Boolean(message) && !isError)
+    window.CuidadoUi.setMessage("customRoutineMessage", message, {
+      type: isError ? "error" : "",
+      successClass: "is-success",
+      successWhenMessage: true,
+    })
   }
 
   function firstValidationMessage(error) {

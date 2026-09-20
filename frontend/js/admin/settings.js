@@ -11,11 +11,9 @@
   const setText = window.CuidadoUi.setText
 
   function setMessage(message, isError = false) {
-    const element = document.getElementById("adminSettingsMessage")
-    if (!element) return
-
-    element.textContent = message || ""
-    element.classList.toggle("is-error", isError)
+    window.CuidadoUi.setMessage("adminSettingsMessage", message, {
+      type: isError ? "error" : "",
+    })
   }
 
   function loadSettings() {
