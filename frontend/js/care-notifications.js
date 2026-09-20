@@ -54,14 +54,7 @@
     return String(value).slice(0, 5)
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;")
-  }
+  const escapeHtml = window.CuidadoUi.escapeHtml
 
   function medicationLabel(medication) {
     const name = medication.medication_name || "Medicamento"

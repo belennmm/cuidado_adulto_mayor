@@ -66,28 +66,9 @@ function setSearchDate(date) {
     window.history.replaceState({}, "", url)
 }
 
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;")
-}
+const escapeHtml = window.CuidadoUi.escapeHtml
 
-function formatDate(value) {
-    if (!value) return "Hoy"
-
-    const [year, month, day] = value.split("-")
-    const date = new Date(Number(year), Number(month) - 1, Number(day))
-
-    return new Intl.DateTimeFormat("es-GT", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    }).format(date)
-}
+const formatDate = window.CuidadoUi.formatLongDate
 
 function formatTime(value) {
     if (!value) return "Sin hora registrada"

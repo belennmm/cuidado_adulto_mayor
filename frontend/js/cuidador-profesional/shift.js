@@ -95,11 +95,7 @@
     return "badge-warning"
   }
 
-  function formatDate(value) {
-    if (!value) return "Sin fecha"
-    const [year, month, day] = value.split("-")
-    return `${day}/${month}/${year}`
-  }
+  const formatDate = window.CuidadoUi.formatNumericDate
 
   function renderVacationRequest(request) {
     return `
