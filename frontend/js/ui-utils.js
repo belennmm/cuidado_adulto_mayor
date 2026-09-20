@@ -83,6 +83,28 @@
     return element
   }
 
+  function setMessage(target, message, options = {}) {
+    const element = typeof target === "string"
+      ? document.getElementById(target)
+      : target
+    if (!element) return null
+
+    const {
+      type = "",
+      errorClass = "is-error",
+      successClass = null,
+      successWhenMessage = false,
+    } = options
+    const hasMessage = Boolean(message)
+    const isError = type === "error"
+    const isSuccess = type === "success" || (successWhenMessage && hasMessage && !isError)
+
+    element.textContent = message || ""
+    if (errorClass) element.classList.toggle(errorClass, isError)
+    if (successClass) element.classList.toggle(successClass, isSuccess)
+    return element
+  }
+
   window.CuidadoUi = Object.freeze({
     escapeHtml,
     formatLongDate,
@@ -92,6 +114,7 @@
     getRoleLabel,
     normalizeText,
     parseDateOnly,
+    setMessage,
     setText,
   })
 })()

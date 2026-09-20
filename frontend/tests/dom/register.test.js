@@ -18,6 +18,7 @@ describe("formulario de registro", () => {
     window.CuidadoApi = { fetchJson }
     window.AuthSession = { clearSession: vi.fn() }
     window.navigateWithLoading = vi.fn()
+    await import("../../js/ui-utils.js")
     await import("../../js/register.js")
   })
 

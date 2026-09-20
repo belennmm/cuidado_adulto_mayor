@@ -30,8 +30,9 @@ const ADMIN_REQUEST_OPTIONS = Object.freeze({
 const escapeHtml = window.CuidadoUi.escapeHtml
 
 function setMessage(message, isError = false) {
-  shiftMessage.textContent = message
-  shiftMessage.classList.toggle("is-error", isError)
+  window.CuidadoUi.setMessage(shiftMessage, message, {
+    type: isError ? "error" : "",
+  })
 }
 
 async function showPopup(message, options = {}) {

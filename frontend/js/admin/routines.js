@@ -9,11 +9,9 @@
   const setText = window.CuidadoUi.setText
 
   function setMessage(message, isError = false) {
-    const element = document.getElementById("adminRoutineMessage")
-    if (!element) return
-
-    element.textContent = message || ""
-    element.classList.toggle("is-error", isError)
+    window.CuidadoUi.setMessage("adminRoutineMessage", message, {
+      type: isError ? "error" : "",
+    })
   }
 
   async function showPopup(message, options = {}) {

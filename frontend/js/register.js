@@ -5,10 +5,10 @@ const togglePassword = document.getElementById("togglePassword")
 const togglePasswordIcon = togglePassword ? togglePassword.querySelector("i") : null
 
 function showMessage(message, isError = false) {
-    if (registerMessage) {
-        registerMessage.textContent = message
-        registerMessage.classList.toggle("error", isError)
-    }
+    window.CuidadoUi.setMessage(registerMessage, message, {
+        type: isError ? "error" : "",
+        errorClass: "error",
+    })
 }
 
 function clearSession() {
