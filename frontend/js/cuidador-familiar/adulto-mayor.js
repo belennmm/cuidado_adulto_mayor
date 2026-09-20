@@ -9,11 +9,7 @@
     element.value = value || ""
   }
 
-  function setText(id, value) {
-    const element = document.getElementById(id)
-    if (!element) return
-    element.textContent = value || ""
-  }
+  const setText = window.CuidadoUi.setText
 
   function firstName(fullName) {
     return String(fullName || "Adulto mayor").split(" ")[0]

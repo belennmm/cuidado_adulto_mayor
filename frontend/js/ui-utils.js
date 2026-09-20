@@ -75,6 +75,14 @@
     return labels[normalizeText(role)] || role || fallback
   }
 
+  function setText(id, value, fallback = "") {
+    const element = document.getElementById(id)
+    if (!element) return null
+
+    element.textContent = value ?? fallback
+    return element
+  }
+
   window.CuidadoUi = Object.freeze({
     escapeHtml,
     formatLongDate,
@@ -84,5 +92,6 @@
     getRoleLabel,
     normalizeText,
     parseDateOnly,
+    setText,
   })
 })()

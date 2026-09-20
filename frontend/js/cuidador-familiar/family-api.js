@@ -55,11 +55,8 @@
     return "Cuidador familiar"
   }
 
-  function setText(id, value, fallback = "0") {
-    const element = document.getElementById(id)
-    if (!element) return
-    element.textContent = value ?? fallback
-  }
+  const setText = (id, value, fallback = "0") =>
+    window.CuidadoUi.setText(id, value, fallback)
 
   function renderEmpty(message, icon = "bx bx-info-circle") {
     return `

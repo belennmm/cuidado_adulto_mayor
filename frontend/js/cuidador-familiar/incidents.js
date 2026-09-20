@@ -5,11 +5,7 @@
 
   const formatShortDate = window.CuidadoUi.formatNumericDate
 
-  function setText(id, value) {
-    const element = document.getElementById(id)
-    if (!element) return
-    element.textContent = value || ""
-  }
+  const setText = window.CuidadoUi.setText
 
   function getIncidentAdultName(incident) {
     return incident?.older_adult?.full_name || incident?.adult_name || "Adulto mayor"

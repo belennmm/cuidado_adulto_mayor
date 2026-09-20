@@ -9,11 +9,7 @@
     }
   }
 
-  function setText(id, value) {
-    const el = document.getElementById(id)
-    if (!el) return
-    el.textContent = value || "-"
-  }
+  const setText = window.CuidadoUi.setText
 
   function getRoleLabel(role) {
     const labels = {
@@ -28,8 +24,8 @@
   }
 
   function renderUser(user) {
-    setText("profileName", user?.name)
-    setText("profileEmail", user?.email)
+    setText("profileName", user?.name, "-")
+    setText("profileEmail", user?.email, "-")
     setText("profileRole", getRoleLabel(user?.role))
   }
 

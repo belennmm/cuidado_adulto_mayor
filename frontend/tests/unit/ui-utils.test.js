@@ -29,4 +29,12 @@ describe("CuidadoUi", () => {
     expect(window.CuidadoUi.getRoleLabel("cuidador_profesional")).toBe("Cuidador Profesional")
     expect(window.CuidadoUi.getRoleLabel("familiar")).toBe("Cuidador Familiar")
   })
+
+  it("actualiza texto conservando ceros y valores alternativos", () => {
+    document.body.innerHTML = '<span id="total"></span>'
+
+    expect(window.CuidadoUi.setText("total", 0)?.textContent).toBe("0")
+    expect(window.CuidadoUi.setText("total", null, "Sin datos")?.textContent).toBe("Sin datos")
+    expect(window.CuidadoUi.setText("inexistente", "texto")).toBeNull()
+  })
 })

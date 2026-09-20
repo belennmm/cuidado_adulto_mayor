@@ -18,11 +18,7 @@
     window.history.replaceState({}, "", url)
   }
 
-  function setText(id, value, fallback = "0") {
-    const element = document.getElementById(id)
-    if (!element) return
-    element.textContent = value ?? fallback
-  }
+  const setText = window.CuidadoUi.setText
 
   function setMessage(message, isError = false) {
     const element = document.getElementById("routineNoteMessage")

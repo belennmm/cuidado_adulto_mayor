@@ -6,10 +6,7 @@
 
   const escapeHtml = window.CuidadoUi.escapeHtml
 
-  function setText(id, value) {
-    const element = document.getElementById(id)
-    if (element) element.textContent = value ?? ""
-  }
+  const setText = window.CuidadoUi.setText
 
   function setMessage(message, isError = false) {
     const element = document.getElementById("adminRoutineMessage")
