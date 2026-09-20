@@ -42,17 +42,7 @@ function isApproved(value) {
   return value === true || value === 1 || value === "1" || value === "true" || value === "t"
 }
 
-function getRoleLabel(role) {
-  const labels = {
-    admin: "Administrador",
-    profesional: "Cuidador Profesional",
-    familiar: "Cuidador Familiar",
-    cuidador_profesional: "Cuidador Profesional",
-    cuidador_familiar: "Cuidador Familiar"
-  }
-
-  return labels[role] || role || "Sin rol"
-}
+const getRoleLabel = window.CuidadoUi.getRoleLabel
 
 function normalizeRole(role) {
   const roles = {
@@ -63,14 +53,7 @@ function normalizeRole(role) {
   return roles[role] || role
 }
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
-}
+const escapeHtml = window.CuidadoUi.escapeHtml
 
 function renderRequestState(message, className = "empty-requests") {
   if (!requestList) return

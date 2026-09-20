@@ -18,18 +18,7 @@ const profileEmail = document.getElementById("profileEmail")
 
 const togglePasswordButtons = document.querySelectorAll(".toggle-password")
 
-function roleLabel(value) {
-  const labels = {
-    admin: "Administrador",
-    administrador: "Administrador",
-    profesional: "Cuidador Profesional",
-    familiar: "Cuidador Familiar",
-    cuidador_profesional: "Cuidador Profesional",
-    cuidador_familiar: "Cuidador Familiar",
-  }
-
-  return labels[value] || value || "Sin rol"
-}
+const roleLabel = window.CuidadoUi.getRoleLabel
 
 function usernameFromEmail(value) {
   return String(value || "").split("@")[0] || ""

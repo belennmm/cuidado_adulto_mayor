@@ -40,14 +40,7 @@
     window.location.assign("../../index.html")
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;")
-  }
+  const escapeHtml = window.CuidadoUi.escapeHtml
 
   const ADMIN_REQUEST_OPTIONS = Object.freeze({
     expectedRoles: ["admin"],

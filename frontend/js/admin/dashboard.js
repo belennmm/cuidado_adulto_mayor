@@ -10,14 +10,7 @@ const changesCount = document.getElementById("changesCount")
 const routineList = document.getElementById("routineList")
 const medicineText = document.querySelector(".medicine-text")
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
-}
+const escapeHtml = window.CuidadoUi.escapeHtml
 
 function formatShortDate(value) {
   if (!value) return "Sin fecha"
