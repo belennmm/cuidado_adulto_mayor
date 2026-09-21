@@ -1,8 +1,5 @@
 (() => {
-  let olderAdults = []
-  let activeOlderAdultId = ""
-  let currentRoutines = []
-  let editingRoutineId = null
+  const state = { olderAdults: [], activeOlderAdultId: "", currentRoutines: [], editingRoutineId: null }
 
   const escapeHtml = window.CuidadoUi.escapeHtml
 
@@ -35,132 +32,18 @@
     window.history.replaceState({}, "", url)
   }
 
-  function renderAdultSelector() {
-    const selector = document.getElementById("adminRoutineAdultSelector")
-    if (!selector) return
-
-    selector.innerHTML = olderAdults
-      .map((adult) => `
-        <option value="${escapeHtml(adult.id)}">
-          ${escapeHtml(adult.full_name || "Adulto mayor")}
-        </option>
-      `)
-      .join("")
-
-    if (activeOlderAdultId) selector.value = String(activeOlderAdultId)
-  }
-
-  function resetForm() {
-    editingRoutineId = null
-    const nameInput = document.getElementById("adminRoutineName")
-    const scheduleInput = document.getElementById("adminRoutineSchedule")
-    const activitiesInput = document.getElementById("adminRoutineActivities")
-    const title = document.getElementById("adminRoutineFormTitle")
-    const saveButton = document.getElementById("adminSaveRoutineButton")
-    const cancelButton = document.getElementById("adminCancelRoutineEdit")
-
-    if (nameInput) nameInput.value = ""
-    if (scheduleInput) scheduleInput.value = ""
-    if (activitiesInput) activitiesInput.value = ""
-    if (title) title.textContent = "Crear rutina"
-    if (saveButton) saveButton.textContent = "Guardar rutina"
-    if (cancelButton) cancelButton.hidden = true
-  }
-
-  function parseActivities(value) {
-    return String(value || "")
-      .split(/\r?\n|,/)
-      .map((activity) => activity.trim())
-      .filter(Boolean)
-  }
-
-  function renderEmpty(targetId, message) {
-    const target = document.getElementById(targetId)
-    if (!target) return
-    target.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`
-  }
-
-  function renderRoutines(routines) {
-    const list = document.getElementById("adminRoutinesList")
-    if (!list) return
-
-    currentRoutines = routines
-    setText("adminRoutineTotal", routines.length)
-
-    if (!routines.length) {
-      renderEmpty("adminRoutinesList", "No hay rutinas creadas para este adulto mayor.")
-      return
-    }
-
-    list.innerHTML = routines.map((routine) => {
-      const activities = Array.isArray(routine.actividades) ? routine.actividades : []
-
-      return `
-        <article class="routine-card">
-          <div class="routine-card-top">
-            <div>
-              <strong>${escapeHtml(routine.nombre || "Rutina")}</strong>
-              <span>${escapeHtml(routine.horario || "Sin horario")}</span>
-            </div>
-            <div class="routine-card-actions">
-              <span class="badge">${activities.length} actividades</span>
-              <button type="button" class="text-button" data-routine-action="edit" data-id="${escapeHtml(routine.id)}">Editar</button>
-              <button type="button" class="text-button is-danger" data-routine-action="delete" data-id="${escapeHtml(routine.id)}">Eliminar</button>
-            </div>
-          </div>
-          <ul>
-            ${activities.map((activity) => `<li>${escapeHtml(activity)}</li>`).join("")}
-          </ul>
-        </article>
-      `
-    }).join("")
-  }
-
-  function renderMedications(adult) {
-    const medications = adult?.medications || []
-    const list = document.getElementById("adminMedicationsList")
-
-    setText("adminMedicationTotal", medications.length)
-    setText("adminMedicationMeta", medications.length ? "Asignados en el perfil clínico" : "Sin medicamentos asignados")
-
-    if (!list) return
-
-    if (!medications.length) {
-      renderEmpty("adminMedicationsList", "Este adulto mayor no tiene medicamentos asignados.")
-      return
-    }
-
-    list.innerHTML = medications.map((medication) => `
-      <article class="routine-card">
-        <div class="routine-card-top">
-          <div>
-            <strong>${escapeHtml(medication.name || "Medicamento")}</strong>
-            <p>${escapeHtml(medication.dosage || "Sin dosis")} &middot; ${escapeHtml(medication.schedule || "Sin horario")}</p>
-          </div>
-          <span class="badge">${escapeHtml((medication.days || []).length ? medication.days.join(", ") : "Diario")}</span>
-        </div>
-        <p>${escapeHtml(medication.notes || "Sin notas.")}</p>
-      </article>
-    `).join("")
-  }
-
-  function renderMeta(adult) {
-    setText(
-      "adminRoutineAdultMeta",
-      adult ? `${adult.full_name || "Adulto mayor"}${adult.room ? ` - Habitacion ${adult.room}` : ""}` : "Sin adulto mayor seleccionado"
-    )
-  }
+  const { renderAdultSelector, resetForm, parseActivities, renderEmpty, renderRoutines, renderMedications, renderMeta } = window.AdminRoutinesView.create({ state, escapeHtml, setText })
 
   async function loadAdults() {
     const data = await window.CuidadoApi.fetchJson("/admin/older-adults", {
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la acción.",
     })
-    olderAdults = data.older_adults || []
+    state.olderAdults = data.older_adults || []
   }
 
   async function loadRoutines() {
-    if (!activeOlderAdultId) {
+    if (!state.activeOlderAdultId) {
       renderMeta(null)
       renderEmpty("adminRoutinesList", "Selecciona un adulto mayor para ver sus rutinas.")
       renderEmpty("adminMedicationsList", "Selecciona un adulto mayor para ver sus medicamentos.")
@@ -170,25 +53,25 @@
     }
 
     const [routineData, adultData] = await Promise.all([
-      window.CuidadoApi.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`, {
+      window.CuidadoApi.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(state.activeOlderAdultId)}`, {
         expectedRoles: ["admin"],
         fallbackError: "No se pudo completar la acción.",
       }),
-      window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(activeOlderAdultId)}`, {
+      window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(state.activeOlderAdultId)}`, {
         expectedRoles: ["admin"],
         fallbackError: "No se pudo completar la acción.",
       }),
     ])
-    const adult = adultData.older_adult || olderAdults.find((item) => String(item.id) === String(activeOlderAdultId))
+    const adult = adultData.older_adult || state.olderAdults.find((item) => String(item.id) === String(state.activeOlderAdultId))
 
     renderMeta(adult)
     renderMedications(adult)
     renderRoutines(routineData.rutinas || [])
-    updateAdultUrl(activeOlderAdultId)
+    updateAdultUrl(state.activeOlderAdultId)
   }
 
   async function saveRoutine() {
-    if (!activeOlderAdultId) {
+    if (!state.activeOlderAdultId) {
       const message = "Selecciona un adulto mayor antes de guardar una rutina."
       setMessage(message, true)
       await showPopup(message, { variant: "error" })
@@ -217,19 +100,19 @@
         saveButton.textContent = "Guardando..."
       }
 
-      await window.CuidadoApi.fetchJson(editingRoutineId ? `/rutinas/${editingRoutineId}` : "/rutinas", {
-        method: editingRoutineId ? "PUT" : "POST",
+      await window.CuidadoApi.fetchJson(state.editingRoutineId ? `/rutinas/${state.editingRoutineId}` : "/rutinas", {
+        method: state.editingRoutineId ? "PUT" : "POST",
         body: JSON.stringify({
           nombre,
           horario,
           actividades,
-          ...(editingRoutineId ? {} : { older_adult_id: activeOlderAdultId }),
+          ...(state.editingRoutineId ? {} : { older_adult_id: state.activeOlderAdultId }),
         }),
         expectedRoles: ["admin"],
         fallbackError: "No se pudo completar la acción.",
       })
 
-      const wasEditing = Boolean(editingRoutineId)
+      const wasEditing = Boolean(state.editingRoutineId)
       resetForm()
       const message = wasEditing ? "Rutina actualizada correctamente." : "Rutina creada correctamente."
       setMessage(message)
@@ -241,16 +124,16 @@
     } finally {
       if (saveButton) {
         saveButton.disabled = false
-        saveButton.textContent = editingRoutineId ? "Guardar cambios" : "Guardar rutina"
+        saveButton.textContent = state.editingRoutineId ? "Guardar cambios" : "Guardar rutina"
       }
     }
   }
 
   function startEditRoutine(routineId) {
-    const routine = currentRoutines.find((item) => String(item.id) === String(routineId))
+    const routine = state.currentRoutines.find((item) => String(item.id) === String(routineId))
     if (!routine) return
 
-    editingRoutineId = routine.id
+    state.editingRoutineId = routine.id
     document.getElementById("adminRoutineName").value = routine.nombre || ""
     document.getElementById("adminRoutineSchedule").value = routine.horario || ""
     document.getElementById("adminRoutineActivities").value = Array.isArray(routine.actividades) ? routine.actividades.join("\n") : ""
@@ -286,7 +169,7 @@
         fallbackError: "No se pudo completar la acción.",
       })
 
-      if (String(editingRoutineId) === String(routineId)) resetForm()
+      if (String(state.editingRoutineId) === String(routineId)) resetForm()
       const message = "Rutina eliminada correctamente."
       setMessage(message)
       await loadRoutines()
@@ -305,7 +188,7 @@
 
       await loadAdults()
 
-      if (!olderAdults.length) {
+      if (!state.olderAdults.length) {
         renderAdultSelector()
         renderEmpty("adminRoutinesList", "No hay adultos mayores registrados.")
         renderEmpty("adminMedicationsList", "No hay adultos mayores registrados.")
@@ -313,8 +196,8 @@
       }
 
       const requestedAdultId = getRequestedAdultId()
-      const hasRequestedAdult = olderAdults.some((adult) => String(adult.id) === String(requestedAdultId))
-      activeOlderAdultId = hasRequestedAdult ? requestedAdultId : String(olderAdults[0].id)
+      const hasRequestedAdult = state.olderAdults.some((adult) => String(adult.id) === String(requestedAdultId))
+      state.activeOlderAdultId = hasRequestedAdult ? requestedAdultId : String(state.olderAdults[0].id)
 
       renderAdultSelector()
       await loadRoutines()
@@ -326,7 +209,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("adminRoutineAdultSelector")?.addEventListener("change", async (event) => {
-      activeOlderAdultId = event.target.value
+      state.activeOlderAdultId = event.target.value
       resetForm()
       setMessage("")
       await loadRoutines()
