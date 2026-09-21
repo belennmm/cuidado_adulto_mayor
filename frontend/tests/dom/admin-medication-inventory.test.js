@@ -45,6 +45,7 @@ describe("inventario individual de medicamentos", () => {
 
     await import("../../js/ui-utils.js")
     await import("../../js/admin/medication-stats-service.js")
+    await import("../../js/admin/medication-stats-view.js")
     await import("../../js/admin/dashboard-medicines-stats.js")
     document.dispatchEvent(new Event("DOMContentLoaded"))
     await flushAsyncEvents()

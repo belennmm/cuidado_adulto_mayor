@@ -22,6 +22,7 @@ afterEach(() => {
   delete window.ProfessionalRoutinesService
   delete window.ProfessionalRoutinesEvents
   delete window.MedicationStatsService
+  delete window.MedicationStatsView
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
   delete window.AppPopup
