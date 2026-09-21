@@ -23,5 +23,10 @@ afterEach(() => {
   delete window.ProfessionalRoutinesEvents
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
+  delete window.AppPopup
+  delete window.showAppAlert
+  delete window.showAppConfirm
+  delete window.showAppSuccess
   delete window.showAdminAlert
+  delete window.showAdminConfirm
 })
