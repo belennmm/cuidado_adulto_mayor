@@ -9,6 +9,22 @@
     ["domingo", "Domingo"],
   ]
 
+  const FIELD_NAMES = Object.freeze({
+    full_name: "fullName",
+    age: "age",
+    birthdate: "birthdate",
+    gender: "gender",
+    room: "room",
+    status: "status",
+    family_caregiver_id: "caregiverFamily",
+    professional_caregiver_id: "professionalCaregiver",
+    emergency_contact_name: "contactName",
+    emergency_contact_phone: "contactPhone",
+    allergies: "allergies",
+    medical_history: "medicalHistory",
+    notes: "notes",
+  })
+
   function createMedicineManager(list) {
     let count = 0
     const escapeHtml = window.CuidadoUi.escapeHtml
@@ -114,5 +130,58 @@
     }
   }
 
-  window.OlderAdultForm = Object.freeze({ createMedicineManager, loadCaregiverOptions })
+  function create({ form, medicinesList, includeMedicationIds = false }) {
+    const medicines = createMedicineManager(medicinesList)
+
+    function getControl(name) {
+      return form?.elements?.namedItem(name) || null
+    }
+
+    function buildPayload() {
+      const formData = new FormData(form)
+      const fields = Object.fromEntries(
+        Object.entries(FIELD_NAMES).map(([payloadName, formName]) => [
+          payloadName,
+          { formData, key: formName },
+        ])
+      )
+
+      return {
+        ...window.CuidadoForms.readPayload(fields),
+        medications: medicines.read({ includeIds: includeMedicationIds }),
+      }
+    }
+
+    function fill(olderAdult = {}) {
+      Object.entries(FIELD_NAMES).forEach(([payloadName, formName]) => {
+        const control = getControl(formName)
+        if (!control) return
+
+        let value = olderAdult[payloadName]
+        if (payloadName === "birthdate" && value) value = String(value).slice(0, 10)
+        if (payloadName.endsWith("_caregiver_id") && value) value = String(value)
+        control.value = value ?? ""
+      })
+      medicines.fill(Array.isArray(olderAdult.medications) ? olderAdult.medications : [])
+    }
+
+    async function loadCaregivers({ familySelectedId = null, professionalSelectedId = null } = {}) {
+      return Promise.all([
+        loadCaregiverOptions(getControl("caregiverFamily"), {
+          path: "/admin/family-caregivers",
+          placeholder: "Seleccione cuidador familiar",
+          selectedId: familySelectedId,
+        }),
+        loadCaregiverOptions(getControl("professionalCaregiver"), {
+          path: "/admin/professional-caregivers",
+          placeholder: "Seleccione cuidador profesional",
+          selectedId: professionalSelectedId,
+        }),
+      ])
+    }
+
+    return Object.freeze({ buildPayload, fill, loadCaregivers, medicines })
+  }
+
+  window.OlderAdultForm = Object.freeze({ create, createMedicineManager, loadCaregiverOptions })
 })()

@@ -1,10 +1,8 @@
 const newOlderAdultForm = document.getElementById("newOlderAdultForm")
 const medicinesList = document.getElementById("medicinesList")
 const addMedicineButton = document.getElementById("addMedicineButton")
-const caregiverFamily = document.getElementById("caregiverFamily")
-const professionalCaregiver = document.getElementById("professionalCaregiver")
-
-const medicineManager = window.OlderAdultForm.createMedicineManager(medicinesList)
+const olderAdultForm = window.OlderAdultForm.create({ form: newOlderAdultForm, medicinesList })
+const medicineManager = olderAdultForm.medicines
 
 function navigateTo(url) {
   if (window.navigateWithLoading) {
@@ -22,41 +20,6 @@ async function showPopup(message, options = {}) {
   }
 
   console.warn(message)
-}
-
-function buildPayload(formData) {
-  return {
-    ...window.CuidadoForms.readPayload({
-      full_name: { formData, key: "fullName" },
-      age: { formData, key: "age" },
-      birthdate: { formData, key: "birthdate" },
-      gender: { formData, key: "gender" },
-      room: { formData, key: "room" },
-      status: { formData, key: "status" },
-      family_caregiver_id: { formData, key: "caregiverFamily" },
-      professional_caregiver_id: { formData, key: "professionalCaregiver" },
-      emergency_contact_name: { formData, key: "contactName" },
-      emergency_contact_phone: { formData, key: "contactPhone" },
-      allergies: { formData, key: "allergies" },
-      medical_history: { formData, key: "medicalHistory" },
-      notes: { formData, key: "notes" },
-    }),
-    medications: medicineManager.read(),
-  }
-}
-
-async function loadFamilyCaregivers() {
-  return window.OlderAdultForm.loadCaregiverOptions(caregiverFamily, {
-    path: "/admin/family-caregivers",
-    placeholder: "Seleccione cuidador familiar",
-  })
-}
-
-async function loadProfessionalCaregivers() {
-  return window.OlderAdultForm.loadCaregiverOptions(professionalCaregiver, {
-    path: "/admin/professional-caregivers",
-    placeholder: "Seleccione cuidador profesional",
-  })
 }
 
 async function createOlderAdult(payload) {
@@ -77,8 +40,7 @@ if (newOlderAdultForm) {
     event.preventDefault()
 
     const submitButton = newOlderAdultForm.querySelector(".primary-button")
-    const formData = new FormData(newOlderAdultForm)
-    const payload = buildPayload(formData)
+    const payload = olderAdultForm.buildPayload()
 
     if (window.CuidadoForms.findMissing(payload, ["full_name"]).length) {
       await showPopup("Ingresa el nombre completo del adulto mayor.", { variant: "error" })
@@ -111,5 +73,4 @@ if (medicinesList) {
   medicineManager.add()
 }
 
-loadFamilyCaregivers()
-loadProfessionalCaregivers()
+olderAdultForm.loadCaregivers()

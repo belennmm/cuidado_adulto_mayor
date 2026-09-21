@@ -9,6 +9,12 @@ const locationInput = document.getElementById("location")
 const phone = document.getElementById("phone")
 const birthdate = document.getElementById("birthdate")
 
+const userForm = window.AdminUserForm.create({
+  form: newUserForm,
+  togglePassword,
+  fields: { name: username, email, password: passwordInput, role: userType, location: locationInput, phone, birthdate },
+})
+
 let pendingRequests = []
 
 function navigateTo(url) {
@@ -42,8 +48,6 @@ const isApproved = window.CuidadoForms.isApproved
 
 const getRoleLabel = window.CuidadoUi.getRoleLabel
 
-const normalizeRole = window.CuidadoForms.normalizeRole
-
 const escapeHtml = window.CuidadoUi.escapeHtml
 
 function renderRequestState(message, className = "empty-requests") {
@@ -57,18 +61,11 @@ function renderRequestState(message, className = "empty-requests") {
 }
 
 function setFormDisabled(disabled) {
-  window.CuidadoForms.setDisabled(newUserForm, disabled)
+  userForm.setDisabled(disabled)
 }
 
 function clearForm() {
-  newUserForm?.reset()
-  passwordInput.type = "password"
-
-  const icon = togglePassword?.querySelector("i")
-  if (icon) {
-    icon.classList.add("bx-hide")
-    icon.classList.remove("bx-show")
-  }
+  userForm.reset()
 }
 
 async function createUser() {
@@ -78,16 +75,7 @@ async function createUser() {
     return
   }
 
-  const payload = window.CuidadoForms.readPayload({
-    name: username,
-    email,
-    password: passwordInput,
-    role: userType,
-    location: locationInput,
-    phone,
-    birthdate,
-  })
-  payload.role = normalizeRole(payload.role)
+  const payload = userForm.readPayload({ includePassword: true })
 
   if (window.CuidadoForms.findMissing(payload, ["name", "email", "password", "role"]).length) {
     await showPopup("Completa tipo de usuario, nombre, correo y contraseña.", { variant: "error" })
@@ -192,18 +180,7 @@ async function showRequestDetails(userId) {
   ].join("\n"), { title: "Información de solicitud" })
 }
 
-if (togglePassword && passwordInput) {
-  togglePassword.addEventListener("click", () => {
-    const isPassword = passwordInput.type === "password"
-    passwordInput.type = isPassword ? "text" : "password"
-
-    const icon = togglePassword.querySelector("i")
-    if (icon) {
-      icon.classList.toggle("bx-hide")
-      icon.classList.toggle("bx-show")
-    }
-  })
-}
+userForm.bindPasswordToggle()
 
 function renderRequests() {
   if (!requestList) return
