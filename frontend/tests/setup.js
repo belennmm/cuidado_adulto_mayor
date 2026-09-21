@@ -18,6 +18,7 @@ afterEach(() => {
   delete window.CuidadoForms
   delete window.OlderAdultForm
   delete window.ProfessionalRoutineForm
+  delete window.ProfessionalRoutinesView
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
   delete window.showAdminAlert
