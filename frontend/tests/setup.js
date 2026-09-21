@@ -30,6 +30,7 @@ afterEach(() => {
   delete window.ShiftsCalendarView
   delete window.AdminShiftsView
   delete window.AdminRoutinesView
+  delete window.IncidentsView
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
   delete window.AppPopup
