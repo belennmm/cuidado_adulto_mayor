@@ -37,6 +37,7 @@ afterEach(() => {
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
   delete window.AppPopup
+  delete window.AppPopupStyles
   delete window.showAppAlert
   delete window.showAppConfirm
   delete window.showAppSuccess

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 describe("AppPopup", () => {
   beforeEach(async () => {
+    await import("../../js/app-popup-styles.js")
     await import("../../js/app-popup.js")
   })
 
