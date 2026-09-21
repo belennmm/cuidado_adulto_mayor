@@ -10,6 +10,12 @@ const phone = document.getElementById("phone")
 const birthdate = document.getElementById("birthdate")
 const status = document.getElementById("status")
 
+const userForm = window.AdminUserForm.create({
+  form: editUserForm,
+  togglePassword,
+  fields: { name: username, email, password: passwordInput, role: userType, location: locationInput, phone, birthdate, status },
+})
+
 const openDeleteModal = document.getElementById("openDeleteModal")
 const closeDeleteModal = document.getElementById("closeDeleteModal")
 const confirmDeleteUser = document.getElementById("confirmDeleteUser")
@@ -36,31 +42,12 @@ async function showPopup(message, options = {}) {
   console.warn(message)
 }
 
-const isApproved = window.CuidadoForms.isApproved
-
 function setFormDisabled(disabled) {
-  window.CuidadoForms.setDisabled(editUserForm, disabled)
-}
-
-function formatDate(value) {
-  if (!value) return ""
-  return String(value).slice(0, 10)
+  userForm.setDisabled(disabled)
 }
 
 function fillForm(user) {
-  userType.value = user.role || ""
-  username.value = user.name || ""
-  email.value = user.email || ""
-  locationInput.value = user.location || ""
-  phone.value = user.phone || ""
-  birthdate.value = formatDate(user.birthdate)
-  status.value = user.role === "admin" || isApproved(user.is_approved) ? "Activo" : "Pendiente"
-  passwordInput.value = ""
-
-  if (user.role === "admin") {
-    status.value = "Activo"
-    status.disabled = true
-  }
+  userForm.fill(user)
 }
 
 async function loadUser() {
@@ -98,23 +85,7 @@ async function loadUser() {
 }
 
 async function saveUser() {
-  const payload = {
-    ...window.CuidadoForms.readPayload({
-      name: username,
-      email,
-      role: userType,
-      location: locationInput,
-      phone,
-      birthdate,
-    }),
-    is_approved: status.value === "Activo",
-  }
-
-  const password = window.CuidadoForms.readValue(passwordInput)
-
-  if (password) {
-    payload.password = password
-  }
+  const payload = userForm.readPayload({ includeApproval: true })
 
   if (window.CuidadoForms.findMissing(payload, ["name", "email", "role"]).length) {
     await showPopup("Completa nombre, correo y tipo de usuario.", { variant: "error" })
@@ -162,29 +133,8 @@ async function deleteUser() {
   }
 }
 
-if (togglePassword && passwordInput) {
-  togglePassword.addEventListener("click", () => {
-    const isPassword = passwordInput.type === "password"
-    passwordInput.type = isPassword ? "text" : "password"
-
-    const icon = togglePassword.querySelector("i")
-    if (icon) {
-      icon.classList.toggle("bx-hide")
-      icon.classList.toggle("bx-show")
-    }
-  })
-}
-
-if (userType && status) {
-  userType.addEventListener("change", () => {
-    const isAdmin = userType.value === "admin"
-    status.disabled = isAdmin
-
-    if (isAdmin) {
-      status.value = "Activo"
-    }
-  })
-}
+userForm.bindPasswordToggle()
+userForm.bindAdminStatus()
 
 if (editUserForm) {
   editUserForm.addEventListener("submit", (event) => {
