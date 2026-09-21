@@ -12,9 +12,7 @@ async function showPopup(message, options = {}) {
   console.warn(message)
 }
 
-function isApproved(value) {
-  return value === true || value === 1 || value === "1" || value === "true" || value === "t"
-}
+const isApproved = window.CuidadoForms.isApproved
 
 const getRoleLabel = window.CuidadoUi.getRoleLabel
 

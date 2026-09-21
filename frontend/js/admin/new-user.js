@@ -38,20 +38,11 @@ async function confirmPopup(message, options = {}) {
   return false
 }
 
-function isApproved(value) {
-  return value === true || value === 1 || value === "1" || value === "true" || value === "t"
-}
+const isApproved = window.CuidadoForms.isApproved
 
 const getRoleLabel = window.CuidadoUi.getRoleLabel
 
-function normalizeRole(role) {
-  const roles = {
-    "cuidador-profesional": "cuidador_profesional",
-    "cuidador-familiar": "cuidador_familiar"
-  }
-
-  return roles[role] || role
-}
+const normalizeRole = window.CuidadoForms.normalizeRole
 
 const escapeHtml = window.CuidadoUi.escapeHtml
 
@@ -66,9 +57,7 @@ function renderRequestState(message, className = "empty-requests") {
 }
 
 function setFormDisabled(disabled) {
-  newUserForm?.querySelectorAll("input, select, button").forEach((element) => {
-    element.disabled = disabled
-  })
+  window.CuidadoForms.setDisabled(newUserForm, disabled)
 }
 
 function clearForm() {
@@ -89,17 +78,18 @@ async function createUser() {
     return
   }
 
-  const payload = {
-    name: username.value.trim(),
-    email: email.value.trim(),
-    password: passwordInput.value.trim(),
-    role: normalizeRole(userType.value),
-    location: locationInput.value.trim() || null,
-    phone: phone.value.trim() || null,
-    birthdate: birthdate.value || null
-  }
+  const payload = window.CuidadoForms.readPayload({
+    name: username,
+    email,
+    password: passwordInput,
+    role: userType,
+    location: locationInput,
+    phone,
+    birthdate,
+  })
+  payload.role = normalizeRole(payload.role)
 
-  if (!payload.name || !payload.email || !payload.password || !payload.role) {
+  if (window.CuidadoForms.findMissing(payload, ["name", "email", "password", "role"]).length) {
     await showPopup("Completa tipo de usuario, nombre, correo y contraseña.", { variant: "error" })
     return
   }
