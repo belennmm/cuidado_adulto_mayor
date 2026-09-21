@@ -4,7 +4,7 @@ const addMedicineButton = document.getElementById("addMedicineButton")
 const caregiverFamily = document.getElementById("caregiverFamily")
 const professionalCaregiver = document.getElementById("professionalCaregiver")
 
-let medicineCount = 0
+const medicineManager = window.OlderAdultForm.createMedicineManager(medicinesList)
 
 function navigateTo(url) {
   if (window.navigateWithLoading) {
@@ -24,199 +24,39 @@ async function showPopup(message, options = {}) {
   console.warn(message)
 }
 
-function createDayOptions(index, selectedDays = []) {
-  const days = [
-    { value: "lunes", label: "Lunes" },
-    { value: "martes", label: "Martes" },
-    { value: "miercoles", label: "Miercoles" },
-    { value: "jueves", label: "Jueves" },
-    { value: "viernes", label: "Viernes" },
-    { value: "sabado", label: "Sabado" },
-    { value: "domingo", label: "Domingo" },
-  ]
-
-  return days
-    .map(
-      (day) => `
-        <label class="day-option">
-          <input type="checkbox" name="medicineDays${index}" value="${day.value}" ${selectedDays.includes(day.value) ? "checked" : ""} />
-          <span>${day.label}</span>
-        </label>
-      `
-    )
-    .join("")
-}
-
-function addMedicineCard(medicine = null) {
-  if (!medicinesList) return
-
-  medicineCount += 1
-
-  const card = document.createElement("div")
-  card.className = "medicine-card"
-  card.dataset.index = medicineCount
-
-  card.innerHTML = `
-    <div class="medicine-card-header">
-      <h3 class="medicine-card-title">Medicina ${medicineCount}</h3>
-      <button type="button" class="remove-medicine-button danger-soft-button">Eliminar</button>
-    </div>
-
-    <div class="medicine-grid">
-      <div class="form-group">
-        <label for="medicineName${medicineCount}">Nombre de medicina</label>
-        <input
-          type="text"
-          id="medicineName${medicineCount}"
-          name="medicineName${medicineCount}"
-          placeholder="Ingrese nombre de medicina"
-          value="${medicine?.name || ""}"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="medicineDosage${medicineCount}">Dosis</label>
-        <input
-          type="text"
-          id="medicineDosage${medicineCount}"
-          name="medicineDosage${medicineCount}"
-          placeholder="Ej. 1 pastilla"
-          value="${medicine?.dosage || ""}"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="medicineSchedule${medicineCount}">Horario</label>
-        <input
-          type="text"
-          id="medicineSchedule${medicineCount}"
-          name="medicineSchedule${medicineCount}"
-          placeholder="Ej. 8:00 AM, 2:00 PM"
-          value="${medicine?.schedule || ""}"
-        />
-      </div>
-
-      <div class="form-group full-width">
-        <label for="medicineNotes${medicineCount}">Notas</label>
-        <textarea
-          id="medicineNotes${medicineCount}"
-          name="medicineNotes${medicineCount}"
-          placeholder="Indicaciones adicionales"
-        >${medicine?.notes || ""}</textarea>
-      </div>
-    </div>
-
-    <div class="days-group">
-      <label>Días de administración</label>
-      <div class="days-options">
-        ${createDayOptions(medicineCount, medicine?.days || [])}
-      </div>
-    </div>
-  `
-
-  const removeButton = card.querySelector(".remove-medicine-button")
-  removeButton.addEventListener("click", () => {
-    card.remove()
-  })
-
-  medicinesList.appendChild(card)
-}
-
-function getValue(formData, key) {
-  const value = formData.get(key)
-  return typeof value === "string" && value.trim() !== "" ? value.trim() : null
-}
-
-function getMedicineCardsPayload() {
-  return Array.from(document.querySelectorAll(".medicine-card"))
-    .map((card) => {
-      const index = card.dataset.index
-      const name = document.getElementById(`medicineName${index}`)?.value.trim() || ""
-      const dosage = document.getElementById(`medicineDosage${index}`)?.value.trim() || ""
-      const schedule = document.getElementById(`medicineSchedule${index}`)?.value.trim() || ""
-      const notes = document.getElementById(`medicineNotes${index}`)?.value.trim() || ""
-      const days = Array.from(card.querySelectorAll(`input[name="medicineDays${index}"]:checked`)).map((input) => input.value)
-
-      if (!name) {
-        return null
-      }
-
-      return {
-        name,
-        dosage: dosage || null,
-        schedule: schedule || null,
-        days,
-        notes: notes || null,
-      }
-    })
-    .filter(Boolean)
-}
-
 function buildPayload(formData) {
   return {
-    full_name: getValue(formData, "fullName"),
-    age: getValue(formData, "age"),
-    birthdate: getValue(formData, "birthdate"),
-    gender: getValue(formData, "gender"),
-    room: getValue(formData, "room"),
-    status: getValue(formData, "status"),
-    family_caregiver_id: getValue(formData, "caregiverFamily"),
-    professional_caregiver_id: getValue(formData, "professionalCaregiver"),
-    emergency_contact_name: getValue(formData, "contactName"),
-    emergency_contact_phone: getValue(formData, "contactPhone"),
-    allergies: getValue(formData, "allergies"),
-    medical_history: getValue(formData, "medicalHistory"),
-    notes: getValue(formData, "notes"),
-    medications: getMedicineCardsPayload(),
+    ...window.CuidadoForms.readPayload({
+      full_name: { formData, key: "fullName" },
+      age: { formData, key: "age" },
+      birthdate: { formData, key: "birthdate" },
+      gender: { formData, key: "gender" },
+      room: { formData, key: "room" },
+      status: { formData, key: "status" },
+      family_caregiver_id: { formData, key: "caregiverFamily" },
+      professional_caregiver_id: { formData, key: "professionalCaregiver" },
+      emergency_contact_name: { formData, key: "contactName" },
+      emergency_contact_phone: { formData, key: "contactPhone" },
+      allergies: { formData, key: "allergies" },
+      medical_history: { formData, key: "medicalHistory" },
+      notes: { formData, key: "notes" },
+    }),
+    medications: medicineManager.read(),
   }
 }
 
 async function loadFamilyCaregivers() {
-  if (!caregiverFamily) return
-
-  if (!window.CuidadoApi.getToken(["admin"])) return
-
-  try {
-    const data = await window.CuidadoApi.fetchJson("/admin/family-caregivers", {
-      expectedRoles: ["admin"],
-      fallbackError: "No se pudieron cargar los cuidadores familiares.",
-    })
-
-    caregiverFamily.innerHTML = '<option value="">Seleccione cuidador familiar</option>'
-
-    ;(data.users || []).forEach((user) => {
-      const option = document.createElement("option")
-      option.value = String(user.id)
-      option.textContent = user.name
-      caregiverFamily.appendChild(option)
-    })
-  } catch (error) {
-    caregiverFamily.innerHTML = '<option value="">No se pudieron cargar los cuidadores</option>'
-  }
+  return window.OlderAdultForm.loadCaregiverOptions(caregiverFamily, {
+    path: "/admin/family-caregivers",
+    placeholder: "Seleccione cuidador familiar",
+  })
 }
 
 async function loadProfessionalCaregivers() {
-  if (!professionalCaregiver) return
-
-  if (!window.CuidadoApi.getToken(["admin"])) return
-
-  try {
-    const data = await window.CuidadoApi.fetchJson("/admin/professional-caregivers", {
-      expectedRoles: ["admin"],
-      fallbackError: "No se pudieron cargar los cuidadores profesionales.",
-    })
-
-    professionalCaregiver.innerHTML = '<option value="">Seleccione cuidador profesional</option>'
-
-    ;(data.users || []).forEach((user) => {
-      const option = document.createElement("option")
-      option.value = String(user.id)
-      option.textContent = user.name
-      professionalCaregiver.appendChild(option)
-    })
-  } catch (error) {
-    professionalCaregiver.innerHTML = '<option value="">No se pudieron cargar los cuidadores</option>'
-  }
+  return window.OlderAdultForm.loadCaregiverOptions(professionalCaregiver, {
+    path: "/admin/professional-caregivers",
+    placeholder: "Seleccione cuidador profesional",
+  })
 }
 
 async function createOlderAdult(payload) {
@@ -240,7 +80,7 @@ if (newOlderAdultForm) {
     const formData = new FormData(newOlderAdultForm)
     const payload = buildPayload(formData)
 
-    if (!payload.full_name) {
+    if (window.CuidadoForms.findMissing(payload, ["full_name"]).length) {
       await showPopup("Ingresa el nombre completo del adulto mayor.", { variant: "error" })
       return
     }
@@ -265,12 +105,10 @@ if (newOlderAdultForm) {
   })
 }
 
-if (addMedicineButton) {
-  addMedicineButton.addEventListener("click", () => addMedicineCard())
-}
+addMedicineButton?.addEventListener("click", () => medicineManager.add())
 
 if (medicinesList) {
-  addMedicineCard()
+  medicineManager.add()
 }
 
 loadFamilyCaregivers()

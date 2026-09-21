@@ -36,14 +36,10 @@ async function showPopup(message, options = {}) {
   console.warn(message)
 }
 
-function isApproved(value) {
-  return value === true || value === 1 || value === "1" || value === "true" || value === "t"
-}
+const isApproved = window.CuidadoForms.isApproved
 
 function setFormDisabled(disabled) {
-  editUserForm?.querySelectorAll("input, select, button").forEach((element) => {
-    element.disabled = disabled
-  })
+  window.CuidadoForms.setDisabled(editUserForm, disabled)
 }
 
 function formatDate(value) {
@@ -103,22 +99,24 @@ async function loadUser() {
 
 async function saveUser() {
   const payload = {
-    name: username.value.trim(),
-    email: email.value.trim(),
-    role: userType.value,
+    ...window.CuidadoForms.readPayload({
+      name: username,
+      email,
+      role: userType,
+      location: locationInput,
+      phone,
+      birthdate,
+    }),
     is_approved: status.value === "Activo",
-    location: locationInput.value.trim() || null,
-    phone: phone.value.trim() || null,
-    birthdate: birthdate.value || null
   }
 
-  const password = passwordInput.value.trim()
+  const password = window.CuidadoForms.readValue(passwordInput)
 
   if (password) {
     payload.password = password
   }
 
-  if (!payload.name || !payload.email || !payload.role) {
+  if (window.CuidadoForms.findMissing(payload, ["name", "email", "role"]).length) {
     await showPopup("Completa nombre, correo y tipo de usuario.", { variant: "error" })
     return
   }
