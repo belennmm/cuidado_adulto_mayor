@@ -26,6 +26,8 @@ afterEach(() => {
   delete window.MedicationStatsDialogs
   delete window.CareNotificationsCore
   delete window.CareNotificationsAudio
+  delete window.ShiftsCalendarDates
+  delete window.ShiftsCalendarView
   delete window.CUIDADO_API_URL
   delete window.navigateWithLoading
   delete window.AppPopup
