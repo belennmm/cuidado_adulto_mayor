@@ -6,6 +6,7 @@
   let editingCustomRoutineId = null
   let currentCustomRoutines = []
   const routineForm = window.ProfessionalRoutineForm
+  const routineService = window.ProfessionalRoutinesService
 
   function getRequestedAdultId() {
     const params = new URLSearchParams(window.location.search)
@@ -95,8 +96,7 @@
   }
 
   async function loadAdults() {
-    const data = await api.fetchJson("/professional/older-adults")
-    assignedAdults = data.older_adults || []
+    assignedAdults = await routineService.loadAdults()
   }
 
   async function loadRoutinesAndNotes() {
@@ -107,11 +107,7 @@
 
     try {
       const selectedAdult = assignedAdults.find((adult) => String(adult.id) === String(activeOlderAdultId))
-      const [routineData, notesData, customRoutineData] = await Promise.all([
-        api.fetchJson(`/professional/routines?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
-        api.fetchJson(`/professional/routine-notes?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
-        api.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(activeOlderAdultId)}`),
-      ])
+      const [routineData, notesData, customRoutineData] = await routineService.loadDashboard(activeOlderAdultId)
 
       renderSummary(routineData, selectedAdult)
       renderWeekRange(notesData.week)
@@ -164,14 +160,12 @@
         saveButton.textContent = "Guardando..."
       }
 
-      await api.fetchJson(editingCustomRoutineId ? `/rutinas/${editingCustomRoutineId}` : "/rutinas", {
-        method: editingCustomRoutineId ? "PUT" : "POST",
-        body: JSON.stringify({
-          nombre,
-          horario,
-          actividades,
-          ...(editingCustomRoutineId ? {} : { adulto_mayor_id: activeOlderAdultId }),
-        }),
+      await routineService.saveRoutine({
+        id: editingCustomRoutineId,
+        olderAdultId: activeOlderAdultId,
+        nombre,
+        horario,
+        actividades,
       })
 
       const wasEditing = Boolean(editingCustomRoutineId)
@@ -230,9 +224,7 @@
     if (!confirmed) return
 
     try {
-      await api.fetchJson(`/rutinas/${routineId}`, {
-        method: "DELETE",
-      })
+      await routineService.deleteRoutine(routineId)
 
       if (String(editingCustomRoutineId) === String(routineId)) {
         resetCustomRoutineForm()
@@ -257,12 +249,7 @@
 
   async function completeCustomRoutineActivity(routineId, activityIndex) {
     try {
-      await api.fetchJson(`/rutinas/${routineId}/completar`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          actividad_index: Number(activityIndex),
-        }),
-      })
+      await routineService.completeActivity(routineId, activityIndex)
 
       setCustomRoutineMessage("Actividad marcada como completada.")
       await loadRoutinesAndNotes()
@@ -298,18 +285,10 @@
       }
 
       const wasEditing = Boolean(editingNoteId)
-      const path = editingNoteId
-        ? `/professional/routine-notes/${editingNoteId}`
-        : "/professional/routine-notes"
-
-      const method = editingNoteId ? "PUT" : "POST"
-      const body = editingNoteId
-        ? { content }
-        : { older_adult_id: activeOlderAdultId, content }
-
-      await api.fetchJson(path, {
-        method,
-        body: JSON.stringify(body),
+      await routineService.saveNote({
+        id: editingNoteId,
+        olderAdultId: activeOlderAdultId,
+        content,
       })
 
       const successMessage = wasEditing ? "Nota actualizada correctamente." : "Nota guardada correctamente."
@@ -363,9 +342,7 @@
     if (!confirmed) return
 
     try {
-      await api.fetchJson(`/professional/routine-notes/${noteId}`, {
-        method: "DELETE",
-      })
+      await routineService.deleteNote(noteId)
 
       if (String(editingNoteId) === String(noteId)) {
         resetNoteForm()
