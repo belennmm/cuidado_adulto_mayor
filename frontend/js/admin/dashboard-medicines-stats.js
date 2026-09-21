@@ -42,10 +42,7 @@
 
   const escapeHtml = window.CuidadoUi.escapeHtml
 
-  const ADMIN_REQUEST_OPTIONS = Object.freeze({
-    expectedRoles: ["admin"],
-    fallbackError: "No se pudo completar la solicitud.",
-  })
+  const service = window.MedicationStatsService
 
 
   function updateFilterButtons() {
@@ -258,13 +255,7 @@
 
 
   async function loadFilterItems() {
-    const [data, adultsData] = await Promise.all([
-      window.CuidadoApi.fetchJson(
-        `/admin/medication-statistics?filter=${encodeURIComponent(state.activeFilter)}`,
-        ADMIN_REQUEST_OPTIONS,
-      ),
-      window.CuidadoApi.fetchJson("/admin/older-adults", ADMIN_REQUEST_OPTIONS),
-    ])
+    const [data, adultsData] = await service.load(state.activeFilter)
     state.items = data.items || []
     state.inventory = data.inventory || []
     state.olderAdults = adultsData.older_adults || []
@@ -423,16 +414,7 @@
     }
 
     try {
-      const path = medicationId
-        ? `/admin/medications/inventory/${encodeURIComponent(medicationId)}`
-        : "/admin/medications/inventory"
-      const method = medicationId ? "PUT" : "POST"
-
-      const data = await window.CuidadoApi.fetchJson(path, {
-        ...ADMIN_REQUEST_OPTIONS,
-        method,
-        body: JSON.stringify(payload),
-      })
+      const data = await service.saveInventory(medicationId, payload)
 
       closeMedicationFormModal()
       showInventoryFeedback(data.message || "Inventario actualizado correctamente.")
@@ -450,14 +432,7 @@
     const amount = Number(document.getElementById("stockAmount")?.value || 0)
 
     try {
-      const data = await window.CuidadoApi.fetchJson(`/admin/medications/inventory/${encodeURIComponent(medicationId)}/stock`, {
-        ...ADMIN_REQUEST_OPTIONS,
-        method: "PATCH",
-        body: JSON.stringify({
-          action,
-          amount,
-        }),
-      })
+      const data = await service.adjustStock(medicationId, action, amount)
 
       closeStockAdjustmentModal()
       showInventoryFeedback(data.message || "Stock actualizado correctamente.")
@@ -491,10 +466,7 @@
       if (!confirmed) return
 
       try {
-        const data = await window.CuidadoApi.fetchJson(`/admin/medications/inventory/${encodeURIComponent(medication.id)}`, {
-          ...ADMIN_REQUEST_OPTIONS,
-          method: "DELETE",
-        })
+        const data = await service.removeInventory(medication.id)
 
         showInventoryFeedback(data.message || "Medicamento eliminado correctamente.")
         await renderStats()
