@@ -385,69 +385,30 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("professionalRoutineAdultSelector")?.addEventListener("change", async (event) => {
-      activeOlderAdultId = event.target.value
+  window.ProfessionalRoutinesEvents.bind({
+    async changeAdult(adultId) {
+      activeOlderAdultId = adultId
       resetNoteForm()
       resetCustomRoutineForm()
       setMessage("")
       setCustomRoutineMessage("")
       await loadRoutinesAndNotes()
-    })
-
-    document.getElementById("professionalCustomRoutineForm")?.addEventListener("submit", async (event) => {
-      event.preventDefault()
-      await saveCustomRoutine()
-    })
-
-    document.getElementById("cancelCustomRoutineEdit")?.addEventListener("click", () => {
+    },
+    saveCustomRoutine,
+    cancelCustomRoutine() {
       resetCustomRoutineForm()
       setCustomRoutineMessage("")
-    })
-
-    document.getElementById("professionalRoutineNoteForm")?.addEventListener("submit", async (event) => {
-      event.preventDefault()
-      await saveNote()
-    })
-
-    document.getElementById("cancelRoutineNoteEdit")?.addEventListener("click", () => {
+    },
+    saveNote,
+    cancelNote() {
       resetNoteForm()
       setMessage("")
-    })
-
-    document.getElementById("professionalRoutineNotesList")?.addEventListener("click", async (event) => {
-      const button = event.target.closest("button[data-action][data-id]")
-      if (!button) return
-
-      if (button.dataset.action === "edit") {
-        startEditNote(button.dataset.id)
-        return
-      }
-
-      if (button.dataset.action === "delete") {
-        await deleteNote(button.dataset.id)
-      }
-    })
-
-    document.getElementById("professionalCustomRoutinesList")?.addEventListener("click", async (event) => {
-      const button = event.target.closest("button[data-custom-routine-action][data-id]")
-      if (!button) return
-
-      if (button.dataset.customRoutineAction === "edit") {
-        startEditCustomRoutine(button.dataset.id)
-        return
-      }
-
-      if (button.dataset.customRoutineAction === "delete") {
-        await deleteCustomRoutine(button.dataset.id)
-        return
-      }
-
-      if (button.dataset.customRoutineAction === "complete") {
-        await completeCustomRoutineActivity(button.dataset.id, button.dataset.activityIndex)
-      }
-    })
-
-    initialize()
+    },
+    editNote: startEditNote,
+    deleteNote,
+    editCustomRoutine: startEditCustomRoutine,
+    deleteCustomRoutine,
+    completeActivity: completeCustomRoutineActivity,
+    initialize,
   })
 })()
