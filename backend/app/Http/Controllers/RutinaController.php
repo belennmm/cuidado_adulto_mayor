@@ -11,6 +11,7 @@ use App\Models\Rutina;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -18,6 +19,7 @@ class RutinaController extends Controller
 {
     public function index(RoutineIndexRequest $request): JsonResponse
     {
+        Gate::forUser($request->user())->authorize('viewAny', Rutina::class);
         $data = $request->validated();
 
         $olderAdultId = $data['adulto_mayor_id'] ?? $data['older_adult_id'] ?? null;
@@ -32,7 +34,7 @@ class RutinaController extends Controller
                 ]);
             }
 
-            $this->authorizeOlderAdult($request, $olderAdult);
+            Gate::forUser($request->user())->authorize('accessOlderAdult', [Rutina::class, $olderAdult]);
             $query->where('older_adult_id', $olderAdult->id);
         } else {
             $this->scopeRutinasForUser($request, $query);
@@ -85,7 +87,7 @@ class RutinaController extends Controller
             ]);
         }
 
-        $this->authorizeOlderAdult($request, $olderAdult);
+        Gate::forUser($request->user())->authorize('accessOlderAdult', [Rutina::class, $olderAdult]);
 
         $rutina = Rutina::create([
             'older_adult_id' => $olderAdult->id,
@@ -106,7 +108,7 @@ class RutinaController extends Controller
     public function update(UpdateRoutineRequest $request, Rutina $rutina): JsonResponse
     {
         $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
-        $this->authorizeOlderAdult($request, $rutina->olderAdult);
+        Gate::forUser($request->user())->authorize('update', $rutina);
 
         $data = $request->validated();
 
@@ -146,7 +148,7 @@ class RutinaController extends Controller
     public function complete(CompleteRoutineActivityRequest $request, Rutina $rutina): JsonResponse
     {
         $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
-        $this->authorizeOlderAdult($request, $rutina->olderAdult);
+        Gate::forUser($request->user())->authorize('complete', $rutina);
 
         $data = $request->validated();
 
@@ -178,7 +180,7 @@ class RutinaController extends Controller
     public function destroy(Request $request, Rutina $rutina): JsonResponse
     {
         $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
-        $this->authorizeOlderAdult($request, $rutina->olderAdult);
+        Gate::forUser($request->user())->authorize('delete', $rutina);
 
         $rutina->delete();
 
@@ -191,12 +193,6 @@ class RutinaController extends Controller
     {
         $user = $request->user();
         $role = $this->normalizeText($user?->role);
-
-        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && ! (bool) $user?->is_approved) {
-            abort(response()->json([
-                'message' => 'Tu cuenta debe estar aprobada para consultar rutinas.',
-            ], 403));
-        }
 
         if ($role === 'admin' || $role === 'administrador') {
             return;
@@ -222,48 +218,6 @@ class RutinaController extends Controller
 
             return;
         }
-
-        abort(response()->json([
-            'message' => 'No tienes acceso a la informacion de rutinas.',
-        ], 403));
-    }
-
-    private function authorizeOlderAdult(Request $request, OlderAdult $olderAdult): void
-    {
-        $user = $request->user();
-        $role = $this->normalizeText($user?->role);
-
-        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && ! (bool) $user?->is_approved) {
-            abort(response()->json([
-                'message' => 'Tu cuenta debe estar aprobada para crear rutinas.',
-            ], 403));
-        }
-
-        if ($role === 'admin' || $role === 'administrador') {
-            return;
-        }
-
-        if (($role === 'profesional' || $role === 'cuidador_profesional') && (int) $olderAdult->professional_caregiver_id === (int) $user?->id) {
-            return;
-        }
-
-        if (($role === 'familiar' || $role === 'cuidador_familiar') && $this->isFamilyAssigned($olderAdult, $user)) {
-            return;
-        }
-
-        abort(response()->json([
-            'message' => 'No tienes acceso a la informacion de este adulto mayor.',
-        ], 403));
-    }
-
-    private function isFamilyAssigned(OlderAdult $olderAdult, mixed $user): bool
-    {
-        if ((int) $olderAdult->family_caregiver_id === (int) $user?->id) {
-            return true;
-        }
-
-        return $olderAdult->family_caregiver_id === null
-            && $this->normalizeText($olderAdult->caregiver_family) === $this->normalizeText($user?->name);
     }
 
     private function normalizeActividades(array $actividades): array
