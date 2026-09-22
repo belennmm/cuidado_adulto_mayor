@@ -3,159 +3,87 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MedicationInventoryRequest;
-use App\Models\Medication;
+use App\Http\Resources\MedicationInventoryResource;
 use App\Models\OlderAdultMedication;
+use App\Services\MedicationInventoryService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class MedicationInventoryController extends Controller
 {
+    public function __construct(private readonly MedicationInventoryService $inventoryService) {}
+
     public function index(MedicationInventoryRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $items = $this->inventoryService->inventory($request->validated('older_adult_id'));
 
         return response()->json([
-            'inventory' => $this->inventoryItems($data['older_adult_id'] ?? null),
+            'inventory' => $items
+                ->map(fn (OlderAdultMedication $item) => $this->resource($item, $request))
+                ->values(),
         ]);
     }
 
     public function store(MedicationInventoryRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $item = $this->inventoryService->create($request->validated());
 
-        $inventoryItem = DB::transaction(function () use ($data) {
-            $medication = Medication::firstOrCreate(
-                ['name' => trim($data['name'])],
-                ['is_active' => true],
-            );
-
-            return OlderAdultMedication::create([
-                ...$this->assignmentData($data),
-                'medication_id' => $medication->id,
-            ]);
-        });
-
-        return response()->json([
-            'message' => 'Medicamento agregado al inventario del adulto mayor.',
-            'medication' => $this->formatInventoryItem($inventoryItem->load(['medication', 'olderAdult'])),
-        ], 201);
+        return $this->medicationResponse(
+            'Medicamento agregado al inventario del adulto mayor.', $item, $request, 201,
+        );
     }
 
-    public function update(MedicationInventoryRequest $request, OlderAdultMedication $inventoryItem): JsonResponse
-    {
-        $data = $request->validated();
+    public function update(
+        MedicationInventoryRequest $request,
+        OlderAdultMedication $inventoryItem,
+    ): JsonResponse {
+        $item = $this->inventoryService->update($inventoryItem, $request->validated());
 
-        DB::transaction(function () use ($inventoryItem, $data) {
-            $medication = Medication::firstOrCreate(
-                ['name' => trim($data['name'])],
-                ['is_active' => true],
-            );
-
-            $inventoryItem->update([
-                ...$this->assignmentData($data),
-                'medication_id' => $medication->id,
-            ]);
-        });
-
-        return response()->json([
-            'message' => 'Inventario del adulto mayor actualizado correctamente.',
-            'medication' => $this->formatInventoryItem($inventoryItem->refresh()->load(['medication', 'olderAdult'])),
-        ]);
+        return $this->medicationResponse(
+            'Inventario del adulto mayor actualizado correctamente.', $item, $request,
+        );
     }
 
-    public function adjustStock(MedicationInventoryRequest $request, OlderAdultMedication $inventoryItem): JsonResponse
-    {
+    public function adjustStock(
+        MedicationInventoryRequest $request,
+        OlderAdultMedication $inventoryItem,
+    ): JsonResponse {
         $data = $request->validated();
+        $item = $this->inventoryService->adjustStock(
+            $inventoryItem,
+            $data['action'],
+            (int) $data['amount'],
+        );
+        $message = $data['action'] === 'increase'
+            ? 'Stock aumentado correctamente.'
+            : 'Stock reducido correctamente.';
 
-        $amount = (int) $data['amount'];
-        $currentQuantity = (int) $inventoryItem->quantity;
-        $nextQuantity = $data['action'] === 'increase'
-            ? $currentQuantity + $amount
-            : $currentQuantity - $amount;
-
-        if ($nextQuantity < 0) {
-            return response()->json([
-                'message' => 'La cantidad no puede quedar negativa.',
-            ], 422);
-        }
-
-        $inventoryItem->update(['quantity' => $nextQuantity]);
-
-        return response()->json([
-            'message' => $data['action'] === 'increase'
-                ? 'Stock aumentado correctamente.'
-                : 'Stock reducido correctamente.',
-            'medication' => $this->formatInventoryItem($inventoryItem->refresh()->load(['medication', 'olderAdult'])),
-        ]);
+        return $this->medicationResponse($message, $item, $request);
     }
 
     public function destroy(OlderAdultMedication $inventoryItem): JsonResponse
     {
-        if ($inventoryItem->administrations()->exists()) {
-            return response()->json([
-                'message' => 'No se puede eliminar este inventario porque tiene administraciones registradas.',
-            ], 422);
-        }
-
-        $inventoryItem->delete();
+        $this->inventoryService->delete($inventoryItem);
 
         return response()->json([
             'message' => 'Medicamento eliminado del inventario del adulto mayor.',
         ]);
     }
 
-    private function assignmentData(array $data): array
-    {
-        return [
-            'older_adult_id' => $data['older_adult_id'],
-            'presentation' => $data['presentation'],
-            'quantity' => $data['quantity'],
-            'unit' => $data['unit'],
-            'minimum_stock' => $data['minimum_stock'],
-            'expiration_date' => $data['expiration_date'],
-            'is_active' => $data['is_active'] ?? true,
-            'dosage' => $data['dosage'] ?? null,
-            'schedule' => $data['schedule'] ?? null,
-        ];
+    private function medicationResponse(
+        string $message,
+        OlderAdultMedication $item,
+        Request $request,
+        int $status = 200,
+    ): JsonResponse {
+        return response()->json([
+            'message' => $message,
+            'medication' => $this->resource($item, $request),
+        ], $status);
     }
 
-    private function inventoryItems(?int $olderAdultId = null): array
+    private function resource(OlderAdultMedication $item, Request $request): array
     {
-        return OlderAdultMedication::query()
-            ->with(['medication', 'olderAdult'])
-            ->withCount('administrations')
-            ->when($olderAdultId, fn ($query) => $query->where('older_adult_id', $olderAdultId))
-            ->orderBy('older_adult_id')
-            ->orderBy('medication_id')
-            ->get()
-            ->map(fn (OlderAdultMedication $inventoryItem) => $this->formatInventoryItem($inventoryItem))
-            ->values()
-            ->all();
-    }
-
-    private function formatInventoryItem(OlderAdultMedication $inventoryItem): array
-    {
-        $status = $inventoryItem->inventoryStatus();
-
-        return [
-            'id' => $inventoryItem->id,
-            'medication_id' => $inventoryItem->medication_id,
-            'older_adult_id' => $inventoryItem->older_adult_id,
-            'older_adult_name' => $inventoryItem->olderAdult?->full_name,
-            'name' => $inventoryItem->medication?->name,
-            'presentation' => $inventoryItem->presentation,
-            'quantity' => (int) $inventoryItem->quantity,
-            'unit' => $inventoryItem->unit,
-            'minimum_stock' => (int) $inventoryItem->minimum_stock,
-            'expiration_date' => $inventoryItem->expiration_date?->toDateString(),
-            'is_active' => (bool) $inventoryItem->is_active,
-            'dosage' => $inventoryItem->dosage,
-            'schedule' => $inventoryItem->schedule,
-            'status' => $status['key'],
-            'status_label' => $status['label'],
-            'assigned_patients' => 1,
-            'active_assignments' => $inventoryItem->is_active ? 1 : 0,
-            'administrations_count' => (int) ($inventoryItem->administrations_count ?? 0),
-        ];
+        return MedicationInventoryResource::make($item)->toArray($request);
     }
 }
