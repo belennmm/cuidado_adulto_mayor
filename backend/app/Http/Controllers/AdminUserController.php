@@ -3,133 +3,97 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AdminUserRequest;
+use App\Http\Resources\AdminUserResource;
 use App\Models\User;
+use App\Services\AdminUserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class AdminUserController extends Controller
 {
-    public function index(): JsonResponse
-    {
-        $users = User::query()
-            ->select('id', 'name', 'email', 'role', 'is_approved', 'location', 'phone', 'birthdate', 'created_at')
-            ->orderByDesc('created_at')
-            ->get();
+    public function __construct(private readonly AdminUserService $userService) {}
 
-        return response()->json(['users' => $users]);
+    public function index(Request $request): JsonResponse
+    {
+        return $this->collectionResponse($this->userService->all(), $request);
     }
 
-    public function professionalCaregivers(): JsonResponse
+    public function professionalCaregivers(Request $request): JsonResponse
     {
-        $users = User::query()
-            ->select('id', 'name', 'email', 'role', 'is_approved')
-            ->where('role', 'profesional')
-            ->where('is_approved', true)
-            ->orderBy('name')
-            ->get();
-
-        return response()->json(['users' => $users]);
+        return $this->collectionResponse(
+            $this->userService->approvedCaregivers('profesional'), $request,
+        );
     }
 
-    public function familyCaregivers(): JsonResponse
+    public function familyCaregivers(Request $request): JsonResponse
     {
-        $users = User::query()
-            ->select('id', 'name', 'email', 'role', 'is_approved')
-            ->where('role', 'familiar')
-            ->where('is_approved', true)
-            ->orderBy('name')
-            ->get();
-
-        return response()->json(['users' => $users]);
+        return $this->collectionResponse(
+            $this->userService->approvedCaregivers('familiar'), $request,
+        );
     }
 
     public function store(AdminUserRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        $user = $this->userService->create($request->validated());
 
-        $validated['role'] = $this->normalizeRole($validated['role']);
-        $validated['password'] = Hash::make($validated['password']);
-        $validated['is_approved'] = true;
-
-        $user = User::create($validated);
-
-        return response()->json([
-            'message' => 'Usuario creado correctamente.',
-            'user' => $user->only('id', 'name', 'email', 'role', 'is_approved', 'location', 'phone', 'birthdate'),
-        ], 201);
+        return $this->userResponse('Usuario creado correctamente.', $user, $request, 201);
     }
 
-    public function show(User $user): JsonResponse
+    public function show(Request $request, User $user): JsonResponse
     {
-        return response()->json([
-            'user' => $user->only('id', 'name', 'email', 'role', 'is_approved', 'location', 'phone', 'birthdate'),
-        ]);
+        return response()->json(['user' => $this->resource($user, $request)]);
     }
 
     public function update(AdminUserRequest $request, User $user): JsonResponse
     {
-        $validated = $request->validated();
+        $user = $this->userService->update($user, $request->validated());
 
-        $validated['role'] = $this->normalizeRole($validated['role']);
-
-        if ($validated['role'] === 'admin') {
-            $validated['is_approved'] = true;
-        }
-
-        if (! empty($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
-        }
-
-        $user->update($validated);
-
-        return response()->json([
-            'message' => 'Usuario actualizado correctamente.',
-            'user' => $user->only('id', 'name', 'email', 'role', 'is_approved', 'location', 'phone', 'birthdate'),
-        ]);
+        return $this->userResponse('Usuario actualizado correctamente.', $user, $request);
     }
 
-    public function approve(User $user): JsonResponse
+    public function approve(Request $request, User $user): JsonResponse
     {
-        $user->update(['is_approved' => true]);
+        $user = $this->userService->approve($user);
 
-        return response()->json([
-            'message' => 'Usuario aprobado correctamente.',
-            'user' => $user->only('id', 'name', 'email', 'role', 'is_approved'),
-        ]);
+        return $this->userResponse('Usuario aprobado correctamente.', $user, $request);
     }
 
     public function reject(User $user): JsonResponse
     {
-        if ($user->role === 'admin' || (bool) $user->is_approved) {
-            return response()->json([
-                'message' => 'Solo se pueden rechazar solicitudes pendientes.',
-            ], 422);
-        }
+        $this->userService->reject($user);
 
-        $user->delete();
-
-        return response()->json([
-            'message' => 'Solicitud rechazada correctamente.',
-        ]);
+        return response()->json(['message' => 'Solicitud rechazada correctamente.']);
     }
 
     public function destroy(User $user): JsonResponse
     {
         $user->delete();
 
+        return response()->json(['message' => 'Usuario eliminado correctamente.']);
+    }
+
+    private function collectionResponse(Collection $users, Request $request): JsonResponse
+    {
         return response()->json([
-            'message' => 'Usuario eliminado correctamente.',
+            'users' => $users->map(fn (User $user) => $this->resource($user, $request))->values(),
         ]);
     }
 
-    private function normalizeRole(string $role): string
+    private function userResponse(
+        string $message,
+        User $user,
+        Request $request,
+        int $status = 200,
+    ): JsonResponse {
+        return response()->json([
+            'message' => $message,
+            'user' => $this->resource($user, $request),
+        ], $status);
+    }
+
+    private function resource(User $user, Request $request): array
     {
-        return match ($role) {
-            'cuidador_profesional' => 'profesional',
-            'cuidador_familiar' => 'familiar',
-            default => $role,
-        };
+        return AdminUserResource::make($user)->toArray($request);
     }
 }
