@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CareFilterRequest;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\OlderAdult;
@@ -95,13 +96,11 @@ class ProfessionalCareController extends Controller
         ]);
     }
 
-    public function routine(Request $request): JsonResponse
+    public function routine(CareFilterRequest $request): JsonResponse
     {
         $this->ensureProfessionalUser($request);
 
-        $data = $request->validate([
-            'older_adult_id' => 'nullable|integer',
-        ]);
+        $data = $request->validated();
 
         $today = $this->today();
         $olderAdults = $this->olderAdultsForRequest($request, $data['older_adult_id'] ?? null);

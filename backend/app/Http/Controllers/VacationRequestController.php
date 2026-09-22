@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\VacationStoreRequest;
 use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Http\JsonResponse;
@@ -25,11 +26,11 @@ class VacationRequestController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(VacationStoreRequest $request): JsonResponse
     {
         $this->ensureProfessionalUser($request->user());
 
-        $data = $this->validateVacationRequest($request);
+        $data = $request->validated();
 
         $vacationRequest = VacationRequest::create([
             'user_id' => $request->user()->id,
@@ -89,15 +90,6 @@ class VacationRequestController extends Controller
             'vacation_request' => $this->formatVacationRequest(
                 $vacationRequest->load(['user:id,name,email,role,is_approved', 'reviewer:id,name,email'])
             ),
-        ]);
-    }
-
-    private function validateVacationRequest(Request $request): array
-    {
-        return $request->validate([
-            'start_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
-            'end_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:start_date'],
-            'reason' => ['required', 'string', 'max:500'],
         ]);
     }
 

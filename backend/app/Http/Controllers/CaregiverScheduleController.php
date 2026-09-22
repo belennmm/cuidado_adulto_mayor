@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveCaregiverScheduleRequest;
+use App\Http\Requests\ScheduleCalendarRequest;
+use App\Http\Requests\ScheduleChangeRequest;
 use App\Models\CaregiverSchedule;
 use App\Models\User;
 use App\Services\ScheduleCalendarService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class CaregiverScheduleController extends Controller
 {
@@ -27,12 +28,9 @@ class CaregiverScheduleController extends Controller
         return response()->json(['schedules' => $schedules]);
     }
 
-    public function calendar(Request $request): JsonResponse
+    public function calendar(ScheduleCalendarRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'start_date' => ['required', 'date_format:Y-m-d'],
-            'end_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:start_date'],
-        ]);
+        $data = $request->validated();
 
         $timezone = (string) config('app.timezone');
         $startDate = Carbon::createFromFormat('Y-m-d', $data['start_date'], $timezone)->startOfDay();
@@ -41,12 +39,12 @@ class CaregiverScheduleController extends Controller
         return response()->json($this->calendarService->build($startDate, $endDate));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(SaveCaregiverScheduleRequest $request): JsonResponse
     {
         $user = $request->user();
         $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
 
-        $data = $this->validateSchedulePayload($request);
+        $data = $request->validated();
 
         $schedule = CaregiverSchedule::updateOrCreate(
             [
@@ -66,9 +64,9 @@ class CaregiverScheduleController extends Controller
         ], 201);
     }
 
-    public function adminStore(Request $request): JsonResponse
+    public function adminStore(SaveCaregiverScheduleRequest $request): JsonResponse
     {
-        $data = $this->validateSchedulePayload($request, true);
+        $data = $request->validated();
 
         $caregiver = User::query()->findOrFail($data['user_id']);
         $this->ensureCaregiverCanManageSchedule($caregiver->role, (bool) $caregiver->is_approved);
@@ -91,7 +89,7 @@ class CaregiverScheduleController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, CaregiverSchedule $schedule): JsonResponse
+    public function update(SaveCaregiverScheduleRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
         $user = $request->user();
         $role = $this->normalizeRole($user?->role);
@@ -106,7 +104,7 @@ class CaregiverScheduleController extends Controller
             $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
         }
 
-        $data = $this->validateSchedulePayload($request);
+        $data = $request->validated();
 
         $schedule->fill([
             'day_of_week' => $data['day_of_week'],
@@ -123,7 +121,7 @@ class CaregiverScheduleController extends Controller
         ]);
     }
 
-    public function requestChange(Request $request, CaregiverSchedule $schedule): JsonResponse
+    public function requestChange(ScheduleChangeRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
         $user = $request->user();
 
@@ -135,7 +133,7 @@ class CaregiverScheduleController extends Controller
 
         $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
 
-        $data = $this->validateChangeRequestPayload($request);
+        $data = $request->validated();
 
         $schedule->fill([
             'change_request_status' => 'pending',
@@ -200,67 +198,6 @@ class CaregiverScheduleController extends Controller
         return response()->json([
             'message' => 'Turno eliminado correctamente.',
         ]);
-    }
-
-    private function validateSchedulePayload(Request $request, bool $requiresUserId = false): array
-    {
-        $rules = [
-            'day_of_week' => ['required', 'integer', 'min:0', 'max:6'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i'],
-            'notes' => ['nullable', 'string', 'max:255'],
-        ];
-
-        if ($requiresUserId) {
-            $rules['user_id'] = [
-                'required',
-                'integer',
-                Rule::exists('users', 'id')->where('role', 'profesional')->where('is_approved', true),
-            ];
-        }
-
-        $data = $request->validate($rules);
-
-        $timezone = (string) config('app.timezone');
-
-        $start = Carbon::createFromFormat('H:i', $data['start_time'], $timezone);
-        $end = Carbon::createFromFormat('H:i', $data['end_time'], $timezone);
-
-        if ($end->lessThanOrEqualTo($start)) {
-            abort(response()->json([
-                'message' => 'El horario es inválido.',
-                'errors' => [
-                    'end_time' => ['end_time debe ser mayor que start_time.'],
-                ],
-            ], 422));
-        }
-
-        return $data;
-    }
-
-    private function validateChangeRequestPayload(Request $request): array
-    {
-        $data = $request->validate([
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i'],
-            'notes' => ['nullable', 'string', 'max:255'],
-            'message' => ['required', 'string', 'max:500'],
-        ]);
-
-        $timezone = (string) config('app.timezone');
-        $start = Carbon::createFromFormat('H:i', $data['start_time'], $timezone);
-        $end = Carbon::createFromFormat('H:i', $data['end_time'], $timezone);
-
-        if ($end->lessThanOrEqualTo($start)) {
-            abort(response()->json([
-                'message' => 'El horario es invalido.',
-                'errors' => [
-                    'end_time' => ['end_time debe ser mayor que start_time.'],
-                ],
-            ], 422));
-        }
-
-        return $data;
     }
 
     private function ensureCaregiverCanManageSchedule(mixed $role, bool $isApproved): void

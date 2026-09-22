@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DateFilterRequest;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use Illuminate\Http\JsonResponse;
@@ -11,11 +12,9 @@ use Illuminate\Support\Str;
 
 class IncidentController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(DateFilterRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'date' => ['nullable', 'date_format:Y-m-d'],
-        ]);
+        $validated = $request->validated();
 
         $timezone = (string) config('app.timezone');
 
@@ -64,7 +63,7 @@ class IncidentController extends Controller
         $user = $request->user();
         $role = $this->normalizeRole($user?->role);
 
-        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && !(bool) $user?->is_approved) {
+        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && ! (bool) $user?->is_approved) {
             abort(response()->json([
                 'message' => 'Tu cuenta debe estar aprobada para consultar incidentes.',
             ], 403));
@@ -84,6 +83,7 @@ class IncidentController extends Controller
                 ->get(['id', 'full_name']);
 
             $this->scopeQueryToOlderAdults($query, $olderAdults);
+
             return;
         }
 
@@ -103,6 +103,7 @@ class IncidentController extends Controller
 
         if ($adultIds->isEmpty() && $adultNames->isEmpty()) {
             $query->whereRaw('1 = 0');
+
             return;
         }
 

@@ -2,32 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthRequest;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(AuthRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $request->validated();
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Credenciales invalidas',
             ], 401);
         }
 
-        if (!$this->canLogin($user)) {
+        if (! $this->canLogin($user)) {
             return response()->json([
                 'message' => 'Tu cuenta esta pendiente de aprobacion por un administrador.',
             ], 403);
@@ -42,17 +39,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request)
+    public function register(AuthRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'role' => 'nullable|in:familiar,profesional,cuidador_familiar,cuidador_profesional',
-            'location' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:255',
-            'birthdate' => 'nullable|date',
-        ]);
+        $request->validated();
 
         $user = User::create([
             'name' => $request->name,
@@ -87,23 +76,15 @@ class AuthController extends Controller
         ]);
     }
 
-    public function updateMe(Request $request)
+    public function updateMe(AuthRequest $request)
     {
         $user = $request->user();
         $previousName = $user->name;
 
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'location' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:255',
-            'birthdate' => 'nullable|date',
-            'current_password' => 'nullable|string',
-            'new_password' => 'nullable|string|min:8|confirmed',
-        ]);
+        $data = $request->validated();
 
-        if (!empty($data['new_password'])) {
-            if (!Hash::check((string) ($data['current_password'] ?? ''), $user->password)) {
+        if (! empty($data['new_password'])) {
+            if (! Hash::check((string) ($data['current_password'] ?? ''), $user->password)) {
                 throw ValidationException::withMessages([
                     'current_password' => ['La contrasena actual no coincide.'],
                 ]);

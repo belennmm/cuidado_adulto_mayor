@@ -2,29 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MedicationInventoryRequest;
 use App\Models\Medication;
 use App\Models\OlderAdultMedication;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class MedicationInventoryController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(MedicationInventoryRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'older_adult_id' => ['nullable', 'integer', Rule::exists('older_adults', 'id')],
-        ]);
+        $data = $request->validated();
 
         return response()->json([
             'inventory' => $this->inventoryItems($data['older_adult_id'] ?? null),
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(MedicationInventoryRequest $request): JsonResponse
     {
-        $data = $this->validateInventoryItem($request);
+        $data = $request->validated();
 
         $inventoryItem = DB::transaction(function () use ($data) {
             $medication = Medication::firstOrCreate(
@@ -44,9 +41,9 @@ class MedicationInventoryController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, OlderAdultMedication $inventoryItem): JsonResponse
+    public function update(MedicationInventoryRequest $request, OlderAdultMedication $inventoryItem): JsonResponse
     {
-        $data = $this->validateInventoryItem($request, $inventoryItem);
+        $data = $request->validated();
 
         DB::transaction(function () use ($inventoryItem, $data) {
             $medication = Medication::firstOrCreate(
@@ -66,12 +63,9 @@ class MedicationInventoryController extends Controller
         ]);
     }
 
-    public function adjustStock(Request $request, OlderAdultMedication $inventoryItem): JsonResponse
+    public function adjustStock(MedicationInventoryRequest $request, OlderAdultMedication $inventoryItem): JsonResponse
     {
-        $data = $request->validate([
-            'action' => ['required', 'in:increase,decrease'],
-            'amount' => ['required', 'integer', 'min:1'],
-        ]);
+        $data = $request->validated();
 
         $amount = (int) $data['amount'];
         $currentQuantity = (int) $inventoryItem->quantity;
@@ -107,22 +101,6 @@ class MedicationInventoryController extends Controller
 
         return response()->json([
             'message' => 'Medicamento eliminado del inventario del adulto mayor.',
-        ]);
-    }
-
-    private function validateInventoryItem(Request $request, ?OlderAdultMedication $inventoryItem = null): array
-    {
-        return $request->validate([
-            'older_adult_id' => ['required', 'integer', Rule::exists('older_adults', 'id')],
-            'name' => ['required', 'string', 'max:255'],
-            'presentation' => ['required', 'string', 'max:255'],
-            'quantity' => ['required', 'integer', 'min:0'],
-            'unit' => ['required', 'string', 'max:80'],
-            'minimum_stock' => ['required', 'integer', 'min:0'],
-            'expiration_date' => ['required', 'date'],
-            'is_active' => ['sometimes', 'boolean'],
-            'dosage' => ['nullable', 'string', 'max:255'],
-            'schedule' => ['nullable', 'string', 'max:255'],
         ]);
     }
 

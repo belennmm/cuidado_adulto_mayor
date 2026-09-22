@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompleteRoutineActivityRequest;
+use App\Http\Requests\RoutineIndexRequest;
+use App\Http\Requests\StoreRoutineRequest;
+use App\Http\Requests\UpdateRoutineRequest;
 use App\Models\OlderAdult;
 use App\Models\Rutina;
 use Illuminate\Http\JsonResponse;
@@ -12,12 +16,9 @@ use Illuminate\Validation\ValidationException;
 
 class RutinaController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(RoutineIndexRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'adulto_mayor_id' => 'nullable|integer',
-            'older_adult_id' => 'nullable|integer',
-        ], $this->validationMessages());
+        $data = $request->validated();
 
         $olderAdultId = $data['adulto_mayor_id'] ?? $data['older_adult_id'] ?? null;
         $query = Rutina::query()->with('olderAdult:id,full_name,room,status');
@@ -25,7 +26,7 @@ class RutinaController extends Controller
         if ($olderAdultId !== null && $olderAdultId !== '') {
             $olderAdult = OlderAdult::query()->find((int) $olderAdultId);
 
-            if (!$olderAdult) {
+            if (! $olderAdult) {
                 throw ValidationException::withMessages([
                     'adulto_mayor_id' => ['El adulto mayor seleccionado no existe.'],
                 ]);
@@ -49,14 +50,14 @@ class RutinaController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreRoutineRequest $request): JsonResponse
     {
-        $data = $request->validate($this->rules(), $this->validationMessages());
+        $data = $request->validated();
 
         $olderAdultId = (int) ($data['adulto_mayor_id'] ?? $data['older_adult_id']);
         $olderAdult = OlderAdult::query()->find($olderAdultId);
 
-        if (!$olderAdult) {
+        if (! $olderAdult) {
             throw ValidationException::withMessages([
                 'adulto_mayor_id' => ['El adulto mayor seleccionado no existe.'],
             ]);
@@ -102,17 +103,12 @@ class RutinaController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Rutina $rutina): JsonResponse
+    public function update(UpdateRoutineRequest $request, Rutina $rutina): JsonResponse
     {
         $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
         $this->authorizeOlderAdult($request, $rutina->olderAdult);
 
-        $data = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'horario' => 'required|date_format:H:i',
-            'actividades' => 'required|array|min:1',
-            'actividades.*' => 'required|string|max:255',
-        ], $this->validationMessages());
+        $data = $request->validated();
 
         $nombre = trim((string) $data['nombre']);
         $horario = $this->normalizeHorario($data['horario']);
@@ -147,15 +143,12 @@ class RutinaController extends Controller
         ]);
     }
 
-    public function complete(Request $request, Rutina $rutina): JsonResponse
+    public function complete(CompleteRoutineActivityRequest $request, Rutina $rutina): JsonResponse
     {
         $rutina->load('olderAdult:id,full_name,room,status,professional_caregiver_id,family_caregiver_id,caregiver_family');
         $this->authorizeOlderAdult($request, $rutina->olderAdult);
 
-        $data = $request->validate([
-            'actividad' => 'required_without:actividad_index|string|max:255',
-            'actividad_index' => 'required_without:actividad|integer|min:0',
-        ], $this->validationMessages());
+        $data = $request->validated();
 
         [$activityIndex, $activityName] = $this->activityFromRequest($rutina, $data);
         $completedActivities = $rutina->actividades_completadas ?? [];
@@ -199,7 +192,7 @@ class RutinaController extends Controller
         $user = $request->user();
         $role = $this->normalizeText($user?->role);
 
-        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && !(bool) $user?->is_approved) {
+        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && ! (bool) $user?->is_approved) {
             abort(response()->json([
                 'message' => 'Tu cuenta debe estar aprobada para consultar rutinas.',
             ], 403));
@@ -212,6 +205,7 @@ class RutinaController extends Controller
         if ($role === 'profesional' || $role === 'cuidador_profesional') {
             $query->whereHas('olderAdult', fn ($olderAdultQuery) => $olderAdultQuery
                 ->where('professional_caregiver_id', $user?->id));
+
             return;
         }
 
@@ -225,6 +219,7 @@ class RutinaController extends Controller
                         ->whereNull('family_caregiver_id')
                         ->whereRaw('LOWER(caregiver_family) = ?', [$normalizedName]);
                 }));
+
             return;
         }
 
@@ -238,7 +233,7 @@ class RutinaController extends Controller
         $user = $request->user();
         $role = $this->normalizeText($user?->role);
 
-        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && !(bool) $user?->is_approved) {
+        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true) && ! (bool) $user?->is_approved) {
             abort(response()->json([
                 'message' => 'Tu cuenta debe estar aprobada para crear rutinas.',
             ], 403));
@@ -287,7 +282,7 @@ class RutinaController extends Controller
         if (array_key_exists('actividad_index', $data)) {
             $activityIndex = (int) $data['actividad_index'];
 
-            if (!array_key_exists($activityIndex, $activities)) {
+            if (! array_key_exists($activityIndex, $activities)) {
                 throw ValidationException::withMessages([
                     'actividad_index' => ['La actividad seleccionada no existe en esta rutina.'],
                 ]);
@@ -316,51 +311,12 @@ class RutinaController extends Controller
         }
 
         foreach (array_keys($activities) as $index) {
-            if (!((bool) ($completedActivities[$index]['completada'] ?? false))) {
+            if (! ((bool) ($completedActivities[$index]['completada'] ?? false))) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    private function rules(): array
-    {
-        return [
-            'nombre' => 'required|string|max:255',
-            'horario' => 'required|date_format:H:i',
-            'actividades' => 'required|array|min:1',
-            'actividades.*' => 'required|string|max:255',
-            'adulto_mayor_id' => 'required_without:older_adult_id|integer',
-            'older_adult_id' => 'required_without:adulto_mayor_id|integer',
-        ];
-    }
-
-    private function validationMessages(): array
-    {
-        return [
-            'nombre.required' => 'El nombre de la rutina es obligatorio.',
-            'nombre.string' => 'El nombre de la rutina debe ser texto.',
-            'nombre.max' => 'El nombre de la rutina no puede superar 255 caracteres.',
-            'horario.required' => 'El horario de la rutina es obligatorio.',
-            'horario.date_format' => 'El horario debe tener el formato HH:MM.',
-            'actividades.required' => 'Debes registrar al menos una actividad.',
-            'actividades.array' => 'Las actividades deben enviarse como una lista.',
-            'actividades.min' => 'Debes registrar al menos una actividad.',
-            'actividades.*.required' => 'Cada actividad debe tener contenido.',
-            'actividades.*.string' => 'Cada actividad debe ser texto.',
-            'actividades.*.max' => 'Cada actividad no puede superar 255 caracteres.',
-            'adulto_mayor_id.required_without' => 'Debes seleccionar un adulto mayor.',
-            'adulto_mayor_id.integer' => 'El adulto mayor seleccionado no es valido.',
-            'older_adult_id.required_without' => 'Debes seleccionar un adulto mayor.',
-            'older_adult_id.integer' => 'El adulto mayor seleccionado no es valido.',
-            'actividad.required_without' => 'Debes seleccionar una actividad para completar.',
-            'actividad.string' => 'La actividad seleccionada debe ser texto.',
-            'actividad.max' => 'La actividad seleccionada no puede superar 255 caracteres.',
-            'actividad_index.required_without' => 'Debes seleccionar una actividad para completar.',
-            'actividad_index.integer' => 'La actividad seleccionada no es valida.',
-            'actividad_index.min' => 'La actividad seleccionada no es valida.',
-        ];
     }
 
     private function normalizeHorario(string $horario): string

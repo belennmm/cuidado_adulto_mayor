@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RoutineNoteRequest;
 use App\Models\OlderAdult;
 use App\Models\RoutineNote;
 use App\Models\User;
@@ -12,13 +13,11 @@ use Illuminate\Support\Str;
 
 class ProfessionalRoutineNoteController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(RoutineNoteRequest $request): JsonResponse
     {
         $user = $this->ensureProfessionalUser($request);
 
-        $data = $request->validate([
-            'older_adult_id' => 'required|integer',
-        ]);
+        $data = $request->validated();
 
         $olderAdult = $this->assignedOlderAdultOrFail($user, (int) $data['older_adult_id']);
         [$weekStart, $weekEnd] = $this->currentWeekRange();
@@ -49,14 +48,11 @@ class ProfessionalRoutineNoteController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(RoutineNoteRequest $request): JsonResponse
     {
         $user = $this->ensureProfessionalUser($request);
 
-        $data = $request->validate([
-            'older_adult_id' => 'required|integer',
-            'content' => 'required|string',
-        ]);
+        $data = $request->validated();
 
         $content = trim((string) $data['content']);
         if ($content === '') {
@@ -94,14 +90,12 @@ class ProfessionalRoutineNoteController extends Controller
         ]);
     }
 
-    public function update(Request $request, RoutineNote $routineNote): JsonResponse
+    public function update(RoutineNoteRequest $request, RoutineNote $routineNote): JsonResponse
     {
         $user = $this->ensureProfessionalUser($request);
         $this->ownedNoteOrFail($user, $routineNote);
 
-        $data = $request->validate([
-            'content' => 'required|string',
-        ]);
+        $data = $request->validated();
 
         $content = trim((string) $data['content']);
         if ($content === '') {

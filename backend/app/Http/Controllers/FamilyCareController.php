@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CareFilterRequest;
+use App\Http\Requests\DateFilterRequest;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
@@ -94,13 +96,11 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function routine(Request $request): JsonResponse
+    public function routine(CareFilterRequest $request): JsonResponse
     {
         $this->ensureFamilyUser($request);
 
-        $data = $request->validate([
-            'older_adult_id' => 'nullable|integer',
-        ]);
+        $data = $request->validated();
 
         $today = $this->today();
         $olderAdults = $this->olderAdultsForFamilyRequest($request, $data['older_adult_id'] ?? null);
@@ -126,14 +126,11 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function incidents(Request $request): JsonResponse
+    public function incidents(CareFilterRequest $request): JsonResponse
     {
         $this->ensureFamilyUser($request);
 
-        $data = $request->validate([
-            'date' => 'nullable|date_format:Y-m-d',
-            'older_adult_id' => 'nullable|integer',
-        ]);
+        $data = $request->validated();
 
         $date = isset($data['date'])
             ? Carbon::createFromFormat('Y-m-d', $data['date'], config('app.timezone'))->startOfDay()
@@ -152,13 +149,11 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function olderAdultIncidents(Request $request, OlderAdult $olderAdult): JsonResponse
+    public function olderAdultIncidents(DateFilterRequest $request, OlderAdult $olderAdult): JsonResponse
     {
         $this->ensureFamilyUser($request);
 
-        $data = $request->validate([
-            'date' => 'nullable|date_format:Y-m-d',
-        ]);
+        $data = $request->validated();
 
         $date = isset($data['date'])
             ? Carbon::createFromFormat('Y-m-d', $data['date'], config('app.timezone'))->startOfDay()

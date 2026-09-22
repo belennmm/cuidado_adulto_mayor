@@ -2,31 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MedicationAdministrationRequest;
 use App\Models\MedicationAdministration;
 use App\Models\OlderAdultMedication;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class MedicationAdministrationController extends Controller
 {
-    public function markTaken(Request $request, OlderAdultMedication $assignment): JsonResponse
+    public function markTaken(MedicationAdministrationRequest $request, OlderAdultMedication $assignment): JsonResponse
     {
         $user = $request->user();
         $this->ensureProfessionalCaregiver($user?->role, (bool) $user?->is_approved);
 
         $olderAdult = $assignment->olderAdult()->first();
-        if (!$olderAdult || (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
+        if (! $olderAdult || (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
             return response()->json([
                 'message' => 'No tienes acceso para marcar este medicamento.',
             ], 403);
         }
 
-        $data = $request->validate([
-            'administration_time' => ['nullable', 'date_format:H:i'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $data = $request->validated();
 
         $timezone = (string) config('app.timezone');
         $now = Carbon::now($timezone);
@@ -81,13 +78,13 @@ class MedicationAdministrationController extends Controller
     {
         $normalized = $this->normalizeRole($role);
 
-        if (!in_array($normalized, ['profesional', 'cuidador_profesional'], true)) {
+        if (! in_array($normalized, ['profesional', 'cuidador_profesional'], true)) {
             abort(response()->json([
                 'message' => 'No tienes acceso para marcar medicamentos.',
             ], 403));
         }
 
-        if (!$isApproved) {
+        if (! $isApproved) {
             abort(response()->json([
                 'message' => 'Tu cuenta debe estar aprobada para marcar medicamentos.',
             ], 403));

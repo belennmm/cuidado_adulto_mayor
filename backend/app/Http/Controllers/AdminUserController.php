@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AdminUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
@@ -44,17 +43,9 @@ class AdminUserController extends Controller
         return response()->json(['users' => $users]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(AdminUserRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', Rule::unique('users', 'email')],
-            'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'])],
-            'location' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:255'],
-            'birthdate' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $validated['role'] = $this->normalizeRole($validated['role']);
         $validated['password'] = Hash::make($validated['password']);
@@ -75,18 +66,9 @@ class AdminUserController extends Controller
         ]);
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(AdminUserRequest $request, User $user): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'password' => ['nullable', 'string', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'])],
-            'is_approved' => ['required', 'boolean'],
-            'location' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:255'],
-            'birthdate' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $validated['role'] = $this->normalizeRole($validated['role']);
 
@@ -94,7 +76,7 @@ class AdminUserController extends Controller
             $validated['is_approved'] = true;
         }
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);

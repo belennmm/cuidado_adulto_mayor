@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MedicationStatisticsRequest;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\MedicationAdministration;
@@ -10,7 +11,6 @@ use App\Models\OlderAdultMedication;
 use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class AdminDashboardController extends Controller
@@ -80,11 +80,9 @@ class AdminDashboardController extends Controller
         ]);
     }
 
-    public function medicationStatistics(Request $request): JsonResponse
+    public function medicationStatistics(MedicationStatisticsRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'filter' => 'nullable|in:day,month,year',
-        ]);
+        $data = $request->validated();
 
         $filter = $data['filter'] ?? 'day';
         $timezone = (string) config('app.timezone');

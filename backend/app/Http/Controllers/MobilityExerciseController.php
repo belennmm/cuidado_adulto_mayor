@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MobilityExerciseRequest;
 use App\Models\MobilityExercise;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class MobilityExerciseController extends Controller
@@ -55,9 +55,9 @@ class MobilityExerciseController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(MobilityExerciseRequest $request): JsonResponse
     {
-        $data = $request->validate($this->rules(), $this->messages());
+        $data = $request->validated();
         $instructions = $this->normalizeInstructions($data['instructions']);
         $slug = $this->uniqueSlug($data['slug'] ?? $data['title']);
 
@@ -74,9 +74,9 @@ class MobilityExerciseController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, MobilityExercise $mobilityExercise): JsonResponse
+    public function update(MobilityExerciseRequest $request, MobilityExercise $mobilityExercise): JsonResponse
     {
-        $data = $request->validate($this->rules($mobilityExercise), $this->messages());
+        $data = $request->validated();
         $instructions = $this->normalizeInstructions($data['instructions']);
         $slugSource = $data['slug'] ?? $data['title'];
 
@@ -99,43 +99,6 @@ class MobilityExerciseController extends Controller
         return response()->json([
             'message' => 'Ejercicio de movilidad eliminado correctamente.',
         ]);
-    }
-
-    private function rules(?MobilityExercise $exercise = null): array
-    {
-        return [
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('mobility_exercises', 'slug')->ignore($exercise?->id),
-            ],
-            'title' => 'required|string|max:255',
-            'focus' => 'required|string|max:255',
-            'duration_minutes' => 'required|integer|min:1|max:1440',
-            'repetitions' => 'required|string|max:255',
-            'instructions' => 'required|array|min:1|max:20',
-            'instructions.*' => 'required|string|max:1000',
-            'precaution' => 'required|string|max:2000',
-            'is_active' => 'sometimes|boolean',
-            'sort_order' => 'sometimes|integer|min:0|max:65535',
-        ];
-    }
-
-    private function messages(): array
-    {
-        return [
-            'title.required' => 'El título del ejercicio es obligatorio.',
-            'focus.required' => 'El área de enfoque es obligatoria.',
-            'duration_minutes.required' => 'La duración es obligatoria.',
-            'duration_minutes.min' => 'La duración debe ser de al menos un minuto.',
-            'repetitions.required' => 'Las repeticiones son obligatorias.',
-            'instructions.required' => 'Debes registrar las instrucciones.',
-            'instructions.min' => 'Debes registrar al menos una instrucción.',
-            'instructions.*.required' => 'Las instrucciones no pueden estar vacías.',
-            'precaution.required' => 'La precaución es obligatoria.',
-            'slug.unique' => 'Ya existe un ejercicio con este identificador.',
-        ];
     }
 
     private function attributes(array $data, array $instructions): array
