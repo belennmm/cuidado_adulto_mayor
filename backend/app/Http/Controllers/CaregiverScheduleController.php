@@ -5,33 +5,31 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SaveCaregiverScheduleRequest;
 use App\Http\Requests\ScheduleCalendarRequest;
 use App\Http\Requests\ScheduleChangeRequest;
+use App\Http\Resources\CaregiverScheduleResource;
 use App\Models\CaregiverSchedule;
-use App\Models\User;
+use App\Services\CaregiverScheduleService;
 use App\Services\ScheduleCalendarService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class CaregiverScheduleController extends Controller
 {
-    public function __construct(private readonly ScheduleCalendarService $calendarService) {}
+    public function __construct(
+        private readonly ScheduleCalendarService $calendarService,
+        private readonly CaregiverScheduleService $scheduleService,
+    ) {}
 
     public function adminIndex(): JsonResponse
     {
-        $schedules = CaregiverSchedule::query()
-            ->with('user:id,name,email,role,is_approved')
-            ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->get()
-            ->map(fn (CaregiverSchedule $schedule) => $this->formatSchedule($schedule));
-
-        return response()->json(['schedules' => $schedules]);
+        return response()->json([
+            'schedules' => CaregiverScheduleResource::collection($this->scheduleService->all())->resolve(),
+        ]);
     }
 
     public function calendar(ScheduleCalendarRequest $request): JsonResponse
     {
         $data = $request->validated();
-
         $timezone = (string) config('app.timezone');
         $startDate = Carbon::createFromFormat('Y-m-d', $data['start_date'], $timezone)->startOfDay();
         $endDate = Carbon::createFromFormat('Y-m-d', $data['end_date'], $timezone)->startOfDay();
@@ -41,242 +39,72 @@ class CaregiverScheduleController extends Controller
 
     public function store(SaveCaregiverScheduleRequest $request): JsonResponse
     {
-        $user = $request->user();
-        $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
+        $schedule = $this->scheduleService->saveForCaregiver($request->user(), $request->validated());
 
-        $data = $request->validated();
-
-        $schedule = CaregiverSchedule::updateOrCreate(
-            [
-                'user_id' => $user->id,
-                'day_of_week' => $data['day_of_week'],
-            ],
-            [
-                'start_time' => $data['start_time'],
-                'end_time' => $data['end_time'],
-                'notes' => $data['notes'] ?? null,
-            ],
+        return $this->scheduleResponse(
+            'Horario guardado correctamente.', $schedule, $request, 201,
         );
-
-        return response()->json([
-            'message' => 'Horario guardado correctamente.',
-            'schedule' => $this->formatSchedule($schedule),
-        ], 201);
     }
 
     public function adminStore(SaveCaregiverScheduleRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $schedule = $this->scheduleService->saveForAdmin($request->validated());
 
-        $caregiver = User::query()->findOrFail($data['user_id']);
-        $this->ensureCaregiverCanManageSchedule($caregiver->role, (bool) $caregiver->is_approved);
-
-        $schedule = CaregiverSchedule::updateOrCreate(
-            [
-                'user_id' => $caregiver->id,
-                'day_of_week' => $data['day_of_week'],
-            ],
-            [
-                'start_time' => $data['start_time'],
-                'end_time' => $data['end_time'],
-                'notes' => $data['notes'] ?? null,
-            ],
+        return $this->scheduleResponse(
+            'Turno asignado correctamente.', $schedule, $request, 201,
         );
-
-        return response()->json([
-            'message' => 'Turno asignado correctamente.',
-            'schedule' => $this->formatSchedule($schedule->load('user:id,name,email,role,is_approved')),
-        ], 201);
     }
 
     public function update(SaveCaregiverScheduleRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
-        $user = $request->user();
-        $role = $this->normalizeRole($user?->role);
+        $schedule = $this->scheduleService->update($request->user(), $schedule, $request->validated());
 
-        if ($role !== 'admin' && (int) $schedule->user_id !== (int) $user?->id) {
-            return response()->json([
-                'message' => 'No tienes permiso para modificar este horario.',
-            ], 403);
-        }
-
-        if ($role !== 'admin') {
-            $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
-        }
-
-        $data = $request->validated();
-
-        $schedule->fill([
-            'day_of_week' => $data['day_of_week'],
-            'start_time' => $data['start_time'],
-            'end_time' => $data['end_time'],
-            'notes' => $data['notes'] ?? null,
-        ]);
-
-        $schedule->save();
-
-        return response()->json([
-            'message' => 'Horario actualizado correctamente.',
-            'schedule' => $this->formatSchedule($schedule),
-        ]);
+        return $this->scheduleResponse('Horario actualizado correctamente.', $schedule, $request);
     }
 
     public function requestChange(ScheduleChangeRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
-        $user = $request->user();
+        $schedule = $this->scheduleService->requestChange(
+            $request->user(), $schedule, $request->validated(),
+        );
 
-        if ((int) $schedule->user_id !== (int) $user?->id) {
-            return response()->json([
-                'message' => 'No tienes permiso para solicitar cambios en este horario.',
-            ], 403);
-        }
-
-        $this->ensureCaregiverCanManageSchedule($user?->role, (bool) $user?->is_approved);
-
-        $data = $request->validated();
-
-        $schedule->fill([
-            'change_request_status' => 'pending',
-            'change_request_start_time' => $data['start_time'],
-            'change_request_end_time' => $data['end_time'],
-            'change_request_notes' => $data['notes'] ?? null,
-            'change_request_message' => $data['message'],
-        ]);
-
-        $schedule->save();
-
-        return response()->json([
-            'message' => 'Solicitud de cambio enviada correctamente.',
-            'schedule' => $this->formatSchedule($schedule),
-        ]);
+        return $this->scheduleResponse(
+            'Solicitud de cambio enviada correctamente.', $schedule, $request,
+        );
     }
 
-    public function approveChangeRequest(CaregiverSchedule $schedule): JsonResponse
+    public function approveChangeRequest(Request $request, CaregiverSchedule $schedule): JsonResponse
     {
-        if ($schedule->change_request_status !== 'pending') {
-            return response()->json([
-                'message' => 'Este turno no tiene una solicitud pendiente.',
-            ], 422);
-        }
+        $schedule = $this->scheduleService->approveChange($schedule);
 
-        $schedule->fill([
-            'start_time' => $schedule->change_request_start_time,
-            'end_time' => $schedule->change_request_end_time,
-            'notes' => $schedule->change_request_notes,
-        ]);
-
-        $this->clearChangeRequest($schedule);
-        $schedule->save();
-
-        return response()->json([
-            'message' => 'Solicitud aprobada y turno actualizado.',
-            'schedule' => $this->formatSchedule($schedule->load('user:id,name,email,role,is_approved')),
-        ]);
+        return $this->scheduleResponse(
+            'Solicitud aprobada y turno actualizado.', $schedule, $request,
+        );
     }
 
-    public function rejectChangeRequest(CaregiverSchedule $schedule): JsonResponse
+    public function rejectChangeRequest(Request $request, CaregiverSchedule $schedule): JsonResponse
     {
-        if ($schedule->change_request_status !== 'pending') {
-            return response()->json([
-                'message' => 'Este turno no tiene una solicitud pendiente.',
-            ], 422);
-        }
+        $schedule = $this->scheduleService->rejectChange($schedule);
 
-        $this->clearChangeRequest($schedule);
-        $schedule->save();
-
-        return response()->json([
-            'message' => 'Solicitud rechazada correctamente.',
-            'schedule' => $this->formatSchedule($schedule->load('user:id,name,email,role,is_approved')),
-        ]);
+        return $this->scheduleResponse('Solicitud rechazada correctamente.', $schedule, $request);
     }
 
     public function destroy(CaregiverSchedule $schedule): JsonResponse
     {
         $schedule->delete();
 
+        return response()->json(['message' => 'Turno eliminado correctamente.']);
+    }
+
+    private function scheduleResponse(
+        string $message,
+        CaregiverSchedule $schedule,
+        Request $request,
+        int $status = 200,
+    ): JsonResponse {
         return response()->json([
-            'message' => 'Turno eliminado correctamente.',
-        ]);
-    }
-
-    private function ensureCaregiverCanManageSchedule(mixed $role, bool $isApproved): void
-    {
-        $normalized = $this->normalizeRole($role);
-
-        if (! in_array($normalized, ['profesional', 'cuidador_profesional'], true)) {
-            abort(response()->json([
-                'message' => 'No tienes acceso para definir horarios.',
-            ], 403));
-        }
-
-        if (! $isApproved) {
-            abort(response()->json([
-                'message' => 'Tu cuenta debe estar aprobada para definir horarios.',
-            ], 403));
-        }
-    }
-
-    private function formatSchedule(CaregiverSchedule $schedule): array
-    {
-        $user = $schedule->relationLoaded('user') && $schedule->user
-            ? [
-                'id' => $schedule->user->id,
-                'name' => $schedule->user->name,
-                'email' => $schedule->user->email,
-                'role' => $schedule->user->role,
-                'is_approved' => $schedule->user->is_approved,
-            ]
-            : null;
-
-        return [
-            'id' => $schedule->id,
-            'user_id' => $schedule->user_id,
-            'user' => $user,
-            'day_of_week' => $schedule->day_of_week,
-            'start_time' => $this->formatTime($schedule->start_time),
-            'end_time' => $this->formatTime($schedule->end_time),
-            'notes' => $schedule->notes,
-            'change_request' => $schedule->change_request_status ? [
-                'status' => $schedule->change_request_status,
-                'start_time' => $this->formatTime($schedule->change_request_start_time),
-                'end_time' => $this->formatTime($schedule->change_request_end_time),
-                'notes' => $schedule->change_request_notes,
-                'message' => $schedule->change_request_message,
-            ] : null,
-        ];
-    }
-
-    private function clearChangeRequest(CaregiverSchedule $schedule): void
-    {
-        $schedule->fill([
-            'change_request_status' => null,
-            'change_request_start_time' => null,
-            'change_request_end_time' => null,
-            'change_request_notes' => null,
-            'change_request_message' => null,
-        ]);
-    }
-
-    private function formatTime(mixed $time): ?string
-    {
-        if ($time === null || $time === '') {
-            return null;
-        }
-
-        return Carbon::createFromFormat(
-            strlen((string) $time) === 5 ? 'H:i' : 'H:i:s',
-            (string) $time,
-            (string) config('app.timezone'),
-        )->format('H:i:s');
-    }
-
-    private function normalizeRole(mixed $role): string
-    {
-        return Str::of((string) $role)
-            ->ascii()
-            ->lower()
-            ->trim()
-            ->toString();
+            'message' => $message,
+            'schedule' => CaregiverScheduleResource::make($schedule)->toArray($request),
+        ], $status);
     }
 }
