@@ -3,35 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RoutineNoteRequest;
-use App\Models\OlderAdult;
+use App\Http\Resources\RoutineNoteResource;
 use App\Models\RoutineNote;
-use App\Models\User;
+use App\Services\RoutineNoteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class ProfessionalRoutineNoteController extends Controller
 {
+    public function __construct(private readonly RoutineNoteService $routineNoteService) {}
+
     public function index(RoutineNoteRequest $request): JsonResponse
     {
-        $user = $this->ensureProfessionalUser($request);
-
-        $data = $request->validated();
-
-        $olderAdult = $this->assignedOlderAdultOrFail($user, (int) $data['older_adult_id']);
-        [$weekStart, $weekEnd] = $this->currentWeekRange();
-
-        $notes = RoutineNote::query()
-            ->with('professionalCaregiver:id,name')
-            ->where('older_adult_id', $olderAdult->id)
-            ->where('professional_caregiver_id', $user->id)
-            ->whereBetween('note_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
-            ->orderByDesc('note_date')
-            ->orderByDesc('updated_at')
-            ->get()
-            ->map(fn (RoutineNote $note) => $this->formatNote($note))
-            ->values();
+        $user = $request->user();
+        $this->routineNoteService->authorize($user);
+        $olderAdult = $this->routineNoteService->assignedOlderAdult(
+            $user,
+            (int) $request->validated('older_adult_id'),
+        );
+        [$weekStart, $weekEnd] = $this->routineNoteService->currentWeekRange();
+        $notes = $this->routineNoteService->notesForCurrentWeek($user, $olderAdult);
 
         return response()->json([
             'older_adult' => [
@@ -44,166 +35,61 @@ class ProfessionalRoutineNoteController extends Controller
                 'start' => $weekStart->toDateString(),
                 'end' => $weekEnd->toDateString(),
             ],
-            'notes' => $notes,
+            'notes' => $notes
+                ->map(fn (RoutineNote $note) => RoutineNoteResource::make($note)->toArray($request))
+                ->values(),
         ]);
     }
 
     public function store(RoutineNoteRequest $request): JsonResponse
     {
-        $user = $this->ensureProfessionalUser($request);
-
+        $user = $request->user();
+        $this->routineNoteService->authorize($user);
         $data = $request->validated();
+        $olderAdult = $this->routineNoteService->assignedOlderAdult($user, (int) $data['older_adult_id']);
+        $note = $this->routineNoteService->create($user, $olderAdult, $data['content']);
 
-        $content = trim((string) $data['content']);
-        if ($content === '') {
-            return response()->json([
-                'message' => 'La nota no puede estar vacia.',
-            ], 422);
-        }
-
-        $olderAdult = $this->assignedOlderAdultOrFail($user, (int) $data['older_adult_id']);
-
-        $note = RoutineNote::create([
-            'older_adult_id' => $olderAdult->id,
-            'professional_caregiver_id' => $user->id,
-            'content' => $content,
-            'note_date' => $this->today()->toDateString(),
-        ]);
-
-        $note->load('professionalCaregiver:id,name');
-
-        return response()->json([
-            'message' => 'Nota guardada correctamente.',
-            'note' => $this->formatNote($note),
-        ], 201);
+        return $this->noteResponse('Nota guardada correctamente.', $note, $request, 201);
     }
 
     public function show(Request $request, RoutineNote $routineNote): JsonResponse
     {
-        $user = $this->ensureProfessionalUser($request);
-        $this->ownedNoteOrFail($user, $routineNote);
-
-        $routineNote->load('professionalCaregiver:id,name');
+        $this->routineNoteService->authorize($request->user());
+        $note = $this->routineNoteService->ownedNote($request->user(), $routineNote);
 
         return response()->json([
-            'note' => $this->formatNote($routineNote),
+            'note' => RoutineNoteResource::make($note)->toArray($request),
         ]);
     }
 
     public function update(RoutineNoteRequest $request, RoutineNote $routineNote): JsonResponse
     {
-        $user = $this->ensureProfessionalUser($request);
-        $this->ownedNoteOrFail($user, $routineNote);
+        $user = $request->user();
+        $this->routineNoteService->authorize($user);
+        $note = $this->routineNoteService->ownedNote($user, $routineNote);
+        $note = $this->routineNoteService->update($note, $request->validated('content'));
 
-        $data = $request->validated();
-
-        $content = trim((string) $data['content']);
-        if ($content === '') {
-            return response()->json([
-                'message' => 'La nota no puede estar vacia.',
-            ], 422);
-        }
-
-        $routineNote->update([
-            'content' => $content,
-        ]);
-
-        $routineNote->load('professionalCaregiver:id,name');
-
-        return response()->json([
-            'message' => 'Nota actualizada correctamente.',
-            'note' => $this->formatNote($routineNote),
-        ]);
+        return $this->noteResponse('Nota actualizada correctamente.', $note, $request);
     }
 
     public function destroy(Request $request, RoutineNote $routineNote): JsonResponse
     {
-        $user = $this->ensureProfessionalUser($request);
-        $this->ownedNoteOrFail($user, $routineNote);
+        $this->routineNoteService->authorize($request->user());
+        $note = $this->routineNoteService->ownedNote($request->user(), $routineNote);
+        $note->delete();
 
-        $routineNote->delete();
+        return response()->json(['message' => 'Nota eliminada correctamente.']);
+    }
 
+    private function noteResponse(
+        string $message,
+        RoutineNote $note,
+        Request $request,
+        int $status = 200,
+    ): JsonResponse {
         return response()->json([
-            'message' => 'Nota eliminada correctamente.',
-        ]);
-    }
-
-    private function ensureProfessionalUser(Request $request): User
-    {
-        $user = $request->user();
-        $role = $this->normalizeText($user?->role);
-
-        if (($role === 'profesional' || $role === 'cuidador_profesional') && (bool) $user?->is_approved) {
-            return $user;
-        }
-
-        abort(response()->json([
-            'message' => 'Esta informacion solo esta disponible para cuidadores profesionales aprobados.',
-        ], 403));
-    }
-
-    private function assignedOlderAdultOrFail(User $user, int $olderAdultId): OlderAdult
-    {
-        $olderAdult = OlderAdult::query()
-            ->where('professional_caregiver_id', $user->id)
-            ->whereKey($olderAdultId)
-            ->first();
-
-        if ($olderAdult) {
-            return $olderAdult;
-        }
-
-        abort(response()->json([
-            'message' => 'No tienes acceso a la informacion de este adulto mayor.',
-        ], 403));
-    }
-
-    private function ownedNoteOrFail(User $user, RoutineNote $routineNote): void
-    {
-        if ((int) $routineNote->professional_caregiver_id === (int) $user->id) {
-            $this->assignedOlderAdultOrFail($user, $routineNote->older_adult_id);
-
-            return;
-        }
-
-        abort(response()->json([
-            'message' => 'No tienes acceso a esta nota.',
-        ], 403));
-    }
-
-    private function currentWeekRange(): array
-    {
-        $today = $this->today();
-
-        return [
-            $today->copy()->startOfWeek(Carbon::MONDAY),
-            $today->copy()->endOfWeek(Carbon::SUNDAY),
-        ];
-    }
-
-    private function today(): Carbon
-    {
-        return Carbon::now(config('app.timezone'))->startOfDay();
-    }
-
-    private function normalizeText(mixed $value): string
-    {
-        return Str::of((string) $value)->ascii()->lower()->trim()->toString();
-    }
-
-    private function formatNote(RoutineNote $note): array
-    {
-        return [
-            'id' => $note->id,
-            'older_adult_id' => $note->older_adult_id,
-            'content' => $note->content,
-            'note_date' => $note->note_date?->toDateString(),
-            'created_at' => $note->created_at?->toISOString(),
-            'updated_at' => $note->updated_at?->toISOString(),
-            'professional_caregiver' => $note->professionalCaregiver ? [
-                'id' => $note->professionalCaregiver->id,
-                'name' => $note->professionalCaregiver->name,
-            ] : null,
-        ];
+            'message' => $message,
+            'note' => RoutineNoteResource::make($note)->toArray($request),
+        ], $status);
     }
 }
