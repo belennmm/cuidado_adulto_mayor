@@ -1,0 +1,274 @@
+.toggle-password {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--family-blue);
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.form-message {
+  color: var(--family-muted);
+}
+
+.form-message.success {
+  color: #2d8c57;
+}
+
+.form-message.error {
+  color: #c73a68;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.profile-summary {
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  background: #ffffff;
+  color: var(--family-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.profile-summary h2 {
+  margin: 18px 0 0;
+}
+
+.profile-summary p,
+.profile-summary span {
+  display: block;
+  margin-top: 8px;
+  color: var(--family-muted);
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.adult-screen-name {
+  margin: 0 0 32px;
+  color: #000000;
+  font-size: 36px;
+  font-weight: 400;
+}
+
+.adult-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(100%, 420px);
+  margin: -14px 0 28px;
+  color: #111111;
+  font-size: 17px;
+}
+
+.adult-selector[hidden] {
+  display: none;
+}
+
+.adult-selector select {
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: var(--family-field);
+  padding: 0 14px;
+  color: #111827;
+  font: inherit;
+}
+
+.routine-adult-selector {
+  margin: 0 0 24px;
+}
+
+.incidents-adult-selector {
+  margin: -56px auto 42px;
+  width: min(100%, 440px);
+}
+
+.adult-prototype-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);
+  gap: 48px;
+}
+
+.adult-details-card,
+.adult-clinical-card {
+  min-height: 560px;
+  padding: 38px 42px;
+  box-sizing: border-box;
+}
+
+.adult-field-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.adult-field-list label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #111111;
+  font-size: 18px;
+}
+
+.adult-field-list .prototype-field {
+  height: 44px;
+  font-size: 20px;
+}
+
+.request-change-button {
+  width: min(100%, 328px);
+  margin-top: 20px;
+}
+
+.adult-clinical-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.prototype-collapse {
+  margin-top: 24px;
+}
+
+.prototype-collapse summary {
+  min-height: 108px;
+  border-radius: 8px;
+  background: var(--family-field);
+  color: #7b7b7b;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 28px;
+  box-sizing: border-box;
+  list-style: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.prototype-collapse summary::-webkit-details-marker {
+  display: none;
+}
+
+.prototype-collapse summary i {
+  color: #5687df;
+  font-size: 30px;
+}
+
+.prototype-collapse p,
+.medicine-summary-list {
+  margin: 12px 0 0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  padding: 16px 18px;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.prototype-collapse p {
+  white-space: pre-line;
+}
+
+.medicine-title {
+  margin-top: 48px;
+}
+
+.medicine-summary-item {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(90px, 0.8fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.medicine-summary-item:last-child {
+  border-bottom: none;
+}
+
+.medicine-summary-item strong {
+  color: var(--family-ink);
+}
+
+.routine-prototype {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+}
+
+.routine-blue-panel {
+  min-height: 100vh;
+  background: #5b9aea;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 86px 48px 40px;
+  box-sizing: border-box;
+}
+
+.routine-blue-panel h1 {
+  margin: 0;
+  font-family: "Courier New", monospace;
+  font-size: 58px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.routine-detail-panel {
+  padding: 36px 42px 48px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.routine-form-row {
+  display: grid;
+  grid-template-columns: minmax(360px, 440px) minmax(150px, 184px);
+  gap: 48px;
+  align-items: end;
+}
+
+.routine-form-row label,
+.routine-notes-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #111111;
+  font-size: 22px;
+}
+
+.routine-form-row .prototype-field {
+  height: 42px;
+  min-height: 42px;
+  color: #8c8c8c;
+  font-size: 17px;
+}
+
+.routine-date-field .prototype-field {
+  text-align: center;
+}
+
+.routine-section-title {
+  margin-top: 46px;
+}

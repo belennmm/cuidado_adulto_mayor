@@ -1,0 +1,67 @@
+@media screen and (max-width: 850px) {
+  .stats-panel {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .routine-content {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-right {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .stats-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-item {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-avatar {
+    display: none;
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+  }
+
+  .panel-title {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .stats-panel,
+  .routines-panel,
+  .side-card {
+    border-radius: 14px;
+  }
+
+  .stats-panel {
+    padding: 14px;
+  }
+
+  .routines-panel,
+  .report-list {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .side-card-header {
+    min-height: 56px;
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+
+  .medicine-number {
+    font-size: 34px;
+  }
+
+  .report-row {
+    font-size: 14px;
+  }
+}

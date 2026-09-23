@@ -1,0 +1,251 @@
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background-card);
+}
+
+.register-form-b {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  background-color: var(--color-background-card);
+  overflow: hidden;
+}
+
+.background {
+  width: 9px;
+  min-height: 100vh;
+  background-color: var(--color-royalblue);
+}
+
+.register-form {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 42px;
+}
+
+.register {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 66px;
+  box-sizing: border-box;
+  max-width: calc(100% - 560px);
+  gap: 22px;
+}
+
+.call-to-action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.iniciemos {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 400;
+  color: var(--color-text-soft);
+}
+
+.account-prompt {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.ya-tienes-cuenta {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 400;
+  color: var(--color-text-soft);
+}
+
+.inicia-sesin {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 25px;
+  font-weight: 500;
+  font-family: var(--font-family-base);
+  color: var(--color-royalblue);
+  cursor: pointer;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-8);
+}
+
+.field-label {
+  font-size: 18px;
+  color: #8a8a8a;
+  padding-left: var(--padding-4, 4px);
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  border: 1.2px solid var(--color-gainsboro-300);
+  border-radius: var(--br-13);
+  padding: 0 var(--padding-16);
+  box-sizing: border-box;
+  background-color: var(--color-background-card);
+  gap: var(--gap-12);
+}
+
+.input-icon {
+  font-size: 22px;
+  color: #9a9a9a;
+  flex-shrink: 0;
+}
+
+.text-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--font-family-base);
+  font-size: 18px;
+  color: var(--color-text-soft);
+  background: transparent;
+}
+
+.text-input::placeholder {
+  color: #b7b7b7;
+}
+
+.select-input {
+  appearance: none;
+  cursor: pointer;
+}
+
+.double-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.half {
+  flex: 1;
+}
+
+.password-box {
+  justify-content: space-between;
+}
+
+.toggle-password {
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.small-icon {
+  font-size: 21px;
+}
+
+.sign-up-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.sign-up-button {
+  min-width: 210px;
+  height: 50px;
+  border: 1.5px solid var(--color-royalblue);
+  border-radius: 23.5px;
+  background-color: var(--color-royalblue);
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-base);
+  font-size: 21px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign-up-button:hover {
+  background-color: var(--color-dodgerblue);
+  border-color: var(--color-dodgerblue);
+}
+
+.register-message {
+  min-height: 24px;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-success);
+}
+
+.register-message.error {
+  color: #b3261e;
+}
+
+.right-panel {
+  width: 38%;
+  min-width: 560px;
+  min-height: 100vh;
+  background-color: var(--color-royalblue);
+  border-radius: 79px 0 0 79px;
+}
+
+@media screen and (max-width: 1100px) {
+  .register-form {
+    flex-wrap: wrap;
+  }
+
+  .register {
+    max-width: 100%;
+  }
+
+  .right-panel {
+    width: 100%;
+    min-width: 100%;
+    min-height: 320px;
+    border-radius: 79px 79px 0 0;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .register {
+    padding: 40px 24px;
+  }
+
+  .iniciemos {
+    font-size: 32px;
+  }
+
+  .ya-tienes-cuenta,
+  .inicia-sesin {
+    font-size: 20px;
+  }
+
+  .double-row {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .iniciemos {
+    font-size: 28px;
+  }
+
+  .field-label,
+  .text-input {
+    font-size: 16px;
+  }
+
+  .sign-up-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,183 @@
+@media screen and (max-width: 560px) {
+  .rectangle-parent {
+    padding: 40px 16px 28px;
+  }
+
+  .inicia-sesin-parent,
+  .frame-group,
+  .frame-container,
+  .rectangle-group,
+  .rectangle-container,
+  .login-button-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .login-button-wrapper {
+    height: auto;
+    padding: 0;
+  }
+
+  .login-button {
+    width: 100%;
+  }
+
+  .canvas-parent {
+    min-height: 180px;
+    padding: 16px;
+    gap: 32px;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .login-form {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .login-form-child {
+    display: none;
+  }
+
+  .frame-parent {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    gap: 0;
+  }
+
+  .rectangle-parent {
+    order: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .canvas-parent {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+    border-radius: 36px 36px 0 0;
+    min-height: 280px;
+    padding: 24px 20px 40px;
+    gap: 40px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .login-form {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  .frame-parent {
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    max-width: 100% !important;
+    gap: 0 !important;
+  }
+
+  .rectangle-parent {
+    order: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .canvas-parent {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    flex: 0 0 auto !important;
+    align-self: stretch !important;
+    border-radius: 36px 36px 0 0 !important;
+    min-height: 300px !important;
+    padding: 24px 20px 40px !important;
+    gap: 40px !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .login-form {
+    gap: 40px;
+  }
+
+  .frame-parent {
+    gap: 24px;
+    max-width: calc(100% - 49px);
+  }
+
+  .rectangle-parent {
+    padding: 96px 36px 72px;
+  }
+
+  .canvas-parent {
+    min-width: 420px;
+    min-height: 82vh;
+    gap: 120px;
+    padding: 18px 18px 40px;
+  }
+
+  .inicia-sesin-parent {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 1120px) {
+  .rectangle-parent {
+    padding: 72px 28px 56px;
+    gap: 28px;
+  }
+
+  .canvas-parent {
+    min-width: 360px;
+    width: 34%;
+    gap: 80px;
+  }
+
+  .dont-have-account-parent {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .login-button {
+    width: min(100%, 240px);
+  }
+}
+
+/* Mantener la paleta del login por encima de los estilos heredados. */
+.login-form { background:var(--login-ivory); }
+
+.login-form-child { background-color:var(--login-coral); }
+
+.rectangle-parent,.frame-child { background-color:var(--login-ivory); }
+
+.inicia-sesin,.dont-have-account,.usuario,.contrasea { color:var(--login-navy); }
+
+.inicia-sesin { font-weight:500; }
+
+.solicitar-cuenta2 { color:var(--login-sage-dark); }
+
+.rectangle-group,.rectangle-container { background:#fff; border-color:#b8ccc8; }
+
+.input-icon,.small-icon { color:var(--login-sage-dark); }
+
+.ingrese-usuario,.ingrese-contrasea { color:var(--login-navy); }
+
+.login-button { border-color:var(--login-navy); background:var(--login-navy); }
+
+.login-button:hover { border-color:var(--login-sage-dark); background:var(--login-sage-dark); }
+
+.canvas-parent { background:radial-gradient(circle at 82% 17%,rgba(255,255,255,.22) 0 72px,transparent 73px),radial-gradient(circle at 13% 88%,rgba(235,243,255,.24) 0 115px,transparent 116px),linear-gradient(145deg,var(--login-sage-dark),var(--login-sage)); }
+
+/* Centrado vertical del formulario en pantallas de escritorio. */
+@media screen and (min-width: 1121px) {
+  .rectangle-parent {
+    justify-content: center;
+    padding-top: 72px;
+    padding-bottom: 24px;
+    transform: translateY(24px);
+  }
+}

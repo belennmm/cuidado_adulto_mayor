@@ -1,0 +1,271 @@
+.routine-note-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.routine-note-card-top strong {
+  display: block;
+  color: #0a112f;
+  font-size: 15px;
+}
+
+.routine-note-card-top span {
+  color: #70707a;
+  font-size: 13px;
+}
+
+.routine-note-card p {
+  margin: 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.routine-note-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.routine-note-text-button {
+  padding: 0;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.routine-note-text-button.is-danger {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #f0c9c9;
+  border-radius: 12px;
+  background: #fff1f1;
+  color: #c94f4f;
+}
+
+.professional-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.professional-stat {
+  display: flex;
+  min-height: 96px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+}
+
+.professional-stat i {
+  color: var(--color-primary);
+  font-size: 22px;
+}
+
+.professional-stat strong {
+  color: #0a112f;
+  font-size: 28px;
+}
+
+.professional-stat span {
+  color: #70707a;
+  font-size: 14px;
+}
+
+.professional-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+.schedule-row {
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+}
+
+.schedule-content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-request-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: #7a5511;
+  font-size: 13px;
+}
+
+.schedule-request-summary p {
+  width: 100%;
+  margin: 0;
+  color: #7a5511;
+}
+
+.schedule-change-toggle:disabled {
+  background: #cbd5e1;
+  cursor: default;
+}
+
+.schedule-change-form {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+}
+
+.schedule-change-form[hidden] {
+  display: none;
+}
+
+.change-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.schedule-change-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #555555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.schedule-change-form input,
+.schedule-change-form textarea {
+  width: 100%;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  padding: 10px;
+  color: #333333;
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.schedule-change-form textarea {
+  min-height: 82px;
+  resize: vertical;
+}
+
+.change-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.change-form-actions button[type="button"] {
+  padding: 0 12px;
+}
+
+.change-form-actions button[type="submit"] {
+  background: #2d8c57;
+  padding: 0 14px;
+}
+
+.schedule-change-message {
+  min-height: 18px;
+  margin: 0;
+  color: #2d8c57;
+  font-size: 13px;
+}
+
+.schedule-change-message.is-error {
+  color: #c94f4f;
+}
+
+.vacation-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 22px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+}
+
+.vacation-panel h2 {
+  margin: 0 0 4px;
+  color: #0a112f;
+  font-size: 20px;
+}
+
+.vacation-panel p {
+  margin: 0;
+  color: #70707a;
+  font-size: 14px;
+}
+
+.vacation-form {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.7fr) minmax(130px, 0.7fr) minmax(220px, 1.4fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.vacation-form label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  color: #555555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.vacation-form input,
+.vacation-form textarea {
+  width: 100%;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  padding: 10px;
+  color: #333333;
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.vacation-form textarea {
+  min-height: 42px;
+  resize: vertical;
+}
+
+.vacation-message {
+  min-height: 18px;
+  color: #2d8c57;
+  font-size: 13px;
+}
+
+.vacation-message.is-error {
+  color: #c94f4f;
+}
+
+.vacation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
