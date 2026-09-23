@@ -1,0 +1,106 @@
+@media screen and (max-width: 700px) {
+  .dashboard-medicines-header,
+  .section-heading-split,
+  .stats-summary-top,
+  .inventory-item-heading {
+    align-items: flex-start;
+  }
+
+  .medicines-section-card,
+  .stats-summary-card,
+  .ranking-panel,
+  .usage-chart-card,
+  .inventory-modal-box {
+    padding: 18px 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 20px;
+  }
+
+  .stats-filter-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stats-filter-button {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .summary-title {
+    font-size: 24px;
+  }
+
+  .stats-cards-grid,
+  .usage-chart,
+  .inventory-item-metrics,
+  .inventory-item-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-bar-card {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) 56px;
+    align-items: end;
+    gap: 10px;
+  }
+
+  .chart-bar-track {
+    height: 120px;
+  }
+
+  .chart-bar-label,
+  .chart-bar-value {
+    text-align: left;
+  }
+
+  .inventory-form-actions {
+    justify-content: stretch;
+  }
+
+  .inventory-heading-actions,
+  .inventory-filter-label,
+  .inventory-filter-label select {
+    width: 100%;
+  }
+
+  .inventory-primary-button,
+  .inventory-secondary-button {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .dashboard-medicines-page {
+    gap: 18px;
+  }
+
+  .dashboard-medicines-title {
+    font-size: 23px;
+  }
+
+  .dashboard-medicines-subtitle {
+    font-size: 14px;
+  }
+
+  .back-button {
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+  }
+
+  .mini-stat-card,
+  .usage-chart-card,
+  .ranking-item,
+  .inventory-placeholder,
+  .inventory-empty,
+  .inventory-item,
+  .stats-empty-state,
+  .stats-loading-state,
+  .stats-error-state,
+  .inventory-modal-box {
+    border-radius: 16px;
+  }
+}

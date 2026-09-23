@@ -1,0 +1,99 @@
+.incident-form-field input,
+.incident-form-field select,
+.incident-form-field textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #cfd8e6;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #18263b;
+}
+
+.incident-form-field textarea {
+    resize: vertical;
+}
+
+.incident-form-field input:focus,
+.incident-form-field select:focus,
+.incident-form-field textarea:focus {
+    outline: none;
+    border-color: var(--color-primary-strong);
+    box-shadow: 0 0 0 3px rgba(22, 120, 243, 0.15);
+}
+
+.incident-form-message {
+    margin: 0;
+    padding: 11px 13px;
+    border-radius: 8px;
+    background: #ffe8e8;
+    color: #9d2929;
+}
+
+.incident-form-message.is-success {
+    background: #e8f7ee;
+    color: #247447;
+}
+
+.incident-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.incident-cancel-button,
+.incident-submit-button {
+    min-height: 42px;
+    padding: 0 20px;
+    border-radius: 22px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.incident-cancel-button {
+    border: 1px solid #cfd8e6;
+    background: #ffffff;
+    color: #34445b;
+}
+
+.incident-submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    background: var(--color-primary-strong);
+    color: #ffffff;
+}
+
+.incident-submit-button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+body.incident-modal-open {
+    overflow: hidden;
+}
+
+@media screen and (max-width: 700px) {
+    .incidents-counter {
+        width: 100%;
+    }
+
+    .incident-form-dialog {
+        padding: 20px;
+    }
+
+    .incident-form {
+        grid-template-columns: 1fr;
+    }
+
+    .incident-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .incident-cancel-button,
+    .incident-submit-button {
+        width: 100%;
+    }
+}

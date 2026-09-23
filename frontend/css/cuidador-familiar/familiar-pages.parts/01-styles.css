@@ -1,0 +1,277 @@
+:root {
+  --family-blue: #1d7cf2;
+  --family-blue-soft: #5b9aea;
+  --family-cyan: #43b8ea;
+  --family-ink: #111827;
+  --family-muted: #6b7280;
+  --family-panel: #f1f1f1;
+  --family-field: #dfdfdf;
+  --family-white: #ffffff;
+}
+
+.family-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 44px 42px;
+}
+
+.family-shell {
+  width: min(100%, 1360px);
+  margin: 0 auto;
+}
+
+.family-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.family-eyebrow {
+  margin: 0 0 8px;
+  color: var(--family-blue);
+  font-family: "Courier New", monospace;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.family-title {
+  margin: 0;
+  color: #111111;
+  font-size: 36px;
+  font-weight: 500;
+}
+
+.family-subtitle {
+  margin: 8px 0 0;
+  max-width: 660px;
+  color: var(--family-muted);
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.family-date-pill,
+.summary-pill {
+  min-height: 44px;
+  border-radius: 12px;
+  background: var(--family-panel);
+  color: var(--family-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  font-weight: 700;
+}
+
+.prototype-title {
+  margin: 0;
+  color: var(--family-blue);
+  font-family: "Courier New", monospace;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.prototype-heading {
+  margin: 0;
+  color: var(--family-ink);
+  font-size: 42px;
+  font-weight: 500;
+}
+
+.prototype-field {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: var(--family-field);
+  color: #6f6f6f;
+  box-sizing: border-box;
+  padding: 0 18px;
+  font-family: "Outfit", sans-serif;
+  font-size: 16px;
+  outline: none;
+}
+
+.prototype-field[readonly],
+.prototype-textarea[readonly] {
+  cursor: default;
+}
+
+.prototype-textarea {
+  width: 100%;
+  min-height: 100px;
+  border: none;
+  border-radius: 8px;
+  background: var(--family-field);
+  color: #6f6f6f;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  resize: vertical;
+  font-family: "Outfit", sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.prototype-back i {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #5b9aea;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.status-stable,
+.badge-success {
+  background: #e6f7ee;
+  color: #2d8c57;
+}
+
+.status-attention,
+.badge-warning {
+  background: #fff5df;
+  color: #b7791f;
+}
+
+.status-critical,
+.badge-danger {
+  background: #fde7ee;
+  color: #c73a68;
+}
+
+.home-status-list,
+.summary-grid,
+.stats-grid,
+.dashboard-grid,
+.mini-list,
+.incident-preview-list,
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.home-status-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-status-item,
+.stat-card,
+.family-card,
+.mini-row,
+.incident-preview,
+.profile-card {
+  border-radius: 18px;
+  background: var(--family-panel);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.summary-grid,
+.stats-grid {
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+}
+
+.card-header,
+.stat-card-top,
+.adult-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-icon,
+.mini-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--family-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.home-status-number,
+.stat-number {
+  display: block;
+  color: var(--family-blue);
+  font-family: "Courier New", monospace;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.home-status-label,
+.stat-label,
+.card-subtitle,
+.mini-text {
+  color: var(--family-muted);
+}
+
+.card-title,
+.mini-title,
+.routine-title,
+.adult-name {
+  margin: 0;
+  color: var(--family-blue);
+  font-family: "Courier New", monospace;
+}
+
+.filter-button.active {
+  background: var(--family-blue);
+  color: #ffffff;
+}
+
+.search-box {
+  position: relative;
+  width: min(100%, 420px);
+}
+
+.search-box input {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  background: var(--family-field);
+  padding: 0 46px 0 16px;
+  box-sizing: border-box;
+  font-size: 18px;
+  outline: none;
+}
+
+.search-box i {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--family-blue);
+  font-size: 22px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 46px;
+}

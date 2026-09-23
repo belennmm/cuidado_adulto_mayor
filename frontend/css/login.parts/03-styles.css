@@ -1,0 +1,270 @@
+.input-icon {
+  font-size: 22px;
+  color: #9a9a9a;
+}
+
+.small-icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 1100px) {
+  .rectangle-parent {
+    gap: 18px;
+    padding-left: 33px;
+    padding-right: 33px;
+    box-sizing: border-box;
+  }
+  .inicia-sesin {
+    font-size: 32px;
+  }
+  .frame-parent {
+    flex-wrap: wrap;
+  }
+  .canvas-parent {
+    flex: 1;
+  }
+}
+
+@media screen and (max-width: 1050px) {
+  .frame-parent {
+    flex-wrap: wrap;
+  }
+  .canvas-parent {
+    flex: 1;
+  }
+}
+
+@media screen and (max-width: 1025px) {
+  .rectangle-parent {
+    gap: 18px;
+    padding-left: 33px;
+    padding-right: 33px;
+    box-sizing: border-box;
+  }
+  .inicia-sesin {
+    font-size: 32px;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .rectangle-parent {
+    gap: 18px;
+    padding-left: 33px;
+    padding-right: 33px;
+    box-sizing: border-box;
+  }
+  .inicia-sesin {
+    font-size: 32px;
+  }
+  .frame-parent {
+    flex-wrap: wrap;
+  }
+  .canvas-parent {
+    flex: 1;
+  }
+}
+
+@media screen and (max-width: 975px) {
+  .rectangle-parent {
+    gap: 18px;
+    padding-left: 33px;
+    padding-right: 33px;
+    box-sizing: border-box;
+  }
+  .inicia-sesin {
+    font-size: 32px;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .login-form {
+    gap: 21px;
+  }
+  .inicia-sesin {
+    font-size: 24px;
+  }
+  .dont-have-account-parent {
+    gap: var(--gap-16);
+    flex-wrap: wrap;
+  }
+  .dont-have-account {
+    font-size: var(--fs-20);
+  }
+  .login-button-wrapper {
+    padding-left: var(--padding-20);
+    padding-right: var(--padding-20);
+    box-sizing: border-box;
+  }
+  .canvas-parent {
+    gap: 283px;
+  }
+}
+
+@media screen and (max-width: 725px) {
+  .inicia-sesin {
+    font-size: 24px;
+  }
+  .dont-have-account-parent {
+    gap: var(--gap-16);
+    flex-wrap: wrap;
+  }
+  .dont-have-account {
+    font-size: var(--fs-20);
+  }
+  .login-button-wrapper {
+    padding-left: var(--padding-20);
+    padding-right: var(--padding-20);
+  }
+  .canvas-parent {
+    gap: 283px;
+  }
+  .login-form {
+    gap: 43px;
+  }
+  .frame-parent {
+    gap: 21px;
+  }
+  .rectangle-parent {
+    padding-top: 125px;
+    padding-bottom: 125px;
+    box-sizing: border-box;
+    min-width: 100%;
+  }
+  .login-button-wrapper {
+    padding-left: 95px;
+    padding-right: 93px;
+    box-sizing: border-box;
+  }
+  .canvas-parent {
+    padding-top: var(--padding-20);
+    padding-bottom: 70px;
+    box-sizing: border-box;
+    min-width: 100%;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .frame-parent {
+    gap: 21px;
+  }
+  .rectangle-parent {
+    padding-top: 125px;
+    padding-bottom: 125px;
+    box-sizing: border-box;
+    min-width: 100%;
+  }
+  .login-button-wrapper {
+    padding-left: 95px;
+    padding-right: 93px;
+  }
+  .canvas-parent {
+    padding-top: var(--padding-20);
+    padding-bottom: 70px;
+    box-sizing: border-box;
+    min-width: 100%;
+  }
+  .login-form {
+    gap: 21px;
+  }
+  .inicia-sesin {
+    font-size: 24px;
+  }
+  .dont-have-account-parent {
+    gap: var(--gap-16);
+    flex-wrap: wrap;
+  }
+  .dont-have-account {
+    font-size: var(--fs-20);
+  }
+  .login-button-wrapper {
+    padding-left: var(--padding-20);
+    padding-right: var(--padding-20);
+    box-sizing: border-box;
+  }
+  .canvas-parent {
+    gap: 283px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .login-form {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .login-form-child {
+    display: none;
+  }
+
+  .frame-parent {
+    max-width: 100%;
+    gap: 0;
+  }
+
+  .rectangle-parent {
+    width: 100%;
+    min-width: 0;
+    padding: 56px 24px 40px;
+    order: 1;
+  }
+
+  .canvas-parent {
+    width: 100%;
+    min-width: 0;
+    min-height: 220px;
+    border-radius: 36px 36px 0 0;
+    order: 2;
+    padding: 18px 18px 32px;
+    gap: 80px;
+  }
+}
+
+@media screen and (max-width: 920px) {
+  .frame-parent {
+    align-items: stretch;
+    max-width: 100%;
+  }
+
+  .rectangle-parent {
+    gap: 22px;
+  }
+
+  .inicia-sesin-parent,
+  .frame-group,
+  .frame-container {
+    width: 100%;
+    height: auto;
+  }
+
+  .rectangle-group,
+  .rectangle-container {
+    min-height: 52px;
+    width: 100%;
+  }
+
+  .login-button-wrapper {
+    width: 100%;
+    height: auto;
+    padding: 0 24px;
+  }
+}
+
+@media screen and (max-width: 885px) {
+  .rectangle-parent {
+    padding: 42px 18px 28px;
+  }
+
+  .login-button-wrapper {
+    padding: 0;
+  }
+
+  .login-button {
+    width: 100%;
+  }
+
+  .canvas-parent {
+    min-height: 160px;
+    gap: 24px;
+  }
+}
