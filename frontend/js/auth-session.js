@@ -58,7 +58,10 @@
     const user = safeJsonParse(localStorage.getItem(legacyUserKey))
     const roleBucket = getRoleBucket(user?.role)
 
-    if (!token || !user || !roleBucket) return null
+    if (!token || !user || !roleBucket) {
+      removeLegacySession()
+      return null
+    }
 
     return { token, user, roleBucket }
   }
@@ -68,7 +71,10 @@
     const user = safeJsonParse(sessionStorage.getItem(tabUserKey))
     const roleBucket = sessionStorage.getItem(tabRoleKey) || getRoleBucket(user?.role)
 
-    if (!token || !user || !roleBucket) return null
+    if (!token || !user || !roleBucket) {
+      clearTabSession()
+      return null
+    }
 
     return { token, user, roleBucket }
   }
@@ -123,7 +129,16 @@
     const token = localStorage.getItem(sessionKey(roleBucket, "token"))
     const user = safeJsonParse(localStorage.getItem(sessionKey(roleBucket, "user")))
 
-    if (!token || !user) return null
+    if (!token || !user) {
+      localStorage.removeItem(sessionKey(roleBucket, "token"))
+      localStorage.removeItem(sessionKey(roleBucket, "user"))
+
+      if (localStorage.getItem(activeRoleKey) === roleBucket) {
+        localStorage.removeItem(activeRoleKey)
+      }
+
+      return null
+    }
 
     return { token, user, roleBucket }
   }

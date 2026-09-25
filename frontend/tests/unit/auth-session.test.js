@@ -29,4 +29,24 @@ describe("AuthSession", () => {
     expect(localStorage.getItem("cuidado.auth.cuidador_familiar.user")).toBeNull()
     expect(sessionStorage.length).toBe(0)
   })
+
+  it("elimina datos incompletos o corruptos al validar la sesión", () => {
+    localStorage.setItem("cuidado.auth.admin.token", "admin-token")
+    localStorage.setItem("cuidado.auth.admin.user", "{bad-json")
+    localStorage.setItem("cuidado.auth.activeRole", "admin")
+    sessionStorage.setItem("cuidado.auth.tab.token", "tab-token")
+    sessionStorage.setItem("cuidado.auth.tab.user", "{bad-json")
+    sessionStorage.setItem("cuidado.auth.tab.role", "admin")
+    localStorage.setItem("token", "legacy-token")
+    localStorage.setItem("user", "{bad-json")
+
+    expect(window.AuthSession.getSession(["admin"])).toBeNull()
+
+    expect(localStorage.getItem("cuidado.auth.admin.token")).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.admin.user")).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.activeRole")).toBeNull()
+    expect(localStorage.getItem("token")).toBeNull()
+    expect(localStorage.getItem("user")).toBeNull()
+    expect(sessionStorage.length).toBe(0)
+  })
 })
