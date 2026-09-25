@@ -30,6 +30,19 @@ describe("acceso a página protegida sin sesión", () => {
     expect(document.documentElement.style.visibility).toBe("")
   })
 
+  it("redirige al usuario con rol incorrecto hacia su área permitida", async () => {
+    window.AuthSession = {
+      getToken: vi.fn(() => "professional-token"),
+      getUser: vi.fn(() => ({ id: 2, role: "profesional" })),
+    }
+
+    await import("../../js/auth-guard-admin.js")
+
+    expect(window.AuthSession.getToken).toHaveBeenCalledWith(["admin", "administrador"])
+    expect(window.AuthSession.getUser).toHaveBeenCalledWith(["admin", "administrador"])
+    expect(window.navigateWithLoading).toHaveBeenCalledWith("../cuidador-profesional/home-page.html")
+  })
+
   it("mantiene la página administrativa oculta hasta redirigir cuando falta el token", async () => {
     await import("../../js/auth-session.js")
     await import("../../js/auth-guard-admin.js")
