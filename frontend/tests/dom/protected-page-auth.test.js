@@ -43,6 +43,20 @@ describe("acceso a página protegida sin sesión", () => {
     expect(window.navigateWithLoading).toHaveBeenCalledWith("../cuidador-profesional/home-page.html")
   })
 
+  it("mantiene oculto el contenido administrativo cuando el rol no está permitido", async () => {
+    document.documentElement.style.visibility = ""
+    document.body.innerHTML = '<main id="adminContent">Panel administrativo</main>'
+    window.AuthSession = {
+      getToken: vi.fn(() => "family-token"),
+      getUser: vi.fn(() => ({ id: 3, role: "familiar" })),
+    }
+
+    await import("../../js/auth-guard-admin.js")
+
+    expect(window.navigateWithLoading).toHaveBeenCalledWith("../cuidador-familiar/home-page.html")
+    expect(document.documentElement.style.visibility).toBe("hidden")
+  })
+
   it("mantiene la página administrativa oculta hasta redirigir cuando falta el token", async () => {
     await import("../../js/auth-session.js")
     await import("../../js/auth-guard-admin.js")
