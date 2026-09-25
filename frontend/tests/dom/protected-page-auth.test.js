@@ -63,4 +63,22 @@ describe("acceso a página protegida sin sesión", () => {
 
     expect(document.documentElement.style.visibility).toBe("hidden")
   })
+
+  it("limpia una sesión corrupta y redirige al login", async () => {
+    localStorage.setItem("cuidado.auth.admin.token", "admin-token")
+    localStorage.setItem("cuidado.auth.admin.user", "{bad-json")
+    localStorage.setItem("cuidado.auth.activeRole", "admin")
+    sessionStorage.setItem("cuidado.auth.tab.token", "tab-token")
+    sessionStorage.setItem("cuidado.auth.tab.user", "{bad-json")
+    sessionStorage.setItem("cuidado.auth.tab.role", "admin")
+
+    await import("../../js/auth-session.js")
+    await import("../../js/auth-guard-admin.js")
+
+    expect(window.navigateWithLoading).toHaveBeenCalledWith("../../index.html")
+    expect(localStorage.getItem("cuidado.auth.admin.token")).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.admin.user")).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.activeRole")).toBeNull()
+    expect(sessionStorage.length).toBe(0)
+  })
 })
