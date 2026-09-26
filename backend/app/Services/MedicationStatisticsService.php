@@ -58,7 +58,7 @@ class MedicationStatisticsService
             'totalUses' => $records->count(),
             'patients' => $patients,
             'streak' => $activeDays,
-            'streakLabel' => $activeDays === 1 ? '1 dia con registro' : "{$activeDays} dias con registro",
+            'streakLabel' => $activeDays === 1 ? '1 día con registro' : "{$activeDays} días con registro",
             'usageLabel' => $this->usageLabel($records->count(), $filter),
             'chartTitle' => $this->chartTitle($filter),
             'rankingNote' => $patients === 1 ? '1 paciente registrado' : "{$patients} pacientes registrados",
@@ -79,19 +79,19 @@ class MedicationStatisticsService
     {
         $period = match ($filter) {
             'month' => 'este mes',
-            'year' => 'este ano',
+            'year' => 'este año',
             default => 'hoy',
         };
 
-        return $total === 1 ? "1 administracion {$period}" : "{$total} administraciones {$period}";
+        return $total === 1 ? "1 administración {$period}" : "{$total} administraciones {$period}";
     }
 
     private function chartTitle(string $filter): string
     {
         return match ($filter) {
             'month' => 'Uso semanal del mes',
-            'year' => 'Uso mensual del ano',
-            default => 'Uso por hora del dia',
+            'year' => 'Uso mensual del año',
+            default => 'Uso por hora del día',
         };
     }
 

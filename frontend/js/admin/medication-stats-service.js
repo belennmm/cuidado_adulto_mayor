@@ -2,11 +2,16 @@
   const OPTIONS = Object.freeze({ expectedRoles: ["admin"], fallbackError: "No se pudo completar la solicitud." })
   const api = () => window.CuidadoApi
 
-  function load(filter) {
-    return Promise.all([
-      api().fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(filter)}`, OPTIONS),
-      api().fetchJson("/admin/older-adults", OPTIONS),
-    ])
+  function loadStatistics(filter) {
+    return api().fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(filter)}`, OPTIONS)
+  }
+
+  function loadInventory() {
+    return api().fetchJson("/admin/medications/inventory", OPTIONS)
+  }
+
+  function loadOlderAdults() {
+    return api().fetchJson("/admin/older-adults", OPTIONS)
   }
 
   function saveInventory(id, payload) {
@@ -25,5 +30,5 @@
     return api().fetchJson(`/admin/medications/inventory/${encodeURIComponent(id)}`, { ...OPTIONS, method: "DELETE" })
   }
 
-  window.MedicationStatsService = Object.freeze({ adjustStock, load, removeInventory, saveInventory })
+  window.MedicationStatsService = Object.freeze({ adjustStock, loadInventory, loadOlderAdults, loadStatistics, removeInventory, saveInventory })
 })()

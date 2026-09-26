@@ -2,7 +2,7 @@
   const FILTER_LABELS = {
     day: "Día",
     month: "Mes",
-    year: "Ano",
+    year: "Año",
   }
 
   const INVENTORY_STATUS_CLASSES = {
@@ -68,11 +68,22 @@
   } = window.MedicationStatsDialogs.create({ state })
 
   async function loadFilterItems() {
-    const [data, adultsData] = await service.load(state.activeFilter)
-    state.items = data.items || []
-    state.inventory = data.inventory || []
-    state.olderAdults = adultsData.older_adults || []
-    renderOlderAdultOptions()
+    const [statisticsResult, inventoryResult, adultsResult] = await Promise.allSettled([
+      service.loadStatistics(state.activeFilter),
+      service.loadInventory(),
+      service.loadOlderAdults(),
+    ])
+
+    if (inventoryResult.status === "fulfilled") {
+      state.inventory = inventoryResult.value.inventory || []
+      renderInventory()
+    }
+    if (adultsResult.status === "fulfilled") {
+      state.olderAdults = adultsResult.value.older_adults || []
+      renderOlderAdultOptions()
+    }
+    if (statisticsResult.status === "rejected") throw statisticsResult.reason
+    state.items = Array.isArray(statisticsResult.value.items) ? statisticsResult.value.items : []
   }
 
   function renderOlderAdultOptions() {
@@ -96,19 +107,28 @@
 
   async function renderStats() {
     updateFilterButtons()
+    const statsLayout = document.getElementById("medicinesStatsLayout")
+    const statsMessage = document.getElementById("medicinesStatsMessage")
+    if (statsMessage) {
+      statsMessage.hidden = true
+      statsMessage.textContent = ""
+      statsMessage.classList.remove("stats-error-state")
+      statsMessage.classList.add("stats-empty-state")
+    }
 
     try {
       await loadFilterItems()
-      renderInventory()
 
       if (!state.items.length) {
         state.selectedMedicineId = null
-        const statsLayout = document.getElementById("medicinesStatsLayout")
         if (statsLayout) statsLayout.hidden = true
+        if (statsMessage) {
+          statsMessage.textContent = "No hay registros de administración de medicamentos para este periodo."
+          statsMessage.hidden = false
+        }
         return
       }
 
-      const statsLayout = document.getElementById("medicinesStatsLayout")
       if (statsLayout) statsLayout.hidden = false
 
       const selectedMedicine = getSelectedMedicine()
@@ -119,7 +139,15 @@
       renderRanking(selectedMedicine.id)
     } catch (error) {
       console.error(error)
-      renderInventory()
+      state.items = []
+      state.selectedMedicineId = null
+      if (statsLayout) statsLayout.hidden = true
+      if (statsMessage) {
+        statsMessage.textContent = error.message || "No se pudieron cargar las estadísticas de medicamentos. Intenta nuevamente."
+        statsMessage.classList.remove("stats-empty-state")
+        statsMessage.classList.add("stats-error-state")
+        statsMessage.hidden = false
+      }
     }
   }
 

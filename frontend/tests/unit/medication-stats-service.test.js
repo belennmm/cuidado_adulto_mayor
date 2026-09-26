@@ -8,10 +8,14 @@ describe("MedicationStatsService", () => {
     await import("../../js/admin/medication-stats-service.js")
   })
 
-  it("carga estadísticas y adultos", async () => {
-    await window.MedicationStatsService.load("month")
+  it("carga estadísticas, inventario y adultos desde sus endpoints", async () => {
+    await window.MedicationStatsService.loadStatistics("month")
+    await window.MedicationStatsService.loadInventory()
+    await window.MedicationStatsService.loadOlderAdults()
     expect(fetchJson.mock.calls.map(([path]) => path)).toEqual([
-      "/admin/medication-statistics?filter=month", "/admin/older-adults",
+      "/admin/medication-statistics?filter=month",
+      "/admin/medications/inventory",
+      "/admin/older-adults",
     ])
   })
 
