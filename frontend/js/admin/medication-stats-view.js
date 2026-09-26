@@ -1,9 +1,24 @@
 (() => {
   function create({ state, FILTER_LABELS, INVENTORY_STATUS_CLASSES, escapeHtml }) {
   function updateFilterButtons() {
-    document.querySelectorAll(".stats-filter-button").forEach((button) => {
+    document.querySelectorAll(".stats-filter-button[data-filter]").forEach((button) => {
       button.classList.toggle("active", button.dataset.filter === state.activeFilter)
     })
+  }
+
+  function updateRankingModeButtons() {
+    document.querySelectorAll(".stats-filter-button[data-ranking-mode]").forEach((button) => {
+      const active = button.dataset.rankingMode === state.rankingMode
+      button.classList.toggle("active", active)
+      button.setAttribute("aria-pressed", String(active))
+    })
+
+    const title = document.querySelector(".ranking-title")
+    if (title) {
+      title.textContent = state.rankingMode === "all"
+        ? "Todos los medicamentos adquiridos"
+        : "Top 3 medicamentos adquiridos"
+    }
   }
 
   function getSelectedMedicine() {
@@ -18,8 +33,10 @@
     const rankingList = document.getElementById("medicinesRankingList")
     if (!rankingList) return
 
-    rankingList.innerHTML = state.items
-      .slice(0, 3)
+    updateRankingModeButtons()
+    const rankedItems = state.rankingMode === "all" ? state.items : state.items.slice(0, 3)
+
+    rankingList.innerHTML = rankedItems
       .map((item, index) => {
         const selectedClass = String(item.id) === String(selectedId) ? " selected" : ""
 
@@ -200,7 +217,7 @@
               <div>
                 <strong>${escapeHtml(item.name)}</strong>
                 <div class="inventory-item-subtitle">
-                  ${escapeHtml(item.is_consolidated ? "Inventario general consolidado" : (item.older_adult_name || "Stock sin asignar"))}${item.is_consolidated ? "" : ` &middot; ${escapeHtml(item.presentation || "Sin presentación")}`}
+                  ${escapeHtml(item.is_consolidated ? "Inventario general" : (item.older_adult_name || "Stock sin asignar"))}${item.is_consolidated ? "" : ` &middot; ${escapeHtml(item.presentation || "Sin presentación")}`}
                 </div>
               </div>
               <span class="inventory-status-badge ${item.is_consolidated && item.status === "mixed" ? "inventory-status-mixed" : statusClass(item.status)}">${escapeHtml(item.status_label)}</span>
@@ -253,7 +270,7 @@
         ? "Mostrando únicamente el stock sin asignar."
         : selectedAdult
           ? `Mostrando medicamentos de ${selectedAdult.full_name}.`
-          : "Mostrando el inventario general consolidado."
+          : "Mostrando el inventario general."
     }
 
     const url = new URL(window.location.href)

@@ -152,6 +152,10 @@
                     <span class="ranking-overline">Ranking</span>
                     <h3 class="ranking-title">Top 3 medicamentos adquiridos</h3>
                   </div>
+                  <div class="stats-filter-group ranking-filter-group" id="rankingModeGroup" aria-label="Cantidad de medicamentos del ranking">
+                    <button type="button" class="stats-filter-button active" data-ranking-mode="top3" aria-pressed="true">Top 3</button>
+                    <button type="button" class="stats-filter-button" data-ranking-mode="all" aria-pressed="false">Todos</button>
+                  </div>
                 </div>
 
                 <div class="ranking-list" id="medicinesRankingList"></div>
@@ -183,7 +187,7 @@
             </div>
 
             <p class="inventory-selection-status" id="inventoryAdultSelectionStatus" aria-live="polite">
-              Mostrando el inventario general consolidado.
+              Mostrando el inventario general.
             </p>
             <p class="sr-only" id="inventoryAdultSelectionHelp">
               Selecciona un adulto mayor para consultar únicamente sus medicamentos registrados.

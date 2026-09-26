@@ -14,6 +14,7 @@
 
   const state = {
     activeFilter: "day",
+    rankingMode: "top3",
     selectedMedicineId: null,
     items: [],
     inventory: [],
@@ -97,7 +98,7 @@
       .join("")
 
     if (filter) {
-      filter.innerHTML = `<option value="">Inventario general consolidado</option><option value="unassigned">Stock sin asignar</option>${options}`
+      filter.innerHTML = `<option value="">Inventario general</option><option value="unassigned">Stock sin asignar</option>${options}`
       filter.value = currentFilter === "unassigned" || state.olderAdults.some((adult) => String(adult.id) === String(currentFilter))
         ? currentFilter
         : ""
@@ -117,7 +118,7 @@
       statsMessage.hidden = true
       statsMessage.textContent = ""
       statsMessage.classList.remove("stats-error-state")
-      statsMessage.classList.add("stats-empty-state")
+      statsMessage.classList.remove("stats-empty-state")
     }
 
     try {
@@ -260,6 +261,15 @@
       state.activeFilter = button.dataset.filter
       state.selectedMedicineId = null
       await renderStats()
+    })
+
+    document.getElementById("rankingModeGroup")?.addEventListener("click", (event) => {
+      const button = event.target.closest(".stats-filter-button[data-ranking-mode]")
+      if (!button || button.dataset.rankingMode === state.rankingMode) return
+
+      state.rankingMode = button.dataset.rankingMode
+      const selectedMedicine = getSelectedMedicine()
+      if (selectedMedicine) renderRanking(selectedMedicine.id)
     })
 
     document.getElementById("medicinesRankingList")?.addEventListener("click", (event) => {
