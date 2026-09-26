@@ -41,6 +41,11 @@ class Medication extends Model
         return $this->hasMany(MedicationAdministration::class);
     }
 
+    public function acquisitions(): HasMany
+    {
+        return $this->hasMany(MedicationAcquisition::class);
+    }
+
     public function inventoryStatus(?Carbon $today = null): array
     {
         $referenceDate = ($today ?: Carbon::now(config('app.timezone')))->copy()->startOfDay();

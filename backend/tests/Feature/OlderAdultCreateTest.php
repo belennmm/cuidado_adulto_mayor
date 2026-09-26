@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Medication;
+use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -53,6 +55,9 @@ class OlderAdultCreateTest extends TestCase
                     'schedule' => '08:00',
                     'days' => ['lunes', 'miercoles'],
                     'notes' => 'Despues del desayuno',
+                    'quantity' => 7,
+                    'unit' => 'tabletas',
+                    'minimum_stock' => 2,
                 ],
             ],
         ];
@@ -118,7 +123,15 @@ class OlderAdultCreateTest extends TestCase
             'dosage' => '1 tableta',
             'schedule' => '08:00',
             'notes' => 'Despues del desayuno',
+            'quantity' => 7,
+            'unit' => 'tabletas',
             'is_active' => true,
+        ]);
+
+        $this->assertDatabaseHas('medication_acquisitions', [
+            'medication_id' => Medication::where('name', 'Losartan')->value('id'),
+            'older_adult_id' => OlderAdult::where('full_name', 'Rosa Martinez')->value('id'),
+            'quantity' => 7,
         ]);
     }
 }

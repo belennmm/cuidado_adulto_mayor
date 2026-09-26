@@ -32,7 +32,7 @@
                 <span class="ranking-meta">${escapeHtml(item.rankingNote)}</span>
               </div>
             </div>
-            <span class="ranking-total">${escapeHtml(item.totalUses)}</span>
+            <span class="ranking-total" title="${escapeHtml(item.unitsAcquired)} unidades adquiridas" aria-label="${escapeHtml(item.unitsAcquired)} unidades adquiridas">${escapeHtml(item.unitsAcquired)} u.</span>
           </button>
         `
       })
@@ -44,7 +44,7 @@
     const chartTitle = document.getElementById("usageChartTitle")
     if (!chart || !chartTitle || !medicine) return
 
-    chartTitle.textContent = `${medicine.chartTitle} de ${medicine.name}`
+    chartTitle.textContent = `${medicine.name}: ${medicine.chartTitle.toLowerCase()}`
 
     const points = Array.isArray(medicine.chart) ? medicine.chart : []
     const values = points.map((point) => Number(point.value) || 0)
@@ -84,13 +84,15 @@
     if (selectedMedicineName) selectedMedicineName.textContent = selectedMedicine.name
     if (selectedFilterLabel) selectedFilterLabel.textContent = FILTER_LABELS[state.activeFilter]
     if (topMedicineUsage) topMedicineUsage.textContent = leader.name
-    if (topMedicineUsageCaption) topMedicineUsageCaption.textContent = leader.usageLabel
-    if (selectedMedicinePatients) selectedMedicinePatients.textContent = String(selectedMedicine.patients)
+    if (topMedicineUsageCaption) topMedicineUsageCaption.textContent = leader.acquisitionLabel
+    if (selectedMedicinePatients) selectedMedicinePatients.textContent = String(selectedMedicine.unitsAcquired)
     if (selectedMedicinePatientsCaption) {
-      selectedMedicinePatientsCaption.textContent = `${selectedMedicine.patients} pacientes en ${FILTER_LABELS[state.activeFilter].toLowerCase()}`
+      selectedMedicinePatientsCaption.textContent = `unidades adquiridas en ${FILTER_LABELS[state.activeFilter].toLowerCase()}`
     }
-    if (selectedMedicineStreak) selectedMedicineStreak.textContent = String(selectedMedicine.streak)
-    if (selectedMedicineStreakCaption) selectedMedicineStreakCaption.textContent = selectedMedicine.streakLabel
+    if (selectedMedicineStreak) selectedMedicineStreak.textContent = String(selectedMedicine.acquisitionsCount)
+    if (selectedMedicineStreakCaption) {
+      selectedMedicineStreakCaption.textContent = `${selectedMedicine.acquisitionsCount} adquisiciones en ${FILTER_LABELS[state.activeFilter].toLowerCase()}`
+    }
   }
 
   function formatDate(value) {

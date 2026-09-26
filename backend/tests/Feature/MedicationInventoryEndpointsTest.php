@@ -44,6 +44,17 @@ class MedicationInventoryEndpointsTest extends TestCase
         $this->assertSame($firstItem['medication_id'], $secondItem['medication_id']);
         $this->assertDatabaseCount('medications', 1);
         $this->assertDatabaseCount('older_adult_medications', 2);
+        $this->assertDatabaseCount('medication_acquisitions', 2);
+        $this->assertDatabaseHas('medication_acquisitions', [
+            'medication_id' => $firstItem['medication_id'],
+            'older_adult_id' => $firstAdult->id,
+            'quantity' => 12,
+        ]);
+        $this->assertDatabaseHas('medication_acquisitions', [
+            'medication_id' => $secondItem['medication_id'],
+            'older_adult_id' => $secondAdult->id,
+            'quantity' => 35,
+        ]);
 
         $this->getJson('/api/admin/medications/inventory')
             ->assertOk()
@@ -81,6 +92,24 @@ class MedicationInventoryEndpointsTest extends TestCase
             'medication_id' => $item['medication_id'],
             'quantity' => 15,
         ]);
+        $this->assertDatabaseCount('medication_acquisitions', 1);
+        $this->assertDatabaseHas('medication_acquisitions', [
+            'medication_id' => $item['medication_id'],
+            'older_adult_id' => null,
+            'quantity' => 15,
+        ]);
+
+        $this->patchJson("/api/admin/medications/inventory/{$item['id']}/stock", [
+            'action' => 'increase',
+            'amount' => 5,
+        ])->assertOk()->assertJsonPath('medication.quantity', 20);
+
+        $this->assertDatabaseCount('medication_acquisitions', 2);
+        $this->assertDatabaseHas('medication_acquisitions', [
+            'medication_id' => $item['medication_id'],
+            'older_adult_id' => null,
+            'quantity' => 5,
+        ]);
 
         $this->getJson('/api/admin/medications/inventory')
             ->assertOk()
@@ -88,8 +117,50 @@ class MedicationInventoryEndpointsTest extends TestCase
                 'id' => $item['id'],
                 'older_adult_id' => null,
                 'name' => 'Rivotril',
-                'quantity' => 15,
+                'quantity' => 20,
             ]);
+    }
+
+    public function test_initial_zero_stock_does_not_create_an_acquisition(): void
+    {
+        $admin = $this->actingAsAdmin();
+        $olderAdult = $this->createOlderAdult($admin, 'Rosa Martinez');
+
+        $this->postJson('/api/admin/medications/inventory', [
+            ...$this->validInventoryPayload($olderAdult),
+            'quantity' => 0,
+        ])->assertCreated();
+
+        $this->assertDatabaseCount('medication_acquisitions', 0);
+    }
+
+    public function test_increasing_stock_records_one_acquisition_and_reducing_stock_records_none(): void
+    {
+        $admin = $this->actingAsAdmin();
+        $olderAdult = $this->createOlderAdult($admin, 'Rosa Martinez');
+        $inventoryItem = $this->postJson('/api/admin/medications/inventory', [
+            ...$this->validInventoryPayload($olderAdult),
+            'quantity' => 5,
+        ])->assertCreated()->json('medication');
+
+        $this->patchJson("/api/admin/medications/inventory/{$inventoryItem['id']}/stock", [
+            'action' => 'increase',
+            'amount' => 7,
+        ])->assertOk()->assertJsonPath('medication.quantity', 12);
+
+        $this->assertDatabaseCount('medication_acquisitions', 2);
+        $this->assertDatabaseHas('medication_acquisitions', [
+            'medication_id' => $inventoryItem['medication_id'],
+            'older_adult_id' => $olderAdult->id,
+            'quantity' => 7,
+        ]);
+
+        $this->patchJson("/api/admin/medications/inventory/{$inventoryItem['id']}/stock", [
+            'action' => 'decrease',
+            'amount' => 3,
+        ])->assertOk()->assertJsonPath('medication.quantity', 9);
+
+        $this->assertDatabaseCount('medication_acquisitions', 2);
     }
 
     public function test_updating_one_adults_inventory_does_not_change_another_adults_stock(): void
@@ -192,7 +263,7 @@ class MedicationInventoryEndpointsTest extends TestCase
 
         $this->deleteJson("/api/admin/medications/inventory/{$firstItem->id}")
             ->assertOk()
-            ->assertJsonPath('message', 'Medicamento eliminado del inventario del adulto mayor.');
+            ->assertJsonPath('message', 'Registro de inventario eliminado correctamente.');
 
         $this->assertDatabaseMissing('older_adult_medications', ['id' => $firstItem->id]);
         $this->assertDatabaseHas('older_adult_medications', [

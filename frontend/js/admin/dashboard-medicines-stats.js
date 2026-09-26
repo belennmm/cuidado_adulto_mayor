@@ -127,7 +127,7 @@
         state.selectedMedicineId = null
         if (statsLayout) statsLayout.hidden = true
         if (statsMessage) {
-          statsMessage.textContent = "No hay registros de administración de medicamentos para este periodo."
+          statsMessage.textContent = "No hay adquisiciones de medicamentos para este periodo."
           statsMessage.hidden = false
         }
         return

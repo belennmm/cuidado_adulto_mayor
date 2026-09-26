@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\MedicationAdministration;
+use App\Models\MedicationAcquisition;
 use App\Models\OlderAdultMedication;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -14,17 +14,16 @@ class MedicationStatisticsService
         $today = Carbon::now((string) config('app.timezone'))->startOfDay();
         [$startDate, $endDate] = $this->periodRange($filter, $today);
 
-        $administrations = MedicationAdministration::query()
-            ->with(['medication:id,name', 'olderAdult:id,full_name'])
-            ->whereBetween('administration_date', [$startDate->toDateString(), $endDate->toDateString()])
-            ->orderBy('administration_date')
-            ->orderBy('administration_time')
+        $acquisitions = MedicationAcquisition::query()
+            ->with('medication:id,name')
+            ->whereBetween('acquired_at', [$startDate->toDateTimeString(), $endDate->toDateTimeString()])
+            ->orderBy('acquired_at')
             ->get();
 
-        $items = $administrations
+        $items = $acquisitions
             ->groupBy('medication_id')
             ->map(fn (Collection $records) => $this->medicationItem($records, $filter))
-            ->sortByDesc('totalUses')
+            ->sortByDesc('unitsAcquired')
             ->values()
             ->all();
 
@@ -43,25 +42,17 @@ class MedicationStatisticsService
     {
         $first = $records->first();
         $name = $first?->medication?->name ?? 'Medicamento';
-        $patients = $records->pluck('older_adult_id')->filter()->unique()->count();
-        $activeDays = $records
-            ->pluck('administration_date')
-            ->map(fn ($date) => $date instanceof Carbon
-                ? $date->toDateString()
-                : Carbon::parse($date)->toDateString())
-            ->unique()
-            ->count();
+        $unitsAcquired = (int) $records->sum('quantity');
+        $acquisitionsCount = $records->count();
 
         return [
             'id' => (string) ($first?->medication_id ?? $name),
             'name' => $name,
-            'totalUses' => $records->count(),
-            'patients' => $patients,
-            'streak' => $activeDays,
-            'streakLabel' => $activeDays === 1 ? '1 día con registro' : "{$activeDays} días con registro",
-            'usageLabel' => $this->usageLabel($records->count(), $filter),
+            'unitsAcquired' => $unitsAcquired,
+            'acquisitionsCount' => $acquisitionsCount,
+            'acquisitionLabel' => $this->acquisitionLabel($unitsAcquired, $filter),
             'chartTitle' => $this->chartTitle($filter),
-            'rankingNote' => $patients === 1 ? '1 paciente registrado' : "{$patients} pacientes registrados",
+            'rankingNote' => $acquisitionsCount === 1 ? '1 adquisición' : "{$acquisitionsCount} adquisiciones",
             'chart' => $this->buildChart($records, $filter),
         ];
     }
@@ -75,7 +66,7 @@ class MedicationStatisticsService
         };
     }
 
-    private function usageLabel(int $total, string $filter): string
+    private function acquisitionLabel(int $units, string $filter): string
     {
         $period = match ($filter) {
             'month' => 'este mes',
@@ -83,15 +74,17 @@ class MedicationStatisticsService
             default => 'hoy',
         };
 
-        return $total === 1 ? "1 administración {$period}" : "{$total} administraciones {$period}";
+        return $units === 1
+            ? "1 unidad adquirida {$period}"
+            : "{$units} unidades adquiridas {$period}";
     }
 
     private function chartTitle(string $filter): string
     {
         return match ($filter) {
-            'month' => 'Uso semanal del mes',
-            'year' => 'Uso mensual del año',
-            default => 'Uso por hora del día',
+            'month' => 'Unidades adquiridas por semana',
+            'year' => 'Unidades adquiridas por mes',
+            default => 'Unidades adquiridas por hora',
         };
     }
 
@@ -102,7 +95,7 @@ class MedicationStatisticsService
             $buckets = array_fill(1, 12, 0);
 
             foreach ($records as $record) {
-                $buckets[Carbon::parse($record->administration_date)->month] += 1;
+                $buckets[Carbon::parse($record->acquired_at)->month] += (int) $record->quantity;
             }
 
             return collect($labels)
@@ -114,8 +107,8 @@ class MedicationStatisticsService
             $buckets = array_fill(1, 5, 0);
 
             foreach ($records as $record) {
-                $week = min(5, (int) ceil(Carbon::parse($record->administration_date)->day / 7));
-                $buckets[$week] += 1;
+                $week = min(5, (int) ceil(Carbon::parse($record->acquired_at)->day / 7));
+                $buckets[$week] += (int) $record->quantity;
             }
 
             return collect($buckets)
@@ -127,8 +120,8 @@ class MedicationStatisticsService
         $buckets = array_fill(0, 8, 0);
 
         foreach ($records as $record) {
-            $bucket = min(7, intdiv(Carbon::parse((string) $record->administration_time)->hour, 3));
-            $buckets[$bucket] += 1;
+            $bucket = min(7, intdiv(Carbon::parse($record->acquired_at)->hour, 3));
+            $buckets[$bucket] += (int) $record->quantity;
         }
 
         return collect($buckets)
