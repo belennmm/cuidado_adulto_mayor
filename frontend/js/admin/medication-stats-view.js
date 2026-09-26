@@ -126,14 +126,65 @@
     if (!inventoryList) return
 
     const selectedOlderAdultId = document.getElementById("inventoryOlderAdultFilter")?.value || ""
-    const visibleInventory = selectedOlderAdultId
-      ? state.inventory.filter((item) => String(item.older_adult_id) === selectedOlderAdultId)
-      : state.inventory
+    let visibleInventory
+    if (!selectedOlderAdultId) {
+      const groups = new Map()
+      state.inventory.forEach((item) => {
+        const key = `${item.medication_id}:${item.unit || "unidades"}`
+        const group = groups.get(key) || {
+          ...item,
+          id: `aggregate-${key}`,
+          is_consolidated: true,
+          quantity: 0,
+          minimum_stock: 0,
+          assigned_quantity: 0,
+          unassigned_quantity: 0,
+          unassigned_inventory_id: null,
+          expiration_dates: new Set(),
+          has_undated_stock: false,
+          statuses: new Set(),
+        }
+        const quantity = Number(item.quantity) || 0
+        group.quantity += quantity
+        group.minimum_stock += Number(item.minimum_stock) || 0
+        group.statuses.add(item.status)
+        if (item.expiration_date) group.expiration_dates.add(item.expiration_date)
+        else group.has_undated_stock = true
+        if (item.older_adult_id == null) {
+          group.unassigned_quantity += quantity
+          group.unassigned_inventory_id ||= item.id
+        } else {
+          group.assigned_quantity += quantity
+        }
+        groups.set(key, group)
+      })
+      visibleInventory = [...groups.values()].map((group) => {
+        const expirationDates = [...group.expiration_dates]
+        const sameStatus = group.statuses.size === 1
+        group.status = sameStatus ? [...group.statuses][0] : "mixed"
+        group.status_label = sameStatus
+          ? state.inventory.find((item) => item.medication_id === group.medication_id && item.unit === group.unit)?.status_label || "Disponible"
+          : "Estados variados"
+        group.expiration_summary = expirationDates.length > 1
+          ? "Vencimientos variados"
+          : expirationDates.length === 1 && group.has_undated_stock
+            ? `Algunos sin fecha · ${formatDate(expirationDates[0])}`
+            : expirationDates.length === 1
+              ? formatDate(expirationDates[0])
+              : "Sin fecha registrada"
+        return group
+      })
+    } else if (selectedOlderAdultId === "unassigned") {
+      visibleInventory = state.inventory.filter((item) => item.older_adult_id == null)
+    } else {
+      visibleInventory = state.inventory.filter((item) => String(item.older_adult_id) === selectedOlderAdultId)
+    }
+    state.displayInventory = visibleInventory
 
     if (!visibleInventory.length) {
       inventoryList.innerHTML = `
         <div class="inventory-empty">
-          No hay medicamentos registrados para el adulto mayor seleccionado.
+          ${selectedOlderAdultId === "unassigned" ? "No hay stock sin asignar." : "No hay medicamentos registrados para esta selección."}
         </div>
       `
       return
@@ -147,11 +198,10 @@
               <div>
                 <strong>${escapeHtml(item.name)}</strong>
                 <div class="inventory-item-subtitle">
-                  ${escapeHtml(item.older_adult_name || "Adulto mayor sin identificar")} &middot;
-                  ${escapeHtml(item.presentation || "Sin presentacion")}
+                  ${escapeHtml(item.is_consolidated ? "Inventario general consolidado" : (item.older_adult_name || "Stock sin asignar"))}${item.is_consolidated ? "" : ` &middot; ${escapeHtml(item.presentation || "Sin presentación")}`}
                 </div>
               </div>
-              <span class="inventory-status-badge ${statusClass(item.status)}">${escapeHtml(item.status_label)}</span>
+              <span class="inventory-status-badge ${item.is_consolidated && item.status === "mixed" ? "inventory-status-mixed" : statusClass(item.status)}">${escapeHtml(item.status_label)}</span>
             </div>
 
             <div class="inventory-item-metrics">
@@ -165,20 +215,26 @@
               </div>
               <div class="inventory-metric">
                 <span class="inventory-metric-label">Vencimiento</span>
-                <span class="inventory-metric-value">${escapeHtml(formatDate(item.expiration_date))}</span>
+                <span class="inventory-metric-value">${escapeHtml(item.is_consolidated ? item.expiration_summary : formatDate(item.expiration_date))}</span>
               </div>
               <div class="inventory-metric">
-                <span class="inventory-metric-label">Inventario de</span>
-                <span class="inventory-metric-value">${escapeHtml(item.older_adult_name || "Sin asignar")}</span>
+                <span class="inventory-metric-label">${item.is_consolidated ? "Distribución" : "Inventario de"}</span>
+                <span class="inventory-metric-value">${item.is_consolidated
+                  ? `${escapeHtml(item.assigned_quantity)} asignadas · ${escapeHtml(item.unassigned_quantity)} sin asignar`
+                  : escapeHtml(item.older_adult_name || "Stock sin asignar")}</span>
               </div>
             </div>
           </div>
 
           <div class="inventory-item-actions">
-            <button type="button" class="inventory-inline-button" data-action="edit" data-id="${escapeHtml(item.id)}">Editar</button>
-            <button type="button" class="inventory-inline-button" data-action="increase" data-id="${escapeHtml(item.id)}">Sumar stock</button>
-            <button type="button" class="inventory-inline-button" data-action="decrease" data-id="${escapeHtml(item.id)}">Reducir stock</button>
-            <button type="button" class="inventory-inline-button danger danger-soft-button" data-action="delete" data-id="${escapeHtml(item.id)}">Eliminar</button>
+            ${item.is_consolidated ? `
+              <button type="button" class="inventory-inline-button" data-action="increase" data-id="${escapeHtml(item.id)}">Sumar stock</button>
+            ` : `
+              <button type="button" class="inventory-inline-button" data-action="edit" data-id="${escapeHtml(item.id)}">Editar</button>
+              <button type="button" class="inventory-inline-button" data-action="increase" data-id="${escapeHtml(item.id)}">Sumar stock</button>
+              <button type="button" class="inventory-inline-button" data-action="decrease" data-id="${escapeHtml(item.id)}">Reducir stock</button>
+              <button type="button" class="inventory-inline-button danger danger-soft-button" data-action="delete" data-id="${escapeHtml(item.id)}">Eliminar</button>
+            `}
           </div>
         </article>
       `)
@@ -191,15 +247,22 @@
     const selectionStatus = document.getElementById("inventoryAdultSelectionStatus")
 
     if (selectionStatus) {
-      selectionStatus.textContent = selectedAdult
-        ? `Mostrando medicamentos de ${selectedAdult.full_name}.`
-        : "Mostrando medicamentos de todos los adultos mayores."
+      selectionStatus.textContent = selectedOlderAdultId === "unassigned"
+        ? "Mostrando únicamente el stock sin asignar."
+        : selectedAdult
+          ? `Mostrando medicamentos de ${selectedAdult.full_name}.`
+          : "Mostrando el inventario general consolidado."
     }
 
     const url = new URL(window.location.href)
-    if (selectedAdult) {
+    if (selectedOlderAdultId === "unassigned") {
+      url.searchParams.set("inventory_scope", "unassigned")
+      url.searchParams.delete("older_adult_id")
+    } else if (selectedAdult) {
+      url.searchParams.delete("inventory_scope")
       url.searchParams.set("older_adult_id", String(selectedAdult.id))
     } else {
+      url.searchParams.delete("inventory_scope")
       url.searchParams.delete("older_adult_id")
     }
     window.history.replaceState(window.history.state, "", url)

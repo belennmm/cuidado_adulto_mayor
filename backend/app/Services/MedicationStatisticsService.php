@@ -165,8 +165,8 @@ class MedicationStatisticsService
                     'is_active' => (bool) $inventoryItem->is_active,
                     'status' => $status['key'],
                     'status_label' => $status['label'],
-                    'assigned_patients' => 1,
-                    'active_assignments' => $inventoryItem->is_active ? 1 : 0,
+                    'assigned_patients' => $inventoryItem->older_adult_id === null ? 0 : 1,
+                    'active_assignments' => $inventoryItem->older_adult_id !== null && $inventoryItem->is_active ? 1 : 0,
                     'administrations_count' => (int) $inventoryItem->administrations_count,
                 ];
             })

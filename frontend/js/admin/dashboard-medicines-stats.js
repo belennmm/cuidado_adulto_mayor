@@ -18,7 +18,9 @@
     items: [],
     inventory: [],
     olderAdults: [],
-    selectedOlderAdultId: new URLSearchParams(window.location.search).get("older_adult_id") || "",
+    selectedOlderAdultId: new URLSearchParams(window.location.search).get("inventory_scope") === "unassigned"
+      ? "unassigned"
+      : new URLSearchParams(window.location.search).get("older_adult_id") || "",
     inventoryMode: "create",
     stockAction: "increase",
   }
@@ -74,13 +76,13 @@
       service.loadOlderAdults(),
     ])
 
-    if (inventoryResult.status === "fulfilled") {
-      state.inventory = inventoryResult.value.inventory || []
-      renderInventory()
-    }
     if (adultsResult.status === "fulfilled") {
       state.olderAdults = adultsResult.value.older_adults || []
       renderOlderAdultOptions()
+    }
+    if (inventoryResult.status === "fulfilled") {
+      state.inventory = inventoryResult.value.inventory || []
+      renderInventory()
     }
     if (statisticsResult.status === "rejected") throw statisticsResult.reason
     state.items = Array.isArray(statisticsResult.value.items) ? statisticsResult.value.items : []
@@ -95,13 +97,15 @@
       .join("")
 
     if (filter) {
-      filter.innerHTML = `<option value="">Todos los adultos mayores</option>${options}`
-      filter.value = state.olderAdults.some((adult) => String(adult.id) === String(currentFilter)) ? currentFilter : ""
+      filter.innerHTML = `<option value="">Inventario general consolidado</option><option value="unassigned">Stock sin asignar</option>${options}`
+      filter.value = currentFilter === "unassigned" || state.olderAdults.some((adult) => String(adult.id) === String(currentFilter))
+        ? currentFilter
+        : ""
       updateOlderAdultSelection(filter.value)
     }
 
     if (formSelect) {
-      formSelect.innerHTML = `<option value="">Selecciona un adulto mayor</option>${options}`
+      formSelect.innerHTML = `<option value="">Stock sin asignar</option>${options}`
     }
   }
 
@@ -156,7 +160,9 @@
 
     const medicationId = document.getElementById("medicationId")?.value
     const payload = {
-      older_adult_id: Number(document.getElementById("medicationOlderAdult")?.value || 0),
+      older_adult_id: document.getElementById("medicationOlderAdult")?.value
+        ? Number(document.getElementById("medicationOlderAdult").value)
+        : null,
       name: document.getElementById("medicationName")?.value.trim(),
       presentation: document.getElementById("medicationPresentation")?.value.trim(),
       quantity: Number(document.getElementById("medicationQuantity")?.value || 0),
@@ -184,7 +190,25 @@
     const amount = Number(document.getElementById("stockAmount")?.value || 0)
 
     try {
-      const data = await service.adjustStock(medicationId, action, amount)
+      const inventoryItem = inventoryItemById(medicationId)
+      let data
+      if (inventoryItem?.is_consolidated) {
+        if (inventoryItem.unassigned_inventory_id) {
+          data = await service.adjustStock(inventoryItem.unassigned_inventory_id, action, amount)
+        } else {
+          data = await service.saveInventory(null, {
+            older_adult_id: null,
+            name: inventoryItem.name,
+            presentation: inventoryItem.presentation || "Sin presentación",
+            quantity: amount,
+            unit: inventoryItem.unit || "unidades",
+            minimum_stock: 0,
+            expiration_date: null,
+          })
+        }
+      } else {
+        data = await service.adjustStock(medicationId, action, amount)
+      }
 
       closeStockAdjustmentModal()
       showInventoryFeedback(data.message || "Stock actualizado correctamente.")
@@ -252,10 +276,6 @@
     })
 
     document.getElementById("openNewMedicationButton")?.addEventListener("click", () => {
-      if (!state.olderAdults.length) {
-        showInventoryFeedback("Primero registra un adulto mayor.", "error")
-        return
-      }
       openMedicationFormModal("create")
     })
 

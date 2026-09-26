@@ -172,6 +172,7 @@
                   Seleccionar adulto mayor
                   <select id="inventoryOlderAdultFilter" aria-describedby="inventoryAdultSelectionHelp inventoryAdultSelectionStatus">
                     <option value="">Todos los adultos mayores</option>
+                    <option value="unassigned">Stock sin asignar</option>
                   </select>
                 </label>
 
@@ -182,7 +183,7 @@
             </div>
 
             <p class="inventory-selection-status" id="inventoryAdultSelectionStatus" aria-live="polite">
-              Mostrando medicamentos de todos los adultos mayores.
+              Mostrando el inventario general consolidado.
             </p>
             <p class="sr-only" id="inventoryAdultSelectionHelp">
               Selecciona un adulto mayor para consultar únicamente sus medicamentos registrados.
@@ -213,9 +214,9 @@
 
           <div class="inventory-form-grid">
             <div class="inventory-form-group">
-              <label for="medicationOlderAdult">Adulto mayor</label>
-              <select id="medicationOlderAdult" name="medicationOlderAdult" required>
-                <option value="">Selecciona un adulto mayor</option>
+              <label for="medicationOlderAdult">Destino del stock</label>
+              <select id="medicationOlderAdult" name="medicationOlderAdult">
+                <option value="">Stock sin asignar</option>
               </select>
             </div>
 
@@ -246,7 +247,7 @@
 
             <div class="inventory-form-group">
               <label for="medicationExpirationDate">Vencimiento</label>
-              <input type="date" id="medicationExpirationDate" name="medicationExpirationDate" required />
+              <input type="date" id="medicationExpirationDate" name="medicationExpirationDate" />
             </div>
           </div>
 

@@ -36,8 +36,11 @@ describe("inventario individual de medicamentos", () => {
         return Promise.resolve({
           items: [],
           inventory: [
-            { id: 1, older_adult_id: 10, older_adult_name: "Rosa Martínez", name: "Losartán", quantity: 12, unit: "tabletas", minimum_stock: 5, status: "available", status_label: "Disponible" },
-            { id: 2, older_adult_id: 20, older_adult_name: "Carlos López", name: "Metformina", quantity: 20, unit: "tabletas", minimum_stock: 8, status: "available", status_label: "Disponible" },
+            { id: 1, older_adult_id: 10, older_adult_name: "Rosa Martínez", medication_id: 1, name: "Losartán", quantity: 12, unit: "tabletas", minimum_stock: 5, expiration_date: "2030-01-01", status: "available", status_label: "Disponible" },
+            { id: 2, older_adult_id: 20, older_adult_name: "Carlos López", medication_id: 2, name: "Metformina", quantity: 20, unit: "tabletas", minimum_stock: 8, expiration_date: "2030-01-01", status: "available", status_label: "Disponible" },
+            { id: 3, older_adult_id: 10, older_adult_name: "Rosa Martínez", medication_id: 3, name: "Rivotril", quantity: 20, unit: "tabletas", minimum_stock: 5, expiration_date: "2030-01-01", status: "available", status_label: "Disponible" },
+            { id: 4, older_adult_id: 20, older_adult_name: "Carlos López", medication_id: 3, name: "Rivotril", quantity: 10, unit: "tabletas", minimum_stock: 5, expiration_date: "2031-01-01", status: "available", status_label: "Disponible" },
+            { id: 5, older_adult_id: null, older_adult_name: null, medication_id: 3, name: "Rivotril", quantity: 30, unit: "tabletas", minimum_stock: 3, expiration_date: null, status: "available", status_label: "Disponible" },
           ],
         })
       }),
@@ -53,10 +56,31 @@ describe("inventario individual de medicamentos", () => {
 
     const selector = document.getElementById("inventoryOlderAdultFilter")
     expect([...selector.options].map((option) => option.textContent)).toEqual([
-      "Todos los adultos mayores",
+      "Inventario general consolidado",
+      "Stock sin asignar",
       "Rosa Martínez",
       "Carlos López",
     ])
+
+    expect(document.getElementById("inventoryList").textContent).toContain("60 tabletas")
+    expect(document.getElementById("inventoryList").textContent).toContain("Vencimientos variados")
+    expect(document.getElementById("inventoryList").textContent).toContain("13 tabletas")
+
+    const consolidatedCard = [...document.querySelectorAll(".inventory-item")]
+      .find((card) => card.textContent.includes("Rivotril"))
+    expect(consolidatedCard.querySelector("[data-action='increase']").textContent).toBe("Sumar stock")
+    expect(consolidatedCard.querySelector("[data-action='decrease']")).toBeNull()
+    expect(consolidatedCard.querySelector("[data-action='edit']")).toBeNull()
+    expect(consolidatedCard.querySelector("[data-action='delete']")).toBeNull()
+
+    selector.value = "unassigned"
+    selector.dispatchEvent(new Event("change", { bubbles: true }))
+    const unassignedCard = [...document.querySelectorAll(".inventory-item")]
+      .find((card) => card.textContent.includes("Rivotril"))
+    expect(unassignedCard.textContent).toContain("30 tabletas")
+    expect(unassignedCard.textContent).toContain("Stock sin asignar")
+    expect(unassignedCard.querySelector("[data-action='edit']")).not.toBeNull()
+    expect(unassignedCard.querySelector("[data-action='decrease']")).not.toBeNull()
 
     selector.value = "10"
     selector.dispatchEvent(new Event("change", { bubbles: true }))

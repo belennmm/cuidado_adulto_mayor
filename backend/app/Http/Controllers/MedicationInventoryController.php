@@ -29,7 +29,12 @@ class MedicationInventoryController extends Controller
         $item = $this->inventoryService->create($request->validated());
 
         return $this->medicationResponse(
-            'Medicamento agregado al inventario del adulto mayor.', $item, $request, 201,
+            $item->older_adult_id === null
+                ? 'Medicamento agregado al stock sin asignar.'
+                : 'Medicamento agregado al inventario del adulto mayor.',
+            $item,
+            $request,
+            201,
         );
     }
 
@@ -66,7 +71,7 @@ class MedicationInventoryController extends Controller
         $this->inventoryService->delete($inventoryItem);
 
         return response()->json([
-            'message' => 'Medicamento eliminado del inventario del adulto mayor.',
+            'message' => 'Registro de inventario eliminado correctamente.',
         ]);
     }
 

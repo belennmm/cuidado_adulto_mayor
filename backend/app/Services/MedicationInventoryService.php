@@ -36,6 +36,18 @@ class MedicationInventoryService
 
     public function update(OlderAdultMedication $inventoryItem, array $data): OlderAdultMedication
     {
+        $requestedAdultId = $data['older_adult_id'] ?? null;
+        $currentAdultId = $inventoryItem->older_adult_id;
+        $sameLocation = $requestedAdultId === null
+            ? $currentAdultId === null
+            : (int) $requestedAdultId === (int) $currentAdultId;
+
+        if (! $sameLocation) {
+            abort(response()->json([
+                'message' => 'La ubicación del stock no puede cambiarse al editarlo. Usa una transferencia de inventario cuando esté disponible.',
+            ], 422));
+        }
+
         DB::transaction(function () use ($inventoryItem, $data) {
             $medication = $this->medication($data['name']);
             $inventoryItem->update([
@@ -88,7 +100,7 @@ class MedicationInventoryService
     private function assignmentData(array $data): array
     {
         return [
-            'older_adult_id' => $data['older_adult_id'],
+            'older_adult_id' => $data['older_adult_id'] ?? null,
             'presentation' => $data['presentation'],
             'quantity' => $data['quantity'],
             'unit' => $data['unit'],

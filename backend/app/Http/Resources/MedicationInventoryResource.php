@@ -27,8 +27,8 @@ class MedicationInventoryResource extends JsonResource
             'schedule' => $this->schedule,
             'status' => $status['key'],
             'status_label' => $status['label'],
-            'assigned_patients' => 1,
-            'active_assignments' => $this->is_active ? 1 : 0,
+            'assigned_patients' => $this->older_adult_id === null ? 0 : 1,
+            'active_assignments' => $this->older_adult_id !== null && $this->is_active ? 1 : 0,
             'administrations_count' => (int) ($this->administrations_count ?? 0),
         ];
     }

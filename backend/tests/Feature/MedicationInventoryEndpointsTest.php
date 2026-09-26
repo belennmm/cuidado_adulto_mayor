@@ -56,6 +56,42 @@ class MedicationInventoryEndpointsTest extends TestCase
             ->assertJsonPath('inventory.0.quantity', 12);
     }
 
+    public function test_inventory_can_be_created_as_unassigned_stock(): void
+    {
+        $this->actingAsAdmin();
+
+        $item = $this->postJson('/api/admin/medications/inventory', [
+            'older_adult_id' => null,
+            'name' => 'Rivotril',
+            'presentation' => 'Tabletas 0.5mg',
+            'quantity' => 15,
+            'unit' => 'tabletas',
+            'minimum_stock' => 3,
+            'expiration_date' => null,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('medication.older_adult_id', null)
+            ->assertJsonPath('medication.older_adult_name', null)
+            ->assertJsonPath('medication.quantity', 15)
+            ->json('medication');
+
+        $this->assertDatabaseHas('older_adult_medications', [
+            'id' => $item['id'],
+            'older_adult_id' => null,
+            'medication_id' => $item['medication_id'],
+            'quantity' => 15,
+        ]);
+
+        $this->getJson('/api/admin/medications/inventory')
+            ->assertOk()
+            ->assertJsonFragment([
+                'id' => $item['id'],
+                'older_adult_id' => null,
+                'name' => 'Rivotril',
+                'quantity' => 15,
+            ]);
+    }
+
     public function test_updating_one_adults_inventory_does_not_change_another_adults_stock(): void
     {
         $admin = $this->actingAsAdmin();
