@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: Organízate - superficie de seguridad
+  version: 1.0.0
+  description: Endpoints de lectura usados por el escaneo autenticado de OWASP ZAP.
+servers:
+  - url: http://host.docker.internal:8080/api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+  schemas:
+    GenericResponse:
+      type: object
+      additionalProperties: true
+security:
+  - bearerAuth: []
+paths:
+  /ping:
+    get:
+      security: []
+      responses:
+        '200': { description: Servicio disponible }
+  /me:
+    get:
+      responses:
+        '200': { description: Perfil autenticado }
+        '401': { description: No autenticado }
+  /incidents:
+    get:
+      responses:
+        '200': { description: Incidentes autorizados }
+  /incidents/today:
+    get:
+      responses:
+        '200': { description: Incidentes del día }
+  /rutinas:
+    get:
+      responses:
+        '200': { description: Rutinas autorizadas }
+  /mobility-exercises:
+    get:
+      responses:
+        '200': { description: Ejercicios autorizados }
+  /family/overview:
+    get:
+      responses:
+        '200': { description: Resumen familiar }
+        '403': { description: Rol no autorizado }
+  /family/older-adults:
+    get:
+      responses:
+        '200': { description: Adultos asignados al familiar }
+        '403': { description: Rol no autorizado }
+  /family/incidents:
+    get:
+      responses:
+        '200': { description: Incidentes asignados al familiar }
+        '403': { description: Rol no autorizado }
+  /family/routine:
+    get:
+      responses:
+        '200': { description: Rutina asignada al familiar }
+        '403': { description: Rol no autorizado }
+  /professional/overview:
+    get:
+      responses:
+        '200': { description: Resumen profesional }
+        '403': { description: Rol no autorizado }
+  /professional/older-adults:
+    get:
+      responses:
+        '200': { description: Adultos asignados al profesional }
+        '403': { description: Rol no autorizado }
+  /professional/routines:
+    get:
+      responses:
+        '200': { description: Rutinas del profesional }
+        '403': { description: Rol no autorizado }
+  /professional/reminders:
+    get:
+      responses:
+        '200': { description: Recordatorios del profesional }
+        '403': { description: Rol no autorizado }
+  /professional/routine-notes:
+    get:
+      parameters:
+        - in: query
+          name: older_adult_id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200': { description: Notas del profesional }
+        '403': { description: Rol no autorizado }
+  /professional/schedules:
+    get:
+      responses:
+        '200': { description: Turnos del profesional }
+        '403': { description: Rol no autorizado }
+  /professional/vacation-requests:
+    get:
+      responses:
+        '200': { description: Solicitudes del profesional }
+        '403': { description: Rol no autorizado }
+  /admin/dashboard-summary:
+    get:
+      responses:
+        '200': { description: Resumen administrativo }
+        '403': { description: Rol no autorizado }
+  /admin/users:
+    get:
+      responses:
+        '200': { description: Usuarios del sistema }
+        '403': { description: Rol no autorizado }
+  /admin/professional-caregivers:
+    get:
+      responses:
+        '200': { description: Cuidadores profesionales }
+        '403': { description: Rol no autorizado }
+  /admin/family-caregivers:
+    get:
+      responses:
+        '200': { description: Cuidadores familiares }
+        '403': { description: Rol no autorizado }
+  /admin/schedules:
+    get:
+      responses:
+        '200': { description: Turnos administrativos }
+        '403': { description: Rol no autorizado }
+  /admin/schedules/calendar:
+    get:
+      parameters:
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\\d{4}-\\d{2}-\\d{2}$'
+            example: '2026-09-01'
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            pattern: '^\\d{4}-\\d{2}-\\d{2}$'
+            example: '2026-09-30'
+      responses:
+        '200': { description: Calendario administrativo }
+        '403': { description: Rol no autorizado }
+  /admin/vacation-requests:
+    get:
+      responses:
+        '200': { description: Solicitudes administrativas }
+        '403': { description: Rol no autorizado }
+  /admin/medication-statistics:
+    get:
+      responses:
+        '200': { description: Estadísticas de medicamentos }
+        '403': { description: Rol no autorizado }
+  /admin/medications/inventory:
+    get:
+      responses:
+        '200': { description: Inventario de medicamentos }
+        '403': { description: Rol no autorizado }
+  /admin/older-adults:
+    get:
+      responses:
+        '200': { description: Adultos mayores }
+        '403': { description: Rol no autorizado }
+  /admin/mobility-exercises:
+    get:
+      responses:
+        '200': { description: Ejercicios administrativos }
+        '403': { description: Rol no autorizado }

@@ -5,7 +5,7 @@ WORKDIR /var/www/html
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip libpq-dev libonig-dev \
     && docker-php-ext-install mbstring pdo_pgsql pgsql \
-    && a2enmod rewrite \
+    && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -22,7 +22,10 @@ RUN composer dump-autoload --optimize \
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && printf 'ServerTokens Prod\nServerSignature Off\nHeader always unset Server\n' > /etc/apache2/conf-available/zz-security-hardening.conf \
+    && a2enconf zz-security-hardening \
+    && printf 'expose_php=Off\nsession.cookie_httponly=1\nsession.cookie_samesite=Lax\n' > /usr/local/etc/php/conf.d/security-hardening.ini
 
 EXPOSE 80
 

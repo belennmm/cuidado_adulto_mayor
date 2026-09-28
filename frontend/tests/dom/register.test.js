@@ -10,6 +10,7 @@ describe("formulario de registro", () => {
         <input id="username" /><input id="email" /><input id="password" type="password" />
         <select id="userType"><option value="">Seleccione</option><option value="familiar">Familiar</option></select>
         <input id="location" /><input id="phone" /><input id="birthdate" />
+        <input id="privacyConsent" type="checkbox" />
         <button type="submit">Registrar</button>
       </form>
       <button id="togglePassword"><i class="bx-hide"></i></button>
@@ -35,6 +36,7 @@ describe("formulario de registro", () => {
     document.getElementById("email").value = "laura@test.com"
     document.getElementById("password").value = "password123"
     document.getElementById("userType").value = "familiar"
+    document.getElementById("privacyConsent").checked = true
 
     fireEvent.submit(document.querySelector("form"))
 
@@ -43,7 +45,7 @@ describe("formulario de registro", () => {
     expect(path).toBe("/register")
     expect(options).toMatchObject({ method: "POST", auth: false })
     expect(JSON.parse(options.body)).toMatchObject({
-      name: "Laura Pérez", email: "laura@test.com", password: "password123", role: "familiar",
+      name: "Laura Pérez", email: "laura@test.com", password: "password123", role: "familiar", privacy_consent: true,
     })
     expect(document.getElementById("registerMessage").textContent).toBe("Registro enviado")
   })
@@ -54,11 +56,24 @@ describe("formulario de registro", () => {
     document.getElementById("email").value = "repetido@test.com"
     document.getElementById("password").value = "password123"
     document.getElementById("userType").value = "familiar"
+    document.getElementById("privacyConsent").checked = true
 
     fireEvent.click(document.getElementById("togglePassword"))
     fireEvent.submit(document.querySelector("form"))
 
     expect(document.getElementById("password").type).toBe("text")
     await vi.waitFor(() => expect(document.getElementById("registerMessage").textContent).toBe("El correo ya existe"))
+  })
+
+  it("impide el registro sin aceptar la política de privacidad", () => {
+    document.getElementById("username").value = "Laura"
+    document.getElementById("email").value = "laura@test.com"
+    document.getElementById("password").value = "password123"
+    document.getElementById("userType").value = "familiar"
+
+    fireEvent.submit(document.querySelector("form"))
+
+    expect(document.getElementById("registerMessage").textContent).toBe("Debes leer y aceptar la Política de privacidad")
+    expect(fetchJson).not.toHaveBeenCalled()
   })
 })
