@@ -25,7 +25,9 @@ services:
       CACHE_STORE: file
       QUEUE_CONNECTION: database
       SESSION_DRIVER: database
-      RUN_SEEDERS: "${RUN_SEEDERS:-fresh}"
+      # Los seeders deben ejecutarse explicitamente en entornos desechables;
+      # nunca durante un reinicio normal del backend.
+      RUN_SEEDERS: "${RUN_SEEDERS:-false}"
       SANCTUM_STATEFUL_DOMAINS: "${SANCTUM_STATEFUL_DOMAINS:-localhost,localhost:3000,localhost:8080,127.0.0.1,127.0.0.1:3000,127.0.0.1:8080}"
     ports:
       - "${BACKEND_PORT:-8080}:80"
