@@ -74,6 +74,32 @@ Las advertencias iniciales sobre CSP ausente, clickjacking, tipo MIME, version d
 | Contenido no almacenable | Resultado de la politica `no-store`; no representa una vulnerabilidad directa. | Revisar la politica de cache y permitir cache solo para recursos estaticos versionados. |
 | Aplicacion web moderna | Hallazgo informativo. | No requiere correccion. |
 
+## Escaneo autenticado de la API
+
+Tambien se ejecuto OWASP ZAP API Scan con una especificacion OpenAPI y tokens temporales de Laravel Sanctum para los roles administrador, profesional y familiar. Los tokens se entregaron al contenedor mediante variables de entorno y no se almacenaron en los reportes. Se usaron cuentas aisladas creadas por `SecurityScanSeeder`.
+
+La primera pasada autenticada revelo CORS permisivo, encabezados defensivos ausentes, divulgacion de `X-Powered-By` y de la version de Apache, y redirecciones provocadas por parametros de prueba incorrectos. Se corrigieron mediante una lista explicita de origenes permitidos, encabezados globales de seguridad, ocultamiento de versiones y ejemplos validos en el contrato OpenAPI.
+
+### Resultado seguro final
+
+| Rol | URL importadas | Reglas aprobadas | Fallos | Advertencias |
+|---|---:|---:|---:|---:|
+| Administrador | 34 | 118 | 0 | 0 |
+| Profesional | 34 | 118 | 0 | 0 |
+| Familiar | 34 | 118 | 0 | 0 |
+
+### Resultado activo final
+
+| Rol | URL observadas despues de las sondas | Reglas aprobadas | Fallos | Tipos de advertencia |
+|---|---:|---:|---:|---:|
+| Administrador | 81 | 118 | 0 | 1 |
+| Profesional | 84 | 118 | 0 | 1 |
+| Familiar | 89 | 118 | 0 | 1 |
+
+La unica advertencia activa fue `Unexpected Content-Type` en 25 a 27 URL aleatorias inexistentes que ZAP genero como sondas. Las respuestas fueron 404 o 405 y no expusieron datos ni demostraron una vulnerabilidad de inyeccion. Como mejora de consistencia, se puede normalizar toda respuesta desconocida bajo `/api` para devolver JSON; el riesgo de seguridad se considera bajo.
+
+Los reportes reproducibles se encuentran localmente en `tests/security/reports/authenticated` y `tests/security/reports/active`. Para repetirlos se usa `tests/security/run-zap-authenticated.ps1`; sin `-Active` ejecuta la modalidad segura y con `-Active` habilita las pruebas activas.
+
 ## Limitaciones y siguiente paso
 
-El escaneo Baseline es pasivo y no demuestra por si solo que todas las rutas autenticadas sean seguras. Falta preparar un contexto ZAP autenticado para los roles administrador, profesional y familiar, y ejecutar un escaneo activo exclusivamente en el ambiente local. Las cuentas creadas antes de esta funcionalidad y las creadas administrativamente conservan el consentimiento como nulo; antes de produccion debe definirse un flujo de renovacion o una base legal distinta para esas cuentas, sin registrar aceptaciones ficticias.
+El contrato de esta ejecucion incluye rutas de lectura para evitar modificar datos durante las pruebas. Aun falta ampliar la especificacion para probar operaciones de escritura sobre una base de datos desechable y realizar pruebas de volumen o inundacion independientes. Las cuentas creadas antes de la funcionalidad de privacidad y las creadas administrativamente conservan el consentimiento como nulo; antes de produccion debe definirse un flujo de renovacion o una base legal distinta para esas cuentas, sin registrar aceptaciones ficticias.

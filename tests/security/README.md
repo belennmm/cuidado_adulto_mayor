@@ -45,6 +45,24 @@ Para analizar directamente el backend puede indicarse otro destino:
 
 El escaneo activo no debe ejecutarse contra produccion. Cuando se autorice en el ambiente local, se preparara un contexto autenticado para cubrir rutas privadas.
 
+## Escaneo autenticado por roles
+
+El archivo `openapi-security.yaml` describe 28 endpoints de lectura. El script inicia sesion como administrador, profesional y familiar, entrega cada token a ZAP mediante `ZAP_AUTH_HEADER_VALUE` y genera reportes separados sin guardar los tokens.
+
+Modo seguro, sin ataques activos:
+
+```powershell
+.\tests\security\run-zap-authenticated.ps1
+```
+
+Modo activo, solamente contra el entorno local autorizado:
+
+```powershell
+.\tests\security\run-zap-authenticated.ps1 -Active
+```
+
+El script prepara tres cuentas exclusivas mediante `SecurityScanSeeder`; no modifica las contrasenas de los usuarios normales ni utiliza datos reales. Las credenciales pueden reemplazarse con parametros del script cuando se use otra base aislada.
+
 ## Evidencia que debe conservarse
 
 - Fecha, ambiente y commit evaluado.
