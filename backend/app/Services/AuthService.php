@@ -63,6 +63,8 @@ class AuthService
             'location' => $data['location'] ?? null,
             'phone' => $data['phone'] ?? null,
             'birthdate' => $data['birthdate'] ?? null,
+            'privacy_consent_at' => now(),
+            'privacy_policy_version' => config('privacy.policy_version'),
         ]);
     }
 

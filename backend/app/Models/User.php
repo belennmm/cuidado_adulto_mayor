@@ -21,6 +21,8 @@ class User extends Authenticatable
         'location',
         'phone',
         'birthdate',
+        'privacy_consent_at',
+        'privacy_policy_version',
     ];
 
     protected $hidden = [
@@ -35,6 +37,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_approved' => 'boolean',
             'birthdate' => 'date',
+            'privacy_consent_at' => 'datetime',
         ];
     }
 

@@ -11,8 +11,8 @@ Evaluar los requisitos no funcionales de seguridad definidos para Organízate y 
 | RNF-16 | Las contrasenas deben almacenarse de forma segura. | Cumple. Laravel genera un hash no reversible y la prueba confirma que el valor almacenado no coincide con la contrasena. | `AuthenticationTest::test_registration_creates_a_pending_user_and_normalizes_role` |
 | RNF-17 | Bloquear el acceso despues de 5 intentos fallidos. | Cumple. El sexto intento se rechaza con HTTP 429 durante 5 minutos. Un acceso correcto limpia el contador anterior. | Pruebas de limite de intentos en `AuthenticationTest`. |
 | RNF-18 | Solo usuarios autorizados pueden acceder a datos medicos. | Cumple en los casos automatizados existentes de roles y aislamiento de datos. | 8 pruebas y 37 aserciones de autorizacion y aislamiento aprobadas. |
-| RNF-23 | Mostrar aviso de privacidad antes del registro. | No cumple. No existe aviso visible en el formulario actual. | Inspeccion de `frontend/pages/register.html`. |
-| RNF-24 | Guardar el consentimiento del 100 % de los usuarios. | No cumple. El modelo y la tabla `users` no contienen datos de consentimiento. | Inspeccion del modelo y las migraciones. |
+| RNF-23 | Mostrar aviso de privacidad antes del registro. | Cumple. El formulario muestra un aviso y enlaza la politica completa antes del boton de registro. | `frontend/pages/register.html` y `frontend/pages/privacy.html`. |
+| RNF-24 | Guardar el consentimiento del 100 % de los usuarios. | Cumple para todo nuevo autorregistro. La API rechaza el registro sin aceptacion y almacena fecha y version de la politica. | Migracion de consentimiento y pruebas de `AuthenticationTest`. |
 | RNF-42 | Comunicacion entre modulos mediante APIs seguras. | Cumple parcialmente. Las rutas privadas usan Sanctum y el frontend ahora incluye encabezados defensivos; el ambiente local aun usa HTTP. | Pruebas de API y reporte ZAP. |
 
 ## Herramienta y ambiente
@@ -76,4 +76,4 @@ Las advertencias iniciales sobre CSP ausente, clickjacking, tipo MIME, version d
 
 ## Limitaciones y siguiente paso
 
-El escaneo Baseline es pasivo y no demuestra por si solo que todas las rutas autenticadas sean seguras. Falta preparar un contexto ZAP autenticado para los roles administrador, profesional y familiar, y ejecutar un escaneo activo exclusivamente en el ambiente local. Tambien falta implementar el aviso y almacenamiento del consentimiento de privacidad para completar RNF-23 y RNF-24.
+El escaneo Baseline es pasivo y no demuestra por si solo que todas las rutas autenticadas sean seguras. Falta preparar un contexto ZAP autenticado para los roles administrador, profesional y familiar, y ejecutar un escaneo activo exclusivamente en el ambiente local. Las cuentas creadas antes de esta funcionalidad y las creadas administrativamente conservan el consentimiento como nulo; antes de produccion debe definirse un flujo de renovacion o una base legal distinta para esas cuentas, sin registrar aceptaciones ficticias.

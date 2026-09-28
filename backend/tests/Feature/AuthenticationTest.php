@@ -112,6 +112,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password123',
             'role' => 'cuidador_profesional',
             'phone' => fake()->numerify('########'),
+            'privacy_consent' => true,
         ];
 
         $this->postJson('/api/register', $payload)
@@ -124,11 +125,31 @@ class AuthenticationTest extends TestCase
             'email' => $payload['email'],
             'role' => 'profesional',
             'is_approved' => false,
+            'privacy_policy_version' => '2026-09-28',
         ]);
+
+        $this->assertNotNull(User::query()->where('email', $payload['email'])->value('privacy_consent_at'));
 
         $storedPassword = User::query()->where('email', $payload['email'])->value('password');
         $this->assertNotSame($payload['password'], $storedPassword);
         $this->assertTrue(Hash::check($payload['password'], $storedPassword));
+    }
+
+    public function test_registration_requires_privacy_consent(): void
+    {
+        $payload = [
+            'name' => 'Usuario sin consentimiento',
+            'email' => 'sin-consentimiento@example.com',
+            'password' => 'password123',
+            'role' => 'familiar',
+            'privacy_consent' => false,
+        ];
+
+        $this->postJson('/api/register', $payload)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['privacy_consent']);
+
+        $this->assertDatabaseMissing('users', ['email' => $payload['email']]);
     }
 
     public function test_registration_validates_required_unique_and_password_fields(): void
