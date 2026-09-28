@@ -5,12 +5,20 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function tearDown(): void
+    {
+        RateLimiter::clear('login:'.sha1('rate-limit@example.com|127.0.0.1'));
+
+        parent::tearDown();
+    }
 
     public function test_an_approved_user_can_login_and_receives_a_sanctum_token(): void
     {
@@ -35,6 +43,56 @@ class AuthenticationTest extends TestCase
         $this->postJson('/api/login', ['email' => $user->email, 'password' => 'incorrect'])
             ->assertUnauthorized()
             ->assertJsonPath('message', 'Credenciales invalidas');
+    }
+
+    public function test_login_is_blocked_after_five_failed_attempts(): void
+    {
+        User::factory()->create([
+            'email' => 'rate-limit@example.com',
+            'password' => Hash::make('correct-password'),
+            'is_approved' => true,
+        ]);
+
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            $this->postJson('/api/login', [
+                'email' => 'rate-limit@example.com',
+                'password' => 'incorrect-password',
+            ])->assertUnauthorized();
+        }
+
+        $this->postJson('/api/login', [
+            'email' => 'rate-limit@example.com',
+            'password' => 'correct-password',
+        ])
+            ->assertStatus(429)
+            ->assertJsonPath('message', 'Demasiados intentos fallidos. Intenta nuevamente mas tarde.')
+            ->assertJsonStructure(['retry_after']);
+    }
+
+    public function test_successful_login_clears_previous_failed_attempts(): void
+    {
+        User::factory()->create([
+            'email' => 'rate-limit@example.com',
+            'password' => Hash::make('correct-password'),
+            'is_approved' => true,
+        ]);
+
+        $this->postJson('/api/login', [
+            'email' => 'rate-limit@example.com',
+            'password' => 'incorrect-password',
+        ])->assertUnauthorized();
+
+        $this->postJson('/api/login', [
+            'email' => 'rate-limit@example.com',
+            'password' => 'correct-password',
+        ])->assertOk();
+
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            $this->postJson('/api/login', [
+                'email' => 'rate-limit@example.com',
+                'password' => 'incorrect-password',
+            ])->assertUnauthorized();
+        }
     }
 
     public function test_pending_non_admin_user_cannot_login(): void
@@ -67,6 +125,10 @@ class AuthenticationTest extends TestCase
             'role' => 'profesional',
             'is_approved' => false,
         ]);
+
+        $storedPassword = User::query()->where('email', $payload['email'])->value('password');
+        $this->assertNotSame($payload['password'], $storedPassword);
+        $this->assertTrue(Hash::check($payload['password'], $storedPassword));
     }
 
     public function test_registration_validates_required_unique_and_password_fields(): void

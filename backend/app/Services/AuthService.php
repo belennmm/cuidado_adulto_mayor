@@ -5,16 +5,31 @@ namespace App\Services;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    public function authenticate(string $email, string $password): array
+    private const MAX_LOGIN_ATTEMPTS = 5;
+
+    private const LOGIN_LOCKOUT_SECONDS = 300;
+
+    public function authenticate(string $email, string $password, string $ipAddress = 'unknown'): array
     {
+        $rateLimitKey = $this->loginRateLimitKey($email, $ipAddress);
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, self::MAX_LOGIN_ATTEMPTS)) {
+            abort(response()->json([
+                'message' => 'Demasiados intentos fallidos. Intenta nuevamente mas tarde.',
+                'retry_after' => RateLimiter::availableIn($rateLimitKey),
+            ], 429));
+        }
+
         $user = User::query()->where('email', $email)->first();
 
         if (! $user || ! Hash::check($password, $user->password)) {
+            RateLimiter::hit($rateLimitKey, self::LOGIN_LOCKOUT_SECONDS);
             abort(response()->json(['message' => 'Credenciales invalidas'], 401));
         }
 
@@ -24,10 +39,17 @@ class AuthService
             ], 403));
         }
 
+        RateLimiter::clear($rateLimitKey);
+
         return [
             'user' => $user,
             'token' => $user->createToken('API Token')->plainTextToken,
         ];
+    }
+
+    private function loginRateLimitKey(string $email, string $ipAddress): string
+    {
+        return 'login:'.sha1(Str::lower(trim($email)).'|'.$ipAddress);
     }
 
     public function register(array $data): User

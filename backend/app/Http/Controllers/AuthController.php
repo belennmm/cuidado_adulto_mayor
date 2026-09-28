@@ -16,7 +16,11 @@ class AuthController extends Controller
     public function login(AuthRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $authentication = $this->authService->authenticate($data['email'], $data['password']);
+        $authentication = $this->authService->authenticate(
+            $data['email'],
+            $data['password'],
+            $request->ip() ?? 'unknown'
+        );
 
         return response()->json([
             'message' => 'Login exitoso',
