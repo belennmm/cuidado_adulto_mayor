@@ -56,7 +56,7 @@ describe("inventario individual de medicamentos", () => {
 
     const selector = document.getElementById("inventoryOlderAdultFilter")
     expect([...selector.options].map((option) => option.textContent)).toEqual([
-      "Inventario general consolidado",
+      "Inventario general",
       "Stock sin asignar",
       "Rosa Martínez",
       "Carlos López",
