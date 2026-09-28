@@ -9,6 +9,7 @@ La prueba genera trafico autenticado concurrente para los roles administrador, p
 | `smoke` | 3 | 9 | 25 segundos |
 | `load` | 15 | 45 | 1 minuto 50 segundos |
 | `stress` | 40 | 120 | 2 minutos 30 segundos |
+| `volume100` | 33-34 | 100 | 2 minutos 30 segundos |
 
 ## Umbrales de aceptacion
 
@@ -26,6 +27,7 @@ docker compose up -d --build
 .\tests\performance\run-k6.ps1 -Profile smoke
 .\tests\performance\run-k6.ps1 -Profile load
 .\tests\performance\run-k6.ps1 -Profile stress
+.\tests\performance\run-k6.ps1 -Profile volume100
 ```
 
 El script prepara las mismas cuentas aisladas usadas por OWASP ZAP. Los archivos JSON se generan en `tests/performance/reports` y se excluyen de Git porque corresponden a evidencia de cada ejecucion.

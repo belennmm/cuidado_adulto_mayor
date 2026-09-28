@@ -8,25 +8,30 @@ const profiles = {
   smoke: { stages: [{ duration: '10s', target: 3 }, { duration: '10s', target: 3 }, { duration: '5s', target: 0 }] },
   load: { stages: [{ duration: '30s', target: 15 }, { duration: '1m', target: 15 }, { duration: '20s', target: 0 }] },
   stress: { stages: [{ duration: '30s', target: 20 }, { duration: '30s', target: 40 }, { duration: '1m', target: 40 }, { duration: '30s', target: 0 }] },
+  volume100: { stages: [{ duration: '30s', target: 1 }, { duration: '60s', target: 1 }, { duration: '30s', target: 0 }] },
 };
 
 if (!profiles[profile]) {
-  throw new Error(`Perfil desconocido: ${profile}. Use smoke, load o stress.`);
+  throw new Error(`Perfil desconocido: ${profile}. Use smoke, load, stress o volume100.`);
 }
 
-const scenario = (exec, startTime = '0s') => ({
+const volume100Targets = { administrator: 34, professional: 33, family: 33 };
+
+const scenario = (exec, role, startTime = '0s') => ({
   executor: 'ramping-vus',
   exec,
   startTime,
   gracefulRampDown: '5s',
-  stages: profiles[profile].stages,
+  stages: profile === 'volume100'
+    ? profiles[profile].stages.map((stage) => ({ ...stage, target: stage.target === 0 ? 0 : volume100Targets[role] }))
+    : profiles[profile].stages,
 });
 
 export const options = {
   scenarios: {
-    administrator: scenario('administratorTraffic'),
-    professional: scenario('professionalTraffic'),
-    family: scenario('familyTraffic'),
+    administrator: scenario('administratorTraffic', 'administrator'),
+    professional: scenario('professionalTraffic', 'professional'),
+    family: scenario('familyTraffic', 'family'),
   },
   thresholds: {
     http_req_failed: ['rate<0.01'],

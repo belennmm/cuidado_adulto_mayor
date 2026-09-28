@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('smoke', 'load', 'stress')]
+    [ValidateSet('smoke', 'load', 'stress', 'volume100')]
     [string]$Profile = 'smoke',
     [string]$ApiUrl = 'http://host.docker.internal:8080/api',
     [string]$ReportDirectory = "$PSScriptRoot\reports"
