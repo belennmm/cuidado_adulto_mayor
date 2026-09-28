@@ -100,6 +100,12 @@ La unica advertencia activa fue `Unexpected Content-Type` en 25 a 27 URL aleator
 
 Los reportes reproducibles se encuentran localmente en `tests/security/reports/authenticated` y `tests/security/reports/active`. Para repetirlos se usa `tests/security/run-zap-authenticated.ps1`; sin `-Active` ejecuta la modalidad segura y con `-Active` habilita las pruebas activas.
 
+## Prueba de volumen o inundacion
+
+Se preparo `tests/volume/run-k6.ps1`, que ejecuta `grafana/k6:latest` contra el backend local. La carga sube progresivamente a 10, 25 y 50 usuarios virtuales durante 3 minutos y consulta endpoints autenticados de lectura. Los criterios de aceptacion son menos de 1 % de errores, p95 menor a 1000 ms, p99 menor a 2000 ms y al menos 99 % de checks exitosos. Cada ejecucion conserva su resumen JSON en `tests/volume/reports`.
+
+La ejecucion del 28 de septiembre de 2026 cumplio todos los umbrales: 17 810 solicitudes, maximo de 49 usuarios virtuales concurrentes, 0 % de errores, p95 de 58.93 ms, p99 de 92.58 ms, 207.8 checks por segundo y 100 % de checks exitosos. En esta carga el sistema mantuvo tiempos muy por debajo del objetivo; esto valida el requisito de rendimiento para el nivel probado, pero no implica capacidad ilimitada ni sustituye una prueba con datos y recursos equivalentes a produccion.
+
 ## Limitaciones y siguiente paso
 
 El contrato de esta ejecucion incluye rutas de lectura para evitar modificar datos durante las pruebas. Aun falta ampliar la especificacion para probar operaciones de escritura sobre una base de datos desechable y realizar pruebas de volumen o inundacion independientes. Las cuentas creadas antes de la funcionalidad de privacidad y las creadas administrativamente conservan el consentimiento como nulo; antes de produccion debe definirse un flujo de renovacion o una base legal distinta para esas cuentas, sin registrar aceptaciones ficticias.

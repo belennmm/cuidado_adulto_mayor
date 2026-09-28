@@ -71,3 +71,15 @@ El script prepara tres cuentas exclusivas mediante `SecurityScanSeeder`; no modi
 - Capturas de los hallazgos relevantes.
 - Tabla con severidad, evidencia, estado y accion correctiva.
 - Resultado de la repeticion despues de cada correccion.
+
+## Prueba de volumen con k6
+
+La prueba de volumen usa `grafana/k6:latest` y genera una carga progresiva de 10, 25 y 50 usuarios virtuales sobre `GET /api/me` y `GET /api/mobility-exercises`. El token se obtiene una sola vez en `setup`, evitando que el limitador de login distorsione la medicion. Los umbrales son menos de 1 % de errores, p95 menor a 1000 ms, p99 menor a 2000 ms y mas de 99 % de checks exitosos.
+
+Ejecutar desde la raiz con el backend local levantado:
+
+```powershell
+.\tests\volume\run-k6.ps1
+```
+
+Los resumenes JSON se guardan en `tests/volume/reports` y no contienen contrasenas ni tokens.
