@@ -35,6 +35,7 @@ form.addEventListener("submit", async(e) => {
     const location = document.getElementById("location").value
     const phone = document.getElementById("phone").value.trim()
     const birthdate = document.getElementById("birthdate").value
+    const privacyConsent = document.getElementById("privacyConsent")?.checked === true
 
     if (!name || !email || !password) {
         showMessage("Completa los campos obligatorios", true)
@@ -43,6 +44,11 @@ form.addEventListener("submit", async(e) => {
 
     if (!role) {
         showMessage("Selecciona el tipo de usuario", true)
+        return
+    }
+
+    if (!privacyConsent) {
+        showMessage("Debes leer y aceptar la Política de privacidad", true)
         return
     }
 
@@ -57,7 +63,8 @@ form.addEventListener("submit", async(e) => {
                 role,
                 location,
                 phone,
-                birthdate
+                birthdate,
+                privacy_consent: privacyConsent
             }),
             fallbackError: "Error al registrar",
         })

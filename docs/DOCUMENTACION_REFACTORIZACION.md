@@ -124,8 +124,8 @@ La arquitectura resultante contiene 17 controladores, 18 servicios, 20 Form Requ
 | 7 | Extraer servicios, validaciones, recursos y políticas | Completado |
 | 8 | Dividir hojas de estilo grandes | Completado |
 | 9 | Ejecutar regresión automatizada | Completado |
-| 10 | Realizar revisión visual y responsive | Pendiente |
-| 11 | Integrar `refactor` en `main` | Pendiente |
+| 10 | Realizar revisión visual y responsive | Completado |
+| 11 | Integrar `refactor` en `main` | Completado |
 
 ## 6. Verificación y resultados
 

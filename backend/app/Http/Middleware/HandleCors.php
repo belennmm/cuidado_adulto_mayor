@@ -20,7 +20,10 @@ class HandleCors
             return $this->withCorsHeaders(response('', 204), $allowedOrigin);
         }
 
-        $response = $next($request);
+            $response = response('', 204);
+        } else {
+            $response = $next($request);
+        }
 
         return $allowedOrigin ? $this->withCorsHeaders($response, $allowedOrigin) : $response;
     }

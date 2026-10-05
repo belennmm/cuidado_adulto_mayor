@@ -1,63 +1,35 @@
-# Pruebas de carga y estrés
+# Pruebas de volumen con k6
 
-Este directorio contiene pruebas de rendimiento de solo lectura para la API de Organízate. Los escenarios simulan aproximadamente 20% de administradores, 50% de cuidadores profesionales y 30% de familiares.
-
-## Seguridad y alcance
-
-- Ejecutar únicamente contra un ambiente local o de pruebas autorizado.
-- Los escenarios incluidos no crean, actualizan ni eliminan información.
-- El ejecutor crea o actualiza tres cuentas exclusivas `@performance.test` mediante `PerformanceTestSeeder`.
-- El sembrador se niega a ejecutarse si Laravel está configurado como producción.
-- El ejecutor elimina `setup_data` del JSON final para que los tokens temporales de sesión no queden almacenados.
-- No ejecutar estrés contra producción.
-
-## Requisitos
-
-- Docker Desktop iniciado.
-- Proyecto levantado desde la raíz con `docker compose up -d --build`.
-- API disponible en `http://localhost:8080/api/ping`.
-
-No es necesario instalar k6: el ejecutor usa la imagen oficial `grafana/k6`.
-
-## Ejecución
-
-Desde la raíz del proyecto:
-
-```powershell
-.\tests\performance\run.ps1 -Test smoke
-.\tests\performance\run.ps1 -Test load
-.\tests\performance\run.ps1 -Test stress
-.\tests\performance\run.ps1 -Test spike
-```
-
-Ejecutar siempre en ese orden. Si smoke falla, no continuar con las pruebas mayores.
-
-Para una API expuesta en otro puerto o equipo de pruebas:
-
-```powershell
-.\tests\performance\run.ps1 -Test smoke -BaseUrl "http://host.docker.internal:8080/api"
-```
-
-También se pueden reemplazar las credenciales mediante variables de entorno de k6: `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `PROFESSIONAL_EMAIL`, `PROFESSIONAL_PASSWORD`, `FAMILY_EMAIL` y `FAMILY_PASSWORD`.
+La prueba genera trafico autenticado concurrente para los roles administrador, profesional y familiar. Cada usuario virtual consulta tres endpoints de lectura y espera un segundo antes de repetir el flujo.
 
 ## Perfiles
 
-| Archivo | Perfil |
-|---|---|
-| `smoke.js` | 1 usuario, 3 iteraciones; valida scripts, acceso y datos base |
-| `load.js` | aumenta hasta 20 usuarios y sostiene la carga normal |
-| `stress.js` | aumenta gradualmente hasta 150 usuarios para encontrar degradación |
-| `spike.js` | salta rápidamente de 5 a 100 usuarios y mide recuperación |
+| Perfil | Usuarios virtuales por rol | Total maximo | Duracion aproximada |
+|---|---:|---:|---:|
+| `smoke` | 3 | 9 | 25 segundos |
+| `load` | 15 | 45 | 1 minuto 50 segundos |
+| `stress` | 40 | 120 | 2 minutos 30 segundos |
+| `volume100` | 33-34 | 100 | 2 minutos 30 segundos |
 
-## Criterios iniciales
+## Umbrales de aceptacion
 
-- Menos de 1% de solicitudes HTTP fallidas.
-- Más de 99% de verificaciones correctas.
-- Percentil 95 menor a 800 ms.
-- Percentil 99 menor a 1500 ms.
+- Menos del 1 % de solicitudes HTTP fallidas.
+- Percentil 95 menor de 1 segundo.
+- Percentil 99 menor de 2 segundos.
+- Mas del 99 % de verificaciones funcionales aprobadas.
 
-Estos valores son una línea base inicial. Deben revisarse después de la primera medición y relacionarse con los requisitos reales del sistema.
+## Ejecucion
 
-## Evidencia
+Levante el ambiente local y ejecute desde la raiz:
 
-Cada ejecución guarda un archivo JSON fechado en `results/`. Durante carga y estrés también conviene ejecutar `docker stats` en otra terminal y guardar una captura de CPU y memoria. El informe debe incluir ambiente, fecha, escenario, usuarios, solicitudes por segundo, latencia promedio, p90, p95, p99, tasa de errores, punto de degradación y acciones de mejora.
+```powershell
+docker compose up -d --build
+.\tests\performance\run-k6.ps1 -Profile smoke
+.\tests\performance\run-k6.ps1 -Profile load
+.\tests\performance\run-k6.ps1 -Profile stress
+.\tests\performance\run-k6.ps1 -Profile volume100
+```
+
+El script prepara las mismas cuentas aisladas usadas por OWASP ZAP. Los archivos JSON se generan en `tests/performance/reports` y se excluyen de Git porque corresponden a evidencia de cada ejecucion.
+
+No ejecute `load` o `stress` contra produccion sin autorizacion y monitoreo de infraestructura.
