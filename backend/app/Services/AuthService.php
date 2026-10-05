@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\OlderAdult;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -24,9 +25,15 @@ class AuthService
             ], 403));
         }
 
+        $expirationMinutes = (int) config('sanctum.expiration', 60);
+
         return [
             'user' => $user,
-            'token' => $user->createToken('API Token')->plainTextToken,
+            'token' => $user->createToken(
+                'API Token',
+                ['*'],
+                now()->addMinutes($expirationMinutes),
+            )->plainTextToken,
         ];
     }
 
@@ -51,16 +58,28 @@ class AuthService
         if (! empty($data['new_password'])) {
             $this->validateCurrentPassword($user, $data['current_password'] ?? '');
             $data['password'] = Hash::make($data['new_password']);
+            $passwordChanged = true;
         }
 
         unset($data['current_password'], $data['new_password'], $data['new_password_confirmation']);
         $user->update($data);
+
+        if ($passwordChanged ?? false) {
+            $this->revokeCredentials($user);
+        }
 
         if ($this->isFamilyRole($user->role) && $previousName !== $user->name) {
             $this->updateFamilyCaregiverName($user, $previousName);
         }
 
         return $user->refresh();
+    }
+
+    private function revokeCredentials(User $user): void
+    {
+        $user->tokens()->delete();
+        DB::table('sessions')->where('user_id', $user->getKey())->delete();
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
     }
 
     private function validateCurrentPassword(User $user, string $currentPassword): void

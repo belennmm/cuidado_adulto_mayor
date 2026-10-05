@@ -1,1 +1,15 @@
 tmp/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sql
+*.dump
+*.backup
+*.bak
+backups/
+tests/performance/reports/
+tests/security/reports/
