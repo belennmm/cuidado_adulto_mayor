@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+
+pwsh -NoProfile -File tools/scan-secrets.ps1

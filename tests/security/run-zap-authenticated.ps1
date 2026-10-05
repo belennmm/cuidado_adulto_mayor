@@ -3,7 +3,7 @@ param(
     [string]$AdminEmail = "zap.admin@example.test",
     [string]$AdminPassword = "ZapAdmin-2026!",
     [string]$ProfessionalEmail = "zap.professional@example.test",
-    [string]$ProfessionalPassword = "ZapProfessional-2026!",
+    [string]$ProfessionalPassword = "ZapPro-2026!",
     [string]$FamilyEmail = "zap.family@example.test",
     [string]$FamilyPassword = "ZapFamily-2026!",
     [string]$ReportDirectory = "$PSScriptRoot\reports\authenticated",

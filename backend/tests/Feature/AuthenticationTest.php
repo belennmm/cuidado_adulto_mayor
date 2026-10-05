@@ -109,7 +109,7 @@ class AuthenticationTest extends TestCase
         $payload = [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => 'password123',
+            'password' => 'Secure-Test!123',
             'role' => 'cuidador_profesional',
             'phone' => fake()->numerify('########'),
             'privacy_consent' => true,

@@ -68,7 +68,7 @@ class AdminUserController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
-        $user->delete();
+        $this->userService->delete($user);
 
         return response()->json(['message' => 'Usuario eliminado correctamente.']);
     }

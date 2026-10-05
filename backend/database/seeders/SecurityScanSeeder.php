@@ -19,7 +19,7 @@ class SecurityScanSeeder extends Seeder
             [
                 'name' => 'ZAP Professional',
                 'email' => 'zap.professional@example.test',
-                'password' => 'ZapProfessional-2026!',
+                'password' => 'ZapPro-2026!',
                 'role' => 'profesional',
             ],
             [

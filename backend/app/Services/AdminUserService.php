@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserService
@@ -37,6 +38,8 @@ class AdminUserService
 
     public function update(User $user, array $data): User
     {
+        $credentialsMustBeRevoked = ! empty($data['password'])
+            || (array_key_exists('is_approved', $data) && ! $data['is_approved']);
         $data['role'] = $this->normalizeRole($data['role']);
 
         if ($data['role'] === 'admin') {
@@ -50,6 +53,10 @@ class AdminUserService
         }
 
         $user->update($data);
+
+        if ($credentialsMustBeRevoked) {
+            $this->revokeCredentials($user);
+        }
 
         return $user;
     }
@@ -69,6 +76,12 @@ class AdminUserService
             ], 422));
         }
 
+        $this->delete($user);
+    }
+
+    public function delete(User $user): void
+    {
+        $this->revokeCredentials($user);
         $user->delete();
     }
 
@@ -79,5 +92,12 @@ class AdminUserService
             'cuidador_familiar' => 'familiar',
             default => $role,
         };
+    }
+
+    private function revokeCredentials(User $user): void
+    {
+        $user->tokens()->delete();
+        DB::table('sessions')->where('user_id', $user->getKey())->delete();
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
     }
 }

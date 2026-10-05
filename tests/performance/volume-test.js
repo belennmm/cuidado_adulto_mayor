@@ -47,7 +47,7 @@ const accounts = {
   },
   professional: {
     email: __ENV.PROFESSIONAL_EMAIL || 'zap.professional@example.test',
-    password: __ENV.PROFESSIONAL_PASSWORD || 'ZapProfessional-2026!',
+    password: __ENV.PROFESSIONAL_PASSWORD || 'ZapPro-2026!',
   },
   family: {
     email: __ENV.FAMILY_EMAIL || 'zap.family@example.test',

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AdminUserRequest extends FormRequest
 {
@@ -19,7 +20,7 @@ class AdminUserRequest extends FormRequest
         $updating = $this->route()?->getActionMethod() === 'update';
         $rules = [
             'name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user instanceof User ? $user->id : null)],
-            'password' => [$updating ? 'nullable' : 'required', 'string', 'min:8'],
+            'password' => [$updating ? 'nullable' : 'required', Password::min(12)->mixedCase()->letters()->numbers()->symbols()],
             'role' => ['required', Rule::in(['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'])],
             'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date'],
         ];

@@ -10,26 +10,31 @@ services:
         condition: service_healthy
     environment:
       APP_NAME: "${APP_NAME:-Cuidado Adulto Mayor}"
-      APP_ENV: "${APP_ENV:-local}"
-      APP_KEY: "${APP_KEY:-base64:IhexPh7kbw4GKKdoMBKAiFXr3T973qlKTai2wGx5VxQ=}"
-      APP_DEBUG: "${APP_DEBUG:-true}"
-      APP_URL: "${APP_URL:-http://localhost:8080}"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_URL: "${APP_URL:?APP_URL is required}"
       APP_TIMEZONE: "${APP_TIMEZONE:-America/Guatemala}"
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: "${POSTGRES_DB:-cuidado_adulto_mayor}"
       DB_USERNAME: "${POSTGRES_USER:-cuidado_user}"
-      DB_PASSWORD: "${POSTGRES_PASSWORD:-cuidado_password}"
-      DB_SSLMODE: "${DB_SSLMODE:-disable}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
+      DB_SSLMODE: "${DB_SSLMODE:-require}"
       CACHE_STORE: file
       QUEUE_CONNECTION: database
       SESSION_DRIVER: database
-      # Los seeders deben ejecutarse explicitamente en entornos desechables;
-      # nunca durante un reinicio normal del backend.
       RUN_SEEDERS: "${RUN_SEEDERS:-false}"
       SANCTUM_STATEFUL_DOMAINS: "${SANCTUM_STATEFUL_DOMAINS:-localhost,localhost:3000,localhost:8080,127.0.0.1,127.0.0.1:3000,127.0.0.1:8080}"
-      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:?CORS_ALLOWED_ORIGINS is required}"
+      SANCTUM_EXPIRATION: "${SANCTUM_EXPIRATION:-60}"
+      HASH_DRIVER: argon2id
+      SESSION_SECURE_COOKIE: "${SESSION_SECURE_COOKIE:-true}"
+      SESSION_HTTP_ONLY: "${SESSION_HTTP_ONLY:-true}"
+      SESSION_SAME_SITE: "${SESSION_SAME_SITE:-lax}"
+      SESSION_ENCRYPT: "${SESSION_ENCRYPT:-true}"
+      LOG_LEVEL: "${LOG_LEVEL:-warning}"
     ports:
       - "${BACKEND_PORT:-8080}:80"
     volumes:
@@ -58,7 +63,7 @@ services:
     environment:
       POSTGRES_DB: "${POSTGRES_DB:-cuidado_adulto_mayor}"
       POSTGRES_USER: "${POSTGRES_USER:-cuidado_user}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-cuidado_password}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -78,8 +83,8 @@ services:
     depends_on:
       - postgres
     environment:
-      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL:-admin@example.com}"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD:-admin}"
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL:?PGADMIN_DEFAULT_EMAIL is required}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD:?PGADMIN_DEFAULT_PASSWORD is required}"
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     volumes:
