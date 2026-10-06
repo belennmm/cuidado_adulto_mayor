@@ -22,7 +22,7 @@ Route::get('/ping', function () {
     return response()->json(['ok' => true]);
 });
 
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
