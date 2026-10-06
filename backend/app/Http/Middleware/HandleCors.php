@@ -16,7 +16,7 @@ class HandleCors
 
         if ($request->isMethod('OPTIONS')) {
             if (! $allowedOrigin) {
-                return response()->json(['message' => 'Origen no permitido.'], 403);
+                return $this->withoutCorsPermission(response('', 204));
             }
 
             return $this->withCorsHeaders(response('', 204), $allowedOrigin);
@@ -24,7 +24,9 @@ class HandleCors
 
         $response = $next($request);
 
-        return $allowedOrigin ? $this->withCorsHeaders($response, $allowedOrigin) : $response;
+        return $allowedOrigin
+            ? $this->withCorsHeaders($response, $allowedOrigin)
+            : $this->withoutCorsPermission($response);
     }
 
     private function withCorsHeaders(Response $response, string $origin): Response
@@ -34,6 +36,21 @@ class HandleCors
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
         $response->headers->set('Access-Control-Max-Age', '600');
         $response->headers->set('Vary', 'Origin');
+
+        return $response;
+    }
+
+    private function withoutCorsPermission(Response $response): Response
+    {
+        foreach ([
+            'Access-Control-Allow-Origin',
+            'Access-Control-Allow-Methods',
+            'Access-Control-Allow-Headers',
+            'Access-Control-Allow-Credentials',
+            'Access-Control-Max-Age',
+        ] as $header) {
+            $response->headers->remove($header);
+        }
 
         return $response;
     }

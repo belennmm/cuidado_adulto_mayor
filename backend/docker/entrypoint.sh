@@ -15,8 +15,11 @@ if [ "${APP_ENV:-production}" = "production" ] && [ "${APP_DEBUG:-false}" != "fa
     exit 1
 fi
 
-# Clear all compiled Laravel caches so route/config changes are picked up
-# even when bootstrap/cache is persisted as a Docker volume.
+# Remove compiled package/provider manifests before Laravel boots. This also
+# handles persisted cache volumes after a Composer dependency is removed.
+find bootstrap/cache -maxdepth 1 -type f -name '*.php' -delete
+
+# Clear all remaining Laravel caches so route/config changes are picked up.
 php artisan optimize:clear
 php artisan migrate --force
 
