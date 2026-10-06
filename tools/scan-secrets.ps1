@@ -6,7 +6,9 @@ $ErrorActionPreference = "Stop"
 $blockedExtensions = @(".sql", ".dump", ".backup", ".bak", ".pem", ".key", ".p12", ".pfx")
 $secretPatterns = @(
     '(?i)-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----',
-    '(?i)(api[_-]?key|secret|password|token)\s*[:=]\s*["'']?[A-Za-z0-9_+/=-]{20,}',
+    # Keep the value on the same line. Using \s* here also consumed line breaks,
+    # so an empty PASSWORD= in .env.example borrowed the following setting.
+    '(?im)^(?:[^\r\n:=]*(?:api[_-]?key|secret|password|token))\s*[:=][ \t]*["'']?[A-Za-z0-9_+/=-]{20,}["'']?[ \t]*(?:#.*)?$',
     'AKIA[0-9A-Z]{16}',
     'gh[pousr]_[A-Za-z0-9]{30,}'
 )

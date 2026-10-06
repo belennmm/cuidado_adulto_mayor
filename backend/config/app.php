@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'max_request_bytes' => (int) env('MAX_REQUEST_BYTES', 2 * 1024 * 1024),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
