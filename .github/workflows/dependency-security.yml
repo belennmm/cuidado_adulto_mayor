@@ -11,6 +11,12 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      CACHE_STORE: array
+      SESSION_DRIVER: array
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
