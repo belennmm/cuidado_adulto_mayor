@@ -21,7 +21,7 @@ jobs:
           output-file: cuidado-adulto-mayor.cdx.json
           upload-artifact: false
       - name: Upload version SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-${{ github.ref_name }}
           path: cuidado-adulto-mayor.cdx.json
