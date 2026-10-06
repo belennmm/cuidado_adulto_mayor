@@ -17,7 +17,13 @@ jobs:
         with:
           php-version: "8.3"
           tools: composer:2.10.2
+          extensions: mbstring, pdo_sqlite
           coverage: none
+      - name: Prepare clean Laravel test environment
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          find bootstrap/cache -maxdepth 1 -type f -name '*.php' -delete
       - name: Install locked PHP dependencies
         working-directory: backend
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -69,7 +75,7 @@ jobs:
           load: true
           tags: cuidado-${{ matrix.name }}:security-scan
       - name: Reject high or critical image vulnerabilities
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: cuidado-${{ matrix.name }}:security-scan
           format: table

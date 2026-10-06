@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Generate repository SBOM (CycloneDX JSON)
-        uses: anchore/sbom-action@v0.20.8
+        uses: anchore/sbom-action@v0.24.0
         with:
           path: .
           format: cyclonedx-json
