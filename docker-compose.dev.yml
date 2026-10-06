@@ -1,0 +1,10 @@
+services:
+  backend:
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_SSLMODE: prefer
+      SESSION_SECURE_COOKIE: "false"
+  postgres:
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"

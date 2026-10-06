@@ -40,6 +40,9 @@ class AuthService
             ], 403));
         }
 
+        // A valid authentication resets only this identity/IP failure bucket.
+        RateLimiter::clear($rateLimitKey);
+
         $expirationMinutes = (int) config('sanctum.expiration', 60);
 
         return [

@@ -35,13 +35,25 @@ services:
       SESSION_SAME_SITE: "${SESSION_SAME_SITE:-lax}"
       SESSION_ENCRYPT: "${SESSION_ENCRYPT:-true}"
       LOG_LEVEL: "${LOG_LEVEL:-warning}"
+      MAX_REQUEST_BYTES: "${MAX_REQUEST_BYTES:-2097152}"
     ports:
-      - "${BACKEND_PORT:-8080}:80"
+      - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
     volumes:
       - backend_storage:/var/www/html/storage
       - backend_cache:/var/www/html/bootstrap/cache
     networks:
       - cuidado_network
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    cpus: 1.0
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+      - /var/log/apache2:size=32m,noexec,nosuid
+      - /var/run/apache2:size=4m,noexec,nosuid
+      - /var/lock/apache2:size=4m,noexec,nosuid
 
   frontend:
     build:
@@ -52,9 +64,18 @@ services:
     depends_on:
       - backend
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:8080"
     networks:
       - cuidado_network
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 100
+    mem_limit: 128m
+    cpus: 0.50
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+      - /var/cache/nginx:size=32m,noexec,nosuid
 
   postgres:
     image: postgres:16-alpine
@@ -64,8 +85,6 @@ services:
       POSTGRES_DB: "${POSTGRES_DB:-cuidado_adulto_mayor}"
       POSTGRES_USER: "${POSTGRES_USER:-cuidado_user}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -75,8 +94,13 @@ services:
       retries: 5
     networks:
       - cuidado_network
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    cpus: 1.0
 
   pgadmin:
+    profiles: ["development"]
     image: dpage/pgadmin4:8
     container_name: cuidado_pgadmin
     restart: unless-stopped
@@ -86,11 +110,15 @@ services:
       PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL:?PGADMIN_DEFAULT_EMAIL is required}"
       PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD:?PGADMIN_DEFAULT_PASSWORD is required}"
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - cuidado_network
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.50
 
 networks:
   cuidado_network:

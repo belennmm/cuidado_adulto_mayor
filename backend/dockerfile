@@ -23,10 +23,16 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
-    && printf 'ServerTokens Prod\nServerSignature Off\nHeader always unset Server\n' > /etc/apache2/conf-available/zz-security-hardening.conf \
+    && sed -ri 's/^Listen 80$/Listen 8080/' /etc/apache2/ports.conf \
+    && sed -ri 's/<VirtualHost \*:80>/<VirtualHost *:8080>/' /etc/apache2/sites-available/*.conf \
+    && printf 'ServerTokens Prod\nServerSignature Off\nHeader always unset Server\nTraceEnable Off\nTimeout 30\nLimitRequestBody 2097152\n<Directory /var/www/html/public>\n    Options -Indexes -Includes -ExecCGI\n    AllowOverride All\n    Require all granted\n    <LimitExcept GET HEAD POST PUT PATCH DELETE OPTIONS>\n        Require all denied\n    </LimitExcept>\n</Directory>\n' > /etc/apache2/conf-available/zz-security-hardening.conf \
     && a2enconf zz-security-hardening \
-    && printf 'expose_php=Off\nsession.cookie_httponly=1\nsession.cookie_samesite=Lax\n' > /usr/local/etc/php/conf.d/security-hardening.ini
+    && printf 'expose_php=Off\ndisplay_errors=Off\nlog_errors=On\npost_max_size=2M\nupload_max_filesize=2M\nmax_execution_time=30\nmax_input_time=30\nmax_input_vars=1000\nmemory_limit=128M\nsession.cookie_httponly=1\nsession.cookie_secure=1\nsession.cookie_samesite=Lax\nallow_url_include=Off\n' > /usr/local/etc/php/conf.d/security-hardening.ini \
+    && mkdir -p /var/run/apache2 /var/lock/apache2 \
+    && chown -R www-data:www-data /var/run/apache2 /var/lock/apache2 /var/log/apache2 /var/www/html
 
-EXPOSE 80
+EXPOSE 8080
+
+USER www-data
 
 ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]
