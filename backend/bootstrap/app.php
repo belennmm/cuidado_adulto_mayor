@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Use the application's strict CORS middleware exclusively. Laravel's
+        // default middleware would otherwise add its own headers afterwards.
+        $middleware->remove(\Illuminate\Http\Middleware\HandleCors::class);
+
         $middleware->prepend(\App\Http\Middleware\RejectDisallowedMethods::class);
         $middleware->prepend(\App\Http\Middleware\EnforceRequestSize::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
