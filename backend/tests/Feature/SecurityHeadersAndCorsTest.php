@@ -53,4 +53,30 @@ class SecurityHeadersAndCorsTest extends TestCase
 
         $this->assertFalse($response->headers->has('Access-Control-Allow-Origin'));
     }
+
+    public function test_unknown_api_route_returns_normalized_error_without_trace(): void
+    {
+        $response = $this->getJson('/api/does-not-exist')
+            ->assertNotFound()
+            ->assertExactJson(['message' => 'Recurso no encontrado.']);
+
+        $this->assertStringNotContainsString('trace', strtolower($response->getContent()));
+    }
+
+    public function test_disallowed_http_method_is_rejected(): void
+    {
+        $this->call('TRACE', '/api/ping')
+            ->assertStatus(405)
+            ->assertJson(['message' => 'Metodo HTTP no permitido.']);
+    }
+
+    public function test_oversized_request_is_rejected_before_controller_execution(): void
+    {
+        config(['app.max_request_bytes' => 10]);
+
+        $this->withServerVariables(['CONTENT_LENGTH' => 11])
+            ->postJson('/api/login', ['email' => 'a@example.com'])
+            ->assertStatus(413)
+            ->assertExactJson(['message' => 'La solicitud excede el tamano permitido.']);
+    }
 }
