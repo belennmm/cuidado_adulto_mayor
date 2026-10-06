@@ -1,17 +1,34 @@
-FROM php:8.3-apache
+FROM php:8.4.26-apache-bookworm AS base
 
 WORKDIR /var/www/html
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libpq-dev libonig-dev \
-    && docker-php-ext-install mbstring pdo_pgsql pgsql \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends git unzip libpq-dev libonig-dev libsqlite3-dev \
+    && docker-php-ext-install mbstring pdo_pgsql pdo_sqlite pgsql \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.10.2 /usr/bin/composer /usr/bin/composer
+
+FROM base AS testing
 
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+COPY . .
+
+RUN cp .env.example .env \
+    && composer dump-autoload --optimize \
+    && chmod +x docker/entrypoint.sh \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+CMD ["php", "artisan", "test"]
+
+FROM base AS production
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 COPY . .
 

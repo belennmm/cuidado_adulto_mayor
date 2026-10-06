@@ -40,6 +40,8 @@ class AuthService
             ], 403));
         }
 
+        RateLimiter::clear($rateLimitKey);
+
         $expirationMinutes = (int) config('sanctum.expiration', 60);
 
         return [

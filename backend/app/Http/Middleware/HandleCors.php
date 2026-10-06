@@ -11,19 +11,18 @@ class HandleCors
     public function handle(Request $request, Closure $next): Response
     {
         $origin = $request->headers->get('Origin');
-        $allowedOrigins = array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', ''))));
+        $allowedOrigins = config('cors.allowed_origins', []);
         $allowedOrigin = in_array($origin, $allowedOrigins, true) ? $origin : null;
 
         if ($request->isMethod('OPTIONS')) {
-            abort_unless($allowedOrigin, 403, 'Origen no permitido.');
+            if (! $allowedOrigin) {
+                return response('', 204);
+            }
 
             return $this->withCorsHeaders(response('', 204), $allowedOrigin);
         }
 
-            $response = response('', 204);
-        } else {
-            $response = $next($request);
-        }
+        $response = $next($request);
 
         return $allowedOrigin ? $this->withCorsHeaders($response, $allowedOrigin) : $response;
     }

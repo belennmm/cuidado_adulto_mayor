@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: dockerfile
+      target: production
     container_name: cuidado_backend
     restart: unless-stopped
     depends_on:
@@ -43,6 +44,17 @@ services:
     networks:
       - cuidado_network
 
+  backend-test:
+    profiles: ["test"]
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+      target: testing
+    environment:
+      APP_ENV: testing
+    networks:
+      - cuidado_network
+
   frontend:
     build:
       context: ./frontend
@@ -57,7 +69,7 @@ services:
       - cuidado_network
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.15-alpine
     container_name: cuidado_postgres
     restart: unless-stopped
     environment:
@@ -77,7 +89,7 @@ services:
       - cuidado_network
 
   pgadmin:
-    image: dpage/pgadmin4:8
+    image: dpage/pgadmin4:9.18
     container_name: cuidado_pgadmin
     restart: unless-stopped
     depends_on:
