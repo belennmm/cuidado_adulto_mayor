@@ -26,6 +26,11 @@ jobs:
     env:
       PHASE: ${{ inputs.phase || 'demo' }}
       TAREA5_REPORT_DIR: tests/automation/ci-reports
+      APP_ENV: testing
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      CACHE_STORE: array
+      SESSION_DRIVER: array
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -38,7 +43,9 @@ jobs:
           node-version: '22'
       - name: Instalar dependencias del backend
         working-directory: backend
-        run: composer install --no-interaction --prefer-dist --no-progress
+        run: |
+          cp .env.example .env
+          composer install --no-interaction --prefer-dist --no-progress
       - name: Pruebas y experimento de regresion
         run: node tests/automation/run.mjs "$PHASE"
       - name: Suite completa del backend

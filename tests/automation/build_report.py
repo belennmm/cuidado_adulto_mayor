@@ -72,7 +72,7 @@ body('<b>Entrega:</b> investigación comparativa, seis pruebas específicas, aut
 page('1. Objetivo y estrategia')
 body('La estrategia comprueba interacciones reales entre la API de Organízate, sus validadores, servicios, modelos y persistencia. Además, protege tres comportamientos implementados: impedir horarios invertidos, conservar el rol al actualizar el perfil y bloquear el inicio de sesión de cuidadores pendientes de aprobación.')
 sub('Contexto técnico')
-body('El proyecto utiliza Laravel 11, PHP 8.2, Sanctum y Eloquent; el frontend utiliza HTML, CSS y JavaScript con módulos ES. La base de datos del entorno de aplicación es PostgreSQL. Para pruebas se emplea SQLite en memoria, configurada en backend/phpunit.xml. Los paquetes locales verificados son PHPUnit 11.5.55 y Vitest 3.2.7, con jsdom y Testing Library.')
+body('El repositorio actual declara PHP ^8.3, Laravel ^13.0, Sanctum ^4.3, PHPUnit ^12.0 y Vitest ^5.0.3; el frontend usa HTML, CSS y JavaScript con módulos ES. La aplicación emplea PostgreSQL y las pruebas SQLite en memoria, mediante backend/phpunit.xml. La instalación local anterior conservaba PHP 8.2/Laravel 11, PHPUnit 11.5.55 y Vitest 3.2.7: esos son los runtimes de la evidencia local. El CI instala las versiones de los lockfiles actuales con PHP 8.3 y Node 22.')
 sub('Capas y criterios de aceptación')
 table(['Capa', 'Verificación y alcance'], [
     ['Integración', 'I01-I03: peticiones HTTP de prueba ejecutadas en Laravel, servicios y modelos reales, migraciones y consultas a SQLite. No se reemplaza la base de datos ni la lógica de negocio con mocks.'],
@@ -154,7 +154,7 @@ body('La fase corrected deja de cargar la copia modificada y recupera la regla o
 code('node tests/automation/run.mjs baseline\nnode tests/automation/run.mjs regression  # salida 1 esperada\nnode tests/automation/run.mjs corrected\nnode tests/automation/run.mjs demo        # valida todo el ciclo')
 
 page('7. Proceso de integración continua')
-body('Configuración: .github/workflows/tarea5-tests.yml. Eventos: push, pull_request y workflow_dispatch. Dos jobs en Ubuntu preparan PHP 8.2/Node 22 y ejecutan los comandos del repositorio. El workflow tiene permiso contents:read y no despliega la aplicación.')
+body('Configuración: .github/workflows/tarea5-tests.yml. Eventos: push, pull_request y workflow_dispatch. Dos jobs en Ubuntu preparan PHP 8.3/Node 22 y ejecutan los comandos del repositorio. El workflow tiene permiso contents:read y no despliega la aplicación.')
 table(['Etapa', 'Acción y evidencia'], [
     ['Preparación backend', 'Checkout; PHP con mbstring, PDO SQLite, DOM y XML; Node; composer install desde composer.lock.'],
     ['Integración/regresión', 'node tests/automation/run.mjs demo: verifica línea base, detecta el fallo deliberado y verifica la recuperación. Un fallo inesperado devuelve código no cero.'],
@@ -188,7 +188,7 @@ body('El backend completo incluye los seis casos nuevos; no deben sumarse nuevam
 sub('Tiempo y esfuerzo')
 body('El experimento de tres fases consumió aproximadamente 8.29 segundos de procesos medidos. La suite completa del backend requirió 64.50 segundos y Vitest 35.34 segundos; estos últimos procesos se ejecutaron de forma concurrente. El esfuerzo principal consistió en elegir fronteras reales, preparar datos y aserciones, aislar la mutación, manejar códigos de salida y producir evidencia legible. No se dispone de un registro de horas-persona del equipo, por lo que no se declara una cifra ficticia.')
 sub('Problemas encontrados y respuesta')
-body('<b>Ruta del ejecutable:</b> la primera invocación de PHPUnit omitía el último segmento; se utilizó vendor/phpunit/phpunit/phpunit con cwd explícito desde el runner.<br/><b>Estado cambiante del proyecto:</b> una ejecución exploratoria amplia coincidió con cambios de configuración del backend y mostró errores de hash y preflight CORS. Se repitió la suite sobre el estado actualizado y terminó con 186 pruebas y cero fallos; no se atribuyen esas correcciones al código de esta tarea.<br/><b>Falso positivo de mutación:</b> se añadió una comprobación estricta del fallo esperado y de cero errores para rechazar crashes.<br/><b>Reportes históricos:</b> se separó el directorio de CI del directorio de evidencia local.')
+body('<b>Ruta del ejecutable:</b> la primera invocación de PHPUnit omitía el último segmento; se fijó vendor/phpunit/phpunit/phpunit y cwd explícito.<br/><b>Estado cambiante del proyecto:</b> una ejecución exploratoria coincidió con cambios del backend y mostró errores de hash/CORS. La repetición sobre el estado actualizado terminó con 186 pruebas aprobadas; no se atribuyen esas correcciones a esta tarea.<br/><b>Dependencias del CI:</b> la primera ejecución remota instaló PHPUnit 12.5.38 y detectó que los lockfiles exigían PHP &gt;=8.3. Se corrigió setup-php de 8.2 a 8.3, sin ignorar requisitos de plataforma.<br/><b>Mutación y reportes:</b> se verificó el fallo exacto, se conservaron hashes del original y se separó evidencia local de CI.')
 sub('Utilidad observada')
 body('PHPUnit dio una explicación precisa del contrato roto y comprobó persistencia. Vitest validó la suite JS existente. El runner produjo registros y manifiestos reproducibles, y Actions integra su ejecución con cambios del repositorio. El fallo deliberado evidencia sensibilidad a una regresión concreta; no prueba que toda regresión posible esté cubierta.')
 
@@ -226,6 +226,8 @@ refs = [
     ('6', 'GitHub - Understanding GitHub Actions', 'https://docs.github.com/en/actions/get-started/understand-github-actions'),
     ('7', 'GitLab - Get started with CI/CD', 'https://docs.gitlab.com/ci/'),
     ('8', 'Jenkins - Pipeline', 'https://www.jenkins.io/doc/book/pipeline/'),
+    ('9', 'Laravel 13 - HTTP Tests (versión del CI)', 'https://laravel.com/docs/13.x/http-tests'),
+    ('10', 'PHPUnit 12.5 - CLI (versión del CI)', 'https://docs.phpunit.de/en/12.5/textui.html'),
 ]
 for n, title, url in refs:
     story.append(p(f'[{n}] {title}. <link href="{url}" color="#127B80">{url}</link>', 'SmallES'))

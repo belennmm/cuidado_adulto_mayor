@@ -4,7 +4,7 @@ Seis pruebas nuevas en `backend/tests/Feature/Tarea5`: I01-I03 verifican integra
 
 ## Preparación
 
-PHP 8.2 con PDO SQLite, mbstring, DOM y XML, Composer, Node 22 y npm. Desde la raíz:
+PHP 8.3 con PDO SQLite, mbstring, DOM y XML, Composer, Node 22 y npm. Las dependencias bloqueadas actuales requieren Laravel 13 y PHPUnit 12; la instalación local anterior conservaba Laravel 11/PHPUnit 11. Desde la raíz:
 
 ```powershell
 composer install --working-dir=backend --no-interaction --prefer-dist
