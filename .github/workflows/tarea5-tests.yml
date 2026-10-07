@@ -1,0 +1,82 @@
+name: Tarea 5 - Integracion y regresion
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: Ejecucion para la demostracion (regression falla deliberadamente)
+        required: true
+        type: choice
+        default: demo
+        options:
+          - demo
+          - baseline
+          - regression
+          - corrected
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PHASE: ${{ inputs.phase || 'demo' }}
+      TAREA5_REPORT_DIR: tests/automation/ci-reports
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite, sqlite3, dom, xml
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependencias del backend
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Pruebas y experimento de regresion
+        run: node tests/automation/run.mjs "$PHASE"
+      - name: Suite completa del backend
+        if: success() && env.PHASE == 'demo'
+        run: node tests/automation/run.mjs full
+      - name: Conservar evidencia incluso si hay fallos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarea5-backend-${{ github.run_id }}-${{ inputs.phase || 'demo' }}
+          path: tests/automation/ci-reports/
+          retention-days: 30
+      - name: Resumen del proceso
+        if: always()
+        run: |
+          echo "## Tarea 5: $PHASE" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Ver artefactos: reportes JUnit, registros, diff y hashes de la clase original.' >> "$GITHUB_STEP_SUMMARY"
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Preparar frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Suite complementaria de frontend
+        working-directory: frontend
+        run: npm test -- --reporter=default --reporter=junit --outputFile=../tests/automation/ci-reports/frontend.xml
+      - name: Conservar reporte del frontend
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarea5-frontend-${{ github.run_id }}
+          path: tests/automation/ci-reports/frontend.xml
+          retention-days: 30
