@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      PHASE: ${{ inputs.phase || 'demo' }}
+      PHASE: ${{ inputs.phase || 'regression' }}
       TAREA5_REPORT_DIR: tests/automation/ci-reports
       APP_ENV: testing
       DB_CONNECTION: sqlite
@@ -55,7 +55,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: tarea5-backend-${{ github.run_id }}-${{ inputs.phase || 'demo' }}
+          name: tarea5-backend-${{ github.run_id }}-${{ env.PHASE }}
           path: tests/automation/ci-reports/
           retention-days: 30
       - name: Resumen del proceso
