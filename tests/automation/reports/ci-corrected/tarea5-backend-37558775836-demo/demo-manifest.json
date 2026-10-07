@@ -1,0 +1,63 @@
+{
+  "executed_at": "2026-10-07T01:47:14.389Z",
+  "mode": "demo",
+  "results": [
+    {
+      "phase": "baseline",
+      "exit_code": 0,
+      "elapsed_seconds": 1.125,
+      "command": [
+        "php",
+        "vendor/phpunit/phpunit/phpunit",
+        "--configuration",
+        "phpunit.xml",
+        "--colors=never",
+        "--log-junit",
+        "/home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/tests/automation/ci-reports/baseline.xml",
+        "--testdox",
+        "tests/Feature/Tarea5"
+      ],
+      "source_sha256": "7233551c99c09f9de152c6b7cf54e410af1bdeb3428e05595841d55cbc06c8e8"
+    },
+    {
+      "phase": "regression",
+      "exit_code": 1,
+      "elapsed_seconds": 1.026,
+      "command": [
+        "php",
+        "-d",
+        "auto_prepend_file=/home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/tests/automation/ci-reports/mutation/bootstrap.php",
+        "vendor/phpunit/phpunit/phpunit",
+        "--configuration",
+        "phpunit.xml",
+        "--colors=never",
+        "--log-junit",
+        "/home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/tests/automation/ci-reports/regression.xml",
+        "--testdox",
+        "tests/Feature/Tarea5"
+      ],
+      "source_sha256": "7233551c99c09f9de152c6b7cf54e410af1bdeb3428e05595841d55cbc06c8e8"
+    },
+    {
+      "phase": "corrected",
+      "exit_code": 0,
+      "elapsed_seconds": 1.084,
+      "command": [
+        "php",
+        "vendor/phpunit/phpunit/phpunit",
+        "--configuration",
+        "phpunit.xml",
+        "--colors=never",
+        "--log-junit",
+        "/home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/tests/automation/ci-reports/corrected.xml",
+        "--testdox",
+        "tests/Feature/Tarea5"
+      ],
+      "source_sha256": "7233551c99c09f9de152c6b7cf54e410af1bdeb3428e05595841d55cbc06c8e8"
+    }
+  ],
+  "source_restored": true,
+  "source_sha256_before": "7233551c99c09f9de152c6b7cf54e410af1bdeb3428e05595841d55cbc06c8e8",
+  "source_sha256_after": "7233551c99c09f9de152c6b7cf54e410af1bdeb3428e05595841d55cbc06c8e8",
+  "experiment_success": true
+}

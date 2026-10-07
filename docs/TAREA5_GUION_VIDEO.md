@@ -4,6 +4,8 @@ Participantes: Luis Lee (241203), Belen Monterroso (231497), Sebastian Lemus (24
 
 Preparación: abrir el PDF, las dos clases de pruebas, el workflow y una terminal en la raíz del proyecto. En GitHub, abrir Actions y los artefactos de la ejecución de esta tarea. Aumentar el tamaño de fuente; ocultar credenciales. El video y su enlace son el material pendiente de entrega.
 
+Los enlaces de las ejecuciones verde, roja y verde están en `docs/TAREA5_EVIDENCIA.md`. Abrirlos antes de grabar permite mostrar los resultados remotos sin esperar nuevas instalaciones durante el video.
+
 | Tiempo | Responsable sugerido | Mostrar y explicar |
 |---|---|---|
 | 0:00-0:50 | Luis Lee | Organízate, Laravel/PHP, frontend JS y PostgreSQL. Objetivo: verificar interacción real y preservar reglas. Comparar PHPUnit, Vitest y Playwright; justificar PHPUnit + Vitest. |

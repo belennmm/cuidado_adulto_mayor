@@ -16,7 +16,7 @@ REPORTS = ROOT / 'tests/automation/reports'
 manifest = json.loads((REPORTS / 'demo-manifest.json').read_text(encoding='utf-8'))
 full = json.loads((REPORTS / 'full-manifest.json').read_text(encoding='utf-8'))
 ci_path = REPORTS / 'github-actions.json'
-ci = json.loads(ci_path.read_text(encoding='utf-8')) if ci_path.exists() else None
+ci = json.loads(ci_path.read_text(encoding='utf-8-sig')) if ci_path.exists() else None
 
 def junit(name):
     tree = ET.parse(REPORTS / (name + '.xml')).getroot()
@@ -168,10 +168,12 @@ sub('Interpretación del experimento en CI')
 body('En demo, la fase regression falla por diseño y el orquestador valida esa detección antes de continuar. El job completo termina verde solo si aprueban baseline, la comprobación del fallo esperado, corrected y la suite completa. En workflow_dispatch, elegir regression por separado hace que su código 1 se propague y el job aparezca rojo. Los artefactos se guardan en ambos casos.')
 sub('Estado de la evidencia remota')
 if ci:
-    body('Ejecución de GitHub Actions registrada en el archivo github-actions.json. Los enlaces y estados del servicio se conservaron para contrastarlos con los resultados locales.')
+    body('Ejecuciones reales por push, registradas en github-actions.json. La fase de regresión se seleccionó temporalmente en el workflow de la rama de entrega y después se recuperó demo; el workflow final conserva demo como valor predeterminado. Cada ejecución descargada incluye estados de jobs, logs y artefactos originales.')
+    ci_rows = []
     for run in ci.get('runs', []):
-        body(f"<b>{escape(str(run.get('name','Tarea 5')))}:</b> {escape(str(run.get('conclusion','pendiente')))}. "
-             f"<link href='{escape(run['html_url'])}' color='#127B80'>{escape(run['html_url'])}</link>")
+        ci_rows.append([run['phase'], run['conclusion'], f"<link href='{escape(run['html_url'])}' color='#127B80'>Ejecución {run['id']}</link>"])
+    table(['Fase remota', 'Estado', 'Enlace verificable'], ci_rows, [140,85,270])
+    body('La ejecución roja de ci-regression falla en R01: esperaba HTTP 422 y recibió 201; los otros cinco casos aprueban y no hay errores de infraestructura. Los jobs verdes ejecutan el experimento completo, 186 pruebas de backend y 123 de frontend. La regresión deliberada queda retirada del comportamiento predeterminado.')
 else:
     body('El workflow está implementado y los mismos comandos fueron verificados localmente. Al generar esta versión todavía no se ha conservado una ejecución remota de GitHub Actions. La evidencia local no se presenta como ejecución del servicio remoto. La publicación de la rama activará el evento push.')
 
@@ -201,7 +203,7 @@ table(['Puede detectar', 'Fuera del alcance actual'], [
     ['Fallos de instalación y ejecución en el pipeline.', 'Disponibilidad de servicios externos, latencia de red y desempeño productivo.'],
 ], [247,248])
 sub('Conclusiones sustentadas')
-body('<b>1.</b> Las tres integraciones aprobadas comprueban efectos entre API y persistencia: token-perfil, adulto-medicación-inventario y nota-asignación. Su evidencia va más allá de verificar un método aislado.<br/><b>2.</b> Los tres casos de regresión fijan comportamientos con consecuencias operativas y de acceso. El experimento de horarios demuestra que R01 detecta la eliminación de la regla y que la corrección recupera el comportamiento.<br/><b>3.</b> Se mantendrían PHPUnit/Laravel y Vitest: están instalados, ofrecen reportes utilizables y aprobaron sus suites. Se mantendría Actions por su ajuste al repositorio GitHub y automatización declarativa; su estado remoto debe verificarse en la evidencia del servicio.<br/><b>4.</b> SQLite permite aislamiento y rapidez, pero no sustituye validar PostgreSQL. Una siguiente ampliación útil es un job contra PostgreSQL y pruebas Playwright de flujos críticos en navegador.<br/><b>5.</b> El experimento controlado proporciona una evidencia concreta de detección. La confianza depende de mantener datos, contratos y escenarios representativos al evolucionar el sistema.')
+body('<b>1.</b> Las tres integraciones aprobadas comprueban efectos entre API y persistencia: token-perfil, adulto-medicación-inventario y nota-asignación. Su evidencia va más allá de verificar un método aislado.<br/><b>2.</b> Los tres casos de regresión fijan comportamientos con consecuencias operativas y de acceso. El experimento de horarios demuestra que R01 detecta la eliminación de la regla y que la corrección recupera el comportamiento.<br/><b>3.</b> Se mantendrían PHPUnit/Laravel y Vitest: ofrecen reportes utilizables y aprobaron sus suites tanto localmente como con las dependencias actuales del CI. Se mantendría Actions por su ajuste a GitHub; las ejecuciones remotas verde-roja-verde confirman la automatización y la conservación de evidencia.<br/><b>4.</b> SQLite permite aislamiento y rapidez, pero no sustituye validar PostgreSQL. Una siguiente ampliación útil es un job contra PostgreSQL y pruebas Playwright de flujos críticos en navegador.<br/><b>5.</b> El experimento controlado proporciona una evidencia concreta de detección. La confianza depende de mantener datos, contratos y escenarios representativos al evolucionar el sistema.')
 sub('Material de entrega y grabación')
 body('El PDF documenta investigación, elección, casos, evidencia y conclusiones. El repositorio contiene las pruebas, el runner, el workflow y los reportes. docs/TAREA5_GUION_VIDEO.md prepara una demostración de aproximadamente 7 minutos con responsables sugeridos, comandos, resultados y explicación del CI. La grabación y su enlace se agregarán al realizar el video.')
 

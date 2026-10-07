@@ -24,6 +24,18 @@
                      "head_sha":  "2177e5e5553a770d93bb4783987d27b85d329112",
                      "created_at":  "2026-10-07T01:45:40Z",
                      "updated_at":  "2026-10-07T01:46:11Z"
+                 },
+                 {
+                     "phase":  "ci-corrected",
+                     "id":  37558775836,
+                     "name":  "Tarea 5 - Integracion y regresion",
+                     "html_url":  "https://github.com/belennmm/cuidado_adulto_mayor/actions/runs/37558775836",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "push",
+                     "head_sha":  "a52e2195f96561b0122ae0a283a126aae5d5e977",
+                     "created_at":  "2026-10-07T01:46:47Z",
+                     "updated_at":  "2026-10-07T01:47:30Z"
                  }
              ]
 }
