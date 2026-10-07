@@ -1,0 +1,92 @@
+﻿2026-10-07T01:44:04.4400098Z ##[group]Run node tests/automation/run.mjs "$PHASE"
+2026-10-07T01:44:04.4400535Z [36;1mnode tests/automation/run.mjs "$PHASE"[0m
+2026-10-07T01:44:04.4470867Z shell: /usr/bin/bash -e {0}
+2026-10-07T01:44:04.4471136Z env:
+2026-10-07T01:44:04.4471324Z   PHASE: demo
+2026-10-07T01:44:04.4471830Z   TAREA5_REPORT_DIR: tests/automation/ci-reports
+2026-10-07T01:44:04.4472142Z   APP_ENV: testing
+2026-10-07T01:44:04.4472365Z   DB_CONNECTION: sqlite
+2026-10-07T01:44:04.4472588Z   DB_DATABASE: :memory:
+2026-10-07T01:44:04.4472798Z   CACHE_STORE: array
+2026-10-07T01:44:04.4473007Z   SESSION_DRIVER: array
+2026-10-07T01:44:04.4473225Z   COMPOSER_PROCESS_TIMEOUT: 0
+2026-10-07T01:44:04.4473473Z   COMPOSER_NO_INTERACTION: 1
+2026-10-07T01:44:04.4473708Z   COMPOSER_NO_AUDIT: 1
+2026-10-07T01:44:04.4473916Z ##[endgroup]
+2026-10-07T01:44:05.6266812Z 
+2026-10-07T01:44:05.6267480Z === baseline ===
+2026-10-07T01:44:05.6268112Z PHPUnit 12.5.38 by Sebastian Bergmann and contributors.
+2026-10-07T01:44:05.6268404Z 
+2026-10-07T01:44:05.6268603Z Runtime:       PHP 8.3.35
+2026-10-07T01:44:05.6269196Z Configuration: /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/phpunit.xml
+2026-10-07T01:44:05.6269620Z 
+2026-10-07T01:44:05.6269864Z ......                                                              6 / 6 (100%)
+2026-10-07T01:44:05.6270378Z 
+2026-10-07T01:44:05.6270534Z Time: 00:00.985, Memory: 52.50 MB
+2026-10-07T01:44:05.6270715Z 
+2026-10-07T01:44:05.6270904Z Integration (Tests\Feature\Tarea5\Integration)
+2026-10-07T01:44:05.6271823Z  ✔ I01 login persists token and authenticates profile
+2026-10-07T01:44:05.6272325Z  ✔ I02 create adult persists medication and acquisition
+2026-10-07T01:44:05.6272970Z  ✔ I03 routine note links professional and adult in database
+2026-10-07T01:44:05.6273232Z 
+2026-10-07T01:44:05.6273421Z Regression (Tests\Feature\Tarea5\Regression)
+2026-10-07T01:44:05.6273874Z  ✔ R01 schedule rejects reversed times without persisting
+2026-10-07T01:44:05.6274378Z  ✔ R02 profile update preserves role in response and database
+2026-10-07T01:44:05.6274877Z  ✔ R03 pending caregiver cannot login or receive token
+2026-10-07T01:44:05.6275113Z 
+2026-10-07T01:44:05.6275240Z OK (6 tests, 26 assertions)
+2026-10-07T01:44:06.7476997Z 
+2026-10-07T01:44:06.7477553Z === regression ===
+2026-10-07T01:44:06.7478136Z PHPUnit 12.5.38 by Sebastian Bergmann and contributors.
+2026-10-07T01:44:06.7478451Z 
+2026-10-07T01:44:06.7478578Z Runtime:       PHP 8.3.35
+2026-10-07T01:44:06.7479173Z Configuration: /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/phpunit.xml
+2026-10-07T01:44:06.7479590Z 
+2026-10-07T01:44:06.7479839Z ...F..                                                              6 / 6 (100%)
+2026-10-07T01:44:06.7480089Z 
+2026-10-07T01:44:06.7480232Z Time: 00:00.976, Memory: 52.50 MB
+2026-10-07T01:44:06.7480406Z 
+2026-10-07T01:44:06.7480591Z Integration (Tests\Feature\Tarea5\Integration)
+2026-10-07T01:44:06.7481241Z  ✔ I01 login persists token and authenticates profile
+2026-10-07T01:44:06.7481984Z  ✔ I02 create adult persists medication and acquisition
+2026-10-07T01:44:06.7482517Z  ✔ I03 routine note links professional and adult in database
+2026-10-07T01:44:06.7482784Z 
+2026-10-07T01:44:06.7482964Z Regression (Tests\Feature\Tarea5\Regression)
+2026-10-07T01:44:06.7483416Z  ✘ R01 schedule rejects reversed times without persisting
+2026-10-07T01:44:06.7483764Z    │
+2026-10-07T01:44:06.7484112Z    │ Expected response status code [422] but received 201.
+2026-10-07T01:44:06.7484586Z    │ Failed asserting that 201 is identical to 422.
+2026-10-07T01:44:06.7484901Z    │
+2026-10-07T01:44:06.7485702Z    │ /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+2026-10-07T01:44:06.7486980Z    │ /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+2026-10-07T01:44:06.7488076Z    │ /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/tests/Feature/Tarea5/RegressionTest.php:21
+2026-10-07T01:44:06.7489018Z    │
+2026-10-07T01:44:06.7489473Z  ✔ R02 profile update preserves role in response and database
+2026-10-07T01:44:06.7490167Z  ✔ R03 pending caregiver cannot login or receive token
+2026-10-07T01:44:06.7490414Z 
+2026-10-07T01:44:06.7490545Z FAILURES!
+2026-10-07T01:44:06.7490884Z Tests: 6, Assertions: 23, Failures: 1.
+2026-10-07T01:44:07.8686776Z 
+2026-10-07T01:44:07.8687445Z === corrected ===
+2026-10-07T01:44:07.8688254Z PHPUnit 12.5.38 by Sebastian Bergmann and contributors.
+2026-10-07T01:44:07.8688762Z 
+2026-10-07T01:44:07.8689001Z Runtime:       PHP 8.3.35
+2026-10-07T01:44:07.8690196Z Configuration: /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/phpunit.xml
+2026-10-07T01:44:07.8690869Z 
+2026-10-07T01:44:07.8691272Z ......                                                              6 / 6 (100%)
+2026-10-07T01:44:07.8691921Z 
+2026-10-07T01:44:07.8692185Z Time: 00:00.982, Memory: 52.50 MB
+2026-10-07T01:44:07.8692487Z 
+2026-10-07T01:44:07.8692895Z Integration (Tests\Feature\Tarea5\Integration)
+2026-10-07T01:44:07.8693926Z  ✔ I01 login persists token and authenticates profile
+2026-10-07T01:44:07.8694798Z  ✔ I02 create adult persists medication and acquisition
+2026-10-07T01:44:07.8695758Z  ✔ I03 routine note links professional and adult in database
+2026-10-07T01:44:07.8696512Z 
+2026-10-07T01:44:07.8696816Z Regression (Tests\Feature\Tarea5\Regression)
+2026-10-07T01:44:07.8697563Z  ✔ R01 schedule rejects reversed times without persisting
+2026-10-07T01:44:07.8698153Z  ✔ R02 profile update preserves role in response and database
+2026-10-07T01:44:07.8698718Z  ✔ R03 pending caregiver cannot login or receive token
+2026-10-07T01:44:07.8698988Z 
+2026-10-07T01:44:07.8699128Z OK (6 tests, 26 assertions)
+2026-10-07T01:44:07.8699308Z 
+2026-10-07T01:44:07.8699860Z Experiment verified: baseline PASS -> regression DETECTED -> corrected PASS.

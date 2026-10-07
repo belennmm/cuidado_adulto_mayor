@@ -1,0 +1,29 @@
+﻿{
+    "repository":  "belennmm/cuidado_adulto_mayor",
+    "runs":  [
+                 {
+                     "phase":  "ci-baseline",
+                     "id":  37558532699,
+                     "name":  "Tarea 5 - Integracion y regresion",
+                     "html_url":  "https://github.com/belennmm/cuidado_adulto_mayor/actions/runs/37558532699",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "push",
+                     "head_sha":  "86808003ca3205bd16bd459315304246f8624e6f",
+                     "created_at":  "2026-10-07T01:43:46Z",
+                     "updated_at":  "2026-10-07T01:44:26Z"
+                 },
+                 {
+                     "phase":  "ci-regression",
+                     "id":  37558685367,
+                     "name":  "Tarea 5 - Integracion y regresion",
+                     "html_url":  "https://github.com/belennmm/cuidado_adulto_mayor/actions/runs/37558685367",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "push",
+                     "head_sha":  "2177e5e5553a770d93bb4783987d27b85d329112",
+                     "created_at":  "2026-10-07T01:45:40Z",
+                     "updated_at":  "2026-10-07T01:46:11Z"
+                 }
+             ]
+}
