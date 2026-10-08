@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: dockerfile
+      target: production
     container_name: cuidado_backend
     restart: unless-stopped
     depends_on:
@@ -10,28 +11,59 @@ services:
         condition: service_healthy
     environment:
       APP_NAME: "${APP_NAME:-Cuidado Adulto Mayor}"
-      APP_ENV: "${APP_ENV:-local}"
-      APP_KEY: "${APP_KEY:-base64:IhexPh7kbw4GKKdoMBKAiFXr3T973qlKTai2wGx5VxQ=}"
-      APP_DEBUG: "${APP_DEBUG:-true}"
-      APP_URL: "${APP_URL:-http://localhost:8080}"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_KEY: "${APP_KEY:?APP_KEY is required}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_URL: "${APP_URL:?APP_URL is required}"
       APP_TIMEZONE: "${APP_TIMEZONE:-America/Guatemala}"
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: "${POSTGRES_DB:-cuidado_adulto_mayor}"
       DB_USERNAME: "${POSTGRES_USER:-cuidado_user}"
-      DB_PASSWORD: "${POSTGRES_PASSWORD:-cuidado_password}"
-      DB_SSLMODE: "${DB_SSLMODE:-disable}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
+      DB_SSLMODE: "${DB_SSLMODE:-require}"
       CACHE_STORE: file
       QUEUE_CONNECTION: database
       SESSION_DRIVER: database
-      RUN_SEEDERS: "${RUN_SEEDERS:-fresh}"
+      RUN_SEEDERS: "${RUN_SEEDERS:-false}"
       SANCTUM_STATEFUL_DOMAINS: "${SANCTUM_STATEFUL_DOMAINS:-localhost,localhost:3000,localhost:8080,127.0.0.1,127.0.0.1:3000,127.0.0.1:8080}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:?CORS_ALLOWED_ORIGINS is required}"
+      SANCTUM_EXPIRATION: "${SANCTUM_EXPIRATION:-60}"
+      HASH_DRIVER: argon2id
+      SESSION_SECURE_COOKIE: "${SESSION_SECURE_COOKIE:-true}"
+      SESSION_HTTP_ONLY: "${SESSION_HTTP_ONLY:-true}"
+      SESSION_SAME_SITE: "${SESSION_SAME_SITE:-lax}"
+      SESSION_ENCRYPT: "${SESSION_ENCRYPT:-true}"
+      LOG_LEVEL: "${LOG_LEVEL:-warning}"
+      MAX_REQUEST_BYTES: "${MAX_REQUEST_BYTES:-2097152}"
     ports:
-      - "${BACKEND_PORT:-8080}:80"
+      - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
     volumes:
       - backend_storage:/var/www/html/storage
       - backend_cache:/var/www/html/bootstrap/cache
+    networks:
+      - cuidado_network
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    cpus: 1.0
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+      - /var/log/apache2:size=32m,noexec,nosuid
+      - /var/run/apache2:size=4m,noexec,nosuid
+      - /var/lock/apache2:size=4m,noexec,nosuid
+
+  backend-test:
+    profiles: ["test"]
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+      target: testing
+    environment:
+      APP_ENV: testing
     networks:
       - cuidado_network
 
@@ -44,20 +76,27 @@ services:
     depends_on:
       - backend
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:8080"
     networks:
       - cuidado_network
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 100
+    mem_limit: 128m
+    cpus: 0.50
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+      - /var/cache/nginx:size=32m,noexec,nosuid
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18.6-alpine
     container_name: cuidado_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: "${POSTGRES_DB:-cuidado_adulto_mayor}"
       POSTGRES_USER: "${POSTGRES_USER:-cuidado_user}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-cuidado_password}"
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -67,22 +106,30 @@ services:
       retries: 5
     networks:
       - cuidado_network
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 512m
+    cpus: 1.0
 
   pgadmin:
-    image: dpage/pgadmin4:8
+    image: dpage/pgadmin4:9.18
     container_name: cuidado_pgadmin
     restart: unless-stopped
     depends_on:
       - postgres
     environment:
-      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL:-admin@example.com}"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD:-admin}"
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_DEFAULT_EMAIL:?PGADMIN_DEFAULT_EMAIL is required}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_DEFAULT_PASSWORD:?PGADMIN_DEFAULT_PASSWORD is required}"
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - cuidado_network
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.50
 
 networks:
   cuidado_network:

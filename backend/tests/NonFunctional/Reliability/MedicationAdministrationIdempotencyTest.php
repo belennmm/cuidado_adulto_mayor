@@ -6,6 +6,7 @@ use App\Models\MedicationAdministration;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\Concerns\CreatesCareTestData;
 use Tests\TestCase;
@@ -82,5 +83,23 @@ class MedicationAdministrationIdempotencyTest extends TestCase
             ...$attributes,
             'administration_time' => '10:01:00',
         ]);
+    }
+
+    public function test_database_interruption_does_not_leave_a_partial_record(): void
+    {
+        $professional = $this->createApprovedProfessional();
+        $assignment = $this->createMedicationAssignment($this->createAssignedOlderAdult($professional));
+
+        Sanctum::actingAs($professional);
+        DB::statement('PRAGMA query_only = ON');
+
+        try {
+            $this->postJson("/api/medications/{$assignment->id}/taken")
+                ->assertServerError();
+        } finally {
+            DB::statement('PRAGMA query_only = OFF');
+        }
+
+        $this->assertDatabaseCount('medication_administrations', 0);
     }
 }

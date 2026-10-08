@@ -40,7 +40,7 @@ class AdminUserManagementTest extends TestCase
         $created = $this->postJson('/api/admin/users', [
             'name' => 'Cuidadora de prueba',
             'email' => $email,
-            'password' => 'password123',
+            'password' => 'Secure-Test!123',
             'role' => 'cuidador_familiar',
         ])->assertCreated()->assertJsonPath('user.role', 'familiar')->json('user');
 

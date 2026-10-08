@@ -5,17 +5,33 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    public function authenticate(string $email, string $password): array
+    private const MAX_LOGIN_ATTEMPTS = 5;
+
+    private const LOGIN_LOCKOUT_SECONDS = 300;
+
+    public function authenticate(string $email, string $password, string $ipAddress = 'unknown'): array
     {
+        $rateLimitKey = $this->loginRateLimitKey($email, $ipAddress);
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, self::MAX_LOGIN_ATTEMPTS)) {
+            abort(response()->json([
+                'message' => 'Demasiados intentos fallidos. Intenta nuevamente mas tarde.',
+                'retry_after' => RateLimiter::availableIn($rateLimitKey),
+            ], 429));
+        }
+
         $user = User::query()->where('email', $email)->first();
 
         if (! $user || ! Hash::check($password, $user->password)) {
+            RateLimiter::hit($rateLimitKey, self::LOGIN_LOCKOUT_SECONDS);
             abort(response()->json(['message' => 'Credenciales invalidas'], 401));
         }
 
@@ -25,10 +41,23 @@ class AuthService
             ], 403));
         }
 
+        RateLimiter::clear($rateLimitKey);
+
+        $expirationMinutes = (int) config('sanctum.expiration', 60);
+
         return [
             'user' => $user,
-            'token' => $user->createToken('API Token')->plainTextToken,
+            'token' => $user->createToken(
+                'API Token',
+                ['*'],
+                now()->addMinutes($expirationMinutes),
+            )->plainTextToken,
         ];
+    }
+
+    private function loginRateLimitKey(string $email, string $ipAddress): string
+    {
+        return 'login:'.sha1(Str::lower(trim($email)).'|'.$ipAddress);
     }
 
     public function register(array $data): User
@@ -42,6 +71,8 @@ class AuthService
             'location' => $data['location'] ?? null,
             'phone' => $data['phone'] ?? null,
             'birthdate' => $data['birthdate'] ?? null,
+            'privacy_consent_at' => now(),
+            'privacy_policy_version' => config('privacy.policy_version'),
         ]);
     }
 
@@ -52,16 +83,28 @@ class AuthService
         if (! empty($data['new_password'])) {
             $this->validateCurrentPassword($user, $data['current_password'] ?? '');
             $data['password'] = Hash::make($data['new_password']);
+            $passwordChanged = true;
         }
 
         unset($data['current_password'], $data['new_password'], $data['new_password_confirmation']);
         $user->update($data);
+
+        if ($passwordChanged ?? false) {
+            $this->revokeCredentials($user);
+        }
 
         if ($user->hasRole(UserRole::FAMILY) && $previousName !== $user->name) {
             $this->updateFamilyCaregiverName($user, $previousName);
         }
 
         return $user->refresh();
+    }
+
+    private function revokeCredentials(User $user): void
+    {
+        $user->tokens()->delete();
+        DB::table('sessions')->where('user_id', $user->getKey())->delete();
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
     }
 
     private function validateCurrentPassword(User $user, string $currentPassword): void

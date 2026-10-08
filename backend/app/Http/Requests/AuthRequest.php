@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AuthRequest extends FormRequest
 {
@@ -16,8 +17,8 @@ class AuthRequest extends FormRequest
     {
         return match ($this->route()?->getActionMethod()) {
             'login' => ['email' => ['required', 'email'], 'password' => ['required']],
-            'register' => ['name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', 'unique:users'], 'password' => ['required', 'min:8'], 'role' => ['nullable', 'in:familiar,profesional,cuidador_familiar,cuidador_profesional'], 'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date']],
-            default => ['name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user()?->id)], 'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date'], 'current_password' => ['nullable', 'string'], 'new_password' => ['nullable', 'string', 'min:8', 'confirmed']],
+            'register' => ['name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', 'unique:users'], 'password' => ['required', Password::min(12)->mixedCase()->letters()->numbers()->symbols()], 'role' => ['nullable', 'in:familiar,profesional,cuidador_familiar,cuidador_profesional'], 'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date'], 'privacy_consent' => ['required', 'accepted']],
+            default => ['name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user()?->id)], 'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date'], 'current_password' => ['nullable', 'string'], 'new_password' => ['nullable', Password::min(12)->mixedCase()->letters()->numbers()->symbols(), 'confirmed']],
         };
     }
 }

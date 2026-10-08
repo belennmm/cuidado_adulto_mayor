@@ -36,6 +36,11 @@
   color: #2680c2;
 }
 
+.inventory-status-mixed {
+  background-color: #fff4df;
+  color: #9a6410;
+}
+
 .inventory-item-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

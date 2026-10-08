@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="123" failures="0" errors="0" time="2.831490946">
+    <testsuite name="tests/dom/admin-dashboard-access.test.js" timestamp="2026-10-07T01:46:06.776Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.028373733">
+        <testcase classname="tests/dom/admin-dashboard-access.test.js" name="acceso exclusivo al panel administrativo &gt; muestra el panel cuando el usuario es administrador" time="0.018112285">
+        </testcase>
+        <testcase classname="tests/dom/admin-dashboard-access.test.js" name="acceso exclusivo al panel administrativo &gt; oculta el panel y redirige al usuario profesional" time="0.003137732">
+        </testcase>
+        <testcase classname="tests/dom/admin-dashboard-access.test.js" name="acceso exclusivo al panel administrativo &gt; oculta el panel y redirige al usuario familiar" time="0.002752801">
+        </testcase>
+        <testcase classname="tests/dom/admin-dashboard-access.test.js" name="acceso exclusivo al panel administrativo &gt; oculta el panel y redirige al login cuando no existe sesión" time="0.002463451">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-dashboard-summary.test.js" timestamp="2026-10-07T01:46:06.777Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.074571477">
+        <testcase classname="tests/dom/admin-dashboard-summary.test.js" name="resumen del panel administrativo &gt; renderiza las estadísticas y los cambios recientes de rutinas" time="0.056685578">
+        </testcase>
+        <testcase classname="tests/dom/admin-dashboard-summary.test.js" name="resumen del panel administrativo &gt; mantiene contadores en cero y muestra el estado vacío" time="0.006901863">
+        </testcase>
+        <testcase classname="tests/dom/admin-dashboard-summary.test.js" name="resumen del panel administrativo &gt; presenta mensajes seguros cuando falla la API" time="0.009427631">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-medication-inventory.test.js" timestamp="2026-10-07T01:46:06.778Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.230917156">
+        <testcase classname="tests/dom/admin-medication-inventory.test.js" name="inventario individual de medicamentos &gt; carga los adultos mayores y filtra los medicamentos al seleccionar uno" time="0.228839428">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-shift-create.test.js" timestamp="2026-10-07T01:46:06.778Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.048124872">
+        <testcase classname="tests/dom/admin-shift-create.test.js" name="asignación de turnos &gt; crea un turno para el cuidador seleccionado y actualiza el listado" time="0.046452056">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-shift-invalid-time.test.js" timestamp="2026-10-07T01:46:06.779Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.035403048">
+        <testcase classname="tests/dom/admin-shift-invalid-time.test.js" name="horarios inválidos de turnos &gt; muestra la validación del backend cuando el fin es anterior al inicio" time="0.033625156">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-shifts-api-error.test.js" timestamp="2026-10-07T01:46:06.779Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.028958732">
+        <testcase classname="tests/dom/admin-shifts-api-error.test.js" name="error de API en turnos &gt; muestra el error cuando no se pueden cargar los datos iniciales" time="0.027217535">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-user-api-error.test.js" timestamp="2026-10-07T01:46:06.779Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.046714496">
+        <testcase classname="tests/dom/admin-user-api-error.test.js" name="error de API al crear usuarios &gt; muestra el error del backend y restablece el formulario" time="0.045037474">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-user-approval-deletion.test.js" timestamp="2026-10-07T01:46:06.779Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.08877031">
+        <testcase classname="tests/dom/admin-user-approval-deletion.test.js" name="aprobación y eliminación de usuarios &gt; aprueba una solicitud pendiente desde el listado" time="0.063868222">
+        </testcase>
+        <testcase classname="tests/dom/admin-user-approval-deletion.test.js" name="aprobación y eliminación de usuarios &gt; elimina un usuario confirmado desde su formulario de edición" time="0.022290598">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-user-create-edit.test.js" timestamp="2026-10-07T01:46:06.780Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.126210785">
+        <testcase classname="tests/dom/admin-user-create-edit.test.js" name="creación y edición de usuarios &gt; envía un usuario nuevo válido" time="0.097819527">
+        </testcase>
+        <testcase classname="tests/dom/admin-user-create-edit.test.js" name="creación y edición de usuarios &gt; carga y actualiza un usuario existente" time="0.02679762">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-user-validation.test.js" timestamp="2026-10-07T01:46:06.780Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.029717629">
+        <testcase classname="tests/dom/admin-user-validation.test.js" name="validaciones del formulario de usuarios &gt; impide crear un usuario cuando faltan los campos obligatorios" time="0.027942351">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/admin-users-listing.test.js" timestamp="2026-10-07T01:46:06.780Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.038292521">
+        <testcase classname="tests/dom/admin-users-listing.test.js" name="listado de usuarios &gt; consulta y muestra los usuarios simulados" time="0.036631684">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/family-auth-guard.test.js" timestamp="2026-10-07T01:46:06.780Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.016473089">
+        <testcase classname="tests/dom/family-auth-guard.test.js" name="guardia de rol familiar &gt; mantiene el panel disponible para una sesión válida de cuidador familiar" time="0.014634346">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/family-dashboard-api-error.test.js" timestamp="2026-10-07T01:46:06.781Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.023076431">
+        <testcase classname="tests/dom/family-dashboard-api-error.test.js" name="error de API en el panel familiar &gt; presenta el mensaje de error en las secciones que no pudieron cargarse" time="0.021356486">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/family-dashboard-assigned-adults.test.js" timestamp="2026-10-07T01:46:06.781Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.059265777">
+        <testcase classname="tests/dom/family-dashboard-assigned-adults.test.js" name="adultos asignados del panel familiar &gt; consulta y muestra la información simulada de los adultos asignados" time="0.05723541">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/family-dashboard-empty.test.js" timestamp="2026-10-07T01:46:06.781Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.021910969">
+        <testcase classname="tests/dom/family-dashboard-empty.test.js" name="panel familiar sin asignaciones &gt; muestra estados vacíos cuando el familiar no tiene adultos asignados" time="0.020326775">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/family-dashboard-summary.test.js" timestamp="2026-10-07T01:46:06.782Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.062115051">
+        <testcase classname="tests/dom/family-dashboard-summary.test.js" name="resumen del panel familiar &gt; renderiza el resumen, las rutinas inmediatas y los incidentes" time="0.059765199">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/login.test.js" timestamp="2026-10-07T01:46:06.782Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.285234585">
+        <testcase classname="tests/dom/login.test.js" name="formulario de inicio de sesión &gt; muestra un mensaje y no llama la API cuando faltan credenciales" time="0.044069255">
+        </testcase>
+        <testcase classname="tests/dom/login.test.js" name="formulario de inicio de sesión &gt; alterna la visibilidad de la contraseña al hacer click" time="0.01225646">
+        </testcase>
+        <testcase classname="tests/dom/login.test.js" name="formulario de inicio de sesión &gt; envía credenciales, guarda la sesión y redirige según el rol" time="0.170939943">
+        </testcase>
+        <testcase classname="tests/dom/login.test.js" name="formulario de inicio de sesión &gt; muestra el error devuelto por la API" time="0.056276813">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/older-adult-create-error.test.js" timestamp="2026-10-07T01:46:06.782Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.059967316">
+        <testcase classname="tests/dom/older-adult-create-error.test.js" name="error de creación de adulto mayor &gt; muestra el error del backend y restablece el botón" time="0.058131205">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/older-adult-create.test.js" timestamp="2026-10-07T01:46:06.783Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.080936481">
+        <testcase classname="tests/dom/older-adult-create.test.js" name="creación de adulto mayor &gt; envía el formulario válido y navega al listado" time="0.079103267">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/older-adult-validation.test.js" timestamp="2026-10-07T01:46:06.783Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.053494992">
+        <testcase classname="tests/dom/older-adult-validation.test.js" name="validación del formulario de adulto mayor &gt; no envía el formulario cuando falta el nombre completo" time="0.051642188">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/older-adults-listing.test.js" timestamp="2026-10-07T01:46:06.783Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.032970263">
+        <testcase classname="tests/dom/older-adults-listing.test.js" name="listado de adultos mayores &gt; solicita los registros y simula la carga de la lista" time="0.031098752">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/older-adults-rendering.test.js" timestamp="2026-10-07T01:46:06.783Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.041517424">
+        <testcase classname="tests/dom/older-adults-rendering.test.js" name="renderizado del listado de adultos mayores &gt; muestra los datos, estado y acciones de cada registro" time="0.039721736">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/professional-page-load.test.js" timestamp="2026-10-07T01:46:06.783Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.021315725">
+        <testcase classname="tests/dom/professional-page-load.test.js" name="preparación de la página profesional &gt; crea una sesión simulada para un profesional" time="0.00803517">
+        </testcase>
+        <testcase classname="tests/dom/professional-page-load.test.js" name="preparación de la página profesional &gt; carga la guardia profesional y consulta la sesión simulada" time="0.003215027">
+        </testcase>
+        <testcase classname="tests/dom/professional-page-load.test.js" name="preparación de la página profesional &gt; mantiene disponible el contenido protegido para un profesional autenticado" time="0.005739649">
+        </testcase>
+        <testcase classname="tests/dom/professional-page-load.test.js" name="preparación de la página profesional &gt; no redirige al profesional cuando su sesión es válida" time="0.002505643">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/professional-routines-dashboard.test.js" timestamp="2026-10-07T01:46:06.784Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.085851573">
+        <testcase classname="tests/dom/professional-routines-dashboard.test.js" name="panel de rutinas del cuidador profesional &gt; carga y renderiza las rutinas con sus actividades" time="0.074959517">
+        </testcase>
+        <testcase classname="tests/dom/professional-routines-dashboard.test.js" name="panel de rutinas del cuidador profesional &gt; muestra el error de API en todas las listas" time="0.009335542">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/protected-page-auth.test.js" timestamp="2026-10-07T01:46:06.784Z" hostname="runnervmmprz5" tests="8" failures="0" errors="0" skipped="0" time="0.05465869">
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; redirige al inicio de sesión al cargar una página administrativa sin sesión" time="0.021176757">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; redirige al inicio de sesión al cargar una página profesional sin sesión" time="0.006969146">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; redirige al inicio de sesión al cargar una página familiar sin sesión" time="0.011902815">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; permite cargar la página administrativa cuando la sesión es válida" time="0.003235835">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; redirige al usuario con rol incorrecto hacia su área permitida" time="0.001849427">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; mantiene oculto el contenido administrativo cuando el rol no está permitido" time="0.004759514">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; mantiene la página administrativa oculta hasta redirigir cuando falta el token" time="0.000926968">
+        </testcase>
+        <testcase classname="tests/dom/protected-page-auth.test.js" name="acceso a página protegida sin sesión &gt; limpia una sesión corrupta y redirige al login" time="0.00207203">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/register.test.js" timestamp="2026-10-07T01:46:06.785Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.113565816">
+        <testcase classname="tests/dom/register.test.js" name="formulario de registro &gt; valida los campos obligatorios antes de consumir la API" time="0.037277783">
+        </testcase>
+        <testcase classname="tests/dom/register.test.js" name="formulario de registro &gt; envía al backend los valores introducidos" time="0.008567391">
+        </testcase>
+        <testcase classname="tests/dom/register.test.js" name="formulario de registro &gt; muestra los errores del registro y permite mostrar la contraseña" time="0.059353728">
+        </testcase>
+        <testcase classname="tests/dom/register.test.js" name="formulario de registro &gt; impide el registro sin aceptar la política de privacidad" time="0.006683081">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/shifts-calendar-load.test.js" timestamp="2026-10-07T01:46:06.786Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.073969247">
+        <testcase classname="tests/dom/shifts-calendar-load.test.js" name="carga del calendario de turnos &gt; consulta y carga los turnos simulados para el rango actual" time="0.072241509">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/dom/shifts-calendar-rendering.test.js" timestamp="2026-10-07T01:46:06.787Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.05819743">
+        <testcase classname="tests/dom/shifts-calendar-rendering.test.js" name="presentación de turnos en calendario &gt; renderiza en la vista semanal el cuidador, residente, horario y estado" time="0.05646107">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/admin-shifts-view.test.js" timestamp="2026-10-07T01:46:06.787Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.052465473">
+        <testcase classname="tests/unit/admin-shifts-view.test.js" name="AdminShiftsView &gt; presenta cuidadores aprobados en el selector" time="0.024848204">
+        </testcase>
+        <testcase classname="tests/unit/admin-shifts-view.test.js" name="AdminShiftsView &gt; muestra el estado vacío de turnos" time="0.00415863">
+        </testcase>
+        <testcase classname="tests/unit/admin-shifts-view.test.js" name="AdminShiftsView &gt; renderiza solicitudes de vacaciones pendientes y escapa contenido" time="0.021857219">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/admin-user-form.test.js" timestamp="2026-10-07T01:46:06.787Z" hostname="runnervmmprz5" tests="5" failures="0" errors="0" skipped="0" time="0.068382848">
+        <testcase classname="tests/unit/admin-user-form.test.js" name="AdminUserForm &gt; construye y normaliza el payload para crear usuarios" time="0.028924796">
+        </testcase>
+        <testcase classname="tests/unit/admin-user-form.test.js" name="AdminUserForm &gt; omite la contraseña vacía al editar" time="0.007658607">
+        </testcase>
+        <testcase classname="tests/unit/admin-user-form.test.js" name="AdminUserForm &gt; llena el formulario y bloquea el estado de administradores" time="0.007442387">
+        </testcase>
+        <testcase classname="tests/unit/admin-user-form.test.js" name="AdminUserForm &gt; comparte el control para mostrar y ocultar contraseña" time="0.018725819">
+        </testcase>
+        <testcase classname="tests/unit/admin-user-form.test.js" name="AdminUserForm &gt; sincroniza el estado cuando cambia el rol" time="0.003777862">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api-config.test.js" timestamp="2026-10-07T01:46:06.788Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.016320562">
+        <testcase classname="tests/unit/api-config.test.js" name="CuidadoApi &gt; construye URLs relativas y conserva URLs absolutas" time="0.008799997">
+        </testcase>
+        <testcase classname="tests/unit/api-config.test.js" name="CuidadoApi &gt; agrega encabezados JSON y el token de autenticación" time="0.002466636">
+        </testcase>
+        <testcase classname="tests/unit/api-config.test.js" name="CuidadoApi &gt; realiza una solicitud y devuelve la respuesta JSON" time="0.002158427">
+        </testcase>
+        <testcase classname="tests/unit/api-config.test.js" name="CuidadoApi &gt; convierte errores HTTP y validaciones en un Error descriptivo" time="0.001385689">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/app-popup.test.js" timestamp="2026-10-07T01:46:06.788Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.104993057">
+        <testcase classname="tests/unit/app-popup.test.js" name="AppPopup &gt; muestra y confirma una alerta" time="0.09568873">
+        </testcase>
+        <testcase classname="tests/unit/app-popup.test.js" name="AppPopup &gt; permite cancelar una confirmación" time="0.007889274">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/auth-session.test.js" timestamp="2026-10-07T01:46:06.789Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.02198585">
+        <testcase classname="tests/unit/auth-session.test.js" name="AuthSession &gt; guarda y recupera una sesión según el rol" time="0.015462116">
+        </testcase>
+        <testcase classname="tests/unit/auth-session.test.js" name="AuthSession &gt; no devuelve una sesión para un rol diferente" time="0.001824511">
+        </testcase>
+        <testcase classname="tests/unit/auth-session.test.js" name="AuthSession &gt; elimina la sesión activa" time="0.001715409">
+        </testcase>
+        <testcase classname="tests/unit/auth-session.test.js" name="AuthSession &gt; elimina datos incompletos o corruptos al validar la sesión" time="0.001396194">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/care-notifications-core.test.js" timestamp="2026-10-07T01:46:06.789Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.017209563">
+        <testcase classname="tests/unit/care-notifications-core.test.js" name="CareNotificationsCore &gt; normaliza horarios de 12 y 24 horas" time="0.010473503">
+        </testcase>
+        <testcase classname="tests/unit/care-notifications-core.test.js" name="CareNotificationsCore &gt; crea alertas solo para medicamentos pendientes" time="0.003183521">
+        </testcase>
+        <testcase classname="tests/unit/care-notifications-core.test.js" name="CareNotificationsCore &gt; persiste las alertas vistas por rol y fecha" time="0.001792153">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/care-notifications-view.test.js" timestamp="2026-10-07T01:46:06.790Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.046686805">
+        <testcase classname="tests/unit/care-notifications-view.test.js" name="CareNotificationsView &gt; monta y actualiza el centro de notificaciones" time="0.036053936">
+        </testcase>
+        <testcase classname="tests/unit/care-notifications-view.test.js" name="CareNotificationsView &gt; activa una alarma de medicamento que ya está venciendo" time="0.006137009">
+        </testcase>
+        <testcase classname="tests/unit/care-notifications-view.test.js" name="CareNotificationsView &gt; deshabilita el botón cuando el navegador no soporta notificaciones" time="0.002758029">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/form-utils.test.js" timestamp="2026-10-07T01:46:06.790Z" hostname="runnervmmprz5" tests="5" failures="0" errors="0" skipped="0" time="0.046128966">
+        <testcase classname="tests/unit/form-utils.test.js" name="CuidadoForms &gt; lee campos, elimina espacios y convierte vacíos en null" time="0.011355153">
+        </testcase>
+        <testcase classname="tests/unit/form-utils.test.js" name="CuidadoForms &gt; lee valores desde FormData" time="0.002874071">
+        </testcase>
+        <testcase classname="tests/unit/form-utils.test.js" name="CuidadoForms &gt; identifica campos obligatorios ausentes" time="0.001274174">
+        </testcase>
+        <testcase classname="tests/unit/form-utils.test.js" name="CuidadoForms &gt; normaliza roles y estados de aprobación" time="0.001575201">
+        </testcase>
+        <testcase classname="tests/unit/form-utils.test.js" name="CuidadoForms &gt; habilita y deshabilita controles de un formulario" time="0.027182322">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/incidents-service.test.js" timestamp="2026-10-07T01:46:06.791Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.029251417">
+        <testcase classname="tests/unit/incidents-service.test.js" name="IncidentsService &gt; usa endpoints administrativos en el contexto de administrador" time="0.021845752">
+        </testcase>
+        <testcase classname="tests/unit/incidents-service.test.js" name="IncidentsService &gt; usa endpoints profesionales fuera del panel administrativo" time="0.002216514">
+        </testcase>
+        <testcase classname="tests/unit/incidents-service.test.js" name="IncidentsService &gt; agrega la fecha codificada al listado de incidentes" time="0.001829098">
+        </testcase>
+        <testcase classname="tests/unit/incidents-service.test.js" name="IncidentsService &gt; informa si existe una sesión válida" time="0.001570985">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/incidents-view.test.js" timestamp="2026-10-07T01:46:06.791Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.039880761">
+        <testcase classname="tests/unit/incidents-view.test.js" name="IncidentsView &gt; muestra un estado vacío y contador cero" time="0.022155953">
+        </testcase>
+        <testcase classname="tests/unit/incidents-view.test.js" name="IncidentsView &gt; renderiza severidad, hora y datos del incidente" time="0.016151471">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/medication-stats-service.test.js" timestamp="2026-10-07T01:46:06.792Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.010700211">
+        <testcase classname="tests/unit/medication-stats-service.test.js" name="MedicationStatsService &gt; carga estadísticas, inventario y adultos desde sus endpoints" time="0.006835397">
+        </testcase>
+        <testcase classname="tests/unit/medication-stats-service.test.js" name="MedicationStatsService &gt; actualiza stock mediante PATCH" time="0.002143865">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/mobility-service.test.js" timestamp="2026-10-07T01:46:06.792Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.008046157">
+        <testcase classname="tests/unit/mobility-service.test.js" name="MobilityService &gt; entrega una copia independiente del catálogo local" time="0.005246647">
+        </testcase>
+        <testcase classname="tests/unit/mobility-service.test.js" name="MobilityService &gt; mantiene la información necesaria para la vista" time="0.001168155">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/mobility.test.js" timestamp="2026-10-07T01:46:06.792Z" hostname="runnervmmprz5" tests="2" failures="0" errors="0" skipped="0" time="0.054995131">
+        <testcase classname="tests/unit/mobility.test.js" name="ejercicios de movilidad &gt; expone ejercicios locales con la información necesaria para una tarjeta" time="0.017341078">
+        </testcase>
+        <testcase classname="tests/unit/mobility.test.js" name="ejercicios de movilidad &gt; genera una tarjeta por cada ejercicio" time="0.035915419">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/older-adult-form.test.js" timestamp="2026-10-07T01:46:06.793Z" hostname="runnervmmprz5" tests="6" failures="0" errors="0" skipped="0" time="0.142014059">
+        <testcase classname="tests/unit/older-adult-form.test.js" name="OlderAdultForm &gt; agrega y lee medicamentos" time="0.062379974">
+        </testcase>
+        <testcase classname="tests/unit/older-adult-form.test.js" name="OlderAdultForm &gt; restablece la lista con una tarjeta vacía" time="0.019270215">
+        </testcase>
+        <testcase classname="tests/unit/older-adult-form.test.js" name="OlderAdultForm &gt; carga opciones de cuidadores y conserva la selección" time="0.004799613">
+        </testcase>
+        <testcase classname="tests/unit/older-adult-form.test.js" name="OlderAdultForm &gt; construye el mismo payload para creación con medicamentos" time="0.016305169">
+        </testcase>
+        <testcase classname="tests/unit/older-adult-form.test.js" name="OlderAdultForm &gt; llena los campos de edición y conserva ids de medicamentos" time="0.031733865">
+        </testcase>
+        <testcase classname="tests/unit/older-adult-form.test.js" name="OlderAdultForm &gt; carga ambos tipos de cuidadores desde un solo controlador" time="0.005840559">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/professional-routines-actions.test.js" timestamp="2026-10-07T01:46:06.793Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.044747384">
+        <testcase classname="tests/unit/professional-routines-actions.test.js" name="acciones de rutinas del cuidador profesional &gt; crea una rutina con sus actividades y recarga el panel" time="0.031119763">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-actions.test.js" name="acciones de rutinas del cuidador profesional &gt; carga una rutina existente y envía sus cambios" time="0.006685234">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-actions.test.js" name="acciones de rutinas del cuidador profesional &gt; marca una actividad como completada y actualiza la vista" time="0.005171835">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/professional-routines-events.test.js" timestamp="2026-10-07T01:46:06.794Z" hostname="runnervmmprz5" tests="1" failures="0" errors="0" skipped="0" time="0.054991646">
+        <testcase classname="tests/unit/professional-routines-events.test.js" name="ProfessionalRoutinesEvents &gt; conecta selector, formulario y acciones delegadas" time="0.053398669">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/professional-routines-form.test.js" timestamp="2026-10-07T01:46:06.794Z" hostname="runnervmmprz5" tests="4" failures="0" errors="0" skipped="0" time="0.025496718">
+        <testcase classname="tests/unit/professional-routines-form.test.js" name="ProfessionalRoutineForm &gt; separa y limpia actividades" time="0.011010251">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-form.test.js" name="ProfessionalRoutineForm &gt; valida horarios reales" time="0.002055084">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-form.test.js" name="ProfessionalRoutineForm &gt; obtiene el primer mensaje de validación" time="0.00130581">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-form.test.js" name="ProfessionalRoutineForm &gt; restablece el formulario de notas" time="0.00919972">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/professional-routines-service.test.js" timestamp="2026-10-07T01:46:06.794Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.014388201">
+        <testcase classname="tests/unit/professional-routines-service.test.js" name="ProfessionalRoutinesService &gt; carga los tres recursos del panel" time="0.008972473">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-service.test.js" name="ProfessionalRoutinesService &gt; crea rutinas incluyendo el adulto mayor" time="0.002509348">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-service.test.js" name="ProfessionalRoutinesService &gt; actualiza notas sin reenviar el adulto mayor" time="0.00133264">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/professional-routines-view.test.js" timestamp="2026-10-07T01:46:06.795Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.042584546">
+        <testcase classname="tests/unit/professional-routines-view.test.js" name="ProfessionalRoutinesView &gt; renderiza medicamentos con su estado" time="0.007501174">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-view.test.js" name="ProfessionalRoutinesView &gt; renderiza notas y actualiza el contador" time="0.028655539">
+        </testcase>
+        <testcase classname="tests/unit/professional-routines-view.test.js" name="ProfessionalRoutinesView &gt; restablece contadores al mostrar un estado vacío" time="0.004614771">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/shifts-calendar-dates.test.js" timestamp="2026-10-07T01:46:06.795Z" hostname="runnervmmprz5" tests="3" failures="0" errors="0" skipped="0" time="0.03388986">
+        <testcase classname="tests/unit/shifts-calendar-dates.test.js" name="ShiftsCalendarDates &gt; calcula el rango semanal de domingo a sábado" time="0.024807022">
+        </testcase>
+        <testcase classname="tests/unit/shifts-calendar-dates.test.js" name="ShiftsCalendarDates &gt; calcula las 42 celdas de la vista mensual" time="0.002604871">
+        </testcase>
+        <testcase classname="tests/unit/shifts-calendar-dates.test.js" name="ShiftsCalendarDates &gt; normaliza etiquetas y clases de estado" time="0.001409134">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/ui-utils.test.js" timestamp="2026-10-07T01:46:06.796Z" hostname="runnervmmprz5" tests="7" failures="0" errors="0" skipped="0" time="0.035756113">
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; escapa caracteres con significado HTML" time="0.00598946">
+        </testcase>
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; normaliza texto con tildes y espacios" time="0.001557094">
+        </testcase>
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; formatea fechas sin desplazamientos de zona horaria" time="0.016314473">
+        </testcase>
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; formatea horas y conserva valores alternativos" time="0.001284739">
+        </testcase>
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; convierte roles conocidos en etiquetas" time="0.001307784">
+        </testcase>
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; actualiza texto conservando ceros y valores alternativos" time="0.004482351">
+        </testcase>
+        <testcase classname="tests/unit/ui-utils.test.js" name="CuidadoUi &gt; presenta mensajes y actualiza sus clases de estado" time="0.003026167">
+        </testcase>
+    </testsuite>
+</testsuites>

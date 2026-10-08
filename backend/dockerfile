@@ -1,14 +1,17 @@
-FROM php:8.3-apache
+FROM php:8.5.10-apache-bookworm AS base
 
 WORKDIR /var/www/html
 
 RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
     && apt-get install -y --no-install-recommends git unzip libpq-dev libonig-dev libsqlite3-dev \
-    && docker-php-ext-install mbstring pdo_pgsql pgsql pdo_sqlite \
-    && a2enmod rewrite \
+    && docker-php-ext-install mbstring pdo_pgsql pdo_sqlite pgsql \
+    && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.10.2 /usr/bin/composer /usr/bin/composer
+
+FROM base AS testing
 
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
@@ -16,15 +19,38 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-s
 COPY . .
 
 RUN cp .env.example .env \
-    && composer dump-autoload --optimize \
+    && APP_ENV=testing composer dump-autoload --optimize \
+    && chmod +x docker/entrypoint.sh \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+CMD ["php", "artisan", "test"]
+
+FROM base AS production
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+COPY . .
+
+RUN cp .env.example .env \
+    && APP_ENV=testing composer dump-autoload --optimize \
     && chmod +x docker/entrypoint.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && sed -ri 's/^Listen 80$/Listen 8080/' /etc/apache2/ports.conf \
+    && sed -ri 's/<VirtualHost \*:80>/<VirtualHost *:8080>/' /etc/apache2/sites-available/*.conf \
+    && printf 'ServerTokens Prod\nServerSignature Off\nHeader always unset Server\nTraceEnable Off\nTimeout 30\nLimitRequestBody 2097152\n<Directory /var/www/html/public>\n    Options -Indexes -Includes -ExecCGI\n    AllowOverride All\n    Require all granted\n    <LimitExcept GET HEAD POST PUT PATCH DELETE OPTIONS>\n        Require all denied\n    </LimitExcept>\n</Directory>\n' > /etc/apache2/conf-available/zz-security-hardening.conf \
+    && a2enconf zz-security-hardening \
+    && printf 'expose_php=Off\ndisplay_errors=Off\nlog_errors=On\npost_max_size=2M\nupload_max_filesize=2M\nmax_execution_time=30\nmax_input_time=30\nmax_input_vars=1000\nmemory_limit=128M\nsession.cookie_httponly=1\nsession.cookie_secure=1\nsession.cookie_samesite=Lax\nallow_url_include=Off\n' > /usr/local/etc/php/conf.d/security-hardening.ini \
+    && mkdir -p /var/run/apache2 /var/lock/apache2 \
+    && chown -R www-data:www-data /var/run/apache2 /var/lock/apache2 /var/log/apache2 /var/www/html
 
-EXPOSE 80
+EXPOSE 8080
+
+USER www-data
 
 ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]

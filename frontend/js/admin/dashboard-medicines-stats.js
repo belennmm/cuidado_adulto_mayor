@@ -2,7 +2,7 @@
   const FILTER_LABELS = {
     day: "Día",
     month: "Mes",
-    year: "Ano",
+    year: "Año",
   }
 
   const INVENTORY_STATUS_CLASSES = {
@@ -14,11 +14,14 @@
 
   const state = {
     activeFilter: "day",
+    rankingMode: "top3",
     selectedMedicineId: null,
     items: [],
     inventory: [],
     olderAdults: [],
-    selectedOlderAdultId: new URLSearchParams(window.location.search).get("older_adult_id") || "",
+    selectedOlderAdultId: new URLSearchParams(window.location.search).get("inventory_scope") === "unassigned"
+      ? "unassigned"
+      : new URLSearchParams(window.location.search).get("older_adult_id") || "",
     inventoryMode: "create",
     stockAction: "increase",
   }
@@ -68,11 +71,22 @@
   } = window.MedicationStatsDialogs.create({ state })
 
   async function loadFilterItems() {
-    const [data, adultsData] = await service.load(state.activeFilter)
-    state.items = data.items || []
-    state.inventory = data.inventory || []
-    state.olderAdults = adultsData.older_adults || []
-    renderOlderAdultOptions()
+    const [statisticsResult, inventoryResult, adultsResult] = await Promise.allSettled([
+      service.loadStatistics(state.activeFilter),
+      service.loadInventory(),
+      service.loadOlderAdults(),
+    ])
+
+    if (adultsResult.status === "fulfilled") {
+      state.olderAdults = adultsResult.value.older_adults || []
+      renderOlderAdultOptions()
+    }
+    if (inventoryResult.status === "fulfilled") {
+      state.inventory = inventoryResult.value.inventory || []
+      renderInventory()
+    }
+    if (statisticsResult.status === "rejected") throw statisticsResult.reason
+    state.items = Array.isArray(statisticsResult.value.items) ? statisticsResult.value.items : []
   }
 
   function renderOlderAdultOptions() {
@@ -84,31 +98,42 @@
       .join("")
 
     if (filter) {
-      filter.innerHTML = `<option value="">Todos los adultos mayores</option>${options}`
-      filter.value = state.olderAdults.some((adult) => String(adult.id) === String(currentFilter)) ? currentFilter : ""
+      filter.innerHTML = `<option value="">Inventario general</option><option value="unassigned">Stock sin asignar</option>${options}`
+      filter.value = currentFilter === "unassigned" || state.olderAdults.some((adult) => String(adult.id) === String(currentFilter))
+        ? currentFilter
+        : ""
       updateOlderAdultSelection(filter.value)
     }
 
     if (formSelect) {
-      formSelect.innerHTML = `<option value="">Selecciona un adulto mayor</option>${options}`
+      formSelect.innerHTML = `<option value="">Stock sin asignar</option>${options}`
     }
   }
 
   async function renderStats() {
     updateFilterButtons()
+    const statsLayout = document.getElementById("medicinesStatsLayout")
+    const statsMessage = document.getElementById("medicinesStatsMessage")
+    if (statsMessage) {
+      statsMessage.hidden = true
+      statsMessage.textContent = ""
+      statsMessage.classList.remove("stats-error-state")
+      statsMessage.classList.remove("stats-empty-state")
+    }
 
     try {
       await loadFilterItems()
-      renderInventory()
 
       if (!state.items.length) {
         state.selectedMedicineId = null
-        const statsLayout = document.getElementById("medicinesStatsLayout")
         if (statsLayout) statsLayout.hidden = true
+        if (statsMessage) {
+          statsMessage.textContent = "No hay adquisiciones de medicamentos para este periodo."
+          statsMessage.hidden = false
+        }
         return
       }
 
-      const statsLayout = document.getElementById("medicinesStatsLayout")
       if (statsLayout) statsLayout.hidden = false
 
       const selectedMedicine = getSelectedMedicine()
@@ -119,7 +144,15 @@
       renderRanking(selectedMedicine.id)
     } catch (error) {
       console.error(error)
-      renderInventory()
+      state.items = []
+      state.selectedMedicineId = null
+      if (statsLayout) statsLayout.hidden = true
+      if (statsMessage) {
+        statsMessage.textContent = error.message || "No se pudieron cargar las estadísticas de medicamentos. Intenta nuevamente."
+        statsMessage.classList.remove("stats-empty-state")
+        statsMessage.classList.add("stats-error-state")
+        statsMessage.hidden = false
+      }
     }
   }
 
@@ -128,7 +161,9 @@
 
     const medicationId = document.getElementById("medicationId")?.value
     const payload = {
-      older_adult_id: Number(document.getElementById("medicationOlderAdult")?.value || 0),
+      older_adult_id: document.getElementById("medicationOlderAdult")?.value
+        ? Number(document.getElementById("medicationOlderAdult").value)
+        : null,
       name: document.getElementById("medicationName")?.value.trim(),
       presentation: document.getElementById("medicationPresentation")?.value.trim(),
       quantity: Number(document.getElementById("medicationQuantity")?.value || 0),
@@ -156,7 +191,25 @@
     const amount = Number(document.getElementById("stockAmount")?.value || 0)
 
     try {
-      const data = await service.adjustStock(medicationId, action, amount)
+      const inventoryItem = inventoryItemById(medicationId)
+      let data
+      if (inventoryItem?.is_consolidated) {
+        if (inventoryItem.unassigned_inventory_id) {
+          data = await service.adjustStock(inventoryItem.unassigned_inventory_id, action, amount)
+        } else {
+          data = await service.saveInventory(null, {
+            older_adult_id: null,
+            name: inventoryItem.name,
+            presentation: inventoryItem.presentation || "Sin presentación",
+            quantity: amount,
+            unit: inventoryItem.unit || "unidades",
+            minimum_stock: 0,
+            expiration_date: null,
+          })
+        }
+      } else {
+        data = await service.adjustStock(medicationId, action, amount)
+      }
 
       closeStockAdjustmentModal()
       showInventoryFeedback(data.message || "Stock actualizado correctamente.")
@@ -210,6 +263,15 @@
       await renderStats()
     })
 
+    document.getElementById("rankingModeGroup")?.addEventListener("click", (event) => {
+      const button = event.target.closest(".stats-filter-button[data-ranking-mode]")
+      if (!button || button.dataset.rankingMode === state.rankingMode) return
+
+      state.rankingMode = button.dataset.rankingMode
+      const selectedMedicine = getSelectedMedicine()
+      if (selectedMedicine) renderRanking(selectedMedicine.id)
+    })
+
     document.getElementById("medicinesRankingList")?.addEventListener("click", (event) => {
       const button = event.target.closest(".ranking-item[data-medicine-id]")
       if (!button) return
@@ -224,10 +286,6 @@
     })
 
     document.getElementById("openNewMedicationButton")?.addEventListener("click", () => {
-      if (!state.olderAdults.length) {
-        showInventoryFeedback("Primero registra un adulto mayor.", "error")
-        return
-      }
       openMedicationFormModal("create")
     })
 

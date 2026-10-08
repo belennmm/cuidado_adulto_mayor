@@ -1,0 +1,53 @@
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: America/Guatemala
+    open-pull-requests-limit: 5
+    groups:
+      laravel:
+        patterns: ["laravel/*", "illuminate/*"]
+      php-development:
+        dependency-type: development
+    labels: ["dependencies", "security"]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:15"
+      timezone: America/Guatemala
+    open-pull-requests-limit: 5
+    groups:
+      frontend-development:
+        dependency-type: development
+    labels: ["dependencies", "security"]
+
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+    labels: ["dependencies", "docker", "security"]
+
+  - package-ecosystem: docker
+    directory: /frontend
+    schedule:
+      interval: weekly
+    labels: ["dependencies", "docker", "security"]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    labels: ["dependencies", "docker", "security"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: ["dependencies", "ci"]

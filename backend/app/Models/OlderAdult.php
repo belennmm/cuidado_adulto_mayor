@@ -69,6 +69,11 @@ class OlderAdult extends Model
         return $this->hasMany(MedicationAdministration::class)->orderByDesc('administration_date');
     }
 
+    public function medicationAcquisitions(): HasMany
+    {
+        return $this->hasMany(MedicationAcquisition::class);
+    }
+
     public function incidents(): HasMany
     {
         return $this->hasMany(Incident::class)->orderByDesc('incident_date');

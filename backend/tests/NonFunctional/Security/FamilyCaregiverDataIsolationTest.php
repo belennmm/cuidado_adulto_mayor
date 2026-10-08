@@ -109,7 +109,13 @@ class FamilyCaregiverDataIsolationTest extends TestCase
             ->assertOk();
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$olderAdultOfCaregiver2->id}")
-            ->assertForbidden();
+            ->assertForbidden()
+            ->assertJsonMissing(['full_name' => 'Maria Sanchez'])
+            ->assertJsonMissing(['room' => 'A-102']);
+
+        $this->withToken($token)->getJson("/api/family/older-adults/{$olderAdultOfCaregiver2->id}/incidents")
+            ->assertForbidden()
+            ->assertJsonMissing(['full_name' => 'Maria Sanchez']);
 
         $this->assertDatabaseHas('older_adults', [
             'id' => $olderAdultOfCaregiver2->id,

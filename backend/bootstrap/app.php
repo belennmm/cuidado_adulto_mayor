@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,8 +13,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [
+        // Keep CORS global so it also handles OPTIONS requests before routing,
+        // but use the application's strict origin validation exclusively.
+        $middleware->replace(
+            \Illuminate\Http\Middleware\HandleCors::class,
             \App\Http\Middleware\HandleCors::class,
+        );
+
+        $middleware->prepend(\App\Http\Middleware\RejectDisallowedMethods::class);
+        $middleware->prepend(\App\Http\Middleware\EnforceRequestSize::class);
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        $middleware->api(prepend: [
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
         $middleware->alias([
@@ -23,5 +35,31 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            if ($exception instanceof HttpExceptionInterface) {
+                $status = $exception->getStatusCode();
+
+                if (! in_array($status, [404, 405], true) && $status < 500) {
+                    return null;
+                }
+            } elseif ($exception instanceof \Illuminate\Validation\ValidationException
+                || $exception instanceof \Illuminate\Auth\AuthenticationException
+                || $exception instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                return null;
+            } else {
+                $status = 500;
+            }
+
+            $message = match ($status) {
+                404 => 'Recurso no encontrado.',
+                405 => 'Metodo HTTP no permitido.',
+                default => $status >= 500 ? 'Error interno del servidor.' : ($exception->getMessage() ?: 'Solicitud no valida.'),
+            };
+
+            return response()->json(['message' => $message], $status);
+        });
     })->create();

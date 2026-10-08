@@ -18,6 +18,8 @@ class UserResource extends JsonResource
             'location' => $this->location,
             'phone' => $this->phone,
             'birthdate' => $this->birthdate?->toDateString(),
+            'privacy_consent_at' => $this->privacy_consent_at?->toISOString(),
+            'privacy_policy_version' => $this->privacy_policy_version,
         ];
     }
 }

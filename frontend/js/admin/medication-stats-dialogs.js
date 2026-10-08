@@ -33,6 +33,7 @@
       const minimumStockInput = document.getElementById("medicationMinimumStock")
       const expirationDateInput = document.getElementById("medicationExpirationDate")
       if (!modal || !title || !submitButton || !medicationId || !olderAdultInput || !nameInput || !presentationInput || !quantityInput || !unitInput || !minimumStockInput || !expirationDateInput) return
+      olderAdultInput.disabled = mode === "edit"
       title.textContent = mode === "edit" ? "Editar medicamento" : "Nuevo medicamento"
       submitButton.textContent = mode === "edit" ? "Guardar cambios" : "Guardar"
       medicationId.value = medication?.id || ""
@@ -63,7 +64,9 @@
       const actionInput = document.getElementById("stockActionType")
       if (!modal || !title || !subtitle || !button || !medicationId || !actionInput) return
       title.textContent = action === "increase" ? "Sumar stock" : "Reducir stock"
-      subtitle.textContent = `${action === "increase" ? "Agrega" : "Resta"} unidades para ${medication.name}.`
+      subtitle.textContent = medication.is_consolidated
+        ? `Las unidades se agregarán al stock sin asignar de ${medication.name}.`
+        : `${action === "increase" ? "Agrega" : "Resta"} unidades para ${medication.name}.`
       button.textContent = action === "increase" ? "Sumar" : "Reducir"
       medicationId.value = medication.id
       actionInput.value = action
@@ -71,7 +74,7 @@
     }
 
     function inventoryItemById(id) {
-      return state.inventory.find((item) => String(item.id) === String(id)) || null
+      return (state.displayInventory || state.inventory).find((item) => String(item.id) === String(id)) || null
     }
 
     return Object.freeze({ showInventoryFeedback, closeMedicationFormModal, openMedicationFormModal, closeStockAdjustmentModal, openStockAdjustmentModal, inventoryItemById })

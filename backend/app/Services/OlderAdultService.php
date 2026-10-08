@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Medication;
+use App\Models\MedicationAcquisition;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -116,6 +117,15 @@ class OlderAdultService
                     'minimum_stock' => (int) ($medicationData['minimum_stock'] ?? 0),
                     'expiration_date' => $medicationData['expiration_date'] ?? null,
                 ]);
+
+                if ((int) $assignment->quantity > 0) {
+                    MedicationAcquisition::create([
+                        'medication_id' => $medication->id,
+                        'older_adult_id' => $olderAdult->id,
+                        'quantity' => (int) $assignment->quantity,
+                        'acquired_at' => now(config('app.timezone')),
+                    ]);
+                }
             }
 
             $keptAssignmentIds[] = $assignment->id;
