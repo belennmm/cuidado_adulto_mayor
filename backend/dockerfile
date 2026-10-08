@@ -3,8 +3,8 @@ FROM php:8.3-apache
 WORKDIR /var/www/html
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libpq-dev libonig-dev \
-    && docker-php-ext-install mbstring pdo_pgsql pgsql \
+    && apt-get install -y --no-install-recommends git unzip libpq-dev libonig-dev libsqlite3-dev \
+    && docker-php-ext-install mbstring pdo_pgsql pgsql pdo_sqlite \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
@@ -15,7 +15,8 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-s
 
 COPY . .
 
-RUN composer dump-autoload --optimize \
+RUN cp .env.example .env \
+    && composer dump-autoload --optimize \
     && chmod +x docker/entrypoint.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 

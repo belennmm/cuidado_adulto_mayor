@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\NonFunctional\Security;
 
 use App\Models\Incident;
 use App\Models\OlderAdult;

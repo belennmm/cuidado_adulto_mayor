@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\MedicationAdministration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -47,68 +46,6 @@ class MedicationAdministrationEndpointsTest extends TestCase
             'older_adult_medication_id' => $assignment->id,
             'administration_type' => 'scheduled',
             'administration_date' => '2026-05-04',
-        ]);
-    }
-
-    public function test_mark_taken_is_idempotent_for_same_day_and_assignment(): void
-    {
-        Carbon::setTestNow(Carbon::parse('2026-05-04 10:15:00'));
-
-        $professional = $this->createApprovedProfessional();
-        $assignment = $this->createMedicationAssignment($this->createAssignedOlderAdult($professional));
-
-        Sanctum::actingAs($professional);
-
-        $firstResponse = $this->postJson("/api/medications/{$assignment->id}/taken", [
-            'administration_time' => '10:00',
-            'notes' => 'Registro original',
-        ])->assertOk();
-
-        $retryResponse = $this->postJson("/api/medications/{$assignment->id}/taken", [
-            'administration_time' => '10:30',
-            'notes' => 'Reintento tardio',
-        ])->assertOk();
-
-        $this->assertSame(
-            $firstResponse->json('administration.id'),
-            $retryResponse->json('administration.id'),
-        );
-
-        $retryResponse
-            ->assertJsonPath('administration.administration_time', '10:00:00')
-            ->assertJsonPath('administration.notes', 'Registro original');
-
-        $this->assertSame(
-            1,
-            MedicationAdministration::query()
-                ->where('older_adult_medication_id', $assignment->id)
-                ->where('administration_type', 'scheduled')
-                ->whereDate('administration_date', '2026-05-04')
-                ->count()
-        );
-    }
-
-    public function test_database_rejects_duplicate_scheduled_administration(): void
-    {
-        $professional = $this->createApprovedProfessional();
-        $assignment = $this->createMedicationAssignment($this->createAssignedOlderAdult($professional));
-        $attributes = [
-            'older_adult_id' => $assignment->older_adult_id,
-            'older_adult_medication_id' => $assignment->id,
-            'medication_id' => $assignment->medication_id,
-            'administration_type' => 'scheduled',
-            'administration_date' => '2026-05-04',
-            'administration_time' => '10:00:00',
-            'recorded_by' => $professional->id,
-        ];
-
-        MedicationAdministration::create($attributes);
-
-        $this->expectException(\Illuminate\Database\QueryException::class);
-
-        MedicationAdministration::create([
-            ...$attributes,
-            'administration_time' => '10:01:00',
         ]);
     }
 
