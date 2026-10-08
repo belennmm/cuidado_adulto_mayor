@@ -6,6 +6,7 @@ use App\Models\MedicationAdministration;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class MedicationAdministrationService
@@ -31,12 +32,6 @@ class MedicationAdministrationService
             ? Carbon::createFromFormat('H:i', $data['administration_time'], $timezone)->format('H:i:s')
             : $now->format('H:i:s');
 
-        $administration = MedicationAdministration::query()
-            ->where('administration_type', 'scheduled')
-            ->whereDate('administration_date', $date)
-            ->where('older_adult_medication_id', $assignment->id)
-            ->first();
-
         $values = [
             'older_adult_id' => $assignment->older_adult_id,
             'medication_id' => $assignment->medication_id,
@@ -47,17 +42,35 @@ class MedicationAdministrationService
             'recorded_by' => $user->id,
         ];
 
-        if ($administration) {
-            $administration->update($values);
+        return DB::transaction(function () use ($assignment, $date, $values) {
+            $now = now();
 
-            return $administration;
-        }
+            MedicationAdministration::query()->upsert([[
+                'administration_type' => 'scheduled',
+                'older_adult_medication_id' => $assignment->id,
+                ...$values,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]], [
+                'older_adult_medication_id',
+                'administration_type',
+                'administration_date',
+            ], [
+                'older_adult_id',
+                'medication_id',
+                'dosage',
+                'administration_time',
+                'notes',
+                'recorded_by',
+                'updated_at',
+            ]);
 
-        return MedicationAdministration::create([
-            'administration_type' => 'scheduled',
-            'older_adult_medication_id' => $assignment->id,
-            ...$values,
-        ]);
+            return MedicationAdministration::query()
+                ->where('administration_type', 'scheduled')
+                ->whereDate('administration_date', $date)
+                ->where('older_adult_medication_id', $assignment->id)
+                ->firstOrFail();
+        });
     }
 
     private function authorize(User $user): void

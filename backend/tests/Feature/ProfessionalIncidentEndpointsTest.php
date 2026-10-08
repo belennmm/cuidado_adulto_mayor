@@ -7,6 +7,7 @@ use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -57,6 +58,34 @@ class ProfessionalIncidentEndpointsTest extends TestCase
             'older_adult_id' => $olderAdult->id,
             'title' => 'Caída leve',
         ]);
+    }
+
+    public function test_database_interruption_does_not_leave_partial_incident(): void
+    {
+        $professional = User::factory()->create([
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+        $olderAdult = OlderAdult::create([
+            'full_name' => 'Rosa Martinez',
+            'status' => 'Estable',
+            'professional_caregiver_id' => $professional->id,
+            'created_by' => $professional->id,
+        ]);
+        Sanctum::actingAs($professional);
+
+        DB::statement('PRAGMA query_only = ON');
+
+        try {
+            $this->postJson('/api/professional/incidents', [
+                'older_adult_id' => $olderAdult->id,
+                'title' => 'Caida durante corte de base de datos',
+            ])->assertServerError();
+        } finally {
+            DB::statement('PRAGMA query_only = OFF');
+        }
+
+        $this->assertDatabaseCount('incidents', 0);
     }
 
     public function test_unapproved_professional_cannot_register_incidents(): void

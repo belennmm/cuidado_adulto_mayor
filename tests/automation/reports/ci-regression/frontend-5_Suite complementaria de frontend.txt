@@ -1,0 +1,71 @@
+﻿2026-10-07T01:45:49.7158027Z ##[group]Run npm test -- --reporter=default --reporter=junit --outputFile=../tests/automation/ci-reports/frontend.xml
+2026-10-07T01:45:49.7158710Z [36;1mnpm test -- --reporter=default --reporter=junit --outputFile=../tests/automation/ci-reports/frontend.xml[0m
+2026-10-07T01:45:49.7215331Z shell: /usr/bin/bash -e {0}
+2026-10-07T01:45:49.7215582Z ##[endgroup]
+2026-10-07T01:45:49.8025036Z 
+2026-10-07T01:45:49.8025403Z > test
+2026-10-07T01:45:49.8026197Z > vitest run --reporter=default --reporter=junit --outputFile=../tests/automation/ci-reports/frontend.xml
+2026-10-07T01:45:49.8026741Z 
+2026-10-07T01:45:50.0681073Z 
+2026-10-07T01:45:50.0712051Z [1m[30m[46m RUN [49m[39m[22m [36mv5.0.3 [39m[90m/home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/frontend[39m
+2026-10-07T01:45:50.0713205Z 
+2026-10-07T01:45:51.1455396Z  [32m✓[39m tests/dom/professional-routines-dashboard.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+2026-10-07T01:45:51.2021861Z  [32m✓[39m tests/dom/admin-medication-inventory.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 231[2mms[22m[39m
+2026-10-07T01:45:51.2418760Z  [32m✓[39m tests/unit/older-adult-form.test.js [2m([22m[2m6 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+2026-10-07T01:45:52.1360367Z  [32m✓[39m tests/unit/professional-routines-actions.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+2026-10-07T01:45:52.2621978Z  [32m✓[39m tests/dom/admin-user-create-edit.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 126[2mms[22m[39m
+2026-10-07T01:45:52.3733603Z  [32m✓[39m tests/dom/register.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 114[2mms[22m[39m
+2026-10-07T01:45:53.1671177Z  [32m✓[39m tests/dom/protected-page-auth.test.js [2m([22m[2m8 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+2026-10-07T01:45:53.2922958Z  [32m✓[39m tests/dom/admin-dashboard-summary.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+2026-10-07T01:45:53.3394800Z  [32m✓[39m tests/unit/admin-user-form.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+2026-10-07T01:45:54.3059289Z  [32m✓[39m tests/dom/admin-user-approval-deletion.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+2026-10-07T01:45:54.3502034Z  [32m✓[39m tests/dom/older-adult-create.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 81[2mms[22m[39m
+2026-10-07T01:45:54.5931920Z  [32m✓[39m tests/dom/login.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 285[2mms[22m[39m
+2026-10-07T01:45:55.3037917Z  [32m✓[39m tests/unit/care-notifications-view.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+2026-10-07T01:45:55.3132630Z  [32m✓[39m tests/dom/family-dashboard-summary.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 62[2mms[22m[39m
+2026-10-07T01:45:55.5903713Z  [32m✓[39m tests/unit/ui-utils.test.js [2m([22m[2m7 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+2026-10-07T01:45:56.2913539Z  [32m✓[39m tests/dom/admin-shift-create.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 48[2mms[22m[39m
+2026-10-07T01:45:56.3204428Z  [32m✓[39m tests/dom/shifts-calendar-load.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 74[2mms[22m[39m
+2026-10-07T01:45:56.5211784Z  [32m✓[39m tests/unit/auth-session.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-10-07T01:45:57.2457290Z  [32m✓[39m tests/dom/admin-shift-invalid-time.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 35[2mms[22m[39m
+2026-10-07T01:45:57.2753198Z  [32m✓[39m tests/dom/professional-page-load.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+2026-10-07T01:45:57.5461864Z  [32m✓[39m tests/unit/admin-shifts-view.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+2026-10-07T01:45:58.2051693Z  [32m✓[39m tests/unit/incidents-service.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-07T01:45:58.3154606Z  [32m✓[39m tests/dom/shifts-calendar-rendering.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 58[2mms[22m[39m
+2026-10-07T01:45:58.5692227Z  [32m✓[39m tests/dom/family-dashboard-assigned-adults.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 59[2mms[22m[39m
+2026-10-07T01:45:59.1781486Z  [32m✓[39m tests/dom/admin-user-api-error.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 47[2mms[22m[39m
+2026-10-07T01:45:59.2836341Z  [32m✓[39m tests/unit/api-config.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-07T01:45:59.5431603Z  [32m✓[39m tests/dom/family-dashboard-empty.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 22[2mms[22m[39m
+2026-10-07T01:46:00.1639275Z  [32m✓[39m tests/dom/admin-dashboard-access.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+2026-10-07T01:46:00.2241342Z  [32m✓[39m tests/unit/shifts-calendar-dates.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+2026-10-07T01:46:00.5724342Z  [32m✓[39m tests/unit/form-utils.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+2026-10-07T01:46:01.1270689Z  [32m✓[39m tests/unit/professional-routines-view.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+2026-10-07T01:46:01.2078622Z  [32m✓[39m tests/dom/older-adult-create-error.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 60[2mms[22m[39m
+2026-10-07T01:46:01.6021865Z  [32m✓[39m tests/dom/family-dashboard-api-error.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 23[2mms[22m[39m
+2026-10-07T01:46:02.0711412Z  [32m✓[39m tests/dom/admin-user-validation.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 30[2mms[22m[39m
+2026-10-07T01:46:02.2767118Z  [32m✓[39m tests/unit/professional-routines-events.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 55[2mms[22m[39m
+2026-10-07T01:46:02.5924308Z  [32m✓[39m tests/unit/professional-routines-form.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+2026-10-07T01:46:03.0201661Z  [32m✓[39m tests/unit/professional-routines-service.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+2026-10-07T01:46:03.2476781Z  [32m✓[39m tests/unit/incidents-view.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+2026-10-07T01:46:03.6451592Z  [32m✓[39m tests/unit/mobility.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+2026-10-07T01:46:03.9965391Z  [32m✓[39m tests/dom/older-adult-validation.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 53[2mms[22m[39m
+2026-10-07T01:46:04.1971496Z  [32m✓[39m tests/dom/older-adults-rendering.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 42[2mms[22m[39m
+2026-10-07T01:46:04.5231734Z  [32m✓[39m tests/dom/admin-shifts-api-error.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 29[2mms[22m[39m
+2026-10-07T01:46:04.9651447Z  [32m✓[39m tests/dom/admin-users-listing.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 38[2mms[22m[39m
+2026-10-07T01:46:05.1641845Z  [32m✓[39m tests/unit/care-notifications-core.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+2026-10-07T01:46:05.4601390Z  [32m✓[39m tests/dom/older-adults-listing.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 33[2mms[22m[39m
+2026-10-07T01:46:05.9454393Z  [32m✓[39m tests/unit/medication-stats-service.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+2026-10-07T01:46:06.0815147Z  [32m✓[39m tests/dom/family-auth-guard.test.js [2m([22m[2m1 test[22m[2m)[22m[32m 16[2mms[22m[39m
+2026-10-07T01:46:06.5515818Z  [32m✓[39m tests/unit/app-popup.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+2026-10-07T01:46:06.7347901Z  [32m✓[39m tests/unit/mobility-service.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+2026-10-07T01:46:06.7383715Z 
+2026-10-07T01:46:06.7389092Z [2m Test Files [22m [1m[32m49 passed[39m[22m[90m (49)[39m
+2026-10-07T01:46:06.7400822Z [2m      Tests [22m [1m[32m123 passed[39m[22m[90m (123)[39m
+2026-10-07T01:46:06.7404102Z [2m   Start at [22m 01:45:50
+2026-10-07T01:46:06.7404956Z [2m   Duration [22m 16.66s[2m (environment 90%, tests 7%, import 1%, setup 1%, transform 1%, worker 1%)[22m
+2026-10-07T01:46:06.7405743Z 
+2026-10-07T01:46:06.7406354Z [2mEnvironment [22m [33mjsdom was created 49 times[39m[2m · 38.65s total, 90% of tracked time[22m
+2026-10-07T01:46:06.7407820Z [2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
+2026-10-07T01:46:06.7409107Z [2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
+2026-10-07T01:46:06.7409570Z 
+2026-10-07T01:46:06.7973804Z JUNIT report written to /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/tests/automation/ci-reports/frontend.xml
