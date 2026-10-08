@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\MobilityExercise;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -118,13 +119,11 @@ class MobilityExerciseService
 
     private function authorizeRead(User $user): void
     {
-        $role = Str::lower((string) $user->role);
-
         if ($this->isAdmin($user)) {
             return;
         }
 
-        if (in_array($role, ['profesional', 'cuidador_profesional'], true) && (bool) $user->is_approved) {
+        if ($user->hasRole(UserRole::PROFESSIONAL) && (bool) $user->is_approved) {
             return;
         }
 
@@ -135,6 +134,6 @@ class MobilityExerciseService
 
     private function isAdmin(User $user): bool
     {
-        return in_array(Str::lower((string) $user->role), ['admin', 'administrador'], true);
+        return $user->hasRole(UserRole::ADMIN);
     }
 }

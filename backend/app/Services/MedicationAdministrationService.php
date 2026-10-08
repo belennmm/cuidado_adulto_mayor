@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\MedicationAdministration;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class MedicationAdministrationService
 {
@@ -62,9 +62,7 @@ class MedicationAdministrationService
 
     private function authorize(User $user): void
     {
-        $role = Str::of((string) $user->role)->ascii()->lower()->trim()->toString();
-
-        if (! in_array($role, ['profesional', 'cuidador_profesional'], true)) {
+        if (! $user->hasRole(UserRole::PROFESSIONAL)) {
             abort(response()->json([
                 'message' => 'No tienes acceso para marcar medicamentos.',
             ], 403));

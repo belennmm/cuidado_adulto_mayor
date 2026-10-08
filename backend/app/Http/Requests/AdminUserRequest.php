@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -20,7 +21,7 @@ class AdminUserRequest extends FormRequest
         $rules = [
             'name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user instanceof User ? $user->id : null)],
             'password' => [$updating ? 'nullable' : 'required', 'string', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'])],
+            'role' => ['required', Rule::in(UserRole::acceptedValues())],
             'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date'],
         ];
         if ($updating) {

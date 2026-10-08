@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\Rutina;
 use App\Models\User;
@@ -101,20 +102,18 @@ class RoutineService
 
     private function scopeForUser(Builder $query, User $user): void
     {
-        $role = $this->normalizeText($user->role);
-
-        if (in_array($role, ['admin', 'administrador'], true)) {
+        if ($user->hasRole(UserRole::ADMIN)) {
             return;
         }
 
-        if (in_array($role, ['profesional', 'cuidador_profesional'], true)) {
+        if ($user->hasRole(UserRole::PROFESSIONAL)) {
             $query->whereHas('olderAdult', fn (Builder $olderAdultQuery) => $olderAdultQuery
                 ->where('professional_caregiver_id', $user->id));
 
             return;
         }
 
-        if (in_array($role, ['familiar', 'cuidador_familiar'], true)) {
+        if ($user->hasRole(UserRole::FAMILY)) {
             $normalizedName = $this->normalizeText($user->name);
 
             $query->whereHas('olderAdult', fn (Builder $olderAdultQuery) => $olderAdultQuery

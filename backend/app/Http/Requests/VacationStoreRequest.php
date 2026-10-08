@@ -2,17 +2,19 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserRole;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Str;
 
 class VacationStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $role = Str::of((string) $this->user()?->role)->ascii()->lower()->trim()->toString();
+        /** @var User|null $user */
+        $user = $this->user();
 
-        return in_array($role, ['profesional', 'cuidador_profesional'], true) && (bool) $this->user()?->is_approved;
+        return $user?->hasRole(UserRole::PROFESSIONAL) && (bool) $user->is_approved;
     }
 
     protected function failedAuthorization(): void

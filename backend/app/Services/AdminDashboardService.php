@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\MedicationAdministration;
@@ -40,7 +41,7 @@ class AdminDashboardService
             'stats' => [
                 'older_adults' => OlderAdult::query()->count(),
                 'caregivers' => User::query()
-                    ->whereIn('role', ['profesional', 'cuidador_profesional'])
+                    ->whereIn('role', UserRole::PROFESSIONAL->databaseValues())
                     ->where('is_approved', true)
                     ->count(),
                 'incidents_today' => Incident::query()

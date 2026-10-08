@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -109,9 +110,7 @@ class ReminderService
 
     private function authorize(User $user): void
     {
-        $role = $this->normalizeText($user->role);
-
-        if (! in_array($role, ['profesional', 'cuidador_profesional'], true)) {
+        if (! $user->hasRole(UserRole::PROFESSIONAL)) {
             abort(response()->json([
                 'message' => 'No tienes acceso para consultar recordatorios.',
             ], 403));

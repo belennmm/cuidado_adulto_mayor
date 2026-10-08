@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\Rutina;
 use App\Models\User;
@@ -63,17 +64,17 @@ class RutinaPolicy
 
     private function isProfessional(User $user): bool
     {
-        return in_array($this->role($user), ['profesional', 'cuidador_profesional'], true);
+        return $user->hasRole(UserRole::PROFESSIONAL);
     }
 
     private function isFamily(User $user): bool
     {
-        return in_array($this->role($user), ['familiar', 'cuidador_familiar'], true);
+        return $user->hasRole(UserRole::FAMILY);
     }
 
     private function isAdmin(User $user): bool
     {
-        return in_array($this->role($user), ['admin', 'administrador'], true);
+        return $user->hasRole(UserRole::ADMIN);
     }
 
     private function isFamilyAssigned(User $user, OlderAdult $olderAdult): bool
@@ -84,11 +85,6 @@ class RutinaPolicy
 
         return $olderAdult->family_caregiver_id === null
             && $this->normalize($olderAdult->caregiver_family) === $this->normalize($user->name);
-    }
-
-    private function role(User $user): string
-    {
-        return $this->normalize($user->role);
     }
 
     private function normalize(mixed $value): string

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
@@ -20,12 +21,11 @@ class CaregiverAccessService
 
     public function authorize(User $user, string $caregiverType): void
     {
-        $role = $this->normalizeText($user->role);
-        $allowedRoles = $caregiverType === self::FAMILY
-            ? ['familiar', 'cuidador_familiar']
-            : ['profesional', 'cuidador_profesional'];
+        $allowedRole = $caregiverType === self::FAMILY
+            ? UserRole::FAMILY
+            : UserRole::PROFESSIONAL;
 
-        if (in_array($role, $allowedRoles, true) && (bool) $user->is_approved) {
+        if ($user->hasRole($allowedRole) && (bool) $user->is_approved) {
             return;
         }
 
