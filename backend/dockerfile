@@ -32,7 +32,8 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 
 COPY . .
 
-RUN APP_ENV=testing composer dump-autoload --optimize \
+RUN cp .env.example .env \
+    && APP_ENV=testing composer dump-autoload --optimize \
     && chmod +x docker/entrypoint.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 

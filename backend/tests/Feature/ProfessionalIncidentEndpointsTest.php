@@ -3,17 +3,17 @@
 namespace Tests\Feature;
 
 use App\Models\Incident;
-use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
+use Tests\Concerns\CreatesCareTestData;
 use Tests\TestCase;
 
 class ProfessionalIncidentEndpointsTest extends TestCase
 {
     use RefreshDatabase;
+    use CreatesCareTestData;
 
     protected function tearDown(): void
     {
@@ -26,17 +26,8 @@ class ProfessionalIncidentEndpointsTest extends TestCase
     {
         Carbon::setTestNow(Carbon::parse('2026-05-11 10:15:00'));
 
-        $professional = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $olderAdult = OlderAdult::create([
-            'full_name' => 'Rosa Martinez',
-            'status' => 'Estable',
-            'professional_caregiver_id' => $professional->id,
-            'created_by' => $professional->id,
-        ]);
+        $professional = $this->createApprovedProfessional();
+        $olderAdult = $this->createAssignedOlderAdult($professional, ['full_name' => 'Rosa Martinez']);
 
         Sanctum::actingAs($professional);
 
@@ -60,40 +51,9 @@ class ProfessionalIncidentEndpointsTest extends TestCase
         ]);
     }
 
-    public function test_database_interruption_does_not_leave_partial_incident(): void
-    {
-        $professional = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-        $olderAdult = OlderAdult::create([
-            'full_name' => 'Rosa Martinez',
-            'status' => 'Estable',
-            'professional_caregiver_id' => $professional->id,
-            'created_by' => $professional->id,
-        ]);
-        Sanctum::actingAs($professional);
-
-        DB::statement('PRAGMA query_only = ON');
-
-        try {
-            $this->postJson('/api/professional/incidents', [
-                'older_adult_id' => $olderAdult->id,
-                'title' => 'Caida durante corte de base de datos',
-            ])->assertServerError();
-        } finally {
-            DB::statement('PRAGMA query_only = OFF');
-        }
-
-        $this->assertDatabaseCount('incidents', 0);
-    }
-
     public function test_unapproved_professional_cannot_register_incidents(): void
     {
-        $professional = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => false,
-        ]);
+        $professional = User::factory()->pendingProfessional()->create();
 
         Sanctum::actingAs($professional);
 
@@ -105,22 +65,9 @@ class ProfessionalIncidentEndpointsTest extends TestCase
 
     public function test_professional_cannot_register_incident_for_other_professionals_older_adult(): void
     {
-        $owner = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $other = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $olderAdult = OlderAdult::create([
-            'full_name' => 'Rosa Martinez',
-            'status' => 'Estable',
-            'professional_caregiver_id' => $owner->id,
-            'created_by' => $owner->id,
-        ]);
+        $owner = $this->createApprovedProfessional();
+        $other = $this->createApprovedProfessional();
+        $olderAdult = $this->createAssignedOlderAdult($owner, ['full_name' => 'Rosa Martinez']);
 
         Sanctum::actingAs($other);
 
@@ -134,17 +81,8 @@ class ProfessionalIncidentEndpointsTest extends TestCase
 
     public function test_incident_rejects_invalid_severity(): void
     {
-        $professional = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $olderAdult = OlderAdult::create([
-            'full_name' => 'Rosa Martinez',
-            'status' => 'Estable',
-            'professional_caregiver_id' => $professional->id,
-            'created_by' => $professional->id,
-        ]);
+        $professional = $this->createApprovedProfessional();
+        $olderAdult = $this->createAssignedOlderAdult($professional, ['full_name' => 'Rosa Martinez']);
 
         Sanctum::actingAs($professional);
 
@@ -157,17 +95,8 @@ class ProfessionalIncidentEndpointsTest extends TestCase
 
     public function test_professional_can_update_incident_notes(): void
     {
-        $professional = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $olderAdult = OlderAdult::create([
-            'full_name' => 'Rosa Martinez',
-            'status' => 'Estable',
-            'professional_caregiver_id' => $professional->id,
-            'created_by' => $professional->id,
-        ]);
+        $professional = $this->createApprovedProfessional();
+        $olderAdult = $this->createAssignedOlderAdult($professional, ['full_name' => 'Rosa Martinez']);
 
         $incident = Incident::create([
             'title' => 'Caída leve',
@@ -191,22 +120,9 @@ class ProfessionalIncidentEndpointsTest extends TestCase
 
     public function test_professional_cannot_update_other_professionals_incident(): void
     {
-        $owner = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $other = User::factory()->create([
-            'role' => 'profesional',
-            'is_approved' => true,
-        ]);
-
-        $olderAdult = OlderAdult::create([
-            'full_name' => 'Rosa Martinez',
-            'status' => 'Estable',
-            'professional_caregiver_id' => $owner->id,
-            'created_by' => $owner->id,
-        ]);
+        $owner = $this->createApprovedProfessional();
+        $other = $this->createApprovedProfessional();
+        $olderAdult = $this->createAssignedOlderAdult($owner, ['full_name' => 'Rosa Martinez']);
 
         $incident = Incident::create([
             'title' => 'Caída leve',

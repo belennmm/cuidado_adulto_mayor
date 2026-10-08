@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\CaregiverSchedule;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class CaregiverScheduleService
 {
@@ -36,7 +36,7 @@ class CaregiverScheduleService
 
     public function update(User $actor, CaregiverSchedule $schedule, array $data): CaregiverSchedule
     {
-        $isAdmin = $this->normalizeRole($actor->role) === 'admin';
+        $isAdmin = $actor->hasRole(UserRole::ADMIN);
 
         if (! $isAdmin && (int) $schedule->user_id !== (int) $actor->id) {
             abort(response()->json([
@@ -116,7 +116,7 @@ class CaregiverScheduleService
 
     private function ensureCaregiverCanManage(User $user): void
     {
-        if (! in_array($this->normalizeRole($user->role), ['profesional', 'cuidador_profesional'], true)) {
+        if (! $user->hasRole(UserRole::PROFESSIONAL)) {
             abort(response()->json(['message' => 'No tienes acceso para definir horarios.'], 403));
         }
 
@@ -152,8 +152,4 @@ class CaregiverScheduleService
         return $schedule->load('user:id,name,email,role,is_approved');
     }
 
-    private function normalizeRole(mixed $role): string
-    {
-        return Str::of((string) $role)->ascii()->lower()->trim()->toString();
-    }
 }

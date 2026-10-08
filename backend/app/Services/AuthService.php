@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -92,7 +93,7 @@ class AuthService
             $this->revokeCredentials($user);
         }
 
-        if ($this->isFamilyRole($user->role) && $previousName !== $user->name) {
+        if ($user->hasRole(UserRole::FAMILY) && $previousName !== $user->name) {
             $this->updateFamilyCaregiverName($user, $previousName);
         }
 
@@ -130,20 +131,15 @@ class AuthService
 
     private function normalizePublicRole(?string $role): string
     {
-        return match ($role) {
-            'profesional', 'cuidador_profesional' => 'profesional',
-            'familiar', 'cuidador_familiar' => 'familiar',
-            default => 'familiar',
-        };
+        $normalized = UserRole::fromValue($role);
+
+        return in_array($normalized, [UserRole::FAMILY, UserRole::PROFESSIONAL], true)
+            ? $normalized->value
+            : UserRole::FAMILY->value;
     }
 
     private function canLogin(User $user): bool
     {
-        return strtolower(trim((string) $user->role)) === 'admin' || (bool) $user->is_approved;
-    }
-
-    private function isFamilyRole(?string $role): bool
-    {
-        return in_array(strtolower(trim((string) $role)), ['familiar', 'cuidador_familiar'], true);
+        return $user->hasRole(UserRole::ADMIN) || (bool) $user->is_approved;
     }
 }

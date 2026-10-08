@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class VacationRequestService
 {
@@ -65,9 +65,7 @@ class VacationRequestService
 
     private function authorizeProfessional(User $user): void
     {
-        $role = Str::of((string) $user->role)->ascii()->lower()->trim()->toString();
-
-        if (in_array($role, ['profesional', 'cuidador_profesional'], true) && $user->is_approved) {
+        if ($user->hasRole(UserRole::PROFESSIONAL) && $user->is_approved) {
             return;
         }
 

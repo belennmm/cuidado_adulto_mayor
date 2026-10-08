@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +20,11 @@ class AdminUserService
 
     public function approvedCaregivers(string $role): Collection
     {
+        $userRole = UserRole::fromValue($role);
+
         return User::query()
             ->select('id', 'name', 'email', 'role', 'is_approved')
-            ->where('role', $role)
+            ->whereIn('role', $userRole?->databaseValues() ?? [$role])
             ->where('is_approved', true)
             ->orderBy('name')
             ->get();
@@ -42,7 +45,7 @@ class AdminUserService
             || (array_key_exists('is_approved', $data) && ! $data['is_approved']);
         $data['role'] = $this->normalizeRole($data['role']);
 
-        if ($data['role'] === 'admin') {
+        if ($data['role'] === UserRole::ADMIN->value) {
             $data['is_approved'] = true;
         }
 
@@ -70,7 +73,7 @@ class AdminUserService
 
     public function reject(User $user): void
     {
-        if ($user->role === 'admin' || $user->is_approved) {
+        if ($user->hasRole(UserRole::ADMIN) || $user->is_approved) {
             abort(response()->json([
                 'message' => 'Solo se pueden rechazar solicitudes pendientes.',
             ], 422));
@@ -87,11 +90,7 @@ class AdminUserService
 
     private function normalizeRole(string $role): string
     {
-        return match ($role) {
-            'cuidador_profesional' => 'profesional',
-            'cuidador_familiar' => 'familiar',
-            default => $role,
-        };
+        return UserRole::fromValue($role)?->value ?? $role;
     }
 
     private function revokeCredentials(User $user): void

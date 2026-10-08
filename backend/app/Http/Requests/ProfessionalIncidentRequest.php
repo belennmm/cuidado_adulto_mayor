@@ -4,16 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Str;
 
 class ProfessionalIncidentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $role = Str::of((string) $this->user()?->role)->ascii()->lower()->trim()->toString();
-
-        return in_array($role, ['admin', 'administrador'], true)
-            || (in_array($role, ['profesional', 'cuidador_profesional'], true) && (bool) $this->user()?->is_approved);
+        return true;
     }
 
     protected function failedAuthorization(): void

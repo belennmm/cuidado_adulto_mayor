@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class ProfessionalIncidentService
@@ -87,8 +87,6 @@ class ProfessionalIncidentService
 
     private function isAdmin(User $user): bool
     {
-        $role = Str::of((string) $user->role)->ascii()->lower()->trim()->toString();
-
-        return in_array($role, ['admin', 'administrador'], true);
+        return $user->hasRole(UserRole::ADMIN);
     }
 }

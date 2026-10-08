@@ -32,11 +32,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/incidents', [IncidentController::class, 'index']);
     Route::get('/incidents/today', [IncidentController::class, 'today']);
 
-    Route::post('/medications/{assignment}/taken', [MedicationAdministrationController::class, 'markTaken']);
+    Route::post('/medications/{assignment}/taken', [MedicationAdministrationController::class, 'markTaken'])
+        ->middleware(['role:profesional', 'approved:professional']);
 
-    Route::post('/schedules', [CaregiverScheduleController::class, 'store']);
-    Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update']);
-    Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange']);
+    Route::post('/schedules', [CaregiverScheduleController::class, 'store'])->middleware(['role:profesional', 'approved:professional']);
+    Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update'])->middleware('role:admin,profesional');
+    Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange'])
+        ->middleware(['role:profesional', 'approved:professional']);
     Route::get('/rutinas', [RutinaController::class, 'index']);
     Route::post('/rutinas', [RutinaController::class, 'store']);
     Route::patch('/rutinas/{rutina}/completar', [RutinaController::class, 'complete']);
@@ -45,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/mobility-exercises', [MobilityExerciseController::class, 'index']);
     Route::get('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'show']);
 
-    Route::prefix('family')->group(function () {
+    Route::middleware(['role:familiar', 'approved:family'])->prefix('family')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
         Route::get('/older-adults', [FamilyCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [FamilyCareController::class, 'olderAdult']);
@@ -55,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/routines', [FamilyCareController::class, 'routine']);
     });
 
-    Route::prefix('professional')->group(function () {
+    Route::middleware(['role:profesional', 'approved:professional'])->prefix('professional')->group(function () {
         Route::get('/overview', [ProfessionalCareController::class, 'overview']);
         Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);
