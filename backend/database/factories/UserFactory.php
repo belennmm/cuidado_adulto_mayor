@@ -32,4 +32,35 @@ class UserFactory extends Factory
         ];
     }
 
+    public function admin(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'admin',
+            'is_approved' => true,
+        ]);
+    }
+
+    public function approvedFamily(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'familiar',
+            'is_approved' => true,
+        ]);
+    }
+
+    public function approvedProfessional(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'profesional',
+            'is_approved' => true,
+        ]);
+    }
+
+    public function pendingProfessional(): static
+    {
+        return $this->state(fn () => [
+            'role' => 'profesional',
+            'is_approved' => false,
+        ]);
+    }
 }

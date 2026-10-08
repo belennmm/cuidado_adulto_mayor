@@ -1,0 +1,284 @@
+{
+    "root_group": {
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "setup": {
+                "name": "setup",
+                "path": "::setup",
+                "id": "5c0f8025f7e0b6654089e5b00e950f1a",
+                "groups": {},
+                "checks": {
+                        "login responds 200": {
+                            "passes": 3,
+                            "fails": 0,
+                            "name": "login responds 200",
+                            "path": "::setup::login responds 200",
+                            "id": "52fe61ec9d501f3c4538a045c6dbe1f2"
+                        },
+                        "login returns token": {
+                            "name": "login returns token",
+                            "path": "::setup::login returns token",
+                            "id": "2c9e3e4ff64d4b6febba748061509914",
+                            "passes": 3,
+                            "fails": 0
+                        }
+                    }
+            }
+        },
+        "checks": {
+            "family_overview responds 200": {
+                "name": "family_overview responds 200",
+                "path": "::family_overview responds 200",
+                "id": "bf332ff8b3bbbdc7f22baf47c4e7f58f",
+                "passes": 1179,
+                "fails": 0
+            },
+            "family_overview returns JSON": {
+                "name": "family_overview returns JSON",
+                "path": "::family_overview returns JSON",
+                "id": "981dbceae315366dc48b409bb31fb4e7",
+                "passes": 1179,
+                "fails": 0
+            },
+            "professional_overview responds 200": {
+                "fails": 0,
+                "name": "professional_overview responds 200",
+                "path": "::professional_overview responds 200",
+                "id": "d7bba1f343a42bbbbe563c9a4db12677",
+                "passes": 1188
+            },
+            "professional_overview returns JSON": {
+                "name": "professional_overview returns JSON",
+                "path": "::professional_overview returns JSON",
+                "id": "622ee77c0f4dae0bc6929dd80e8ea9d1",
+                "passes": 1188,
+                "fails": 0
+            },
+            "admin_dashboard responds 200": {
+                "name": "admin_dashboard responds 200",
+                "path": "::admin_dashboard responds 200",
+                "id": "741bb970348df32f4d586a5b7c95497c",
+                "passes": 1181,
+                "fails": 0
+            },
+            "admin_dashboard returns JSON": {
+                "passes": 1181,
+                "fails": 0,
+                "name": "admin_dashboard returns JSON",
+                "path": "::admin_dashboard returns JSON",
+                "id": "29de6b0acff47fd58af8325d8c3c688a"
+            },
+            "family_older_adults responds 200": {
+                "name": "family_older_adults responds 200",
+                "path": "::family_older_adults responds 200",
+                "id": "3f7343c255ef83df66eb5289075e80f9",
+                "passes": 1177,
+                "fails": 0
+            },
+            "family_older_adults returns JSON": {
+                "passes": 1177,
+                "fails": 0,
+                "name": "family_older_adults returns JSON",
+                "path": "::family_older_adults returns JSON",
+                "id": "5bce6314769cfa5a143d1c5f3e93a0f8"
+            },
+            "professional_older_adults responds 200": {
+                "passes": 1187,
+                "fails": 0,
+                "name": "professional_older_adults responds 200",
+                "path": "::professional_older_adults responds 200",
+                "id": "7c9e7f91b3c17aaa4257e66b4bab1528"
+            },
+            "professional_older_adults returns JSON": {
+                "name": "professional_older_adults returns JSON",
+                "path": "::professional_older_adults returns JSON",
+                "id": "826e32df8d552b3c540582dbd25997dd",
+                "passes": 1187,
+                "fails": 0
+            },
+            "admin_users responds 200": {
+                "name": "admin_users responds 200",
+                "path": "::admin_users responds 200",
+                "id": "54063cb0975964d3ab974a7493e80b58",
+                "passes": 1180,
+                "fails": 0
+            },
+            "admin_users returns JSON": {
+                "name": "admin_users returns JSON",
+                "path": "::admin_users returns JSON",
+                "id": "b97afcff2d0c297fcec273727ecac383",
+                "passes": 1180,
+                "fails": 0
+            },
+            "family_incidents responds 200": {
+                "id": "dfc73b25e704edfbe84ccec60fe29360",
+                "passes": 1177,
+                "fails": 0,
+                "name": "family_incidents responds 200",
+                "path": "::family_incidents responds 200"
+            },
+            "family_incidents returns JSON": {
+                "path": "::family_incidents returns JSON",
+                "id": "8c7b0aa4bd3528b6c044dd13a1a59caa",
+                "passes": 1177,
+                "fails": 0,
+                "name": "family_incidents returns JSON"
+            },
+            "professional_reminders responds 200": {
+                "name": "professional_reminders responds 200",
+                "path": "::professional_reminders responds 200",
+                "id": "4e862f4beb89229bbe93297b928a9b2e",
+                "passes": 1187,
+                "fails": 0
+            },
+            "professional_reminders returns JSON": {
+                "name": "professional_reminders returns JSON",
+                "path": "::professional_reminders returns JSON",
+                "id": "485993def06bca94256fdda03c4a7bd6",
+                "passes": 1187,
+                "fails": 0
+            },
+            "admin_older_adults responds 200": {
+                "name": "admin_older_adults responds 200",
+                "path": "::admin_older_adults responds 200",
+                "id": "39a963ca9844064cd2cef32f6e1ca24f",
+                "passes": 1180,
+                "fails": 0
+            },
+            "admin_older_adults returns JSON": {
+                "name": "admin_older_adults returns JSON",
+                "path": "::admin_older_adults returns JSON",
+                "id": "c18497e168185fa26bb4901b08af4f84",
+                "passes": 1180,
+                "fails": 0
+            }
+        },
+        "name": ""
+    },
+    "metrics": {
+        "checks": {
+            "passes": 21278,
+            "fails": 0,
+            "thresholds": {
+                "rate>0.99": false
+            },
+            "value": 1
+        },
+        "http_req_connecting": {
+            "max": 8.599984,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.031633242222013344,
+            "min": 0,
+            "med": 0
+        },
+        "http_req_waiting": {
+            "min": 0,
+            "med": 24.54173,
+            "max": 207.848756,
+            "p(90)": 40.24478140000002,
+            "p(95)": 51.32569610000002,
+            "avg": 27.449880318074964
+        },
+        "http_reqs": {
+            "count": 10639,
+            "rate": 101.17321534246221
+        },
+        "vus": {
+            "value": 1,
+            "min": 1,
+            "max": 45
+        },
+        "http_req_sending": {
+            "avg": 0.014689227746968767,
+            "min": 0.002497,
+            "med": 0.010629,
+            "max": 3.181183,
+            "p(90)": 0.0223594,
+            "p(95)": 0.037967400000000026
+        },
+        "http_req_duration": {
+            "avg": 27.844047445342518,
+            "min": 0.108288,
+            "med": 24.951207,
+            "max": 207.973553,
+            "p(90)": 40.757187400000014,
+            "p(95)": 51.72537520000002,
+            "thresholds": {
+                "p(95)<1000": false,
+                "p(99)<2000": false
+            }
+        },
+        "http_req_tls_handshaking": {
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0
+        },
+        "iterations": {
+            "count": 3544,
+            "rate": 33.702215920075766
+        },
+        "http_req_failed": {
+            "fails": 10639,
+            "passes": 0,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "data_sent": {
+            "count": 2180005,
+            "rate": 20731.094587145817
+        },
+        "iteration_duration": {
+            "p(95)": 1122.7879560000001,
+            "avg": 1084.8982191207651,
+            "min": 1043.59232,
+            "med": 1081.3684025,
+            "max": 1237.61659,
+            "p(90)": 1110.5552118
+        },
+        "vus_max": {
+            "max": 45,
+            "value": 45,
+            "min": 45
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 0.108288,
+            "med": 24.951207,
+            "max": 207.973553,
+            "p(90)": 40.757187400000014,
+            "p(95)": 51.72537520000002,
+            "avg": 27.844047445342518
+        },
+        "data_received": {
+            "count": 6479967,
+            "rate": 61622.248021717154
+        },
+        "http_req_blocked": {
+            "avg": 0.03676086323902615,
+            "min": 0.000678,
+            "med": 0.003324,
+            "max": 8.743712,
+            "p(90)": 0.006055000000000011,
+            "p(95)": 0.008279900000000007
+        },
+        "http_req_receiving": {
+            "avg": 0.37947789952063116,
+            "min": 0.012005,
+            "med": 0.324444,
+            "max": 6.622259,
+            "p(90)": 0.7151000000000001,
+            "p(95)": 0.8823632000000001
+        }
+    },
+    "setup_data": {
+        "administrator": "23|evoT89I7EFhGkr3E3LVqvXHlu2c49NQkSr01f9QI6e54affc",
+        "family": "25|HcFyj2FjcqENpxNBl0p0T8JYcB0uE1L3v78s1fYubbffcd55",
+        "professional": "24|WYiQAFSRX3ol6VnIwC4CPOX6W0KzqrlpPu6S9a9df89b4799"
+    }
+}

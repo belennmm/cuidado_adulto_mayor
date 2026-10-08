@@ -2,39 +2,36 @@
 
 namespace Tests\Feature;
 
-use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Tests\Concerns\CreatesCareTestData;
 use Tests\TestCase;
 
 class FamilyCaregiverDataIsolationTest extends TestCase
 {
     use RefreshDatabase;
+    use CreatesCareTestData;
 
     public function test_family_caregiver_can_only_access_assigned_older_adult_data(): void
     {
-        $familyCaregiver = User::factory()->create([
+        $familyCaregiver = $this->createApprovedFamily([
             'name' => 'Laura Rodriguez',
             'email' => 'laura.rodriguez@example.com',
             'password' => Hash::make('secret123'),
             'role' => 'cuidador_familiar',
-            'is_approved' => true,
         ]);
 
-        $admin = User::factory()->create(['role' => 'admin', 'is_approved' => true]);
+        $admin = User::factory()->admin()->create();
 
-        $assignedOlderAdult = OlderAdult::create([
+        $assignedOlderAdult = $this->createAssignedOlderAdult($familyCaregiver, [
             'full_name' => 'Rosa Martinez',
             'age' => 81,
             'room' => 'A-101',
-            'status' => 'Estable',
-            'caregiver_family' => $familyCaregiver->name,
-            'family_caregiver_id' => $familyCaregiver->id,
             'created_by' => $admin->id,
         ]);
 
-        $unassignedOlderAdult = OlderAdult::create([
+        $unassignedOlderAdult = $this->createOlderAdult([
             'full_name' => 'Juan Perez',
             'age' => 75,
             'room' => 'B-202',
@@ -75,36 +72,29 @@ class FamilyCaregiverDataIsolationTest extends TestCase
 
     public function test_family_caregiver_cannot_see_other_family_caregivers_older_adults(): void
     {
-        $familyCaregiver1 = User::factory()->create([
+        $familyCaregiver1 = $this->createApprovedFamily([
             'name' => 'Laura Rodriguez',
-            'role' => 'cuidador_familiar',
-            'is_approved' => true,
             'password' => Hash::make('secret123'),
         ]);
 
-        $familyCaregiver2 = User::factory()->create([
+        $familyCaregiver2 = $this->createApprovedFamily([
             'name' => 'Carlos Lopez',
-            'role' => 'cuidador_familiar',
-            'is_approved' => true,
         ]);
 
-        $admin = User::factory()->create(['role' => 'admin', 'is_approved' => true]);
+        $admin = User::factory()->admin()->create();
 
-        $olderAdultOfCaregiver1 = OlderAdult::create([
+        $olderAdultOfCaregiver1 = $this->createAssignedOlderAdult($familyCaregiver1, [
             'full_name' => 'Rosa Martinez',
             'age' => 81,
             'room' => 'A-101',
-            'status' => 'Estable',
-            'family_caregiver_id' => $familyCaregiver1->id,
             'created_by' => $admin->id,
         ]);
 
-        $olderAdultOfCaregiver2 = OlderAdult::create([
+        $olderAdultOfCaregiver2 = $this->createAssignedOlderAdult($familyCaregiver2, [
             'full_name' => 'Maria Sanchez',
             'age' => 78,
             'room' => 'A-102',
             'status' => 'Atencion',
-            'family_caregiver_id' => $familyCaregiver2->id,
             'created_by' => $admin->id,
         ]);
 
