@@ -59,13 +59,24 @@ class MedicationAdministrationEndpointsTest extends TestCase
 
         Sanctum::actingAs($professional);
 
-        $this->postJson("/api/medications/{$assignment->id}/taken", [
+        $firstResponse = $this->postJson("/api/medications/{$assignment->id}/taken", [
             'administration_time' => '10:00',
+            'notes' => 'Registro original',
         ])->assertOk();
 
-        $this->postJson("/api/medications/{$assignment->id}/taken", [
+        $retryResponse = $this->postJson("/api/medications/{$assignment->id}/taken", [
             'administration_time' => '10:30',
+            'notes' => 'Reintento tardio',
         ])->assertOk();
+
+        $this->assertSame(
+            $firstResponse->json('administration.id'),
+            $retryResponse->json('administration.id'),
+        );
+
+        $retryResponse
+            ->assertJsonPath('administration.administration_time', '10:00:00')
+            ->assertJsonPath('administration.notes', 'Registro original');
 
         $this->assertSame(
             1,
@@ -75,6 +86,30 @@ class MedicationAdministrationEndpointsTest extends TestCase
                 ->whereDate('administration_date', '2026-05-04')
                 ->count()
         );
+    }
+
+    public function test_database_rejects_duplicate_scheduled_administration(): void
+    {
+        $professional = $this->createApprovedProfessional();
+        $assignment = $this->createMedicationAssignment($this->createAssignedOlderAdult($professional));
+        $attributes = [
+            'older_adult_id' => $assignment->older_adult_id,
+            'older_adult_medication_id' => $assignment->id,
+            'medication_id' => $assignment->medication_id,
+            'administration_type' => 'scheduled',
+            'administration_date' => '2026-05-04',
+            'administration_time' => '10:00:00',
+            'recorded_by' => $professional->id,
+        ];
+
+        MedicationAdministration::create($attributes);
+
+        $this->expectException(\Illuminate\Database\QueryException::class);
+
+        MedicationAdministration::create([
+            ...$attributes,
+            'administration_time' => '10:01:00',
+        ]);
     }
 
     public function test_pending_professional_cannot_mark_taken(): void

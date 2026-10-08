@@ -31,32 +31,17 @@ class MedicationAdministrationService
             ? Carbon::createFromFormat('H:i', $data['administration_time'], $timezone)->format('H:i:s')
             : $now->format('H:i:s');
 
-        $administration = MedicationAdministration::query()
-            ->where('administration_type', 'scheduled')
-            ->whereDate('administration_date', $date)
-            ->where('older_adult_medication_id', $assignment->id)
-            ->first();
-
-        $values = [
+        return MedicationAdministration::firstOrCreate([
+            'administration_type' => 'scheduled',
+            'older_adult_medication_id' => $assignment->id,
+            'administration_date' => $date,
+        ], [
             'older_adult_id' => $assignment->older_adult_id,
             'medication_id' => $assignment->medication_id,
             'dosage' => $assignment->dosage,
-            'administration_date' => $date,
             'administration_time' => $time,
             'notes' => $data['notes'] ?? null,
             'recorded_by' => $user->id,
-        ];
-
-        if ($administration) {
-            $administration->update($values);
-
-            return $administration;
-        }
-
-        return MedicationAdministration::create([
-            'administration_type' => 'scheduled',
-            'older_adult_medication_id' => $assignment->id,
-            ...$values,
         ]);
     }
 
