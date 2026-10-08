@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\UserRole;
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -11,11 +9,7 @@ class ProfessionalIncidentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        /** @var User|null $user */
-        $user = $this->user();
-
-        return $user?->hasRole(UserRole::ADMIN)
-            || ($user?->hasRole(UserRole::PROFESSIONAL) && (bool) $user->is_approved);
+        return true;
     }
 
     protected function failedAuthorization(): void
