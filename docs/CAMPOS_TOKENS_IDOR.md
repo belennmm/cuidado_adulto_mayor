@@ -57,4 +57,4 @@ Resultado: **30 pruebas en los dos archivos nuevos y 581 aserciones, sin fallos*
 
 El entorno instalado utiliza PHP 8.2.12, Laravel 11.51 y PHPUnit 11.5.55; `composer.json` declara PHP 8.3+, Laravel 13 y PHPUnit 12. No se modificaron dependencias. Queda pendiente validar en las versiones declaradas.
 
-Al cerrar este bloque quedaban pendientes SCRUM-791 a SCRUM-796. El siguiente bloque cubre SCRUM-791 a SCRUM-794; SCRUM-795 y SCRUM-796 siguen pendientes.
+Al cerrar este bloque quedaban pendientes SCRUM-791 a SCRUM-796. Los bloques posteriores completaron esas subtareas; véase el [cierre de A01](CIERRE_A01_INVALIDACION_METODOS.md).

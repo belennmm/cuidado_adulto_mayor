@@ -23,8 +23,9 @@ class CurrentRequestPermissionsTest extends TestCase
         // Simulate an external state change that does not dispatch model observers.
         DB::table('users')->where('id', $user->id)->update(['is_approved' => false]);
         $this->assertSame(1, $user->tokens()->count());
-        $this->getJson($path, [...$headers, 'X-Role' => $role, 'X-Is-Approved' => 'true'])->assertForbidden();
-        $this->putJson('/api/me', ['name' => 'Intento', 'email' => $user->email, 'is_approved' => true], $headers)->assertForbidden();
+        $this->getJson($path, [...$headers, 'X-Role' => $role, 'X-Is-Approved' => 'true'])->assertUnauthorized();
+        $this->putJson('/api/me', ['name' => 'Intento', 'email' => $user->email, 'is_approved' => true], $headers)->assertUnauthorized();
+        $this->assertSame(0, $user->tokens()->count());
         $this->assertDatabaseMissing('users', ['id' => $user->id, 'name' => 'Intento']);
     }
 
@@ -44,8 +45,8 @@ class CurrentRequestPermissionsTest extends TestCase
         $this->getJson('/api/admin/users', $headers)->assertOk();
         foreach (['familiar', 'auditor', ''] as $role) {
             DB::table('users')->where('id', $user->id)->update(['role' => $role]);
-            $this->getJson('/api/admin/users', $headers)->assertForbidden();
-            $this->putJson('/api/admin/users/999999', ['role' => 'admin', 'is_approved' => true], $headers)->assertForbidden();
+            $this->getJson('/api/admin/users', $headers)->assertUnauthorized();
+            $this->putJson('/api/admin/users/999999', ['role' => 'admin', 'is_approved' => true], $headers)->assertUnauthorized();
         }
     }
 

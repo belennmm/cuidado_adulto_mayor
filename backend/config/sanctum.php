@@ -34,7 +34,8 @@ return [
     |
     */
 
-    'guard' => ['web'],
+    // This API issues Bearer credentials; a web session must not bypass token invalidation.
+    'guard' => [],
 
     /*
     |--------------------------------------------------------------------------

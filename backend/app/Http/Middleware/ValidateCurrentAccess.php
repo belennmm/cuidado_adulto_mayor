@@ -3,6 +3,9 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Services\CredentialRevocationService;
+use App\Support\AccountSecurityState;
+use App\Support\ResourceAccess;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
@@ -36,6 +39,15 @@ class ValidateCurrentAccess
             if (! $token || ! $token->tokenable()->whereKey($current->id)->exists()
                 || ($token->expires_at && $token->expires_at->isPast())
                 || ($expiration && $token->created_at->lte(now()->subMinutes((int) $expiration)))) {
+                throw new AuthenticationException;
+            }
+            if (! is_string($token->security_fingerprint)
+                || ! hash_equals(AccountSecurityState::fingerprint($current), $token->security_fingerprint)) {
+                app(CredentialRevocationService::class)->revokeOutdated($current);
+                throw new AuthenticationException;
+            }
+            if (! ResourceAccess::admin($current) && ! ResourceAccess::caregiver($current)) {
+                app(CredentialRevocationService::class)->revoke($current);
                 throw new AuthenticationException;
             }
         }

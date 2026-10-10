@@ -7,6 +7,7 @@ use App\Models\Incident;
 use App\Models\MobilityExercise;
 use App\Models\OlderAdult;
 use App\Models\OlderAdultMedication;
+use App\Models\PersonalAccessToken;
 use App\Models\RoutineNote;
 use App\Models\Rutina;
 use App\Models\User;
@@ -27,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->validateProductionConfiguration();
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         User::observe(UserObserver::class);
 
         Gate::policy(Rutina::class, RutinaPolicy::class);

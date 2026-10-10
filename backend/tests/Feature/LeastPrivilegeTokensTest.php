@@ -87,8 +87,8 @@ class LeastPrivilegeTokensTest extends TestCase
         $plain = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk()->json('token');
         DB::table('users')->where('id', $user->id)->update(['role' => 'admin']);
         $headers = ['Authorization' => 'Bearer '.$plain];
-        $this->getJson('/api/admin/users', $headers)->assertForbidden();
-        $this->getJson('/api/me', $headers)->assertOk()->assertJsonPath('user.role', 'admin');
+        $this->getJson('/api/admin/users', $headers)->assertUnauthorized();
+        $this->getJson('/api/me', $headers)->assertUnauthorized();
     }
 
     #[DataProvider('unprivilegedServiceUsers')]

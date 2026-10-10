@@ -2,6 +2,8 @@
 
 Historia SCRUM-779 (A01), sprint 9. Fecha: 2026-10-09. Bloque de cuatro subtareas. No se ejecutaron acciones de Git.
 
+Seguimiento final: [SCRUM-795 y SCRUM-796](CIERRE_A01_INVALIDACION_METODOS.md) vincula tokens al estado de emisión. Un cambio externo de rol/aprobación ahora invalida la credencial con 401; los tokens anteriores sin huella requieren nuevo login. La API deja de aceptar sesiones web como alternativa al Bearer. Los resultados y respuestas descritos a continuación corresponden al bloque SCRUM-791 a SCRUM-794.
+
 ## SCRUM-791: permisos vigentes en cada solicitud
 
 `ValidateCurrentAccess` se ejecuta después de la autenticación y antes de los controles de rol y del enlace de modelos. En cada solicitud privada vuelve a consultar al usuario; si hay un Bearer token, lo identifica por su valor actual y verifica su existencia, propietario y vencimiento. No reutiliza una identidad anterior si cambia el encabezado Authorization. Las Policies siguen comprobando la asignación vigente al recurso.
@@ -78,4 +80,4 @@ Se agregaron **48 casos de prueba**. La suite completa pasó con **302 pruebas y
 
 La validación local usa PHP 8.2.12, Laravel 11.51 y PHPUnit 11.5.55. `composer.json` declara PHP 8.3+, Laravel 13 y PHPUnit 12; queda pendiente comprobar esas versiones. No se modificaron dependencias ni credenciales locales.
 
-SCRUM-795 y SCRUM-796 quedan para el siguiente bloque.
+SCRUM-795 y SCRUM-796 se completaron en el [bloque final](CIERRE_A01_INVALIDACION_METODOS.md).
