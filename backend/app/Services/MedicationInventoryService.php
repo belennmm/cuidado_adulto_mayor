@@ -137,7 +137,7 @@ class MedicationInventoryService
                 abort(response()->json(['message' => 'La cantidad no puede quedar negativa.'], 422));
             }
 
-            if ($nextQuantity > 4294967295) {
+            if ($nextQuantity > 2147483647) {
                 abort(response()->json(['message' => 'La cantidad excede el limite del inventario.'], 422));
             }
 
@@ -160,13 +160,16 @@ class MedicationInventoryService
 
     public function delete(OlderAdultMedication $inventoryItem): void
     {
-        if ($inventoryItem->administrations()->exists()) {
-            abort(response()->json([
-                'message' => 'No se puede eliminar este inventario porque tiene administraciones registradas.',
-            ], 422));
-        }
+        DB::transaction(function () use ($inventoryItem) {
+            $inventoryItem = OlderAdultMedication::query()->lockForUpdate()->findOrFail($inventoryItem->getKey());
+            if ($inventoryItem->administrations()->exists()) {
+                abort(response()->json([
+                    'message' => 'No se puede eliminar este inventario porque tiene administraciones registradas.',
+                ], 422));
+            }
 
-        $inventoryItem->delete();
+            $inventoryItem->delete();
+        });
     }
 
     private function medication(string $name): Medication

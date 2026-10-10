@@ -186,7 +186,7 @@ class CareDataService
         ];
     }
 
-    private function isDueToday(mixed $days, Carbon $today): bool
+    public function isDueToday(mixed $days, Carbon $today): bool
     {
         if (! is_array($days) || count($days) === 0) {
             return true;

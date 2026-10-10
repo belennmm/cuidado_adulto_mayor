@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -59,39 +60,48 @@ class RoutineService
 
     public function update(Rutina $routine, array $data): Rutina
     {
-        $routine->update([
-            ...$this->normalizedRoutineData($data),
-            'actividades_completadas' => null,
-            'completada' => false,
-            'completada_at' => null,
-        ]);
+        return DB::transaction(function () use ($routine, $data) {
+            $routine = Rutina::query()->lockForUpdate()->findOrFail($routine->getKey());
+            $routine->update([
+                ...$this->normalizedRoutineData($data),
+                'actividades_completadas' => null,
+                'completada' => false,
+                'completada_at' => null,
+            ]);
 
-        return $this->loadForResponse($routine->refresh());
+            return $this->loadForResponse($routine->refresh());
+        });
     }
 
     public function completeActivity(Rutina $routine, array $data): Rutina
     {
-        [$activityIndex, $activityName] = $this->activityFromData($routine, $data);
-        $completedActivities = $routine->actividades_completadas ?? [];
+        return DB::transaction(function () use ($routine, $data) {
+            $routine = Rutina::query()->lockForUpdate()->findOrFail($routine->getKey());
+            [$activityIndex, $activityName] = $this->activityFromData($routine, $data);
+            $completedActivities = $routine->actividades_completadas ?? [];
+            if ($completedActivities[$activityIndex]['completada'] ?? false) {
+                return $this->loadForResponse($routine);
+            }
 
-        $completedActivities[$activityIndex] = [
-            'actividad' => $activityName,
-            'completada' => true,
-            'completada_at' => now()->toISOString(),
-        ];
+            $completedActivities[$activityIndex] = [
+                'actividad' => $activityName,
+                'completada' => true,
+                'completada_at' => now()->toISOString(),
+            ];
 
-        $routineCompleted = $this->allActivitiesCompleted(
-            $routine->actividades ?? [],
-            $completedActivities,
-        );
+            $routineCompleted = $this->allActivitiesCompleted(
+                $routine->actividades ?? [],
+                $completedActivities,
+            );
 
-        $routine->update([
-            'actividades_completadas' => $completedActivities,
-            'completada' => $routineCompleted,
-            'completada_at' => $routineCompleted ? ($routine->completada_at ?? now()) : null,
-        ]);
+            $routine->update([
+                'actividades_completadas' => $completedActivities,
+                'completada' => $routineCompleted,
+                'completada_at' => $routineCompleted ? ($routine->completada_at ?? now()) : null,
+            ]);
 
-        return $this->loadForResponse($routine->refresh());
+            return $this->loadForResponse($routine->refresh());
+        });
     }
 
     public function loadForAuthorization(Rutina $routine): Rutina

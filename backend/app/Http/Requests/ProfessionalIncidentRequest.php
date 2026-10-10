@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Incident;
+use Illuminate\Validation\Rule;
 use App\Support\ResourceAccess;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -29,7 +31,7 @@ class ProfessionalIncidentRequest extends StrictFormRequest
 
         return [
             'description' => ['nullable', 'string', 'max:2000'], 'severity' => ['nullable', 'in:baja,media,alta'],
-            'status' => ['nullable', 'in:abierto,en_progreso,resuelto,cerrado'],
+            'status' => ['nullable', Rule::in(array_keys(Incident::STATUS_TRANSITIONS))],
         ];
     }
 

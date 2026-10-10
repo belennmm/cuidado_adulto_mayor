@@ -10,6 +10,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class VacationRequestService
 {
@@ -53,20 +55,26 @@ class VacationRequestService
         string $status,
     ): VacationRequest {
         Gate::forUser($reviewer)->authorize('review', $vacationRequest);
-        if ($vacationRequest->status !== 'pending') {
-            abort(response()->json(['message' => 'Esta solicitud ya fue revisada.'], 422));
+        if (! in_array($status, ['approved', 'rejected'], true)) {
+            throw ValidationException::withMessages(['status' => ['La decisión no es válida.']]);
         }
+        return DB::transaction(function () use ($vacationRequest, $reviewer, $status) {
+            $vacationRequest = VacationRequest::query()->lockForUpdate()->findOrFail($vacationRequest->getKey());
+            if ($vacationRequest->status !== 'pending') {
+                abort(response()->json(['message' => 'Esta solicitud ya fue revisada.'], 422));
+            }
 
-        $vacationRequest->update([
-            'status' => $status,
-            'reviewed_by' => $reviewer->id,
-            'reviewed_at' => Carbon::now(config('app.timezone')),
-        ]);
+            $vacationRequest->update([
+                'status' => $status,
+                'reviewed_by' => $reviewer->id,
+                'reviewed_at' => Carbon::now(config('app.timezone')),
+            ]);
 
-        return $vacationRequest->load([
-            'user:id,name,email,role,is_approved',
-            'reviewer:id,name,email',
-        ]);
+            return $vacationRequest->load([
+                'user:id,name,email,role,is_approved',
+                'reviewer:id,name,email',
+            ]);
+        });
     }
 
     private function authorizeProfessional(User $user): void

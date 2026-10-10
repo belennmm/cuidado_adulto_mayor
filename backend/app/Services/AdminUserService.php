@@ -97,6 +97,7 @@ class AdminUserService
         }
 
         return DB::transaction(function () use ($user, $data) {
+            $user = User::query()->lockForUpdate()->findOrFail($user->getKey());
             $user->forceFill($data)->save();
 
             return $user;
@@ -105,25 +106,34 @@ class AdminUserService
 
     public function approve(User $user): User
     {
-        $user->forceFill(['is_approved' => true])->save();
+        return DB::transaction(function () use ($user) {
+            $user = User::query()->lockForUpdate()->findOrFail($user->getKey());
+            if ($user->is_approved) {
+                return $user;
+            }
+            $user->forceFill(['is_approved' => true])->save();
 
-        return $user;
+            return $user;
+        });
     }
 
     public function reject(User $user): void
     {
-        if ($user->hasRole(UserRole::ADMIN) || $user->is_approved) {
-            abort(response()->json([
-                'message' => 'Solo se pueden rechazar solicitudes pendientes.',
-            ], 422));
-        }
+        DB::transaction(function () use ($user) {
+            $user = User::query()->lockForUpdate()->findOrFail($user->getKey());
+            if ($user->hasRole(UserRole::ADMIN) || $user->is_approved) {
+                abort(response()->json([
+                    'message' => 'Solo se pueden rechazar solicitudes pendientes.',
+                ], 422));
+            }
 
-        $this->delete($user);
+            $this->delete($user);
+        });
     }
 
     public function delete(User $user): void
     {
-        DB::transaction(fn () => $user->delete());
+        DB::transaction(fn () => User::query()->lockForUpdate()->findOrFail($user->getKey())->delete());
     }
 
     private function normalizeRole(string $role): string

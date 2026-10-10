@@ -8,6 +8,8 @@ use App\Models\OlderAdultMedication;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class MedicationAdministrationService
 {
@@ -17,34 +19,53 @@ class MedicationAdministrationService
         array $data,
     ): MedicationAdministration {
         $this->authorize($user);
-        Gate::forUser($user)->authorize('markTaken', $assignment);
-        $olderAdult = $assignment->olderAdult()->first();
+        return DB::transaction(function () use ($user, $assignment, $data) {
+            // Match the profile synchronization lock order: older adult, then assignment.
+            $olderAdult = $assignment->olderAdult()->lockForUpdate()->first();
+            $assignment = OlderAdultMedication::query()->lockForUpdate()->findOrFail($assignment->getKey());
+            Gate::forUser($user)->authorize('markTaken', $assignment);
 
-        if (! $olderAdult || (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
-            abort(response()->json([
-                'message' => 'No tienes acceso para marcar este medicamento.',
-            ], 403));
-        }
+            if (! $olderAdult || (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
+                abort(response()->json([
+                    'message' => 'No tienes acceso para marcar este medicamento.',
+                ], 403));
+            }
 
-        $timezone = (string) config('app.timezone');
-        $now = Carbon::now($timezone);
-        $date = $now->toDateString();
-        $time = isset($data['administration_time'])
-            ? Carbon::createFromFormat('H:i', $data['administration_time'], $timezone)->format('H:i:s')
-            : $now->format('H:i:s');
+            $timezone = (string) config('app.timezone');
+            $now = Carbon::now($timezone);
+            $date = $now->toDateString();
+            $existing = $assignment->administrations()
+                ->where('administration_type', 'scheduled')
+                ->whereDate('administration_date', $date)->first();
+            if ($existing) {
+                return $existing;
+            }
 
-        return MedicationAdministration::firstOrCreate([
-            'administration_type' => 'scheduled',
-            'older_adult_medication_id' => $assignment->id,
-            'administration_date' => $date,
-        ], [
-            'older_adult_id' => $assignment->older_adult_id,
-            'medication_id' => $assignment->medication_id,
-            'dosage' => $assignment->dosage,
-            'administration_time' => $time,
-            'notes' => $data['notes'] ?? null,
-            'recorded_by' => $user->id,
-        ]);
+            if (! $assignment->is_active
+                || ($assignment->start_date && $assignment->start_date->toDateString() > $date)
+                || ($assignment->end_date && $assignment->end_date->toDateString() < $date)
+                || ! app(CareDataService::class)->isDueToday($assignment->days, $now)) {
+                throw ValidationException::withMessages([
+                    'assignment' => ['El medicamento no está activo o no está programado para hoy.'],
+                ]);
+            }
+            $time = isset($data['administration_time'])
+                ? Carbon::createFromFormat('H:i', $data['administration_time'], $timezone)->format('H:i:s')
+                : $now->format('H:i:s');
+
+            return MedicationAdministration::firstOrCreate([
+                'administration_type' => 'scheduled',
+                'older_adult_medication_id' => $assignment->id,
+                'administration_date' => $date,
+            ], [
+                'older_adult_id' => $assignment->older_adult_id,
+                'medication_id' => $assignment->medication_id,
+                'dosage' => $assignment->dosage,
+                'administration_time' => $time,
+                'notes' => $data['notes'] ?? null,
+                'recorded_by' => $user->id,
+            ]);
+        });
     }
 
     private function authorize(User $user): void

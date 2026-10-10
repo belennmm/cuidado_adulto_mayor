@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Support\ResourceAccess;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ProfessionalIncidentService
@@ -51,28 +52,40 @@ class ProfessionalIncidentService
 
     public function update(User $user, Incident $incident, array $data): Incident
     {
-        Gate::forUser($user)->authorize('update', $incident);
-        $incident->load('olderAdult:id,professional_caregiver_id,full_name');
+        return DB::transaction(function () use ($user, $incident, $data) {
+            $incident = Incident::query()->lockForUpdate()->findOrFail($incident->getKey());
+            Gate::forUser($user)->authorize('update', $incident);
+            $incident->load('olderAdult:id,professional_caregiver_id,full_name');
 
-        if (! $incident->older_adult_id || ! $incident->olderAdult) {
-            abort(response()->json(['message' => 'No se puede modificar este incidente.'], 403));
-        }
+            if (! $incident->older_adult_id || ! $incident->olderAdult) {
+                abort(response()->json(['message' => 'No se puede modificar este incidente.'], 403));
+            }
 
-        if ((int) $incident->olderAdult->professional_caregiver_id !== (int) $user->id) {
-            abort(response()->json([
-                'message' => 'No tienes acceso para modificar este incidente.',
-            ], 403));
-        }
+            if ((int) $incident->olderAdult->professional_caregiver_id !== (int) $user->id) {
+                abort(response()->json([
+                    'message' => 'No tienes acceso para modificar este incidente.',
+                ], 403));
+            }
 
-        $incident->update([
-            'description' => array_key_exists('description', $data)
-                ? $data['description']
-                : $incident->description,
-            'severity' => $data['severity'] ?? $incident->severity,
-            'status' => $data['status'] ?? $incident->status,
-        ]);
+            $nextStatus = $data['status'] ?? $incident->status;
+            $currentState = Incident::LEGACY_STATUS_ALIASES[$incident->status] ?? $incident->status;
+            $nextState = Incident::LEGACY_STATUS_ALIASES[$nextStatus] ?? $nextStatus;
+            if (! in_array($nextState, Incident::STATUS_TRANSITIONS[$currentState] ?? [], true)) {
+                throw ValidationException::withMessages([
+                    'status' => ['El incidente no puede regresar a un estado anterior.'],
+                ]);
+            }
 
-        return $incident;
+            $incident->update([
+                'description' => array_key_exists('description', $data)
+                    ? $data['description']
+                    : $incident->description,
+                'severity' => $data['severity'] ?? $incident->severity,
+                'status' => $nextStatus,
+            ]);
+
+            return $incident;
+        });
     }
 
     private function findOlderAdult(int $olderAdultId): OlderAdult
