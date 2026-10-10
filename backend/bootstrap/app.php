@@ -1,8 +1,20 @@
 <?php
 
+use App\Http\Middleware\EnforceRequestSize;
+use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\RejectDisallowedMethods;
+use App\Http\Middleware\RequireAccessRule;
+use App\Http\Middleware\SecurityHeaders;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,35 +28,35 @@ return Application::configure(basePath: dirname(__DIR__))
         // Keep CORS global so it also handles OPTIONS requests before routing,
         // but use the application's strict origin validation exclusively.
         $middleware->replace(
-            \Illuminate\Http\Middleware\HandleCors::class,
-            \App\Http\Middleware\HandleCors::class,
+            HandleCors::class,
+            App\Http\Middleware\HandleCors::class,
         );
 
-        $middleware->prepend(\App\Http\Middleware\RejectDisallowedMethods::class);
-        $middleware->prepend(\App\Http\Middleware\EnforceRequestSize::class);
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->prepend(RejectDisallowedMethods::class);
+        $middleware->prepend(EnforceRequestSize::class);
+        $middleware->append(SecurityHeaders::class);
 
         $middleware->api(prepend: [
-            \App\Http\Middleware\SecurityHeaders::class,
-        ]);
+            SecurityHeaders::class,
+        ], append: [RequireAccessRule::class]);
 
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
-            'role' => \App\Http\Middleware\EnsureRole::class,
+            'admin' => EnsureAdmin::class,
+            'role' => EnsureRole::class,
         ]);
 
         // Reject unauthorized roles before resolving resource identifiers.
         $middleware->prependToPriorityList(
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\EnsureRole::class,
+            SubstituteBindings::class,
+            EnsureRole::class,
         );
         $middleware->prependToPriorityList(
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\EnsureAdmin::class,
+            SubstituteBindings::class,
+            EnsureAdmin::class,
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (Throwable $exception, Request $request) {
             if (! $request->is('api/*')) {
                 return null;
             }
@@ -55,9 +67,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 if (! in_array($status, [404, 405], true) && $status < 500) {
                     return null;
                 }
-            } elseif ($exception instanceof \Illuminate\Validation\ValidationException
-                || $exception instanceof \Illuminate\Auth\AuthenticationException
-                || $exception instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+            } elseif ($exception instanceof ValidationException
+                || $exception instanceof AuthenticationException
+                || $exception instanceof HttpResponseException) {
                 return null;
             } else {
                 $status = 500;

@@ -6,6 +6,7 @@ use App\Models\MedicationAdministration;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class MedicationAdministrationService
@@ -16,6 +17,7 @@ class MedicationAdministrationService
         array $data,
     ): MedicationAdministration {
         $this->authorize($user);
+        Gate::forUser($user)->authorize('markTaken', $assignment);
         $olderAdult = $assignment->olderAdult()->first();
 
         if (! $olderAdult || (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {

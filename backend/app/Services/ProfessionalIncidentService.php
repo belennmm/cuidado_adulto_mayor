@@ -6,6 +6,7 @@ use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -14,6 +15,7 @@ class ProfessionalIncidentService
     public function create(User $user, array $data): Incident
     {
         $olderAdult = $this->findOlderAdult((int) $data['older_adult_id']);
+        Gate::forUser($user)->authorize('createFor', [Incident::class, $olderAdult]);
 
         if (! $this->isAdmin($user) && (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
             abort(response()->json([
@@ -49,6 +51,7 @@ class ProfessionalIncidentService
 
     public function update(User $user, Incident $incident, array $data): Incident
     {
+        Gate::forUser($user)->authorize('update', $incident);
         $incident->load('olderAdult:id,professional_caregiver_id,full_name');
 
         if (! $incident->older_adult_id || ! $incident->olderAdult) {

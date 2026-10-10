@@ -7,6 +7,7 @@ use App\Models\RoutineNote;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 class RoutineNoteService
 {
@@ -28,6 +29,7 @@ class RoutineNoteService
 
     public function notesForCurrentWeek(User $user, OlderAdult $olderAdult): Collection
     {
+        Gate::forUser($user)->authorize('createFor', [RoutineNote::class, $olderAdult]);
         [$weekStart, $weekEnd] = $this->currentWeekRange();
 
         return RoutineNote::query()
@@ -42,6 +44,7 @@ class RoutineNoteService
 
     public function create(User $user, OlderAdult $olderAdult, string $content): RoutineNote
     {
+        Gate::forUser($user)->authorize('createFor', [RoutineNote::class, $olderAdult]);
         $note = RoutineNote::create([
             'older_adult_id' => $olderAdult->id,
             'professional_caregiver_id' => $user->id,
@@ -54,6 +57,7 @@ class RoutineNoteService
 
     public function ownedNote(User $user, RoutineNote $note): RoutineNote
     {
+        Gate::forUser($user)->authorize('view', $note);
         if ((int) $note->professional_caregiver_id !== (int) $user->id) {
             abort(response()->json(['message' => 'No tienes acceso a esta nota.'], 403));
         }

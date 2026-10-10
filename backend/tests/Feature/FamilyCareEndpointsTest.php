@@ -51,6 +51,7 @@ class FamilyCareEndpointsTest extends TestCase
             'room' => 'A-101',
             'status' => 'Estable',
             'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
             'professional_caregiver_id' => $professional->id,
             'created_by' => $professional->id,
         ]);
@@ -82,6 +83,7 @@ class FamilyCareEndpointsTest extends TestCase
             'title' => 'Revision de presion',
             'description' => 'Se notifico lectura elevada.',
             'adult_name' => 'Rosa Martinez',
+            'older_adult_id' => $assignedAdult->id,
             'severity' => 'media',
             'status' => 'abierto',
             'incident_date' => Carbon::today()->toDateString(),
@@ -187,6 +189,7 @@ class FamilyCareEndpointsTest extends TestCase
             'room' => 'A-101',
             'status' => 'Estable',
             'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
             'professional_caregiver_id' => $professional->id,
             'created_by' => $professional->id,
         ]);
@@ -676,6 +679,7 @@ class FamilyCareEndpointsTest extends TestCase
             'room' => 'A-101',
             'status' => 'Estable',
             'caregiver_family' => 'Laura Rodriguez',
+            'family_caregiver_id' => $family->id,
             'created_by' => $family->id,
         ]);
 

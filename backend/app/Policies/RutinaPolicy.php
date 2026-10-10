@@ -5,31 +5,30 @@ namespace App\Policies;
 use App\Models\OlderAdult;
 use App\Models\Rutina;
 use App\Models\User;
+use App\Support\ResourceAccess as Access;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Str;
 
 class RutinaPolicy
 {
-    public function before(User $user, string $ability): ?bool
-    {
-        return $this->isAdmin($user) ? true : null;
-    }
-
     public function viewAny(User $user): Response
     {
-        return $this->isApprovedCaregiver($user)
+        return Access::admin($user) || Access::caregiver($user)
             ? Response::allow()
             : Response::deny('No tienes acceso a la informacion de rutinas.');
     }
 
     public function accessOlderAdult(User $user, OlderAdult $olderAdult): Response
     {
+        if (Access::admin($user)) {
+            return Response::allow();
+        }
+
         if (! $this->isApprovedCaregiver($user)) {
             return Response::deny('Tu cuenta debe estar aprobada para crear rutinas.');
         }
 
         if ($this->isProfessional($user)) {
-            return (int) $olderAdult->professional_caregiver_id === (int) $user->id
+            return Access::professionalAssigned($user, $olderAdult)
                 ? Response::allow()
                 : Response::deny('No tienes acceso a la informacion de este adulto mayor.');
         }
@@ -41,6 +40,10 @@ class RutinaPolicy
 
     public function update(User $user, Rutina $rutina): Response
     {
+        if (Access::admin($user)) {
+            return Response::allow();
+        }
+
         return $rutina->olderAdult !== null
             ? $this->accessOlderAdult($user, $rutina->olderAdult)
             : Response::deny('No tienes acceso a la informacion de este adulto mayor.');
@@ -58,41 +61,31 @@ class RutinaPolicy
 
     private function isApprovedCaregiver(User $user): bool
     {
-        return (bool) $user->is_approved && ($this->isProfessional($user) || $this->isFamily($user));
+        return Access::caregiver($user);
     }
 
     private function isProfessional(User $user): bool
     {
-        return in_array($this->role($user), ['profesional', 'cuidador_profesional'], true);
+        return Access::professional($user);
     }
 
     private function isFamily(User $user): bool
     {
-        return in_array($this->role($user), ['familiar', 'cuidador_familiar'], true);
-    }
-
-    private function isAdmin(User $user): bool
-    {
-        return in_array($this->role($user), ['admin', 'administrador'], true);
+        return Access::family($user);
     }
 
     private function isFamilyAssigned(User $user, OlderAdult $olderAdult): bool
     {
-        if ((int) $olderAdult->family_caregiver_id === (int) $user->id) {
-            return true;
-        }
-
-        return $olderAdult->family_caregiver_id === null
-            && $this->normalize($olderAdult->caregiver_family) === $this->normalize($user->name);
+        return Access::familyAssigned($user, $olderAdult);
     }
 
-    private function role(User $user): string
+    public function create(User $user): Response
     {
-        return $this->normalize($user->role);
+        return $this->viewAny($user);
     }
 
-    private function normalize(mixed $value): string
+    public function view(User $user, Rutina $rutina): Response
     {
-        return Str::of((string) $value)->ascii()->lower()->trim()->toString();
+        return $this->update($user, $rutina);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class VacationRequestService
@@ -47,6 +48,7 @@ class VacationRequestService
         User $reviewer,
         string $status,
     ): VacationRequest {
+        Gate::forUser($reviewer)->authorize('review', $vacationRequest);
         if ($vacationRequest->status !== 'pending') {
             abort(response()->json(['message' => 'Esta solicitud ya fue revisada.'], 422));
         }
