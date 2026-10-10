@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\MedicationAdministration;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 
 class MedicationAdministrationService
 {
@@ -33,40 +33,23 @@ class MedicationAdministrationService
             ? Carbon::createFromFormat('H:i', $data['administration_time'], $timezone)->format('H:i:s')
             : $now->format('H:i:s');
 
-        $administration = MedicationAdministration::query()
-            ->where('administration_type', 'scheduled')
-            ->whereDate('administration_date', $date)
-            ->where('older_adult_medication_id', $assignment->id)
-            ->first();
-
-        $values = [
+        return MedicationAdministration::firstOrCreate([
+            'administration_type' => 'scheduled',
+            'older_adult_medication_id' => $assignment->id,
+            'administration_date' => $date,
+        ], [
             'older_adult_id' => $assignment->older_adult_id,
             'medication_id' => $assignment->medication_id,
             'dosage' => $assignment->dosage,
-            'administration_date' => $date,
             'administration_time' => $time,
             'notes' => $data['notes'] ?? null,
             'recorded_by' => $user->id,
-        ];
-
-        if ($administration) {
-            $administration->update($values);
-
-            return $administration;
-        }
-
-        return MedicationAdministration::create([
-            'administration_type' => 'scheduled',
-            'older_adult_medication_id' => $assignment->id,
-            ...$values,
         ]);
     }
 
     private function authorize(User $user): void
     {
-        $role = Str::of((string) $user->role)->ascii()->lower()->trim()->toString();
-
-        if (! in_array($role, ['profesional', 'cuidador_profesional'], true)) {
+        if (! $user->hasRole(UserRole::PROFESSIONAL)) {
             abort(response()->json([
                 'message' => 'No tienes acceso para marcar medicamentos.',
             ], 403));

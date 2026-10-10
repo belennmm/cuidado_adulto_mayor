@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\CaregiverSchedule;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 
 class CaregiverScheduleService
 {
@@ -101,7 +101,7 @@ class CaregiverScheduleService
 
     private function ensureCaregiverCanManage(User $user): void
     {
-        if (! in_array($this->normalizeRole($user->role), ['profesional', 'cuidador_profesional'], true)) {
+        if (! $user->hasRole(UserRole::PROFESSIONAL)) {
             abort(response()->json(['message' => 'No tienes acceso para definir horarios.'], 403));
         }
 
@@ -135,10 +135,5 @@ class CaregiverScheduleService
     private function loadUser(CaregiverSchedule $schedule): CaregiverSchedule
     {
         return $schedule->load('user:id,name,email,role,is_approved');
-    }
-
-    private function normalizeRole(mixed $role): string
-    {
-        return Str::of((string) $role)->ascii()->lower()->trim()->toString();
     }
 }

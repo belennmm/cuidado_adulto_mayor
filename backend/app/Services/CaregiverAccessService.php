@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
@@ -25,12 +26,9 @@ class CaregiverAccessService
             abort(403, 'Tipo de cuidador no permitido.');
         }
 
-        $role = $this->normalizeText($user->role);
-        $allowedRoles = $caregiverType === self::FAMILY
-            ? ['familiar', 'cuidador_familiar']
-            : ['profesional', 'cuidador_profesional'];
+        $allowedRole = $caregiverType === self::FAMILY ? UserRole::FAMILY : UserRole::PROFESSIONAL;
 
-        if ((int) $user->id > 0 && in_array($role, $allowedRoles, true) && (bool) $user->is_approved) {
+        if ((int) $user->id > 0 && $user->hasRole($allowedRole) && (bool) $user->is_approved) {
             return;
         }
 

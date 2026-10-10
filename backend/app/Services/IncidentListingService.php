@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class IncidentListingService
 {
@@ -31,22 +31,22 @@ class IncidentListingService
 
     private function scopeForUser(Builder $query, User $user): void
     {
-        $role = $this->normalizeRole($user->role);
+        $role = $user->roleEnum();
 
-        if (! in_array($role, ['admin', 'familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true)) {
+        if (! in_array($role, UserRole::cases(), true)) {
             abort(response()->json([
                 'message' => 'No tienes acceso para consultar incidentes.',
             ], 403));
         }
 
-        if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true)
+        if (in_array($role, UserRole::cases(), true)
             && ! $user->is_approved) {
             abort(response()->json([
                 'message' => 'Tu cuenta debe estar aprobada para consultar incidentes.',
             ], 403));
         }
 
-        if (in_array($role, ['familiar', 'cuidador_familiar'], true)) {
+        if ($role === UserRole::FAMILY) {
             $olderAdults = OlderAdult::query()
                 ->where('family_caregiver_id', $user->id)
                 ->get(['id', 'full_name']);
@@ -56,7 +56,7 @@ class IncidentListingService
             return;
         }
 
-        if (in_array($role, ['profesional', 'cuidador_profesional'], true)) {
+        if ($role === UserRole::PROFESSIONAL) {
             $olderAdults = OlderAdult::query()
                 ->where('professional_caregiver_id', $user->id)
                 ->get(['id', 'full_name']);
@@ -75,10 +75,5 @@ class IncidentListingService
         }
 
         $query->whereIn('older_adult_id', $adultIds);
-    }
-
-    private function normalizeRole(mixed $role): string
-    {
-        return Str::of((string) $role)->ascii()->lower()->trim()->toString();
     }
 }

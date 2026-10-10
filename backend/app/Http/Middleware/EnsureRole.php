@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureRole
@@ -17,12 +17,8 @@ class EnsureRole
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        $role = Str::of((string) $user->role)->ascii()->lower()->trim()->toString();
-        $role = match ($role) {
-            'cuidador_familiar' => 'familiar',
-            'cuidador_profesional' => 'profesional',
-            default => $role,
-        };
+        $role = $user->roleEnum()?->value;
+        $roles = array_values(array_filter(array_map(fn (string $role) => UserRole::fromValue($role)?->value, $roles)));
 
         // Only explicitly listed roles may enter; administrators have no implicit bypass.
         if (! in_array($role, $roles, true)) {

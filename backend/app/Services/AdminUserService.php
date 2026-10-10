@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -27,9 +28,11 @@ class AdminUserService
             throw ValidationException::withMessages(['role' => ['El filtro de cuidador no es valido.']]);
         }
 
+        $userRole = UserRole::fromValue($role);
+
         return User::query()
             ->select('id', 'name', 'email', 'role', 'is_approved')
-            ->where('role', $role)
+            ->whereIn('role', $userRole?->databaseValues() ?? [$role])
             ->where('is_approved', true)
             ->orderBy('name')
             ->get();
@@ -75,7 +78,7 @@ class AdminUserService
 
     public function reject(User $user): void
     {
-        if ($user->role === 'admin' || $user->is_approved) {
+        if ($user->hasRole(UserRole::ADMIN) || $user->is_approved) {
             abort(response()->json([
                 'message' => 'Solo se pueden rechazar solicitudes pendientes.',
             ], 422));
@@ -91,15 +94,11 @@ class AdminUserService
 
     private function normalizeRole(string $role): string
     {
-        if (! in_array($role, ['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'], true)) {
+        if (! in_array($role, UserRole::acceptedValues(), true)) {
             throw ValidationException::withMessages(['role' => ['El rol seleccionado no es valido.']]);
         }
 
-        return match ($role) {
-            'cuidador_profesional' => 'profesional',
-            'cuidador_familiar' => 'familiar',
-            default => $role,
-        };
+        return UserRole::fromValue($role)->value;
     }
 
     private function allowedData(array $data): array

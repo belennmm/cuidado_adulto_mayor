@@ -108,7 +108,7 @@ class LeastPrivilegeTokensTest extends TestCase
 
     public static function unprivilegedServiceUsers(): array
     {
-        return [['familiar', true], ['profesional', true], ['administrador', true], ['admin', false]];
+        return [['familiar', true], ['profesional', true], ['super_admin', true], ['administrador', false], ['admin', false]];
     }
 
     public function test_seeders_cannot_install_known_privileged_accounts_in_production(): void
@@ -145,7 +145,7 @@ class LeastPrivilegeTokensTest extends TestCase
         $schedule = CaregiverSchedule::create(['user_id' => $professional->id, 'day_of_week' => 1, 'start_time' => '08:00', 'end_time' => '16:00']);
         $actors = [
             User::factory()->create(['role' => 'admin', 'is_approved' => false]),
-            User::factory()->create(['role' => 'administrador', 'is_approved' => true]),
+            User::factory()->create(['role' => 'super_admin', 'is_approved' => true]),
             User::factory()->create(['role' => 'profesional', 'is_approved' => true]),
         ];
         foreach ($actors as $actor) {

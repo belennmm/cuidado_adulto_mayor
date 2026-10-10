@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\MobilityExercise;
 use App\Models\User;
 use App\Support\ResourceAccess;
@@ -122,13 +123,11 @@ class MobilityExerciseService
 
     private function authorizeRead(User $user): void
     {
-        $role = Str::lower((string) $user->role);
-
         if ($this->isAdmin($user)) {
             return;
         }
 
-        if (in_array($role, ['profesional', 'cuidador_profesional'], true) && (bool) $user->is_approved) {
+        if ($user->hasRole(UserRole::PROFESSIONAL) && (bool) $user->is_approved) {
             return;
         }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureApproved;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTokenScope;
 use App\Http\Middleware\RejectDisallowedMethods;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureAdmin::class,
             'role' => EnsureRole::class,
+            'approved' => EnsureApproved::class,
         ]);
 
         // Reject unauthorized roles before resolving resource identifiers.

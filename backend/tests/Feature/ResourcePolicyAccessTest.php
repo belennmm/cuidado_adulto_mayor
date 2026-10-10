@@ -58,7 +58,7 @@ class ResourcePolicyAccessTest extends TestCase
 
     public static function deniedUsers(): array
     {
-        return [['auditor', true], ['', true], ['administrador', true], ['admin', false], ['familiar', false], ['cuidador_profesional', false]];
+        return [['auditor', true], ['', true], ['super_admin', true], ['administrador', false], ['admin', false], ['familiar', false], ['cuidador_profesional', false]];
     }
 
     public function test_api_route_without_an_explicit_policy_is_denied_even_for_admin(): void

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -35,6 +36,16 @@ class User extends Authenticatable
             'birthdate' => 'date',
             'privacy_consent_at' => 'datetime',
         ];
+    }
+
+    public function roleEnum(): ?UserRole
+    {
+        return UserRole::fromValue($this->role);
+    }
+
+    public function hasRole(UserRole $role): bool
+    {
+        return $this->roleEnum() === $role;
     }
 
     public function routineNotes(): HasMany

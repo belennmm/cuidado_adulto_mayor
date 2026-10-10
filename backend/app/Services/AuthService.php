@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\User;
 use App\Support\ResourceAccess;
@@ -100,7 +101,7 @@ class AuthService
             $previousName = $user->name;
             $user->forceFill($data)->save();
 
-            if ($this->isFamilyRole($user->role) && $previousName !== $user->name) {
+            if ($user->hasRole(UserRole::FAMILY) && $previousName !== $user->name) {
                 $this->updateFamilyCaregiverName($user);
             }
 
@@ -126,20 +127,15 @@ class AuthService
 
     private function normalizePublicRole(?string $role): string
     {
-        return match ($role) {
-            'profesional', 'cuidador_profesional' => 'profesional',
-            'familiar', 'cuidador_familiar' => 'familiar',
-            default => 'familiar',
-        };
+        $normalized = UserRole::fromValue($role);
+
+        return in_array($normalized, [UserRole::FAMILY, UserRole::PROFESSIONAL], true)
+            ? $normalized->value
+            : UserRole::FAMILY->value;
     }
 
     private function canLogin(User $user): bool
     {
         return ResourceAccess::admin($user) || ResourceAccess::caregiver($user);
-    }
-
-    private function isFamilyRole(?string $role): bool
-    {
-        return in_array(strtolower(trim((string) $role)), ['familiar', 'cuidador_familiar'], true);
     }
 }

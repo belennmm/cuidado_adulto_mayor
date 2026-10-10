@@ -2,25 +2,25 @@
 
 namespace App\Support;
 
+use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\User;
-use Illuminate\Support\Str;
 
 final class ResourceAccess
 {
     public static function admin(User $user): bool
     {
-        return $user->role === 'admin' && (bool) $user->is_approved;
+        return $user->hasRole(UserRole::ADMIN) && (bool) $user->is_approved;
     }
 
     public static function professional(User $user): bool
     {
-        return $user->is_approved && in_array(self::role($user), ['profesional', 'cuidador_profesional'], true);
+        return $user->is_approved && $user->hasRole(UserRole::PROFESSIONAL);
     }
 
     public static function family(User $user): bool
     {
-        return $user->is_approved && in_array(self::role($user), ['familiar', 'cuidador_familiar'], true);
+        return $user->is_approved && $user->hasRole(UserRole::FAMILY);
     }
 
     public static function caregiver(User $user): bool
@@ -51,10 +51,5 @@ final class ResourceAccess
     public static function assigned(User $user, ?OlderAdult $adult): bool
     {
         return self::professionalAssigned($user, $adult) || self::familyAssigned($user, $adult);
-    }
-
-    private static function role(User $user): string
-    {
-        return Str::of((string) $user->role)->ascii()->lower()->trim()->toString();
     }
 }
