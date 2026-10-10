@@ -22,7 +22,7 @@ class OlderAdultRequest extends FormRequest
             'professional_caregiver_id' => ['nullable', 'integer', Rule::exists('users', 'id')->where(fn ($q) => $q->where('role', 'profesional')->where('is_approved', true))],
             'emergency_contact_name' => ['nullable', 'string', 'max:255'], 'emergency_contact_phone' => ['nullable', 'string', 'max:255'],
             'allergies' => ['nullable', 'string', 'max:255'], 'medical_history' => ['nullable', 'string'], 'notes' => ['nullable', 'string'],
-            'medications' => ['nullable', 'array'], 'medications.*.id' => ['nullable', 'integer', 'exists:older_adult_medications,id'],
+            'medications' => ['nullable', 'array'], 'medications.*.id' => ['nullable', 'integer', 'min:1'],
             'medications.*.name' => ['required', 'string', 'max:255'], 'medications.*.presentation' => ['nullable', 'string', 'max:255'],
             'medications.*.quantity' => ['nullable', 'integer', 'min:0'], 'medications.*.unit' => ['nullable', 'string', 'max:80'],
             'medications.*.minimum_stock' => ['nullable', 'integer', 'min:0'], 'medications.*.expiration_date' => ['nullable', 'date'],

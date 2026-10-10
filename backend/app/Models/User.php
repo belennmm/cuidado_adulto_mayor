@@ -12,17 +12,13 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // Security attributes are written explicitly by controlled services, never by fill/update payloads.
     protected $fillable = [
         'name',
         'email',
-        'password',
-        'role',
-        'is_approved',
         'location',
         'phone',
         'birthdate',
-        'privacy_consent_at',
-        'privacy_policy_version',
     ];
 
     protected $hidden = [

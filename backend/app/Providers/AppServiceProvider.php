@@ -21,6 +21,7 @@ use App\Policies\RoutineNotePolicy;
 use App\Policies\RutinaPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\VacationRequestPolicy;
+use App\Support\RuntimeDatabaseAccount;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -67,10 +68,12 @@ class AppServiceProvider extends ServiceProvider
         $required = [
             'APP_KEY' => config('app.key'),
             'APP_URL' => config('app.url'),
-            'DB_PASSWORD' => config('database.connections.'.config('database.default').'.password'),
             'CORS_ALLOWED_ORIGINS' => config('cors.allowed_origins'),
         ];
         $missing = array_keys(array_filter($required, fn (mixed $value) => $value === null || $value === '' || $value === []));
+        $missing = array_merge($missing, RuntimeDatabaseAccount::errors(
+            config('database.connections.'.config('database.default'), []),
+        ));
 
         if (config('app.debug')) {
             $missing[] = 'APP_DEBUG debe ser false';

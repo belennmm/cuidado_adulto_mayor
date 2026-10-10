@@ -18,6 +18,9 @@ class InitialDataSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            throw new \LogicException('Los datos de demostracion no se pueden crear en produccion.');
+        }
         $users = $this->seedUsers();
         $olderAdults = $this->seedOlderAdults($users['admin'], $users);
         $this->assignProfessionalCaregivers($olderAdults, $users);
@@ -30,7 +33,7 @@ class InitialDataSeeder extends Seeder
     private function seedUsers(): array
     {
         $users = [
-            'admin' => User::updateOrCreate(
+            'admin' => $this->saveUser(
                 ['email' => 'belen@gmail.com'],
                 [
                     'name' => 'Belen Admin',
@@ -42,7 +45,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1998-05-16',
                 ]
             ),
-            'admin_2' => User::updateOrCreate(
+            'admin_2' => $this->saveUser(
                 ['email' => 'mon231497@uvg.edu.gt'],
                 [
                     'name' => 'Mon Admin',
@@ -54,7 +57,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1999-04-23',
                 ]
             ),
-            'admin_her' => User::updateOrCreate(
+            'admin_her' => $this->saveUser(
                 ['email' => 'her241424@uvg.edu.gt'],
                 [
                     'name' => 'wichandro',
@@ -66,7 +69,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '2005-05-17',
                 ]
             ),
-            'admin_wicho' => User::updateOrCreate(
+            'admin_wicho' => $this->saveUser(
                 ['email' => 'wicho123@gmail.com'],
                 [
                     'name' => 'Wicho Admin',
@@ -76,7 +79,7 @@ class InitialDataSeeder extends Seeder
                     'location' => 'Guatemala',
                 ]
             ),
-            'professional_1' => User::updateOrCreate(
+            'professional_1' => $this->saveUser(
                 ['email' => 'maria.gonzalez@organizate.com'],
                 [
                     'name' => 'Maria Gonzalez',
@@ -88,7 +91,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1992-03-11',
                 ]
             ),
-            'professional_2' => User::updateOrCreate(
+            'professional_2' => $this->saveUser(
                 ['email' => 'daniel.soto@organizate.com'],
                 [
                     'name' => 'Daniel Soto',
@@ -100,7 +103,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1990-09-22',
                 ]
             ),
-            'family_1' => User::updateOrCreate(
+            'family_1' => $this->saveUser(
                 ['email' => 'laura.rodriguez@familia.com'],
                 [
                     'name' => 'Laura Rodriguez',
@@ -112,7 +115,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1987-01-30',
                 ]
             ),
-            'family_2' => User::updateOrCreate(
+            'family_2' => $this->saveUser(
                 ['email' => 'jose.perez@familia.com'],
                 [
                     'name' => 'Jose Perez',
@@ -124,7 +127,7 @@ class InitialDataSeeder extends Seeder
                     'birthdate' => '1985-07-14',
                 ]
             ),
-            'family_3' => User::updateOrCreate(
+            'family_3' => $this->saveUser(
                 ['email' => 'ana.lopez@familia.com'],
                 [
                     'name' => 'Ana Lopez',
@@ -139,6 +142,14 @@ class InitialDataSeeder extends Seeder
         ];
 
         return $users;
+    }
+
+    private function saveUser(array $identity, array $attributes): User
+    {
+        $user = User::firstOrNew($identity);
+        $user->forceFill($attributes)->save();
+
+        return $user;
     }
 
     private function seedOlderAdults(User $admin, array $users): array
@@ -236,7 +247,7 @@ class InitialDataSeeder extends Seeder
         foreach ($assignments as $olderAdultName => $caregiverId) {
             $olderAdult = $olderAdults[$olderAdultName] ?? null;
 
-            if (!$olderAdult) {
+            if (! $olderAdult) {
                 continue;
             }
 
@@ -443,7 +454,7 @@ class InitialDataSeeder extends Seeder
         foreach ($assignments as $olderAdultName => $medications) {
             $olderAdult = $olderAdults[$olderAdultName] ?? null;
 
-            if (!$olderAdult) {
+            if (! $olderAdult) {
                 continue;
             }
 
@@ -452,7 +463,7 @@ class InitialDataSeeder extends Seeder
             foreach ($medications as $assignment) {
                 $medication = Medication::where('name', $assignment['name'])->first();
 
-                if (!$medication) {
+                if (! $medication) {
                     continue;
                 }
 
@@ -499,7 +510,7 @@ class InitialDataSeeder extends Seeder
             $olderAdult = $olderAdults[$log['older_adult']] ?? null;
             $medication = Medication::where('name', $log['medication'])->first();
 
-            if (!$olderAdult || !$medication) {
+            if (! $olderAdult || ! $medication) {
                 continue;
             }
 
@@ -508,7 +519,7 @@ class InitialDataSeeder extends Seeder
                 ->where('medication_id', $medication->id)
                 ->first();
 
-            if (!$assignment) {
+            if (! $assignment) {
                 continue;
             }
 
@@ -556,7 +567,7 @@ class InitialDataSeeder extends Seeder
             $olderAdult = $olderAdults[$log['older_adult']] ?? null;
             $medication = Medication::where('name', $log['medication'])->first();
 
-            if (!$olderAdult || !$medication) {
+            if (! $olderAdult || ! $medication) {
                 continue;
             }
 
@@ -659,7 +670,7 @@ class InitialDataSeeder extends Seeder
             $olderAdult = $olderAdults[$note['older_adult']] ?? null;
             $professional = $users[$note['professional']] ?? null;
 
-            if (!$olderAdult || !$professional) {
+            if (! $olderAdult || ! $professional) {
                 continue;
             }
 

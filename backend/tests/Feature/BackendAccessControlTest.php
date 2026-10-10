@@ -148,7 +148,7 @@ class BackendAccessControlTest extends TestCase
         $headers = ['Authorization' => 'Bearer '.$user->createToken('access-test')->plainTextToken];
         $this->getJson('/api/professional/overview', $headers)->assertOk();
 
-        $user->update(['is_approved' => false]);
+        $user->forceFill(['is_approved' => false])->save();
         $this->app['auth']->forgetGuards();
         $this->getJson('/api/professional/overview', $headers)->assertUnauthorized();
         $this->assertDatabaseCount('personal_access_tokens', 0);

@@ -2,6 +2,8 @@
 
 Historia SCRUM-779 (A01). Fecha: 2026-10-09. Bloque de cuatro subtareas, sin acciones de Git.
 
+Seguimiento: [SCRUM-791 a SCRUM-794](PERMISOS_VIGENTES_MINIMOS_PRIVILEGIOS.md) agrega recarga de permisos por solicitud, tokens con capacidades explícitas, protección de atributos sensibles en `User::$fillable` y restricciones de producción. Para cambiar rol/aprobación desde código autorizado se usan los servicios controlados o asignación explícita seguida de `save`; `update` con arrays ya no acepta esos atributos.
+
 ## SCRUM-787: campos protegidos
 
 `AuthService::updateProfile` admite únicamente los campos de perfil y la operación explícita de cambio de contraseña, que exige la contraseña actual. No acepta cambios de `role`, `is_approved`, propietarios, campos de privacidad o una contraseña enviada como `password`. El registro público tampoco permite inyectar aprobación ni campos administrativos.
@@ -55,4 +57,4 @@ Resultado: **30 pruebas en los dos archivos nuevos y 581 aserciones, sin fallos*
 
 El entorno instalado utiliza PHP 8.2.12, Laravel 11.51 y PHPUnit 11.5.55; `composer.json` declara PHP 8.3+, Laravel 13 y PHPUnit 12. No se modificaron dependencias. Queda pendiente validar en las versiones declaradas.
 
-Las subtareas SCRUM-791 a SCRUM-796 quedan para los siguientes bloques.
+Al cerrar este bloque quedaban pendientes SCRUM-791 a SCRUM-796. El siguiente bloque cubre SCRUM-791 a SCRUM-794; SCRUM-795 y SCRUM-796 siguen pendientes.

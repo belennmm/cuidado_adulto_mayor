@@ -157,7 +157,7 @@ class ProtectedFieldsAndCredentialsTest extends TestCase
         foreach ([['role' => 'familiar'], ['is_approved' => false]] as $change) {
             $user = User::factory()->create(['role' => 'profesional', 'is_approved' => true]);
             $headers = $this->headersFor($user);
-            $user->update($change);
+            $user->forceFill($change)->save();
             $this->app['auth']->forgetGuards();
             $this->getJson('/api/me', $headers)->assertUnauthorized();
         }

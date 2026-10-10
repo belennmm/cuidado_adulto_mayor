@@ -3,9 +3,11 @@
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\EnsureTokenScope;
 use App\Http\Middleware\RejectDisallowedMethods;
 use App\Http\Middleware\RequireAccessRule;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\ValidateCurrentAccess;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -38,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [
             SecurityHeaders::class,
-        ], append: [RequireAccessRule::class]);
+        ], append: [ValidateCurrentAccess::class, EnsureTokenScope::class, RequireAccessRule::class]);
 
         $middleware->alias([
             'admin' => EnsureAdmin::class,
@@ -53,6 +55,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToPriorityList(
             SubstituteBindings::class,
             EnsureAdmin::class,
+        );
+        $middleware->prependToPriorityList(
+            EnsureRole::class,
+            ValidateCurrentAccess::class,
+        );
+        $middleware->prependToPriorityList(
+            EnsureAdmin::class,
+            ValidateCurrentAccess::class,
+        );
+        $middleware->prependToPriorityList(
+            SubstituteBindings::class,
+            EnsureTokenScope::class,
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {

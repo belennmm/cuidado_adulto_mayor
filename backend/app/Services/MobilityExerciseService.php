@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\MobilityExercise;
 use App\Models\User;
+use App\Support\ResourceAccess;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -46,6 +48,7 @@ class MobilityExerciseService
 
     public function create(array $data, User $actor): MobilityExercise
     {
+        Gate::forUser($actor)->authorize('create', MobilityExercise::class);
         $instructions = $this->normalizeInstructions($data['instructions']);
 
         return MobilityExercise::create([
@@ -58,6 +61,7 @@ class MobilityExerciseService
 
     public function update(MobilityExercise $exercise, array $data, User $actor): MobilityExercise
     {
+        Gate::forUser($actor)->authorize('update', $exercise);
         $instructions = $this->normalizeInstructions($data['instructions']);
         $exercise->update([
             ...$this->attributes($data, $instructions),
@@ -135,6 +139,6 @@ class MobilityExerciseService
 
     private function isAdmin(User $user): bool
     {
-        return in_array(Str::lower((string) $user->role), ['admin', 'administrador'], true);
+        return ResourceAccess::admin($user);
     }
 }

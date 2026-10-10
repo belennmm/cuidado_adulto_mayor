@@ -36,7 +36,10 @@ class AdminUserService
         $data['password'] = Hash::make($data['password']);
         $data['is_approved'] = true;
 
-        return User::create($data);
+        $user = new User;
+        $user->forceFill($data)->save();
+
+        return $user;
     }
 
     public function update(User $user, array $data): User
@@ -51,7 +54,7 @@ class AdminUserService
         }
 
         return DB::transaction(function () use ($user, $data) {
-            $user->update($data);
+            $user->forceFill($data)->save();
 
             return $user;
         });
@@ -59,7 +62,7 @@ class AdminUserService
 
     public function approve(User $user): User
     {
-        $user->update(['is_approved' => true]);
+        $user->forceFill(['is_approved' => true])->save();
 
         return $user;
     }

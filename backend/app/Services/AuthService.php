@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OlderAdult;
 use App\Models\User;
 use App\Support\ResourceAccess;
+use App\Support\TokenAbilities;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -50,7 +51,7 @@ class AuthService
             'user' => $user,
             'token' => $user->createToken(
                 'API Token',
-                ['*'],
+                TokenAbilities::forUser($user),
                 now()->addMinutes($expirationMinutes),
             )->plainTextToken,
         ];
@@ -63,7 +64,8 @@ class AuthService
 
     public function register(array $data): User
     {
-        return User::create([
+        $user = new User;
+        $user->forceFill([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
@@ -74,7 +76,9 @@ class AuthService
             'birthdate' => $data['birthdate'] ?? null,
             'privacy_consent_at' => now(),
             'privacy_policy_version' => config('privacy.policy_version'),
-        ]);
+        ])->save();
+
+        return $user;
     }
 
     public function updateProfile(User $user, array $data): User
@@ -94,7 +98,7 @@ class AuthService
 
         return DB::transaction(function () use ($user, $data) {
             $previousName = $user->name;
-            $user->update($data);
+            $user->forceFill($data)->save();
 
             if ($this->isFamilyRole($user->role) && $previousName !== $user->name) {
                 $this->updateFamilyCaregiverName($user);

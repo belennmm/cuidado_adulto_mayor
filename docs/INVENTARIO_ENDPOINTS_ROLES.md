@@ -11,15 +11,16 @@ Inventario obtenido de `php artisan route:list --json`, contrastado con `routes/
 - **A**: administrador (`admin`), aprobado. El middleware administrativo mantiene la comprobación exacta de este valor. No obtiene acceso implícito a las rutas de cuidadores.
 - **P**: cuidador profesional (`profesional` o `cuidador_profesional`), aprobado.
 - **F**: cuidador familiar (`familiar` o `cuidador_familiar`), aprobado.
-- **Sesión**: un usuario con credenciales vigentes puede consultar/editar su propio perfil y cerrar su sesión. Estas operaciones no conceden acceso a información de cuidado. Retirar la aprobación revoca sus credenciales, incluidas las del administrador.
+- **Sesión**: un usuario aprobado, de rol reconocido y con credenciales vigentes puede consultar/editar su propio perfil y cerrar su sesión, con el alcance de token correspondiente. Estas operaciones no conceden acceso a información de cuidado. Retirar la aprobación mediante los servicios revoca sus credenciales, incluidas las del administrador.
 - Un rol desconocido o vacío no concede acceso a recursos de cuidado, aunque el usuario esté aprobado.
 - El inicio de sesión exige rol reconocido y aprobación. Retirar la aprobación mediante el modelo revoca los tokens existentes: su siguiente uso recibe 401. Los middleware y Policies también rechazan con 403 a usuarios autenticados sin aprobación.
 - Sin autenticación válida, las rutas privadas API responden 401. Un rol no permitido recibe 403 antes del enlace de modelos y de la validación del payload.
 - Dentro de un módulo permitido, consultar o modificar un recurso ajeno devuelve el mismo 404 y mensaje genérico que un identificador inexistente: `Recurso no encontrado.`
+- Cada solicitud privada recarga usuario y credencial vigente antes de comprobar roles. También exige el alcance de lectura/escritura del token y los permisos actuales del usuario; una capacidad del token no sustituye la Policy.
 
 ## Inventario completo
 
-Las columnas muestran los controles efectivos después de SCRUM-787/788/789/790. `auth:sanctum` autentica; `role` limita rol y aprobación; `admin` restringe al administrador aprobado; `can` ejecuta la Policy indicada. El grupo API también aplica `RequireAccessRule` para denegar rutas sin contrato explícito. Los controles por asignación/propiedad se detallan después de la tabla.
+Las columnas muestran los controles efectivos después de SCRUM-791/792/793/794. `auth:sanctum` autentica; `role` limita rol y aprobación; `admin` restringe al administrador aprobado; `can` ejecuta la Policy indicada. El grupo API aplica además `ValidateCurrentAccess`, `EnsureTokenScope` y `RequireAccessRule` para comprobar identidad/credenciales vigentes, capacidades del token y contrato explícito. Los controles por asignación/propiedad se detallan después de la tabla.
 
 | Método | Endpoint | Roles permitidos | Control de entrada | Acción |
 | --- | --- | --- | --- | --- |
@@ -134,6 +135,8 @@ Las columnas muestran los controles efectivos después de SCRUM-787/788/789/790.
 
 5. **SCRUM-787/788/789/790:** protección de campos, revocación de credenciales, respuestas uniformes para recursos ajenos y pruebas de IDOR/escalamiento. Detalle en [CAMPOS_TOKENS_IDOR.md](CAMPOS_TOKENS_IDOR.md).
 
+6. **SCRUM-791/792/793/794:** permisos vigentes por solicitud, protección frente a enumeración de IDs, mínimos privilegios y bloqueo de asignación masiva. Detalle y requisitos de producción en [PERMISOS_VIGENTES_MINIMOS_PRIVILEGIOS.md](PERMISOS_VIGENTES_MINIMOS_PRIVILEGIOS.md).
+
 ## Verificación reproducible
 
 Desde `backend`:
@@ -152,4 +155,6 @@ Validación inicial SCRUM-781/782/783 del 2026-10-09: **22 pruebas nuevas, 893 a
 
 Validación SCRUM-784/785/786 del 2026-10-09: **15 pruebas adicionales, 223 aserciones, sin fallos**; suite completa de ese bloque: **223 pruebas, 2776 aserciones, sin fallos**.
 
-Validación SCRUM-787/788/789/790 del 2026-10-09: **30 pruebas en los dos archivos nuevos, 581 aserciones, sin fallos**, más un caso de administrador desaprobado en `ResourcePolicyAccessTest`. Suite completa actual: **254 pruebas, 3374 aserciones, sin fallos**. PHPUnit se ejecutó fuera del aislamiento por la restricción de lectura del bootstrap en Windows. No se ejecutaron acciones de Git.
+Validación SCRUM-787/788/789/790 del 2026-10-09: **30 pruebas en los dos archivos nuevos, 581 aserciones, sin fallos**, más un caso de administrador desaprobado en `ResourcePolicyAccessTest`. Suite completa de ese bloque: **254 pruebas, 3374 aserciones, sin fallos**.
+
+Validación SCRUM-791/792/793/794 del 2026-10-09: **48 casos adicionales**; suite completa actual: **302 pruebas, 3720 aserciones, sin fallos**. PHPUnit y Pint se ejecutaron fuera del aislamiento por las restricciones locales de Windows. No se ejecutaron acciones de Git.

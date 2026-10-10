@@ -9,6 +9,9 @@ class SecurityScanSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            throw new \LogicException('Las cuentas de escaneo no se pueden crear en produccion.');
+        }
         $accounts = [
             [
                 'name' => 'ZAP Admin',
@@ -31,8 +34,7 @@ class SecurityScanSeeder extends Seeder
         ];
 
         foreach ($accounts as $account) {
-            User::updateOrCreate(
-                ['email' => $account['email']],
+            User::firstOrNew(['email' => $account['email']])->forceFill(
                 [
                     'name' => $account['name'],
                     'password' => $account['password'],
@@ -41,7 +43,7 @@ class SecurityScanSeeder extends Seeder
                     'privacy_consent_at' => null,
                     'privacy_policy_version' => null,
                 ]
-            );
+            )->save();
         }
     }
 }

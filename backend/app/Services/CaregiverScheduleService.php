@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\CaregiverSchedule;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class CaregiverScheduleService
@@ -36,17 +37,7 @@ class CaregiverScheduleService
 
     public function update(User $actor, CaregiverSchedule $schedule, array $data): CaregiverSchedule
     {
-        $isAdmin = $this->normalizeRole($actor->role) === 'admin';
-
-        if (! $isAdmin && (int) $schedule->user_id !== (int) $actor->id) {
-            abort(response()->json([
-                'message' => 'No tienes permiso para modificar este horario.',
-            ], 403));
-        }
-
-        if (! $isAdmin) {
-            $this->ensureCaregiverCanManage($actor);
-        }
+        Gate::forUser($actor)->authorize('update', $schedule);
 
         $schedule->update($this->scheduleAttributes($data));
 
@@ -55,13 +46,7 @@ class CaregiverScheduleService
 
     public function requestChange(User $actor, CaregiverSchedule $schedule, array $data): CaregiverSchedule
     {
-        if ((int) $schedule->user_id !== (int) $actor->id) {
-            abort(response()->json([
-                'message' => 'No tienes permiso para solicitar cambios en este horario.',
-            ], 403));
-        }
-
-        $this->ensureCaregiverCanManage($actor);
+        Gate::forUser($actor)->authorize('requestChange', $schedule);
         $schedule->update([
             'change_request_status' => 'pending',
             'change_request_start_time' => $data['start_time'],
