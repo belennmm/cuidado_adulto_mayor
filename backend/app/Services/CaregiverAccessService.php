@@ -94,7 +94,7 @@ class CaregiverAccessService
 
         $query = Incident::query()
             ->with([
-                'reporter:id,name,email',
+                'reporter:id,name',
                 'olderAdult.familyCaregiver:id,name,email,phone,location',
                 'olderAdult.professionalCaregiver:id,name,email,phone,location',
                 'olderAdult.medicationAssignments.medication',
@@ -150,7 +150,6 @@ class CaregiverAccessService
             $formatted['reporter'] = $incident->reporter ? [
                 'id' => $incident->reporter->id,
                 'name' => $incident->reporter->name,
-                'email' => $incident->reporter->email,
             ] : null;
         }
 

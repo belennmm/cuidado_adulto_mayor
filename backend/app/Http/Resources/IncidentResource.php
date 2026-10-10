@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\ResourceAccess;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,8 @@ class IncidentResource extends JsonResource
             'reporter' => $this->reporter ? [
                 'id' => $this->reporter->id,
                 'name' => $this->reporter->name,
-                'email' => $this->reporter->email,
+                // Reporter contact details belong to administrative user access.
+                ...(ResourceAccess::admin($request->user()) ? ['email' => $this->reporter->email] : []),
             ] : null,
             'older_adult' => $this->olderAdult ? [
                 'id' => $this->olderAdult->id,
