@@ -11,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class AdminUserService
 {
+    public const CAREGIVER_ROLES = ['familiar', 'profesional'];
+
     public function all(): Collection
     {
         return User::query()
@@ -21,6 +23,10 @@ class AdminUserService
 
     public function approvedCaregivers(string $role): Collection
     {
+        if (! in_array($role, self::CAREGIVER_ROLES, true)) {
+            throw ValidationException::withMessages(['role' => ['El filtro de cuidador no es valido.']]);
+        }
+
         return User::query()
             ->select('id', 'name', 'email', 'role', 'is_approved')
             ->where('role', $role)

@@ -1,177 +1,81 @@
 (() => {
-  function create({ state, caregiverSelect, shiftsTableBody, vacationsTableBody, DAY_LABELS, escapeHtml, formatDate, formatTimeRange, statusLabel }) {
-    function renderCaregiverOptions() {
-      caregiverSelect.innerHTML = `<option value="">Seleccionar cuidador</option>`
-    
-      state.caregivers.forEach((caregiver) => {
-        const option = document.createElement("option")
-        option.value = caregiver.id
-        option.textContent = `${caregiver.name} (${caregiver.email})`
-        caregiverSelect.appendChild(option)
-      })
-    
-      if (!state.caregivers.length) {
-        const option = document.createElement("option")
-        option.value = ""
-        option.textContent = "No hay cuidadores aprobados"
-        caregiverSelect.appendChild(option)
-      }
+  function create({ state, caregiverSelect, shiftsTableBody, vacationsTableBody, DAY_LABELS, formatDate, formatTimeRange, statusLabel,
+    normalizeTime = (value) => String(value || "").slice(0, 5),
+    deleteSchedule = () => {}, resolveChangeRequest = () => {}, resolveVacationRequest = () => {},
+  }) {
+    const el = window.CuidadoUi.element
+    const cell = (label, text, children = [], extraClass = "") => {
+      const node = el("div", `shift-cell ${extraClass}`.trim(), text, children)
+      node.dataset.label = label
+      return node
     }
-    
+    const caregiverCell = (user) => cell("Cuidador", null, [
+      el("div", "shift-avatar"), el("div", "shift-name-group", null, [el("span", "", user?.name || "Cuidador"), el("span", "shift-email", user?.email || "")]),
+    ], "shift-caregiver")
+    const button = (className, text, id, action) => {
+      const node = el("button", className, text)
+      node.type = "button"
+      node.dataset.id = String(id ?? "")
+      node.addEventListener("click", () => action(node.dataset.id))
+      return node
+    }
+    function renderCaregiverOptions() {
+      const option = (value, label) => {
+        const node = el("option", "", label)
+        node.value = String(value ?? "")
+        return node
+      }
+      caregiverSelect.replaceChildren(option("", "Seleccionar cuidador"), ...state.caregivers.map((user) => option(user.id, `${user.name} (${user.email})`)))
+      if (!state.caregivers.length) caregiverSelect.append(option("", "No hay cuidadores aprobados"))
+    }
     function renderVacations() {
       if (!vacationsTableBody) return
-      vacationsTableBody.innerHTML = ""
-    
+      vacationsTableBody.replaceChildren()
       if (!state.vacations.length) {
-        vacationsTableBody.innerHTML = `
-          <div class="empty-state">
-            Todavía no hay solicitudes de vacaciones.
-          </div>
-        `
+        vacationsTableBody.append(el("div", "empty-state", "Todavía no hay solicitudes de vacaciones."))
         return
       }
-    
-      state.vacations.forEach((request) => {
-        const row = document.createElement("article")
-        row.className = "vacation-admin-row"
-    
-        row.innerHTML = `
-          <div class="shift-cell shift-caregiver" data-label="Cuidador">
-            <div class="shift-avatar"></div>
-            <div class="shift-name-group">
-              <span>${escapeHtml(request.user?.name || "Cuidador")}</span>
-              <span class="shift-email">${escapeHtml(request.user?.email || "")}</span>
-            </div>
-          </div>
-    
-          <div class="shift-cell" data-label="Fechas">
-            ${escapeHtml(formatDate(request.start_date))} - ${escapeHtml(formatDate(request.end_date))}
-          </div>
-    
-          <div class="shift-cell" data-label="Motivo">
-            ${escapeHtml(request.reason || "Sin motivo")}
-          </div>
-    
-          <div class="shift-cell" data-label="Estado">
-            <span class="vacation-status vacation-status-${escapeHtml(request.status)}">
-              ${escapeHtml(statusLabel(request.status))}
-            </span>
-          </div>
-    
-          <div class="shift-cell" data-label="Acción">
-            ${request.status === "pending" ? `
-              <button type="button" class="approve-vacation-button" data-id="${request.id}">
-                Aprobar
-              </button>
-              <button type="button" class="reject-vacation-button" data-id="${request.id}">
-                Rechazar
-              </button>
-            ` : `<span class="request-empty">Revisada</span>`}
-          </div>
-        `
-    
-        vacationsTableBody.appendChild(row)
-      })
-    
-      document.querySelectorAll(".approve-vacation-button").forEach((button) => {
-        button.addEventListener("click", () => resolveVacationRequest(button.dataset.id, "approve"))
-      })
-    
-      document.querySelectorAll(".reject-vacation-button").forEach((button) => {
-        button.addEventListener("click", () => resolveVacationRequest(button.dataset.id, "reject"))
-      })
-    }
-    
-    function renderSchedules() {
-      shiftsTableBody.innerHTML = ""
-    
-      if (!state.schedules.length) {
-        shiftsTableBody.innerHTML = `
-          <div class="empty-state">
-            Todavía no hay turnos asignados.
-          </div>
-        `
-        return
+      for (const request of state.vacations) {
+        const status = ["pending", "approved", "rejected"].includes(request.status) ? request.status : "pending"
+        const actions = request.status === "pending" ? [
+          button("approve-vacation-button", "Aprobar", request.id, (id) => resolveVacationRequest(id, "approve")),
+          button("reject-vacation-button", "Rechazar", request.id, (id) => resolveVacationRequest(id, "reject")),
+        ] : [el("span", "request-empty", "Revisada")]
+        vacationsTableBody.append(el("article", "vacation-admin-row", null, [
+          caregiverCell(request.user), cell("Fechas", `${formatDate(request.start_date)} - ${formatDate(request.end_date)}`),
+          cell("Motivo", request.reason || "Sin motivo"), cell("Estado", null, [el("span", `vacation-status vacation-status-${status}`, statusLabel(request.status))]),
+          cell("Acción", null, actions),
+        ]))
       }
-    
-      state.schedules.forEach((schedule) => {
-        const row = document.createElement("article")
-        row.className = "shift-row"
-    
-        row.innerHTML = `
-          <div class="shift-cell shift-caregiver" data-label="Cuidador">
-            <div class="shift-avatar"></div>
-            <div class="shift-name-group">
-              <span>${escapeHtml(schedule.user?.name || "Cuidador")}</span>
-              <span class="shift-email">${escapeHtml(schedule.user?.email || "")}</span>
-            </div>
-          </div>
-    
-          <div class="shift-cell" data-label="Día">
-            ${escapeHtml(DAY_LABELS[schedule.day_of_week] || "Sin día")}
-          </div>
-    
-          <div class="shift-cell" data-label="Horario">
-            ${escapeHtml(formatTimeRange(schedule))}
-          </div>
-    
-          <div class="shift-cell" data-label="Notas">
-            ${escapeHtml(schedule.notes || "Sin notas")}
-          </div>
-    
-          <div class="shift-cell shift-request" data-label="Solicitud">
-            ${renderChangeRequest(schedule)}
-          </div>
-    
-          <div class="shift-cell" data-label="Acción">
-            ${schedule.change_request?.status === "pending" ? `
-              <button type="button" class="approve-request-button" data-id="${schedule.id}">
-                Aprobar
-              </button>
-              <button type="button" class="reject-request-button" data-id="${schedule.id}">
-                Rechazar
-              </button>
-            ` : ""}
-            <button type="button" class="delete-shift-button danger-soft-button" data-id="${schedule.id}">
-              Eliminar
-            </button>
-          </div>
-        `
-    
-        shiftsTableBody.appendChild(row)
-      })
-    
-      document.querySelectorAll(".delete-shift-button").forEach((button) => {
-        button.addEventListener("click", () => deleteSchedule(button.dataset.id))
-      })
-    
-      document.querySelectorAll(".approve-request-button").forEach((button) => {
-        button.addEventListener("click", () => resolveChangeRequest(button.dataset.id, "approve"))
-      })
-    
-      document.querySelectorAll(".reject-request-button").forEach((button) => {
-        button.addEventListener("click", () => resolveChangeRequest(button.dataset.id, "reject"))
-      })
     }
-    
     function renderChangeRequest(schedule) {
       const request = schedule.change_request
-    
-      if (!request || request.status !== "pending") {
-        return `<span class="request-empty">Sin solicitud</span>`
-      }
-    
-      return `
-        <div class="request-card">
-          <strong>${escapeHtml(normalizeTime(request.start_time))} - ${escapeHtml(normalizeTime(request.end_time))}</strong>
-          <span>${escapeHtml(request.notes || "Sin notas")}</span>
-          <p>${escapeHtml(request.message || "")}</p>
-        </div>
-      `
+      if (!request || request.status !== "pending") return el("span", "request-empty", "Sin solicitud")
+      return el("div", "request-card", null, [
+        el("strong", "", `${normalizeTime(request.start_time)} - ${normalizeTime(request.end_time)}`),
+        el("span", "", request.notes || "Sin notas"), el("p", "", request.message || ""),
+      ])
     }
-    
-        return Object.freeze({ renderCaregiverOptions, renderVacations, renderSchedules, renderChangeRequest })
+    function renderSchedules() {
+      shiftsTableBody.replaceChildren()
+      if (!state.schedules.length) {
+        shiftsTableBody.append(el("div", "empty-state", "Todavía no hay turnos asignados."))
+        return
+      }
+      for (const schedule of state.schedules) {
+        const actions = []
+        if (schedule.change_request?.status === "pending") actions.push(
+          button("approve-request-button", "Aprobar", schedule.id, (id) => resolveChangeRequest(id, "approve")),
+          button("reject-request-button", "Rechazar", schedule.id, (id) => resolveChangeRequest(id, "reject")),
+        )
+        actions.push(button("delete-shift-button danger-soft-button", "Eliminar", schedule.id, deleteSchedule))
+        shiftsTableBody.append(el("article", "shift-row", null, [
+          caregiverCell(schedule.user), cell("Día", DAY_LABELS[schedule.day_of_week] || "Sin día"), cell("Horario", formatTimeRange(schedule)),
+          cell("Notas", schedule.notes || "Sin notas"), cell("Solicitud", null, [renderChangeRequest(schedule)], "shift-request"), cell("Acción", null, actions),
+        ]))
+      }
+    }
+    return Object.freeze({ renderCaregiverOptions, renderVacations, renderSchedules, renderChangeRequest })
   }
   window.AdminShiftsView = Object.freeze({ create })
 })()
-

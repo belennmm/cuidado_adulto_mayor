@@ -27,55 +27,44 @@
 
   function createMedicineManager(list) {
     let count = 0
-    const escapeHtml = window.CuidadoUi.escapeHtml
-
-    function dayOptions(index, selectedDays = []) {
-      return DAYS.map(([value, label]) => `
-        <label class="day-option">
-          <input type="checkbox" name="medicineDays${index}" value="${value}" ${selectedDays.includes(value) ? "checked" : ""} />
-          <span>${label}</span>
-        </label>
-      `).join("")
-    }
-
     function add(medicine = null) {
       if (!list) return null
       count += 1
-
-      const card = document.createElement("div")
-      card.className = "medicine-card"
-      card.dataset.index = count
-      card.dataset.medicationAssignmentId = medicine?.id || ""
-      card.innerHTML = `
-        <div class="medicine-card-header">
-          <h3 class="medicine-card-title">Medicina ${count}</h3>
-          <button type="button" class="remove-medicine-button danger-soft-button">Eliminar</button>
-        </div>
-        <div class="medicine-grid">
-          <div class="form-group">
-            <label for="medicineName${count}">Nombre de medicina</label>
-            <input type="text" id="medicineName${count}" name="medicineName${count}" placeholder="Ingrese nombre de medicina" value="${escapeHtml(medicine?.name || "")}" />
-          </div>
-          <div class="form-group">
-            <label for="medicineDosage${count}">Dosis</label>
-            <input type="text" id="medicineDosage${count}" name="medicineDosage${count}" placeholder="Ej. 1 pastilla" value="${escapeHtml(medicine?.dosage || "")}" />
-          </div>
-          <div class="form-group">
-            <label for="medicineSchedule${count}">Horario</label>
-            <input type="text" id="medicineSchedule${count}" name="medicineSchedule${count}" placeholder="Ej. 8:00 AM, 2:00 PM" value="${escapeHtml(medicine?.schedule || "")}" />
-          </div>
-          <div class="form-group full-width">
-            <label for="medicineNotes${count}">Notas</label>
-            <textarea id="medicineNotes${count}" name="medicineNotes${count}" placeholder="Indicaciones adicionales">${escapeHtml(medicine?.notes || "")}</textarea>
-          </div>
-        </div>
-        <div class="days-group">
-          <label>Días de administración</label>
-          <div class="days-options">${dayOptions(count, medicine?.days || [])}</div>
-        </div>
-      `
-      card.querySelector(".remove-medicine-button")?.addEventListener("click", () => card.remove())
-      list.appendChild(card)
+      const el = window.CuidadoUi.element
+      const card = el("div", "medicine-card")
+      card.dataset.index = String(count)
+      card.dataset.medicationAssignmentId = String(medicine?.id || "")
+      const remove = el("button", "remove-medicine-button danger-soft-button", "Eliminar")
+      remove.type = "button"
+      remove.addEventListener("click", () => card.remove())
+      const grid = el("div", "medicine-grid")
+      for (const [key, label, placeholder, multiline] of [
+        ["Name", "Nombre de medicina", "Ingrese nombre de medicina", false],
+        ["Dosage", "Dosis", "Ej. 1 pastilla", false],
+        ["Schedule", "Horario", "Ej. 8:00 AM, 2:00 PM", false],
+        ["Notes", "Notas", "Indicaciones adicionales", true],
+      ]) {
+        const input = document.createElement(multiline ? "textarea" : "input")
+        if (!multiline) input.type = "text"
+        input.id = `medicine${key}${count}`
+        input.name = input.id
+        input.placeholder = placeholder
+        input.value = String(medicine?.[key === "Name" ? "name" : key.toLowerCase()] || "")
+        const title = el("label", "", label)
+        title.htmlFor = input.id
+        grid.append(el("div", `form-group${multiline ? " full-width" : ""}`, null, [title, input]))
+      }
+      const options = DAYS.map(([value, label]) => {
+        const input = document.createElement("input")
+        input.type = "checkbox"
+        input.name = `medicineDays${count}`
+        input.value = value
+        input.checked = Array.isArray(medicine?.days) && medicine.days.includes(value)
+        return el("label", "day-option", null, [input, el("span", "", label)])
+      })
+      card.append(el("div", "medicine-card-header", null, [el("h3", "medicine-card-title", `Medicina ${count}`), remove]), grid,
+        el("div", "days-group", null, [el("label", "", "Días de administración"), el("div", "days-options", null, options)]))
+      list.append(card)
       return card
     }
 
@@ -103,7 +92,7 @@
 
     function fill(medicines = []) {
       if (!list) return
-      list.innerHTML = ""
+      list.replaceChildren()
       count = 0
       medicines.length ? medicines.forEach(add) : add()
     }

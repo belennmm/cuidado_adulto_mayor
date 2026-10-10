@@ -6,11 +6,18 @@ use App\Models\MedicationAcquisition;
 use App\Models\OlderAdultMedication;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class MedicationStatisticsService
 {
+    public const FILTERS = ['day', 'month', 'year'];
+
     public function statistics(string $filter): array
     {
+        if (! in_array($filter, self::FILTERS, true)) {
+            throw ValidationException::withMessages(['filter' => ['El filtro debe ser day, month o year.']]);
+        }
+
         $today = Carbon::now((string) config('app.timezone'))->startOfDay();
         [$startDate, $endDate] = $this->periodRange($filter, $today);
 

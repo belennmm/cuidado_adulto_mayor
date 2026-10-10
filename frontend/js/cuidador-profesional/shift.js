@@ -11,58 +11,49 @@
   }
 
   function renderSchedule(schedule) {
-    const pendingRequest = schedule.change_request?.status === "pending"
-    const requestSummary = pendingRequest
-      ? `
-        <div class="schedule-request-summary">
-          <strong>Solicitud pendiente</strong>
-          <span>${api.escapeHtml(api.formatTime(schedule.change_request.start_time))} - ${api.escapeHtml(api.formatTime(schedule.change_request.end_time))}</span>
-          <p>${api.escapeHtml(schedule.change_request.message || "")}</p>
-        </div>
-      `
-      : ""
-
-    return `
-      <article class="professional-row schedule-row">
-        <span class="row-icon"><i class="bx bxs-time"></i></span>
-        <div class="schedule-content">
-          <div>
-            <h3>${api.escapeHtml(days[schedule.day_of_week] || "Día")}</h3>
-            <p>${api.escapeHtml(api.formatTime(schedule.start_time))} - ${api.escapeHtml(api.formatTime(schedule.end_time))}</p>
-          </div>
-          ${requestSummary}
-        </div>
-        <span class="badge badge-blue">${api.escapeHtml(schedule.notes || "Asignado")}</span>
-        <button type="button" class="schedule-change-toggle" data-id="${schedule.id}" ${pendingRequest ? "disabled" : ""}>
-          ${pendingRequest ? "En revisión" : "Solicitar cambio"}
-        </button>
-        <form class="schedule-change-form" data-id="${schedule.id}" hidden>
-          <div class="change-form-grid">
-            <label>
-              Inicio
-              <input type="time" name="start_time" value="${api.escapeHtml(api.formatTime(schedule.start_time))}" required />
-            </label>
-            <label>
-              Fin
-              <input type="time" name="end_time" value="${api.escapeHtml(api.formatTime(schedule.end_time))}" required />
-            </label>
-            <label>
-              Notas
-              <input type="text" name="notes" maxlength="255" value="${api.escapeHtml(schedule.notes || "")}" />
-            </label>
-          </div>
-          <label>
-            Motivo
-            <textarea name="message" maxlength="500" required placeholder="Explica el cambio que necesitas"></textarea>
-          </label>
-          <div class="change-form-actions">
-            <button type="button" class="schedule-change-cancel">Cancelar</button>
-            <button type="submit">Enviar solicitud</button>
-          </div>
-          <p class="schedule-change-message" aria-live="polite"></p>
-        </form>
-      </article>
-    `
+    const el = window.CuidadoUi.element
+    const pending = schedule.change_request?.status === "pending"
+    const content = el("div", "schedule-content", null, [el("div", "", null, [
+      el("h3", "", days[schedule.day_of_week] || "Día"), el("p", "", `${api.formatTime(schedule.start_time)} - ${api.formatTime(schedule.end_time)}`),
+    ])])
+    if (pending) content.append(el("div", "change-request-summary", null, [
+      el("strong", "", "Solicitud pendiente"), el("span", "", `${api.formatTime(schedule.change_request.start_time)} - ${api.formatTime(schedule.change_request.end_time)}`),
+      el("p", "", schedule.change_request.message || ""),
+    ]))
+    const toggle = el("button", "schedule-change-toggle", pending ? "En revisión" : "Solicitar cambio")
+    toggle.type = "button"
+    toggle.disabled = pending
+    toggle.dataset.id = String(schedule.id ?? "")
+    const form = el("form", "schedule-change-form")
+    form.dataset.id = String(schedule.id ?? "")
+    form.hidden = true
+    const grid = el("div", "change-form-grid")
+    for (const [name, title, type, value] of [
+      ["start_time", "Inicio", "time", api.formatTime(schedule.start_time)], ["end_time", "Fin", "time", api.formatTime(schedule.end_time)], ["notes", "Notas", "text", schedule.notes || ""],
+    ]) {
+      const input = document.createElement("input")
+      input.name = name
+      input.type = type
+      input.value = value
+      input.required = name !== "notes"
+      if (name === "notes") input.maxLength = 255
+      grid.append(el("label", "", title, [input]))
+    }
+    const message = document.createElement("textarea")
+    message.name = "message"
+    message.maxLength = 500
+    message.required = true
+    message.placeholder = "Explica el cambio que necesitas"
+    const cancel = el("button", "schedule-change-cancel", "Cancelar")
+    cancel.type = "button"
+    const submit = el("button", "", "Enviar solicitud")
+    submit.type = "submit"
+    const feedback = el("p", "schedule-change-message")
+    feedback.setAttribute("aria-live", "polite")
+    form.append(grid, el("label", "", "Motivo", [message]), el("div", "change-form-actions", null, [cancel, submit]), feedback)
+    return el("article", "professional-row schedule-row", null, [
+      el("span", "row-icon", null, [el("i", "bx bxs-time")]), content, el("span", "badge badge-blue", schedule.notes || "Asignado"), toggle, form,
+    ])
   }
 
   async function showProfessionalAlert(message, options = {}) {
@@ -115,9 +106,7 @@
 
     try {
       const data = await api.fetchJson("/professional/schedules")
-      list.innerHTML = data.schedules?.length
-        ? data.schedules.map(renderSchedule).join("")
-        : api.renderEmpty("No tienes turnos asignados por ahora.")
+      list.replaceChildren(...(data.schedules?.length ? data.schedules.map(renderSchedule) : [window.CuidadoUi.element("div", "empty-state", "No tienes turnos asignados por ahora.")]))
     } catch (error) {
       list.innerHTML = api.renderEmpty(error.message)
     }
@@ -167,7 +156,7 @@
         message: form.elements.message.value.trim(),
       }
 
-      const data = await api.fetchJson(`/schedules/${scheduleId}/change-request`, {
+      const data = await api.fetchJson(`/schedules/${encodeURIComponent(scheduleId)}/change-request`, {
         method: "POST",
         body: JSON.stringify(payload),
       })

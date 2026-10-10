@@ -15,6 +15,7 @@ describe("AdminShiftsView", () => {
     shiftsTableBody = document.getElementById("shifts")
     vacationsTableBody = document.getElementById("vacations")
     state = { caregivers: [], schedules: [], vacations: [] }
+    await import("../../js/ui-utils.js")
     await import("../../js/admin/shifts-view.js")
     view = window.AdminShiftsView.create({
       state,

@@ -38,7 +38,7 @@ class VacationRequestService
     {
         return VacationRequest::query()
             ->with(['user:id,name,email,role,is_approved', 'reviewer:id,name,email'])
-            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByRaw('CASE WHEN status = ? THEN 0 ELSE 1 END', ['pending'])
             ->orderByDesc('created_at')
             ->get();
     }

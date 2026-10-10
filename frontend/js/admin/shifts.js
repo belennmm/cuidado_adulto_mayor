@@ -76,7 +76,7 @@ async function loadVacations() {
   renderVacations()
 }
 
-const { renderCaregiverOptions, renderVacations, renderSchedules, renderChangeRequest } = window.AdminShiftsView.create({ state, caregiverSelect, shiftsTableBody, vacationsTableBody, DAY_LABELS, escapeHtml, formatDate, formatTimeRange, statusLabel })
+const { renderCaregiverOptions, renderVacations, renderSchedules, renderChangeRequest } = window.AdminShiftsView.create({ state, caregiverSelect, shiftsTableBody, vacationsTableBody, DAY_LABELS, formatDate, formatTimeRange, statusLabel, normalizeTime, deleteSchedule, resolveChangeRequest, resolveVacationRequest })
 
 async function saveSchedule(event) {
   event.preventDefault()
@@ -126,7 +126,7 @@ async function deleteSchedule(scheduleId) {
   }
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/${scheduleId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/${encodeURIComponent(scheduleId)}`, {
       ...ADMIN_REQUEST_OPTIONS,
       method: "DELETE",
     })
@@ -156,7 +156,7 @@ async function resolveChangeRequest(scheduleId, action) {
   }
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/${scheduleId}/change-request/${action}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/schedules/${encodeURIComponent(scheduleId)}/change-request/${action}`, {
       ...ADMIN_REQUEST_OPTIONS,
       method: "PATCH",
     })
@@ -186,7 +186,7 @@ async function resolveVacationRequest(requestId, action) {
   }
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/vacation-requests/${requestId}/${action}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/vacation-requests/${encodeURIComponent(requestId)}/${action}`, {
       ...ADMIN_REQUEST_OPTIONS,
       method: "PATCH",
     })

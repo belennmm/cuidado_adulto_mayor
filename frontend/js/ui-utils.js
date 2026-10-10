@@ -1,4 +1,15 @@
 (() => {
+  // Values become text nodes; this helper never interprets data as markup or attributes.
+  function element(tag, className = "", text = null, children = []) {
+    const node = document.createElement(tag)
+    node.className = className
+    if (text !== null) node.textContent = String(text ?? "")
+    for (const child of children.flat(Infinity)) {
+      if (child !== null && child !== undefined) node.append(child instanceof Node ? child : document.createTextNode(String(child)))
+    }
+    return node
+  }
+
   function escapeHtml(value) {
     return String(value ?? "")
       .replaceAll("&", "&amp;")
@@ -106,6 +117,7 @@
   }
 
   window.CuidadoUi = Object.freeze({
+    element,
     escapeHtml,
     formatLongDate,
     formatNumericDate,
