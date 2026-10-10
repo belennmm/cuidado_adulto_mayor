@@ -83,3 +83,9 @@ Ejecutar desde la raiz con el backend local levantado:
 ```
 
 Los resumenes JSON se guardan en `tests/volume/reports` y no contienen contrasenas ni tokens.
+
+## Análisis estático de inyecciones (A03)
+
+Desde la raíz: `php tests/security/php-sast.php`. No requiere dependencias ni ejecuta código de aplicación. El workflow `injection-static-analysis.yml` añade Semgrep con las reglas locales de `tests/security/semgrep.yml`. Si Semgrep está instalado: `semgrep scan --config tests/security/semgrep.yml --error --metrics=off backend/app backend/routes frontend/js`.
+
+Alcance, reutilización de controles y limitaciones: [cierre A03](../../docs/CIERRE_A03_NORMALIZACION_JSON_ANALISIS.md).

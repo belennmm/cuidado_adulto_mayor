@@ -13,7 +13,7 @@ class EnforceRequestSize
         $maximumBytes = (int) config('app.max_request_bytes', 2 * 1024 * 1024);
         $contentLength = (int) $request->server('CONTENT_LENGTH', 0);
 
-        if ($contentLength > $maximumBytes) {
+        if ($contentLength > $maximumBytes || strlen($request->getContent()) > $maximumBytes) {
             return response()->json(['message' => 'La solicitud excede el tamano permitido.'], 413);
         }
 

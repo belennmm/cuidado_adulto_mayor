@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Este bloque implementa las cuatro subtareas siguientes de SCRUM-823 (A03). Las tareas SCRUM-836 a SCRUM-840 quedan para el siguiente bloque. No se realizaron acciones de Git, cambios de dependencias, despliegues ni migraciones sobre la base de datos de la aplicación.
+Este bloque implementa las cuatro subtareas siguientes de SCRUM-823 (A03). El bloque restante SCRUM-836 a SCRUM-842 está documentado en `CIERRE_A03_NORMALIZACION_JSON_ANALISIS.md`. No se realizaron acciones de Git, cambios de dependencias, despliegues ni migraciones sobre la base de datos de la aplicación.
 
 ## SCRUM-832: validar destinos URL
 

@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             App\Http\Middleware\HandleCors::class,
         );
 
+        $middleware->trimStrings(except: ['new_password', 'new_password_confirmation']);
         $middleware->prepend(RejectDisallowedMethods::class);
         $middleware->prepend(EnforceRequestSize::class);
         $middleware->append(SecurityHeaders::class);

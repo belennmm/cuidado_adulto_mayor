@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\StrictJson;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -14,6 +15,86 @@ abstract class StrictFormRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->allFiles() !== []) {
+            $this->rejectBody('Esta API no admite archivos adjuntos.');
+        }
+        if ($this->isJson() && $this->getContent() !== '') {
+            try {
+                $decoded = StrictJson::decode($this->getContent());
+                $this->checkJsonContainers($decoded, $this->ruleTree());
+            } catch (JsonException) {
+                $this->rejectBody('JSON no valido: revise claves, estructura y anidamiento.');
+            }
+        }
+        // Keep query and body separate, including GET requests with JSON headers.
+        $this->query->replace($this->normalizeInput($this->query->all()));
+        $this->request->replace($this->normalizeInput($this->request->all()));
+        if ($this->isJson()) {
+            $this->json()->replace($this->normalizeInput($this->json()->all()));
+        }
+    }
+
+    private function normalizeInput(array $input, int $depth = 0): array
+    {
+        if ($depth > StrictJson::MAX_DEPTH) {
+            $this->rejectBody('La entrada excede el nivel de anidamiento permitido.');
+        }
+        foreach ($input as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->normalizeInput($value, $depth + 1);
+            } elseif (is_string($value)) {
+                if (! mb_check_encoding($value, 'UTF-8') || preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', $value)) {
+                    $this->rejectBody('La entrada contiene caracteres no permitidos.');
+                }
+                // Credentials are opaque: never trim, decode or normalize passwords.
+                if (! str_contains((string) $key, 'password')) {
+                    $value = \Normalizer::normalize($value, \Normalizer::FORM_C);
+                    $value = preg_replace('/\A[\p{Z}\s]+|[\p{Z}\s]+\z/u', '', $value);
+                }
+            }
+        }
+        unset($value);
+
+        return $input;
+    }
+
+    private function rejectBody(string $message, string $field = '_body'): never
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => $message,
+            'errors' => [$field => [$message]],
+        ], 422));
+    }
+
+    private function ruleTree(): array
+    {
+        $tree = [];
+        foreach (array_keys($this->rules()) as $field) {
+            $node = &$tree;
+            foreach (explode('.', $field) as $segment) {
+                $node[$segment] ??= [];
+                $node = &$node[$segment];
+            }
+            unset($node);
+        }
+
+        return $tree;
+    }
+
+    private function checkJsonContainers(mixed $value, array $tree, string $prefix = ''): void
+    {
+        if (isset($tree['*']) && is_object($value)) {
+            $this->rejectBody('Se esperaba una lista JSON.', $prefix ?: '_body');
+        }
+        if (is_array($value) || is_object($value)) {
+            foreach ($value as $key => $child) {
+                $this->checkJsonContainers($child, $tree[$key] ?? $tree['*'] ?? [], ltrim($prefix.'.'.$key, '.'));
+            }
+        }
+    }
+
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
@@ -23,26 +104,7 @@ abstract class StrictFormRequest extends FormRequest
                 && ! str_starts_with($contentType, 'multipart/form-data')) {
                 $validator->errors()->add('_body', 'El cuerpo debe enviarse como JSON o formulario.');
             }
-            if ($this->isJson() && $this->getContent() !== '') {
-                try {
-                    $decoded = json_decode($this->getContent(), false, 64, JSON_THROW_ON_ERROR);
-                    if (! is_object($decoded) && $decoded !== []) {
-                        $validator->errors()->add('_body', 'El cuerpo JSON debe ser un objeto.');
-                    }
-                } catch (JsonException) {
-                    $validator->errors()->add('_body', 'El cuerpo JSON no es valido.');
-                }
-            }
-
-            $tree = [];
-            foreach (array_keys($this->rules()) as $field) {
-                $node = &$tree;
-                foreach (explode('.', $field) as $segment) {
-                    $node[$segment] ??= [];
-                    $node = &$node[$segment];
-                }
-                unset($node);
-            }
+            $tree = $this->ruleTree();
 
             $input = $this->all();
             // Laravel supports form method override as transport metadata, not business input.
