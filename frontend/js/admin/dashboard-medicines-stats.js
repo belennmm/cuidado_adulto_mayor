@@ -21,6 +21,7 @@
     selectedMedicineId: null,
     items: [],
     inventory: [],
+    inventoryIsComplete: false,
     olderAdults: [],
     selectedOlderAdultId: new URLSearchParams(window.location.search).get("inventory_scope") === "unassigned"
       ? "unassigned"
@@ -92,6 +93,7 @@
     }
     if (inventoryResult.status === "fulfilled" && inventorySequence === state.inventoryLoadSequence) {
       state.inventory = inventoryResult.value.inventory || []
+      state.inventoryIsComplete = !inventoryResult.value.pagination && !state.inventory.some((item) => item.is_consolidated)
       renderInventory()
       window.CuidadoUi.pagination("inventoryList", inventoryResult.value.pagination, loadInventoryPage)
     }
@@ -124,6 +126,7 @@
       if (sequence !== state.inventoryLoadSequence) return
       state.inventoryPage = page
       state.inventory = data.inventory || []
+      state.inventoryIsComplete = !data.pagination && !state.inventory.some((item) => item.is_consolidated)
       renderInventory()
       window.CuidadoUi.pagination("inventoryList", data.pagination, loadInventoryPage)
     } catch (error) {
@@ -342,6 +345,13 @@
     document.getElementById("inventoryOlderAdultFilter")?.addEventListener("change", (event) => {
       updateOlderAdultSelection(event.target.value)
       state.selectedOlderAdultId = event.target.value
+      // Only a complete collection of individual records can be filtered immediately.
+      // A scoped page or consolidated totals require the new server response.
+      if (state.inventoryIsComplete) renderInventory()
+      else {
+        renderInventoryLoading()
+        window.CuidadoUi.pagination("inventoryList", null, loadInventoryPage)
+      }
       loadInventoryPage(1)
     })
 
