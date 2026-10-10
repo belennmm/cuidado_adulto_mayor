@@ -35,9 +35,7 @@ class RoutineService
         $olderAdult = OlderAdult::query()->find($id);
 
         if (! $olderAdult) {
-            throw ValidationException::withMessages([
-                'adulto_mayor_id' => ['El adulto mayor seleccionado no existe.'],
-            ]);
+            abort(404);
         }
 
         return $olderAdult;

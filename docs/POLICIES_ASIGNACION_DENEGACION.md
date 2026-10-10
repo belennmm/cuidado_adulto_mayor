@@ -2,6 +2,8 @@
 
 Historia SCRUM-779 (A01). Fecha: 2026-10-09. Esta entrega abarca únicamente estas tres subtareas; no ejecuta acciones de Git.
 
+Seguimiento: [SCRUM-787 a SCRUM-790](CAMPOS_TOKENS_IDOR.md) exige aprobación también al administrador, revoca credenciales al retirar aprobación o cambiar rol y unifica en 404 las respuestas a recursos ajenos e inexistentes. Los resultados de validación de este documento corresponden al bloque SCRUM-784/785/786.
+
 ## SCRUM-784: Policies para recursos sensibles
 
 Se registraron explícitamente nueve Policies en `AppServiceProvider`: ocho nuevas y la Policy de rutinas existente actualizada. Las 71 operaciones API de cuidado/administración declaran su autorización con `can`; las tres operaciones de cuenta (GET/PUT `/api/me` y POST `/api/logout`) mantienen su contrato de sesión propia.

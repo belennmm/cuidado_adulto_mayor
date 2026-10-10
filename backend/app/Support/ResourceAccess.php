@@ -10,7 +10,7 @@ final class ResourceAccess
 {
     public static function admin(User $user): bool
     {
-        return $user->role === 'admin';
+        return $user->role === 'admin' && (bool) $user->is_approved;
     }
 
     public static function professional(User $user): bool

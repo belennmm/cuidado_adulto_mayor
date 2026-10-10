@@ -30,12 +30,12 @@ class RutinaPolicy
         if ($this->isProfessional($user)) {
             return Access::professionalAssigned($user, $olderAdult)
                 ? Response::allow()
-                : Response::deny('No tienes acceso a la informacion de este adulto mayor.');
+                : Response::denyAsNotFound();
         }
 
         return $this->isFamily($user) && $this->isFamilyAssigned($user, $olderAdult)
             ? Response::allow()
-            : Response::deny('No tienes acceso a la informacion de este adulto mayor.');
+            : Response::denyAsNotFound();
     }
 
     public function update(User $user, Rutina $rutina): Response
@@ -46,7 +46,7 @@ class RutinaPolicy
 
         return $rutina->olderAdult !== null
             ? $this->accessOlderAdult($user, $rutina->olderAdult)
-            : Response::deny('No tienes acceso a la informacion de este adulto mayor.');
+            : Response::denyAsNotFound();
     }
 
     public function complete(User $user, Rutina $rutina): Response

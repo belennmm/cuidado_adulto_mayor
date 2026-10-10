@@ -20,9 +20,9 @@ class RoutineNotePolicy
         return Access::professional($user);
     }
 
-    public function createFor(User $user, OlderAdult $olderAdult): bool
+    public function createFor(User $user, OlderAdult $olderAdult): Response
     {
-        return Access::professionalAssigned($user, $olderAdult);
+        return Access::professionalAssigned($user, $olderAdult) ? Response::allow() : Response::denyAsNotFound();
     }
 
     public function view(User $user, RoutineNote $note): Response
@@ -30,7 +30,7 @@ class RoutineNotePolicy
         return Access::owns($user, $note->professional_caregiver_id)
             && Access::professionalAssigned($user, $note->olderAdult)
                 ? Response::allow()
-                : Response::deny('No tienes acceso a esta nota.');
+                : Response::denyAsNotFound();
     }
 
     public function update(User $user, RoutineNote $note): Response

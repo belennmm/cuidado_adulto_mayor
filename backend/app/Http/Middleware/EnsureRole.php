@@ -29,10 +29,12 @@ class EnsureRole
             return response()->json(['message' => 'No tienes permiso para realizar esta accion.'], 403);
         }
 
-        if ($role !== 'admin' && ! $user->is_approved) {
-            $message = $role === 'profesional'
-                ? 'Esta informacion solo esta disponible para cuidadores profesionales aprobados.'
-                : 'Esta informacion solo esta disponible para cuidadores familiares.';
+        if (! $user->is_approved) {
+            $message = match ($role) {
+                'profesional' => 'Esta informacion solo esta disponible para cuidadores profesionales aprobados.',
+                'familiar' => 'Esta informacion solo esta disponible para cuidadores familiares.',
+                default => 'Tu cuenta debe estar aprobada para realizar esta accion.',
+            };
 
             return response()->json(['message' => $message], 403);
         }

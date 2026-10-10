@@ -20,15 +20,16 @@ class IncidentPolicy
         return Access::admin($user) || Access::professional($user);
     }
 
-    public function createFor(User $user, OlderAdult $olderAdult): bool
+    public function createFor(User $user, OlderAdult $olderAdult): Response
     {
-        return Access::admin($user) || Access::professionalAssigned($user, $olderAdult);
+        return Access::admin($user) || Access::professionalAssigned($user, $olderAdult)
+            ? Response::allow() : Response::denyAsNotFound();
     }
 
     public function update(User $user, Incident $incident): Response
     {
         return Access::professionalAssigned($user, $incident->olderAdult)
             ? Response::allow()
-            : Response::deny('No tienes acceso para modificar este incidente.');
+            : Response::denyAsNotFound();
     }
 }

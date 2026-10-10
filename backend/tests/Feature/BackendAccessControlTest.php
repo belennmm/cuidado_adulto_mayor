@@ -150,7 +150,8 @@ class BackendAccessControlTest extends TestCase
 
         $user->update(['is_approved' => false]);
         $this->app['auth']->forgetGuards();
-        $this->getJson('/api/professional/overview', $headers)->assertForbidden();
+        $this->getJson('/api/professional/overview', $headers)->assertUnauthorized();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
     public function test_unknown_role_cannot_obtain_unfiltered_incidents_from_the_service(): void
@@ -163,8 +164,7 @@ class BackendAccessControlTest extends TestCase
 
     private function privateApiRoutes(): array
     {
-        return array_values(array_filter(Route::getRoutes()->getRoutes(), fn ($route) =>
-            str_starts_with($route->uri(), 'api/') && ! in_array($route->uri(), self::PUBLIC_API, true)
+        return array_values(array_filter(Route::getRoutes()->getRoutes(), fn ($route) => str_starts_with($route->uri(), 'api/') && ! in_array($route->uri(), self::PUBLIC_API, true)
         ));
     }
 

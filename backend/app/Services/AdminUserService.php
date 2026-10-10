@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AdminUserService
 {
@@ -29,6 +31,7 @@ class AdminUserService
 
     public function create(array $data): User
     {
+        $data = $this->allowedData($data);
         $data['role'] = $this->normalizeRole($data['role']);
         $data['password'] = Hash::make($data['password']);
         $data['is_approved'] = true;
@@ -38,13 +41,8 @@ class AdminUserService
 
     public function update(User $user, array $data): User
     {
-        $credentialsMustBeRevoked = ! empty($data['password'])
-            || (array_key_exists('is_approved', $data) && ! $data['is_approved']);
+        $data = $this->allowedData($data);
         $data['role'] = $this->normalizeRole($data['role']);
-
-        if ($data['role'] === 'admin') {
-            $data['is_approved'] = true;
-        }
 
         if (! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
@@ -52,13 +50,11 @@ class AdminUserService
             unset($data['password']);
         }
 
-        $user->update($data);
+        return DB::transaction(function () use ($user, $data) {
+            $user->update($data);
 
-        if ($credentialsMustBeRevoked) {
-            $this->revokeCredentials($user);
-        }
-
-        return $user;
+            return $user;
+        });
     }
 
     public function approve(User $user): User
@@ -81,12 +77,15 @@ class AdminUserService
 
     public function delete(User $user): void
     {
-        $this->revokeCredentials($user);
-        $user->delete();
+        DB::transaction(fn () => $user->delete());
     }
 
     private function normalizeRole(string $role): string
     {
+        if (! in_array($role, ['admin', 'familiar', 'profesional', 'cuidador_familiar', 'cuidador_profesional'], true)) {
+            throw ValidationException::withMessages(['role' => ['El rol seleccionado no es valido.']]);
+        }
+
         return match ($role) {
             'cuidador_profesional' => 'profesional',
             'cuidador_familiar' => 'familiar',
@@ -94,10 +93,8 @@ class AdminUserService
         };
     }
 
-    private function revokeCredentials(User $user): void
+    private function allowedData(array $data): array
     {
-        $user->tokens()->delete();
-        DB::table('sessions')->where('user_id', $user->getKey())->delete();
-        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+        return Arr::only($data, ['name', 'email', 'password', 'role', 'is_approved', 'location', 'phone', 'birthdate']);
     }
 }

@@ -53,8 +53,8 @@ class CaregiverScheduleUnauthorizedModificationTest extends TestCase
         $deleteResponse = $this->deleteJson("/api/admin/schedules/{$schedule->id}");
 
         $updateResponse
-            ->assertForbidden()
-            ->assertJsonPath('message', 'No tienes permiso para modificar este horario.');
+            ->assertNotFound()
+            ->assertExactJson(['message' => 'Recurso no encontrado.']);
 
         $deleteResponse
             ->assertForbidden()

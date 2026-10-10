@@ -11,6 +11,7 @@ use App\Models\RoutineNote;
 use App\Models\Rutina;
 use App\Models\User;
 use App\Models\VacationRequest;
+use App\Observers\UserObserver;
 use App\Policies\CaregiverSchedulePolicy;
 use App\Policies\IncidentPolicy;
 use App\Policies\MobilityExercisePolicy;
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->validateProductionConfiguration();
+        User::observe(UserObserver::class);
 
         Gate::policy(Rutina::class, RutinaPolicy::class);
         Gate::policy(OlderAdult::class, OlderAdultPolicy::class);

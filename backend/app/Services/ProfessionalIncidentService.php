@@ -80,9 +80,7 @@ class ProfessionalIncidentService
         $olderAdult = OlderAdult::query()->find($olderAdultId);
 
         if (! $olderAdult) {
-            throw ValidationException::withMessages([
-                'older_adult_id' => ['El adulto mayor seleccionado no existe.'],
-            ]);
+            abort(404);
         }
 
         return $olderAdult;

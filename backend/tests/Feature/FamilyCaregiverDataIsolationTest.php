@@ -55,14 +55,14 @@ class FamilyCaregiverDataIsolationTest extends TestCase
             ->assertJsonPath('older_adult.full_name', 'Rosa Martinez');
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$unassignedOlderAdult->id}")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$assignedOlderAdult->id}/incidents")
             ->assertOk()
             ->assertJsonPath('older_adult.id', $assignedOlderAdult->id);
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$unassignedOlderAdult->id}/incidents")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->assertDatabaseHas('older_adults', [
             'id' => $unassignedOlderAdult->id,
@@ -119,7 +119,7 @@ class FamilyCaregiverDataIsolationTest extends TestCase
             ->assertOk();
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$olderAdultOfCaregiver2->id}")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->assertDatabaseHas('older_adults', [
             'id' => $olderAdultOfCaregiver2->id,

@@ -6,12 +6,14 @@ use App\Models\Medication;
 use App\Models\MedicationAcquisition;
 use App\Models\OlderAdult;
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class OlderAdultService
 {
     public function create(array $data, User $creator): OlderAdult
     {
+        $data = $this->allowedData($data);
         $data = $this->normalizeCaregiverAssignments($data);
         $medications = $data['medications'] ?? [];
         unset($data['medications']);
@@ -29,6 +31,7 @@ class OlderAdultService
 
     public function update(OlderAdult $olderAdult, array $data): OlderAdult
     {
+        $data = $this->allowedData($data);
         $data = $this->normalizeCaregiverAssignments($data);
         $shouldSyncMedications = array_key_exists('medications', $data);
         $medications = $data['medications'] ?? [];
@@ -53,6 +56,16 @@ class OlderAdultService
             'medicationAssignments.medication',
             'familyCaregiver',
             'professionalCaregiver',
+        ]);
+    }
+
+    private function allowedData(array $data): array
+    {
+        return Arr::only($data, [
+            'full_name', 'age', 'birthdate', 'gender', 'room', 'status',
+            'caregiver_family', 'family_caregiver_id', 'professional_caregiver_id',
+            'emergency_contact_name', 'emergency_contact_phone', 'allergies',
+            'medical_history', 'notes', 'medications',
         ]);
     }
 
@@ -105,6 +118,10 @@ class OlderAdultService
             $assignment = $assignmentId
                 ? $olderAdult->medicationAssignments()->find($assignmentId)
                 : null;
+
+            if ($assignmentId && ! $assignment) {
+                abort(404);
+            }
 
             if ($assignment) {
                 $assignment->update($assignmentData);

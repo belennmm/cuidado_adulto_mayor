@@ -33,12 +33,13 @@ class CaregiverSchedulePolicy
     {
         return $this->view($user, $schedule)
             ? Response::allow()
-            : Response::deny('No tienes permiso para modificar este horario.');
+            : Response::denyAsNotFound();
     }
 
-    public function requestChange(User $user, CaregiverSchedule $schedule): bool
+    public function requestChange(User $user, CaregiverSchedule $schedule): Response
     {
-        return Access::professional($user) && Access::owns($user, $schedule->user_id);
+        return Access::professional($user) && Access::owns($user, $schedule->user_id)
+            ? Response::allow() : Response::denyAsNotFound();
     }
 
     public function review(User $user, CaregiverSchedule $schedule): bool

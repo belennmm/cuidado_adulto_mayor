@@ -297,7 +297,7 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertJsonPath('routine.0.older_adult_id', $assignedAdult->id);
 
         $this->getJson("/api/family/routines?older_adult_id={$otherAdult->id}")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 
     public function test_family_can_get_complete_assigned_older_adult_info_with_incidents(): void
@@ -406,7 +406,7 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertJsonPath('older_adult.incidents.0.reporter.name', 'Maria Gonzalez');
 
         $this->getJson("/api/family/older-adults/{$otherAdult->id}")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 
     public function test_family_incidents_endpoint_returns_only_assigned_complete_incidents(): void
@@ -489,7 +489,7 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertJsonMissing(['title' => 'Molestia respiratoria']);
 
         $this->getJson("/api/family/incidents?date=2026-05-01&older_adult_id={$otherAdult->id}")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 
     public function test_family_can_get_incidents_for_assigned_older_adult(): void
@@ -580,7 +580,7 @@ class FamilyCareEndpointsTest extends TestCase
             ->assertJsonMissing(['title' => 'Molestia respiratoria']);
 
         $this->getJson("/api/family/older-adults/{$otherAdult->id}/incidents")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 
     public function test_admin_assigns_older_adult_to_real_approved_family_caregiver(): void

@@ -18,7 +18,7 @@ class OlderAdultPolicy
     {
         return Access::admin($user) || Access::assigned($user, $olderAdult)
             ? Response::allow()
-            : Response::deny('No tienes acceso a la informacion de este adulto mayor.');
+            : Response::denyAsNotFound();
     }
 
     public function create(User $user): bool

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\OlderAdultMedication;
 use App\Models\User;
 use App\Support\ResourceAccess as Access;
+use Illuminate\Auth\Access\Response;
 
 class OlderAdultMedicationPolicy
 {
@@ -33,9 +34,9 @@ class OlderAdultMedicationPolicy
         return Access::admin($user);
     }
 
-    public function markTaken(User $user, OlderAdultMedication $item): bool
+    public function markTaken(User $user, OlderAdultMedication $item): Response
     {
-        return Access::professionalAssigned($user, $item->olderAdult);
+        return Access::professionalAssigned($user, $item->olderAdult) ? Response::allow() : Response::denyAsNotFound();
     }
 
     public function reminders(User $user): bool

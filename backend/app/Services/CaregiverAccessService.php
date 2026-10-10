@@ -84,9 +84,7 @@ class CaregiverAccessService
             return $olderAdult;
         }
 
-        abort(response()->json([
-            'message' => 'No tienes acceso a la informacion de este adulto mayor.',
-        ], 403));
+        abort(404);
     }
 
     public function incidentsFor(Collection $olderAdults, ?Carbon $date = null, bool $includeReporter = false): Collection

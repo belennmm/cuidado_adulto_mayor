@@ -34,7 +34,7 @@ class ResourcePolicyAccessTest extends TestCase
 
     public function test_sensitive_models_have_registered_policies_and_undefined_abilities_are_denied_even_for_admin(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'admin', 'is_approved' => true]);
 
         foreach (self::RESOURCES as $model) {
             $this->assertNotNull(Gate::getPolicyFor($model), $model);
@@ -58,7 +58,7 @@ class ResourcePolicyAccessTest extends TestCase
 
     public static function deniedUsers(): array
     {
-        return [['auditor', true], ['', true], ['administrador', true], ['familiar', false], ['cuidador_profesional', false]];
+        return [['auditor', true], ['', true], ['administrador', true], ['admin', false], ['familiar', false], ['cuidador_profesional', false]];
     }
 
     public function test_api_route_without_an_explicit_policy_is_denied_even_for_admin(): void
@@ -123,7 +123,7 @@ class ResourcePolicyAccessTest extends TestCase
         $this->incident($adult);
         Sanctum::actingAs($family);
 
-        $this->getJson("/api/family/older-adults/{$adult->id}")->assertForbidden();
+        $this->getJson("/api/family/older-adults/{$adult->id}")->assertNotFound();
         $this->getJson('/api/family/older-adults')->assertOk()->assertJsonCount(0, 'older_adults');
         $this->getJson('/api/incidents')->assertOk()->assertJsonCount(0, 'incidents');
 
@@ -160,16 +160,16 @@ class ResourcePolicyAccessTest extends TestCase
         $this->getJson("/api/professional/routine-notes/{$note->id}")->assertOk();
 
         $adult->update(['professional_caregiver_id' => $this->professional()->id]);
-        $this->getJson("/api/professional/older-adults/{$adult->id}")->assertForbidden();
-        $this->getJson("/api/professional/routine-notes/{$note->id}")->assertForbidden();
-        $this->putJson("/api/professional/routine-notes/{$note->id}", ['content' => 'Cambio indebido'])->assertForbidden();
-        $this->deleteJson("/api/professional/routine-notes/{$note->id}")->assertForbidden();
-        $this->deleteJson("/api/rutinas/{$routine->id}")->assertForbidden();
+        $this->getJson("/api/professional/older-adults/{$adult->id}")->assertNotFound();
+        $this->getJson("/api/professional/routine-notes/{$note->id}")->assertNotFound();
+        $this->putJson("/api/professional/routine-notes/{$note->id}", ['content' => 'Cambio indebido'])->assertNotFound();
+        $this->deleteJson("/api/professional/routine-notes/{$note->id}")->assertNotFound();
+        $this->deleteJson("/api/rutinas/{$routine->id}")->assertNotFound();
         $this->postJson('/api/rutinas', [
             'older_adult_id' => $adult->id, 'nombre' => 'Indebida', 'horario' => '10:00', 'actividades' => ['Caminar'],
-        ])->assertForbidden();
-        $this->patchJson("/api/professional/incidents/{$incident->id}", ['description' => 'Cambio indebido'])->assertForbidden();
-        $this->postJson("/api/medications/{$assignment->id}/taken", [])->assertForbidden();
+        ])->assertNotFound();
+        $this->patchJson("/api/professional/incidents/{$incident->id}", ['description' => 'Cambio indebido'])->assertNotFound();
+        $this->postJson("/api/medications/{$assignment->id}/taken", [])->assertNotFound();
         $this->getJson('/api/incidents')->assertOk()->assertJsonCount(0, 'incidents');
         $this->assertDatabaseHas('routine_notes', ['id' => $note->id, 'content' => 'Nota original']);
         $this->assertDatabaseHas('rutinas', ['id' => $routine->id]);
@@ -181,7 +181,7 @@ class ResourcePolicyAccessTest extends TestCase
     {
         $owner = $this->professional();
         $other = $this->professional();
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'admin', 'is_approved' => true]);
         $schedule = CaregiverSchedule::create(['user_id' => $owner->id, 'day_of_week' => 1, 'start_time' => '08:00', 'end_time' => '16:00']);
         $vacation = VacationRequest::create([
             'user_id' => $owner->id, 'start_date' => '2026-11-01', 'end_date' => '2026-11-02', 'reason' => 'Descanso', 'status' => 'pending',
