@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
+use App\Support\ListPage;
 
 class MedicationInventoryRequest extends StrictFormRequest
 {
@@ -14,7 +15,11 @@ class MedicationInventoryRequest extends StrictFormRequest
     public function rules(): array
     {
         return match ($this->route()?->getActionMethod()) {
-            'index' => ['older_adult_id' => ['nullable', 'integer', 'min:1', Rule::exists('older_adults', 'id')]],
+            'index' => [
+                ...ListPage::rules(),
+                'scope' => ['sometimes', 'in:general,unassigned', 'prohibits:older_adult_id'],
+                'older_adult_id' => ['nullable', 'integer', 'min:1', Rule::exists('older_adults', 'id')],
+            ],
             'adjustStock' => ['action' => ['required', 'in:increase,decrease'], 'amount' => ['required', 'integer', 'min:1', 'max:4294967295']],
             'store', 'update' => [
                 'older_adult_id' => ['nullable', 'integer', 'min:1', Rule::exists('older_adults', 'id')],

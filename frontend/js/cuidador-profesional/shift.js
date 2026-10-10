@@ -100,27 +100,29 @@
     `
   }
 
-  async function loadSchedules() {
+  async function loadSchedules(page = 1) {
     const list = document.getElementById("professionalSchedulesList")
     if (!list) return
 
     try {
-      const data = await api.fetchJson("/professional/schedules")
+      const data = await api.fetchJson(window.CuidadoUi.pagePath("/professional/schedules", page))
       list.replaceChildren(...(data.schedules?.length ? data.schedules.map(renderSchedule) : [window.CuidadoUi.element("div", "empty-state", "No tienes turnos asignados por ahora.")]))
+      window.CuidadoUi.pagination(list, data.pagination, loadSchedules)
     } catch (error) {
       list.innerHTML = api.renderEmpty(error.message)
     }
   }
 
-  async function loadVacationRequests() {
+  async function loadVacationRequests(page = 1) {
     const list = document.getElementById("vacationRequestsList")
     if (!list) return
 
     try {
-      const data = await api.fetchJson("/professional/vacation-requests")
+      const data = await api.fetchJson(window.CuidadoUi.pagePath("/professional/vacation-requests", page))
       list.innerHTML = data.vacation_requests?.length
         ? data.vacation_requests.map(renderVacationRequest).join("")
         : api.renderEmpty("No has enviado solicitudes de vacaciones.")
+      window.CuidadoUi.pagination(list, data.pagination, loadVacationRequests)
     } catch (error) {
       list.innerHTML = api.renderEmpty(error.message)
     }

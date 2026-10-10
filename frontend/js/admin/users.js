@@ -2,6 +2,8 @@ const userSearchInput = document.getElementById("userSearchInput")
 const usersTableBody = document.getElementById("usersTableBody")
 
 let usersData = []
+let usersPage = 1
+let usersLoadSequence = 0
 
 async function showPopup(message, options = {}) {
   if (window.showAdminAlert) {
@@ -28,16 +30,21 @@ function getStatusClass(status) {
 }
 
 
-async function loadUsers() {
+async function loadUsers(page = usersPage) {
+  const sequence = ++usersLoadSequence
   try {
-    const data = await window.CuidadoApi.fetchJson("/admin/users", {
+    const data = await window.CuidadoApi.fetchJson(window.CuidadoUi.pagePath("/admin/users", page, { q: userSearchInput?.value.trim() || "" }), {
       expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los usuarios.",
     })
 
+    if (sequence !== usersLoadSequence) return
+    usersPage = page
     usersData = data.users || []
     renderUsers(usersData)
+    window.CuidadoUi.pagination(usersTableBody, data.pagination, loadUsers)
   } catch (error) {
+    if (sequence !== usersLoadSequence) return
     usersTableBody.replaceChildren(window.CuidadoUi.element("div", "empty-state", error.message))
   }
 }
@@ -115,7 +122,12 @@ function filterUsers() {
 }
 
 if (userSearchInput) {
-  userSearchInput.addEventListener("input", filterUsers)
+  let timer
+  userSearchInput.addEventListener("input", () => {
+    usersLoadSequence++
+    clearTimeout(timer)
+    timer = setTimeout(() => loadUsers(1), 400)
+  })
 }
 
 loadUsers()

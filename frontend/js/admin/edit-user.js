@@ -23,6 +23,8 @@ const deleteModal = document.getElementById("deleteModal")
 
 const params = new URLSearchParams(window.location.search)
 const userId = params.get("id")
+let originalUser = null
+let savingUser = false
 
 function navigateTo(url) {
   if (window.navigateWithLoading) {
@@ -71,6 +73,7 @@ async function loadUser() {
       fallbackError: "No se pudo completar la solicitud.",
     })
 
+    originalUser = data.user
     fillForm(data.user)
   } catch (error) {
     await showPopup(error.message, { variant: "error" })
@@ -85,6 +88,7 @@ async function loadUser() {
 }
 
 async function saveUser() {
+  if (savingUser || !originalUser) return
   const payload = userForm.readPayload({ includeApproval: true })
 
   if (window.CuidadoForms.findMissing(payload, ["name", "email", "role"]).length) {
@@ -92,9 +96,20 @@ async function saveUser() {
     return
   }
 
+  savingUser = true
   setFormDisabled(true)
 
   try {
+    const originalRole = window.CuidadoUi.getRoleLabel(originalUser.role)
+    const requestedRole = window.CuidadoUi.getRoleLabel(payload.role)
+    if (originalRole !== requestedRole) {
+      const confirmed = window.showAdminConfirm
+        ? await window.showAdminConfirm(`¿Cambiar el rol de ${originalUser.name} de ${originalRole} a ${requestedRole}?`, {
+            title: "Cambiar permisos", confirmText: "Cambiar rol",
+          })
+        : false
+      if (!confirmed) return
+    }
     const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}`, {
       method: "PUT",
       body: JSON.stringify(payload),
@@ -107,6 +122,7 @@ async function saveUser() {
   } catch (error) {
     await showPopup(error.message, { variant: "error" })
   } finally {
+    savingUser = false
     setFormDisabled(false)
 
     if (userType.value === "admin") {

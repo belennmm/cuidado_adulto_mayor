@@ -25,6 +25,7 @@ class OlderAdultEmptyListingTest extends TestCase
             ->assertJsonCount(0, 'older_adults')
             ->assertExactJson([
                 'older_adults' => [],
+                'pagination' => ['current_page' => 1, 'per_page' => 25, 'total' => 0, 'last_page' => 1],
             ]);
     }
 }

@@ -13,6 +13,9 @@
   }
 
   const state = {
+    inventoryPage: 1,
+    inventoryLoadSequence: 0,
+    statisticsLoadSequence: 0,
     activeFilter: "day",
     rankingMode: "top3",
     selectedMedicineId: null,
@@ -71,22 +74,62 @@
   } = window.MedicationStatsDialogs.create({ state })
 
   async function loadFilterItems() {
+    const inventorySequence = ++state.inventoryLoadSequence
+    const statisticsSequence = ++state.statisticsLoadSequence
     const [statisticsResult, inventoryResult, adultsResult] = await Promise.allSettled([
       service.loadStatistics(state.activeFilter),
-      service.loadInventory(),
+      service.loadInventory(state.selectedOlderAdultId, state.inventoryPage),
       service.loadOlderAdults(),
     ])
 
     if (adultsResult.status === "fulfilled") {
       state.olderAdults = adultsResult.value.older_adults || []
       renderOlderAdultOptions()
+      for (const id of ["inventoryOlderAdultFilter", "medicationOlderAdult"]) {
+        window.CuidadoUi.pagedSelect(id, "/admin/older-adults", "older_adults", adultsResult.value,
+          { expectedRoles: ["admin"] }, (rows) => { state.olderAdults = rows })
+      }
     }
-    if (inventoryResult.status === "fulfilled") {
+    if (inventoryResult.status === "fulfilled" && inventorySequence === state.inventoryLoadSequence) {
       state.inventory = inventoryResult.value.inventory || []
       renderInventory()
+      window.CuidadoUi.pagination("inventoryList", inventoryResult.value.pagination, loadInventoryPage)
     }
+    if (statisticsSequence !== state.statisticsLoadSequence) return false
     if (statisticsResult.status === "rejected") throw statisticsResult.reason
     state.items = Array.isArray(statisticsResult.value.items) ? statisticsResult.value.items : []
+    state.leader = statisticsResult.value.leader || state.items[0]
+    state.statisticsPagination = statisticsResult.value.pagination
+    return true
+  }
+
+  async function loadRankingPage(page) {
+    const sequence = ++state.statisticsLoadSequence
+    const data = await service.loadStatistics(state.activeFilter, page)
+    if (sequence !== state.statisticsLoadSequence) return
+    state.items = data.items || []
+    state.statisticsPagination = data.pagination
+    state.leader = data.leader || state.leader
+    state.selectedMedicineId = state.items[0]?.id || null
+    const selected = getSelectedMedicine()
+    if (selected) { renderChart(selected); renderSummary(selected) }
+    renderRanking(state.selectedMedicineId)
+    window.CuidadoUi.pagination("medicinesRankingList", state.rankingMode === "all" ? data.pagination : null, loadRankingPage)
+  }
+
+  async function loadInventoryPage(page = 1) {
+    const sequence = ++state.inventoryLoadSequence
+    try {
+      const data = await service.loadInventory(state.selectedOlderAdultId, page)
+      if (sequence !== state.inventoryLoadSequence) return
+      state.inventoryPage = page
+      state.inventory = data.inventory || []
+      renderInventory()
+      window.CuidadoUi.pagination("inventoryList", data.pagination, loadInventoryPage)
+    } catch (error) {
+      if (sequence !== state.inventoryLoadSequence) return
+      showInventoryFeedback(error.message, "error")
+    }
   }
 
   function renderOlderAdultOptions() {
@@ -100,8 +143,12 @@
     }
     const adultOptions = () => state.olderAdults.map((adult) => option(adult.id, adult.full_name))
     if (filter) {
+      const previousSelected = [...filter.options].find((item) => item.value === currentFilter)?.cloneNode(true)
       filter.replaceChildren(option("", "Inventario general"), option("unassigned", "Stock sin asignar"), ...adultOptions())
-      filter.value = currentFilter === "unassigned" || state.olderAdults.some((adult) => String(adult.id) === String(currentFilter)) ? currentFilter : ""
+      if (currentFilter && ![...filter.options].some((item) => item.value === currentFilter)) {
+        filter.append(previousSelected || option(currentFilter, `Adulto #${currentFilter}`))
+      }
+      filter.value = currentFilter
       updateOlderAdultSelection(filter.value)
     }
     if (formSelect) formSelect.replaceChildren(option("", "Stock sin asignar"), ...adultOptions())
@@ -119,7 +166,7 @@
     }
 
     try {
-      await loadFilterItems()
+      if (!(await loadFilterItems())) return
 
       if (!state.items.length) {
         state.selectedMedicineId = null
@@ -139,6 +186,7 @@
       renderSummary(selectedMedicine)
       renderChart(selectedMedicine)
       renderRanking(selectedMedicine.id)
+      window.CuidadoUi.pagination("medicinesRankingList", state.rankingMode === "all" ? state.statisticsPagination : null, loadRankingPage)
     } catch (error) {
       console.error(error)
       state.items = []
@@ -260,13 +308,18 @@
       await renderStats()
     })
 
-    document.getElementById("rankingModeGroup")?.addEventListener("click", (event) => {
+    document.getElementById("rankingModeGroup")?.addEventListener("click", async (event) => {
       const button = event.target.closest(".stats-filter-button[data-ranking-mode]")
       if (!button || button.dataset.rankingMode === state.rankingMode) return
 
       state.rankingMode = button.dataset.rankingMode
+      if (state.rankingMode === "top3" && state.statisticsPagination?.current_page > 1) {
+        try { await loadRankingPage(1) }
+        catch (error) { showInventoryFeedback(error.message, "error"); return }
+      }
       const selectedMedicine = getSelectedMedicine()
       if (selectedMedicine) renderRanking(selectedMedicine.id)
+      window.CuidadoUi.pagination("medicinesRankingList", state.rankingMode === "all" ? state.statisticsPagination : null, loadRankingPage)
     })
 
     document.getElementById("medicinesRankingList")?.addEventListener("click", (event) => {
@@ -288,7 +341,8 @@
 
     document.getElementById("inventoryOlderAdultFilter")?.addEventListener("change", (event) => {
       updateOlderAdultSelection(event.target.value)
-      renderInventory()
+      state.selectedOlderAdultId = event.target.value
+      loadInventoryPage(1)
     })
 
     document.getElementById("inventoryList")?.addEventListener("click", async (event) => {

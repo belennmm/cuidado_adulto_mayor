@@ -14,7 +14,7 @@ describe("MedicationStatsService", () => {
     await window.MedicationStatsService.loadOlderAdults()
     expect(fetchJson.mock.calls.map(([path]) => path)).toEqual([
       "/admin/medication-statistics?filter=month",
-      "/admin/medications/inventory",
+      "/admin/medications/inventory?scope=general",
       "/admin/older-adults",
     ])
   })

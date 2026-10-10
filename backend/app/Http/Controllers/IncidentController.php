@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DateFilterRequest;
-use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\ListRequest;
+use App\Support\ListPage;
 use App\Http\Resources\IncidentResource;
 use App\Models\Incident;
 use App\Services\IncidentListingService;
@@ -22,20 +23,18 @@ class IncidentController extends Controller
         return $this->incidentsResponse($request, $date);
     }
 
-    public function today(EmptyInputRequest $request): JsonResponse
+    public function today(ListRequest $request): JsonResponse
     {
         return $this->incidentsResponse($request, $this->date());
     }
 
     private function incidentsResponse(Request $request, string $date): JsonResponse
     {
-        $incidents = $this->incidentListing->forDate($request->user(), $date);
+        $incidents = $this->incidentListing->forDate($request->user(), $date, $request->validated());
 
         return response()->json([
             'date' => $date,
-            'incidents' => $incidents
-                ->map(fn (Incident $incident) => IncidentResource::make($incident)->toArray($request))
-                ->values(),
+            ...ListPage::payload($incidents, 'incidents', fn (Incident $incident) => IncidentResource::make($incident)->toArray($request)),
         ]);
     }
 

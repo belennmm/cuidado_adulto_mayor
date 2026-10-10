@@ -21,12 +21,13 @@
       return Boolean(api.getToken(INCIDENT_ROLES))
     }
 
-    async function loadOlderAdults() {
+    async function loadOlderAdults(onLoaded = () => {}) {
       const endpoint = isAdminContext() ? "/admin/older-adults" : "/professional/older-adults"
       const data = await api.fetchJson(endpoint, {
         expectedRoles: getContextRoles(),
         fallbackError: "No se pudieron cargar los adultos mayores.",
       })
+      onLoaded(data)
       return Array.isArray(data.older_adults) ? data.older_adults : []
     }
 
@@ -40,9 +41,10 @@
       })
     }
 
-    function loadIncidents(date = "") {
+    function loadIncidents(date = "", page = 1) {
       const params = new URLSearchParams()
       if (date) params.set("date", date)
+      if (page > 1) params.set("page", String(page))
       const query = params.toString()
       return api.fetchJson(`/incidents${query ? `?${query}` : ""}`, {
         expectedRoles: INCIDENT_ROLES,

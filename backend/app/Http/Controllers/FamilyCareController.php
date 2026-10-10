@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CareFilterRequest;
 use App\Http\Requests\DateFilterRequest;
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\ListRequest;
+use App\Support\ListPage;
 use App\Models\OlderAdult;
 use App\Services\CareDataService;
 use App\Services\CaregiverAccessService;
@@ -48,20 +50,24 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function olderAdults(EmptyInputRequest $request): JsonResponse
+    public function olderAdults(ListRequest $request): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();
-        $olderAdults = $this->assignedAdults($request);
+        $query = $this->caregiverAccess->assignedOlderAdults($request->user(), CaregiverAccessService::FAMILY);
+        if ($search = $request->validated('q')) {
+            $query->whereRaw('LOWER(full_name) LIKE ?', ['%'.mb_strtolower($search).'%']);
+        }
+        $page = ListPage::query($query->orderBy('id'), $request->validated());
+        $olderAdults = $page->getCollection();
         $administeredMap = $this->careData->administeredMedicationMap(
             $this->careData->medicationAssignmentIds($olderAdults), $today,
         );
 
         return response()->json([
             'date' => $today->toDateString(),
-            'older_adults' => $olderAdults
-                ->map(fn (OlderAdult $adult) => $this->careData
-                    ->formatOlderAdultDetail($adult, $today, $administeredMap, true))->values(),
+            ...ListPage::payload($page, 'older_adults', fn (OlderAdult $adult) => $this->careData
+                ->formatOlderAdultDetail($adult, $today, $administeredMap, true)),
         ]);
     }
 
@@ -76,15 +82,15 @@ class FamilyCareController extends Controller
         $administeredMap = $this->careData->administeredMedicationMap(
             $this->careData->medicationAssignmentIds($olderAdults), $today,
         );
-        $incidents = $this->caregiverAccess->incidentsFor($olderAdults, null, true);
+        $incidents = $this->caregiverAccess->incidentsFor($olderAdults, null, true, []);
 
         return response()->json([
             'date' => $today->toDateString(),
             'older_adult' => [
                 ...$this->careData->formatOlderAdultDetail($assignedAdult, $today, $administeredMap, true),
-                'incidents_count' => $incidents->count(),
+                'incidents_count' => $incidents->total(),
                 'last_incident' => $incidents->first(),
-                'incidents' => $incidents,
+                ...ListPage::payload($incidents, 'incidents'),
             ],
         ]);
     }
@@ -105,9 +111,9 @@ class FamilyCareController extends Controller
                 'administered_today' => $todayRoutine->where('administered_today', true)->count(),
                 'pending_today' => $todayRoutine->where('administered_today', false)->count(),
             ],
-            'routine' => $routine->sortBy([
+            ...ListPage::payload(ListPage::collection($routine->sortBy([
                 ['due_today', 'desc'], ['sort_order', 'asc'], ['older_adult_name', 'asc'],
-            ])->values()->map(fn (array $entry) => $this->careData->withoutSortOrder($entry)),
+            ])->values(), $request->validated()), 'routine', fn (array $entry) => $this->careData->withoutSortOrder($entry)),
         ]);
     }
 
@@ -119,14 +125,16 @@ class FamilyCareController extends Controller
             ? Carbon::createFromFormat('Y-m-d', $data['date'], config('app.timezone'))->startOfDay()
             : $this->careData->today();
         $olderAdults = $this->filteredAdults($request, $data['older_adult_id'] ?? null);
-        $incidents = $this->caregiverAccess->incidentsFor($olderAdults, $date, true);
+        $incidents = $this->caregiverAccess->incidentsFor($olderAdults, $date, true, $data);
+        $adultList = ListPage::payload(ListPage::collection($olderAdults, $data), 'older_adults',
+            fn (OlderAdult $adult) => $this->careData->formatOlderAdultSummary($adult));
 
         return response()->json([
             'date' => $date->toDateString(),
-            'summary' => $this->caregiverAccess->incidentSummary($incidents),
-            'older_adults' => $olderAdults
-                ->map(fn (OlderAdult $adult) => $this->careData->formatOlderAdultSummary($adult))->values(),
-            'incidents' => $incidents,
+            'summary' => $this->caregiverAccess->incidentCounts($olderAdults, $date),
+            'older_adults' => $adultList['older_adults'],
+            'older_adults_pagination' => $adultList['pagination'],
+            ...ListPage::payload($incidents, 'incidents'),
         ]);
     }
 
@@ -140,14 +148,14 @@ class FamilyCareController extends Controller
         $assignedAdult = $this->caregiverAccess->assignedOlderAdultOrFail(
             $request->user(), CaregiverAccessService::FAMILY, $olderAdult->id,
         );
-        $incidents = $this->caregiverAccess->incidentsFor(collect([$assignedAdult]), $date, true);
+        $incidents = $this->caregiverAccess->incidentsFor(collect([$assignedAdult]), $date, true, $request->validated());
 
         return response()->json([
             'date' => $date?->toDateString(),
             'filters' => ['older_adult_id' => $assignedAdult->id, 'date' => $date?->toDateString()],
-            'summary' => $this->caregiverAccess->incidentSummary($incidents),
+            'summary' => $this->caregiverAccess->incidentCounts(collect([$assignedAdult]), $date),
             'older_adult' => $this->careData->formatOlderAdultSummary($assignedAdult),
-            'incidents' => $incidents,
+            ...ListPage::payload($incidents, 'incidents'),
         ]);
     }
 

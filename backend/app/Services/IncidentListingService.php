@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Enums\UserRole;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
@@ -11,7 +13,7 @@ use Illuminate\Support\Collection;
 
 class IncidentListingService
 {
-    public function forDate(User $user, string $date): Collection
+    public function forDate(User $user, string $date, ?array $input = null): Collection|LengthAwarePaginator
     {
         $query = Incident::query()->with([
             'reporter:id,name,email',
@@ -21,12 +23,13 @@ class IncidentListingService
 
         $this->scopeForUser($query, $user);
 
-        return $query
+        $query
             ->whereDate('incident_date', $date)
             ->orderByRaw('incident_time IS NULL')
             ->orderBy('incident_time')
-            ->orderByDesc('created_at')
-            ->get();
+            ->orderByDesc('created_at')->orderByDesc('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     private function scopeForUser(Builder $query, User $user): void

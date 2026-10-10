@@ -2,17 +2,22 @@
   const api = () => window.ProfessionalCare
   const encodeId = (value) => encodeURIComponent(value)
 
-  async function loadAdults() {
+  async function loadAdults(onLoaded = () => {}) {
     const data = await api().fetchJson("/professional/older-adults")
+    onLoaded(data)
     return data.older_adults || []
   }
 
   function loadDashboard(olderAdultId) {
     return Promise.all([
-      api().fetchJson(`/professional/routines?older_adult_id=${encodeId(olderAdultId)}`),
-      api().fetchJson(`/professional/routine-notes?older_adult_id=${encodeId(olderAdultId)}`),
-      api().fetchJson(`/rutinas?older_adult_id=${encodeId(olderAdultId)}`),
-    ])
+      ["/professional/routines", "routine"],
+      ["/professional/routine-notes", "notes"],
+      ["/rutinas", "rutinas"],
+    ].map(async ([endpoint, key]) => {
+      const path = `${endpoint}?older_adult_id=${encodeId(olderAdultId)}`
+      const data = await api().fetchJson(path)
+      return window.CuidadoUi.allPages(path, key, data, (url) => api().fetchJson(url))
+    }))
   }
 
   function saveRoutine({ id, olderAdultId, nombre, horario, actividades }) {

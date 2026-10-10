@@ -62,18 +62,22 @@ async function loadCaregivers() {
   const data = await window.CuidadoApi.fetchJson("/admin/professional-caregivers", ADMIN_REQUEST_OPTIONS)
   state.caregivers = data.users || []
   renderCaregiverOptions()
+  window.CuidadoUi.pagedSelect(caregiverSelect, "/admin/professional-caregivers", "users", data, ADMIN_REQUEST_OPTIONS,
+    (rows) => { state.caregivers = rows })
 }
 
-async function loadSchedules() {
-  const data = await window.CuidadoApi.fetchJson("/admin/schedules", ADMIN_REQUEST_OPTIONS)
+async function loadSchedules(page = 1) {
+  const data = await window.CuidadoApi.fetchJson(window.CuidadoUi.pagePath("/admin/schedules", page), ADMIN_REQUEST_OPTIONS)
   state.schedules = data.schedules || []
   renderSchedules()
+  window.CuidadoUi.pagination(shiftsTableBody, data.pagination, loadSchedules)
 }
 
-async function loadVacations() {
-  const data = await window.CuidadoApi.fetchJson("/admin/vacation-requests", ADMIN_REQUEST_OPTIONS)
+async function loadVacations(page = 1) {
+  const data = await window.CuidadoApi.fetchJson(window.CuidadoUi.pagePath("/admin/vacation-requests", page), ADMIN_REQUEST_OPTIONS)
   state.vacations = data.vacation_requests || []
   renderVacations()
+  window.CuidadoUi.pagination(vacationsTableBody, data.pagination, loadVacations)
 }
 
 const { renderCaregiverOptions, renderVacations, renderSchedules, renderChangeRequest } = window.AdminShiftsView.create({ state, caregiverSelect, shiftsTableBody, vacationsTableBody, DAY_LABELS, formatDate, formatTimeRange, statusLabel, normalizeTime, deleteSchedule, resolveChangeRequest, resolveVacationRequest })

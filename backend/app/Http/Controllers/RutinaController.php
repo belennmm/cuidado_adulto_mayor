@@ -9,6 +9,7 @@ use App\Http\Requests\StoreRoutineRequest;
 use App\Http\Requests\UpdateRoutineRequest;
 use App\Http\Resources\RoutineResource;
 use App\Models\Rutina;
+use App\Support\ListPage;
 use App\Services\RoutineService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
@@ -31,13 +32,10 @@ class RutinaController extends Controller
         $routines = $this->routineService->listFor(
             $request->user(),
             $olderAdultId !== null && $olderAdultId !== '' ? (int) $olderAdultId : null,
+            $data,
         );
 
-        return response()->json([
-            'rutinas' => $routines
-                ->map(fn (Rutina $routine) => RoutineResource::make($routine)->toArray($request))
-                ->values(),
-        ]);
+        return response()->json(ListPage::payload($routines, 'rutinas', fn (Rutina $routine) => RoutineResource::make($routine)->toArray($request)));
     }
 
     public function store(StoreRoutineRequest $request): JsonResponse

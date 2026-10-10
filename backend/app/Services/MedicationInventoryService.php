@@ -5,20 +5,68 @@ namespace App\Services;
 use App\Models\Medication;
 use App\Models\MedicationAcquisition;
 use App\Models\OlderAdultMedication;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class MedicationInventoryService
 {
-    public function inventory(?int $olderAdultId = null): Collection
+    public function inventory(?int $olderAdultId = null, ?array $input = null): Collection|LengthAwarePaginator
     {
-        return OlderAdultMedication::query()
+        $query = OlderAdultMedication::query()
             ->with(['medication', 'olderAdult'])
             ->withCount('administrations')
             ->when($olderAdultId, fn ($query) => $query->where('older_adult_id', $olderAdultId))
             ->orderBy('older_adult_id')
-            ->orderBy('medication_id')
-            ->get();
+            ->orderBy('medication_id')->orderBy('id');
+        if (($input['scope'] ?? null) === 'unassigned') {
+            $query->whereNull('older_adult_id');
+        }
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
+    }
+
+    public function consolidatedInventory(array $input): LengthAwarePaginator
+    {
+        $today = now(config('app.timezone'))->toDateString();
+        $soon = now(config('app.timezone'))->addDays(30)->toDateString();
+        $query = OlderAdultMedication::query()
+            ->select('medication_id', 'unit')
+            ->selectRaw('SUM(quantity) AS quantity, SUM(minimum_stock) AS minimum_stock')
+            ->selectRaw('MIN(presentation) AS presentation')
+            ->selectRaw('SUM(CASE WHEN older_adult_id IS NULL THEN quantity ELSE 0 END) AS unassigned_quantity')
+            ->selectRaw('SUM(CASE WHEN older_adult_id IS NOT NULL THEN quantity ELSE 0 END) AS assigned_quantity')
+            ->selectRaw('MIN(CASE WHEN older_adult_id IS NULL THEN id ELSE NULL END) AS unassigned_inventory_id')
+            ->selectRaw('MIN(expiration_date) AS first_expiration, MAX(expiration_date) AS last_expiration, COUNT(*) - COUNT(expiration_date) AS undated_count')
+            ->selectRaw("MIN(CASE WHEN expiration_date < ? THEN 'expired' WHEN expiration_date <= ? THEN 'expiring_soon' WHEN quantity <= minimum_stock THEN 'low_stock' ELSE 'available' END) AS first_status", [$today, $soon])
+            ->selectRaw("MAX(CASE WHEN expiration_date < ? THEN 'expired' WHEN expiration_date <= ? THEN 'expiring_soon' WHEN quantity <= minimum_stock THEN 'low_stock' ELSE 'available' END) AS last_status", [$today, $soon])
+            ->with('medication:id,name')
+            ->groupBy('medication_id', 'unit')->orderBy('medication_id')->orderBy('unit');
+        $page = ListPage::query($query, $input);
+        $labels = ['expired' => 'Vencido', 'expiring_soon' => 'Próximo a vencer', 'low_stock' => 'Bajo stock', 'available' => 'Disponible', 'mixed' => 'Estados variados'];
+        $page->setCollection($page->getCollection()->map(function ($item) use ($labels) {
+            $status = $item->first_status === $item->last_status ? $item->first_status : 'mixed';
+            $expiration = $item->first_expiration !== $item->last_expiration
+                ? 'Vencimientos variados'
+                : ($item->first_expiration
+                    ? ((int) $item->undated_count > 0 ? 'Algunos sin fecha · ' : '').$item->first_expiration
+                    : 'Sin fecha registrada');
+
+            return [
+                'id' => 'aggregate-'.$item->medication_id.':'.$item->unit,
+                'medication_id' => $item->medication_id, 'name' => $item->medication?->name,
+                'presentation' => $item->presentation,
+                'unit' => $item->unit, 'is_consolidated' => true,
+                'quantity' => (int) $item->quantity, 'minimum_stock' => (int) $item->minimum_stock,
+                'assigned_quantity' => (int) $item->assigned_quantity,
+                'unassigned_quantity' => (int) $item->unassigned_quantity,
+                'unassigned_inventory_id' => $item->unassigned_inventory_id === null ? null : (int) $item->unassigned_inventory_id,
+                'status' => $status, 'status_label' => $labels[$status], 'expiration_summary' => $expiration,
+            ];
+        }));
+
+        return $page;
     }
 
     public function create(array $data): OlderAdultMedication

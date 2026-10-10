@@ -23,6 +23,7 @@ use App\Policies\RutinaPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\VacationRequestPolicy;
 use App\Support\RuntimeDatabaseAccount;
+use App\Support\ResourceAccess;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -55,11 +56,38 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(VacationRequest::class, VacationRequestPolicy::class);
 
         RateLimiter::for('login', fn (Request $request) => [
-            Limit::perMinute(5)->by(strtolower((string) $request->input('email')).'|'.$request->ip()),
+            // The service separately limits failed attempts for each email/IP pair.
+            Limit::perMinute(config('abuse.login_per_minute'))->by($request->ip()),
         ]);
         RateLimiter::for('registration', fn (Request $request) => [
             Limit::perHour(10)->by($request->ip()),
         ]);
+        RateLimiter::for('sensitive-api', function (Request $request) {
+            if ($request->route()?->getActionMethod() === 'logout') {
+                return Limit::none();
+            }
+
+            $account = (string) $request->user()->id;
+            if (in_array($request->method(), ['GET', 'HEAD'], true)) {
+                return Limit::perMinute(config('abuse.reads_per_minute'))->by('read:'.$account);
+            }
+
+            $limits = [
+                Limit::perMinute(config('abuse.writes_per_minute'))->by('write:'.$account),
+                Limit::perHour(config('abuse.writes_per_hour'))->by('write-hour:'.$account),
+            ];
+            $uri = $request->route()?->uri() ?? '';
+            $administrative = str_starts_with($uri, 'api/admin/');
+            $critical = $administrative
+                ? ResourceAccess::admin($request->user()) && ($request->method() === 'DELETE'
+                    || str_starts_with($uri, 'api/admin/users') || $request->route()?->getActionMethod() === 'adjustStock')
+                : $request->method() === 'DELETE' && (ResourceAccess::admin($request->user()) || ResourceAccess::caregiver($request->user()));
+            if ($critical) {
+                $limits[] = Limit::perMinute(config('abuse.critical_per_minute'))->by('critical:'.$account);
+            }
+
+            return $limits;
+        });
     }
 
     private function validateProductionConfiguration(): void

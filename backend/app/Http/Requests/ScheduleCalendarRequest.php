@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Carbon;
+use App\Support\ListPage;
 
 class ScheduleCalendarRequest extends StrictFormRequest
 {
@@ -12,8 +13,8 @@ class ScheduleCalendarRequest extends StrictFormRequest
         parent::withValidator($validator);
         $validator->after(function (Validator $validator) {
             if (! $validator->errors()->has('start_date') && ! $validator->errors()->has('end_date')
-                && Carbon::parse($this->input('start_date'))->diffInDays(Carbon::parse($this->input('end_date'))) > 366) {
-                $validator->errors()->add('end_date', 'El calendario permite consultar hasta 366 dias por solicitud.');
+                && Carbon::parse($this->input('start_date'))->diffInDays(Carbon::parse($this->input('end_date'))) > 41) {
+                $validator->errors()->add('end_date', 'El calendario permite consultar hasta 42 dias por solicitud.');
             }
         });
     }
@@ -26,6 +27,8 @@ class ScheduleCalendarRequest extends StrictFormRequest
     public function rules(): array
     {
         return [
+            ...ListPage::rules(),
+            'events_page' => ['sometimes', 'integer', 'min:1', 'max:10000'],
             'start_date' => ['required', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:start_date'],
         ];

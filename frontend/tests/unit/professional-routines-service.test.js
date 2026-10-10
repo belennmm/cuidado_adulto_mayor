@@ -6,6 +6,7 @@ describe("ProfessionalRoutinesService", () => {
   beforeEach(async () => {
     fetchJson = vi.fn().mockResolvedValue({})
     window.ProfessionalCare = { fetchJson }
+    await import("../../js/ui-utils.js")
     await import("../../js/cuidador-profesional/routines-service.js")
   })
 

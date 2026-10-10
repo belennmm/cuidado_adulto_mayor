@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\ListRequest;
+use App\Support\ListPage;
 use App\Http\Requests\VacationStoreRequest;
 use App\Http\Resources\VacationRequestResource;
 use App\Models\VacationRequest;
@@ -14,10 +16,10 @@ class VacationRequestController extends Controller
 {
     public function __construct(private readonly VacationRequestService $vacationService) {}
 
-    public function index(EmptyInputRequest $request): JsonResponse
+    public function index(ListRequest $request): JsonResponse
     {
         return $this->collectionResponse(
-            $this->vacationService->forProfessional($request->user()),
+            $this->vacationService->forProfessional($request->user(), $request->validated()),
             $request,
         );
     }
@@ -33,9 +35,9 @@ class VacationRequestController extends Controller
         );
     }
 
-    public function adminIndex(EmptyInputRequest $request): JsonResponse
+    public function adminIndex(ListRequest $request): JsonResponse
     {
-        return $this->collectionResponse($this->vacationService->allForAdmin(), $request);
+        return $this->collectionResponse($this->vacationService->allForAdmin($request->validated()), $request);
     }
 
     public function approve(EmptyInputRequest $request, VacationRequest $vacationRequest): JsonResponse
@@ -62,11 +64,7 @@ class VacationRequestController extends Controller
 
     private function collectionResponse($vacationRequests, Request $request): JsonResponse
     {
-        return response()->json([
-            'vacation_requests' => $vacationRequests
-                ->map(fn (VacationRequest $item) => $this->resource($item, $request))
-                ->values(),
-        ]);
+        return response()->json(ListPage::payload($vacationRequests, 'vacation_requests', fn (VacationRequest $item) => $this->resource($item, $request)));
     }
 
     private function requestResponse(

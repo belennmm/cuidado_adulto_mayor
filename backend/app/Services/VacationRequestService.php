@@ -5,20 +5,23 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\User;
 use App\Models\VacationRequest;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 class VacationRequestService
 {
-    public function forProfessional(User $user): Collection
+    public function forProfessional(User $user, ?array $input = null): Collection|LengthAwarePaginator
     {
         $this->authorizeProfessional($user);
 
-        return VacationRequest::query()
+        $query = VacationRequest::query()
             ->where('user_id', $user->id)
-            ->orderByDesc('created_at')
-            ->get();
+            ->orderByDesc('created_at')->orderByDesc('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     public function create(User $user, array $data): VacationRequest
@@ -34,13 +37,14 @@ class VacationRequestService
         ]);
     }
 
-    public function allForAdmin(): Collection
+    public function allForAdmin(?array $input = null): Collection|LengthAwarePaginator
     {
-        return VacationRequest::query()
+        $query = VacationRequest::query()
             ->with(['user:id,name,email,role,is_approved', 'reviewer:id,name,email'])
             ->orderByRaw('CASE WHEN status = ? THEN 0 ELSE 1 END', ['pending'])
-            ->orderByDesc('created_at')
-            ->get();
+            ->orderByDesc('created_at')->orderByDesc('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     public function review(

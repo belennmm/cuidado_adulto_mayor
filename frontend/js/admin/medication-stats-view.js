@@ -43,7 +43,7 @@
         return `
           <button type="button" class="ranking-item${selectedClass}" data-medicine-id="${escapeHtml(item.id)}">
             <div class="ranking-item-main">
-              <span class="ranking-position">${index + 1}</span>
+              <span class="ranking-position">${index + 1 + ((state.statisticsPagination?.current_page || 1) - 1) * (state.statisticsPagination?.per_page || 25)}</span>
               <div class="ranking-text">
                 <strong class="ranking-name">${escapeHtml(item.name)}</strong>
                 <span class="ranking-meta">${escapeHtml(item.rankingNote)}</span>
@@ -79,7 +79,7 @@
   }
 
   function renderSummary(selectedMedicine) {
-    const leader = state.items[0]
+    const leader = state.leader || state.items[0]
     const topMedicineUsage = document.getElementById("topMedicineUsage")
     const topMedicineUsageCaption = document.getElementById("topMedicineUsageCaption")
     const selectedMedicineName = document.getElementById("selectedMedicineName")
@@ -139,7 +139,9 @@
 
     const selectedOlderAdultId = document.getElementById("inventoryOlderAdultFilter")?.value || ""
     let visibleInventory
-    if (!selectedOlderAdultId) {
+    if (state.inventory.some((item) => item.is_consolidated)) {
+      visibleInventory = state.inventory
+    } else if (!selectedOlderAdultId) {
       const groups = new Map()
       state.inventory.forEach((item) => {
         const key = `${item.medication_id}:${item.unit || "unidades"}`
@@ -263,16 +265,16 @@
         ? "Mostrando únicamente el stock sin asignar."
         : selectedAdult
           ? `Mostrando medicamentos de ${selectedAdult.full_name}.`
-          : "Mostrando el inventario general."
+          : selectedOlderAdultId ? "Mostrando medicamentos del adulto seleccionado." : "Mostrando el inventario general."
     }
 
     const url = new URL(window.location.href)
     if (selectedOlderAdultId === "unassigned") {
       url.searchParams.set("inventory_scope", "unassigned")
       url.searchParams.delete("older_adult_id")
-    } else if (selectedAdult) {
+    } else if (selectedOlderAdultId) {
       url.searchParams.delete("inventory_scope")
-      url.searchParams.set("older_adult_id", String(selectedAdult.id))
+      url.searchParams.set("older_adult_id", String(selectedOlderAdultId))
     } else {
       url.searchParams.delete("inventory_scope")
       url.searchParams.delete("older_adult_id")

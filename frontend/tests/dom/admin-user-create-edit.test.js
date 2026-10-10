@@ -18,6 +18,30 @@ function renderUserForm(id) {
 }
 
 describe("creación y edición de usuarios", () => {
+  it.each([false, true])("requiere confirmar un cambio de rol (confirmado: %s)", async (confirmed) => {
+    window.history.replaceState({}, "", "?id=12")
+    renderUserForm("editUserForm")
+    window.navigateWithLoading = vi.fn()
+    window.showAdminAlert = vi.fn().mockResolvedValue()
+    window.showAdminConfirm = vi.fn().mockResolvedValue(confirmed)
+    window.CuidadoApi = {
+      getToken: vi.fn(() => "admin-token"),
+      fetchJson: vi.fn((path, options = {}) => Promise.resolve(options.method === "PUT"
+        ? { message: "Actualizado" }
+        : { user: { id: 12, name: "Luis", email: "luis@example.test", role: "cuidador_profesional", is_approved: true } })),
+    }
+    await import("../../js/ui-utils.js")
+    await import("../../js/form-utils.js")
+    await import("../../js/admin/user-form.js")
+    await import("../../js/admin/edit-user.js")
+    await flushRequests()
+    document.getElementById("userType").value = "cuidador_familiar"
+    document.getElementById("editUserForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
+    await flushRequests()
+    expect(window.showAdminConfirm).toHaveBeenCalledOnce()
+    expect(window.CuidadoApi.fetchJson.mock.calls.filter(([, options]) => options.method === "PUT")).toHaveLength(confirmed ? 1 : 0)
+  })
+
   it("envía un usuario nuevo válido", async () => {
     renderUserForm("newUserForm")
     document.body.insertAdjacentHTML("beforeend", '<div id="requestList"></div>')

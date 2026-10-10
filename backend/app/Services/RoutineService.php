@@ -6,6 +6,8 @@ use App\Models\OlderAdult;
 use App\Models\Rutina;
 use App\Models\User;
 use App\Support\ResourceAccess as Access;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -15,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 
 class RoutineService
 {
-    public function listFor(User $user, ?int $olderAdultId = null): Collection
+    public function listFor(User $user, ?int $olderAdultId = null, ?array $input = null): Collection|LengthAwarePaginator
     {
         Gate::forUser($user)->authorize('viewAny', Rutina::class);
         $query = Rutina::query()->with('olderAdult:id,full_name,room,status');
@@ -27,7 +29,9 @@ class RoutineService
             $this->scopeForUser($query, $user);
         }
 
-        return $query->orderBy('horario')->orderBy('nombre')->get();
+        $query->orderBy('horario')->orderBy('nombre')->orderBy('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     public function findOlderAdult(int $id): OlderAdult

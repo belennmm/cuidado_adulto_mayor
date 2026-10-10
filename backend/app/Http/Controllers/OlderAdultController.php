@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\ListRequest;
+use App\Support\ListPage;
 use App\Http\Requests\OlderAdultRequest;
 use App\Http\Resources\OlderAdultResource;
 use App\Models\OlderAdult;
@@ -22,15 +24,21 @@ class OlderAdultController extends Controller
         ]);
     }
 
-    public function index(EmptyInputRequest $request): JsonResponse
+    public function index(ListRequest $request): JsonResponse
     {
-        $olderAdults = OlderAdult::query()
+        $query = OlderAdult::query()
             ->with(['familyCaregiver', 'professionalCaregiver'])
-            ->orderBy('full_name')
-            ->get()
-            ->map(fn (OlderAdult $olderAdult) => OlderAdultResource::make($olderAdult)->resolve());
+            ->orderBy('full_name')->orderBy('id');
+        $search = $request->validated('q');
+        if ($search !== null && $search !== '') {
+            $query->where(function ($query) use ($search) {
+                $term = '%'.mb_strtolower($search).'%';
+                $query->whereRaw("LOWER(COALESCE(full_name, '')) LIKE ? OR LOWER(COALESCE(caregiver_family, '')) LIKE ? OR LOWER(COALESCE(room, '')) LIKE ? OR LOWER(COALESCE(status, '')) LIKE ? OR COALESCE(CAST(age AS TEXT), '') LIKE ?", [$term, $term, $term, $term, $term]);
+            });
+        }
+        $olderAdults = ListPage::query($query, $request->validated());
 
-        return response()->json(['older_adults' => $olderAdults]);
+        return response()->json(ListPage::payload($olderAdults, 'older_adults', fn (OlderAdult $adult) => OlderAdultResource::make($adult)->resolve()));
     }
 
     public function store(OlderAdultRequest $request): JsonResponse

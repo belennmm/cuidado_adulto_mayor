@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\ListRequest;
+use App\Support\ListPage;
 use App\Http\Requests\SaveCaregiverScheduleRequest;
 use App\Http\Requests\ScheduleCalendarRequest;
 use App\Http\Requests\ScheduleChangeRequest;
@@ -21,11 +23,9 @@ class CaregiverScheduleController extends Controller
         private readonly CaregiverScheduleService $scheduleService,
     ) {}
 
-    public function adminIndex(EmptyInputRequest $request): JsonResponse
+    public function adminIndex(ListRequest $request): JsonResponse
     {
-        return response()->json([
-            'schedules' => CaregiverScheduleResource::collection($this->scheduleService->all())->resolve(),
-        ]);
+        return response()->json(ListPage::payload($this->scheduleService->all($request->validated()), 'schedules', fn ($schedule) => CaregiverScheduleResource::make($schedule)->toArray($request)));
     }
 
     public function calendar(ScheduleCalendarRequest $request): JsonResponse
@@ -35,7 +35,7 @@ class CaregiverScheduleController extends Controller
         $startDate = Carbon::createFromFormat('Y-m-d', $data['start_date'], $timezone)->startOfDay();
         $endDate = Carbon::createFromFormat('Y-m-d', $data['end_date'], $timezone)->startOfDay();
 
-        return response()->json($this->calendarService->build($startDate, $endDate));
+        return response()->json($this->calendarService->build($startDate, $endDate, $data));
     }
 
     public function store(SaveCaregiverScheduleRequest $request): JsonResponse

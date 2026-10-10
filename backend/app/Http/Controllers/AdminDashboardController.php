@@ -25,7 +25,7 @@ class AdminDashboardController extends Controller
         $filter = $request->validated('filter', 'day');
 
         return response()->json(
-            $this->medicationStatisticsService->statistics($filter),
+            $this->medicationStatisticsService->statistics($filter, $request->validated()),
         );
     }
 }

@@ -116,7 +116,107 @@
     return element
   }
 
+  function pagePath(path, page = 1, filters = {}) {
+    const [base, query = ""] = path.split("?")
+    const params = new URLSearchParams(query)
+    if (page > 1) params.set("page", String(page))
+    else params.delete("page")
+    for (const [key, value] of Object.entries(filters)) {
+      if (value === "" || value === null || value === undefined) params.delete(key)
+      else params.set(key, String(value))
+    }
+    return `${base}${params.size ? `?${params}` : ""}`
+  }
+
+  const pagers = new WeakMap()
+  function pagination(target, meta, loadPage) {
+    if (typeof target === "string") target = document.getElementById(target)
+    if (!target) return
+    let nav = pagers.get(target)
+    if (!meta) { nav?.remove(); pagers.delete(target); return }
+    if (!nav?.isConnected) {
+      nav = element("nav", "list-pagination")
+      nav.setAttribute("aria-label", "Páginas del listado")
+      target.after(nav)
+      pagers.set(target, nav)
+    }
+    const status = element("span", "", `Página ${meta.current_page} de ${meta.last_page}`)
+    status.setAttribute("aria-live", "polite")
+    const buttons = [["Anterior", meta.current_page - 1], ["Siguiente", meta.current_page + 1]].map(([label, page]) => {
+      const button = element("button", "secondary-button", label)
+      button.type = "button"
+      button.disabled = page < 1 || page > meta.last_page
+      button.addEventListener("click", async () => {
+        if (button.disabled) return
+        for (const node of nav.querySelectorAll("button")) node.disabled = true
+        let failure
+        try { await loadPage(page) }
+        catch (error) { failure = error.message }
+        finally {
+          if (nav.contains(button)) pagination(target, meta, loadPage)
+          if (failure) nav.append(element("span", "is-error", failure))
+        }
+      })
+      return button
+    })
+    nav.replaceChildren(buttons[0], status, buttons[1])
+  }
+
+  // Full collections are needed for options and routine views, never ordinary lists.
+  async function allPages(path, key, data, fetchPage = (url) => window.CuidadoApi.fetchJson(url)) {
+    const rows = [...(data[key] || [])]
+    const meta = data.pagination
+    for (let page = (meta?.current_page || 1) + 1; page <= (meta?.last_page || 1); page++) {
+      const next = await fetchPage(pagePath(path, page, { per_page: meta.per_page }))
+      rows.push(...(next[key] || []))
+    }
+    return { ...data, [key]: rows }
+  }
+
+  const selectPages = new WeakMap()
+  const optionLoads = new WeakMap()
+  function pagedSelect(select, path, key, data, options = {}, onData = () => {}) {
+    if (typeof select === "string") select = document.getElementById(select)
+    if (!select || !data?.pagination) return
+    selectPages.get(select)?.error?.remove()
+    const request = {}
+    selectPages.set(select, request)
+    let loads = optionLoads.get(data)
+    if (!loads) { loads = new Map(); optionLoads.set(data, loads) }
+    const loadKey = JSON.stringify([path, key, options])
+    if (!loads.has(loadKey)) {
+      loads.set(loadKey, allPages(path, key, data, (url) => window.CuidadoApi.fetchJson(url, options)))
+    }
+    return loads.get(loadKey).then((result) => {
+      if (selectPages.get(select) !== request) return
+      const selected = select.value
+      const existingOptions = new Map([...select.options].map((item) => [item.value, item.cloneNode(true)]))
+      const selectedOption = [...select.options].find((item) => item.value === selected)?.cloneNode(true)
+      const staticOptions = [...select.options].filter((item) => !/^\d+$/.test(item.value)).map((item) => item.cloneNode(true))
+      const rows = result[key] || []
+      select.replaceChildren(...staticOptions, ...rows.map((item) => {
+        if (existingOptions.has(String(item.id))) return existingOptions.get(String(item.id))
+        const option = element("option", "", item.full_name || item.name || "Sin nombre")
+        option.value = String(item.id)
+        return option
+      }))
+      if (selectedOption && ![...select.options].some((item) => item.value === selected)) select.append(selectedOption)
+      select.value = selected
+      if (rows.length > 1 && select.parentElement) select.parentElement.hidden = false
+      onData(rows)
+    }).catch((error) => {
+      if (selectPages.get(select) !== request) return
+      // Preserve existing options and surface failures without retrying limited requests.
+      request.error = element("span", "is-error", error.message || "No se pudieron cargar todas las opciones.")
+      request.error.setAttribute("role", "alert")
+      select.after(request.error)
+    })
+  }
   window.CuidadoUi = Object.freeze({
+    allPages,
+    pagePath,
+    pagination,
+    pagedSelect,
     element,
     escapeHtml,
     formatLongDate,

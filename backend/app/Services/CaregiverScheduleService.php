@@ -5,18 +5,21 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\CaregiverSchedule;
 use App\Models\User;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 class CaregiverScheduleService
 {
-    public function all(): Collection
+    public function all(?array $input = null): Collection|LengthAwarePaginator
     {
-        return CaregiverSchedule::query()
+        $query = CaregiverSchedule::query()
             ->with('user:id,name,email,role,is_approved')
             ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->get();
+            ->orderBy('start_time')->orderBy('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     public function saveForCaregiver(User $user, array $data): CaregiverSchedule
