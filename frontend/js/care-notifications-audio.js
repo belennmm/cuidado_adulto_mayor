@@ -6,7 +6,7 @@
   function notify(alert) {
     if (!supportsNotifications() || Notification.permission !== "granted") return
     const notification = new Notification(alert.title, { body: alert.body, tag: alert.key, renotify: false })
-    notification.onclick = () => { window.focus(); if (alert.url) window.location.href = alert.url; notification.close() }
+    notification.onclick = () => { window.focus(); const url = window.CuidadoUrls.localUrl(alert.url); if (url) window.location.href = url; notification.close() }
   }
   function isSoundEnabled() { return localStorage.getItem(soundStorageKey) !== "muted" }
   function setSoundEnabled(enabled) { localStorage.setItem(soundStorageKey, enabled ? "enabled" : "muted") }

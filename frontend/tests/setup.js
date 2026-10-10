@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, vi } from "vitest"
 
-beforeEach(() => {
+beforeEach(async () => {
+  await import("../js/url-utils.js")
   vi.spyOn(console, "error").mockImplementation(() => {})
 })
 
@@ -13,6 +14,7 @@ afterEach(() => {
   vi.resetModules()
   delete window.AuthSession
   delete window.CuidadoApi
+  delete window.CuidadoUrls
   delete window.CuidadoConfig
   delete window.CuidadoUi
   delete window.CuidadoForms

@@ -5,6 +5,8 @@
     ? `${window.location.protocol}//${window.location.hostname}:${apiPort}/api`
     : "/api"
   const apiUrl = String(configuredApiUrl || defaultApiUrl).replace(/\/$/, "")
+  const apiBase = window.CuidadoUrls.httpUrl(apiUrl)
+  if (!apiBase || apiBase.search || apiBase.hash) throw new Error("URL de API no válida.")
 
   window.CuidadoConfig = {
     apiUrl,
@@ -14,14 +16,17 @@
     return typeof FormData !== "undefined" && value instanceof FormData
   }
 
-  function isAbsoluteUrl(value) {
-    return /^https?:\/\//i.test(String(value || ""))
-  }
-
   function buildUrl(path = "") {
-    if (isAbsoluteUrl(path)) return String(path)
-    const normalizedPath = String(path || "").startsWith("/") ? path : `/${path}`
-    return `${apiUrl}${normalizedPath}`
+    const value = String(path || "")
+    const absolute = /^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith("//")
+    const candidate = absolute ? value : `${apiUrl}/${value.replace(/^\//, "")}`
+    const url = window.CuidadoUrls.httpUrl(candidate)
+    const prefix = apiBase.pathname.replace(/\/$/, "")
+    if (!url || url.origin !== apiBase.origin || url.hash
+      || !(url.pathname === prefix || url.pathname.startsWith(`${prefix}/`))) {
+      throw new Error("URL de API no permitida.")
+    }
+    return candidate
   }
 
   function getToken(expectedRoles = []) {
@@ -61,9 +66,10 @@
   }
 
   function createApiError(response, data, fallback) {
+    if (response.status >= 500) data = { message: "Error interno del servidor." }
     const error = new Error(getErrorMessage(data, fallback))
     error.status = response.status
-    error.statusText = response.statusText
+    error.statusText = response.status >= 500 ? "Internal Server Error" : response.statusText
     error.data = data
     error.errors = data?.errors || {}
     return error
@@ -76,7 +82,7 @@
     }
 
     const text = await response.text().catch(() => "")
-    return text ? { message: text } : {}
+    return {}
   }
 
   async function fetchJson(path, options = {}) {
@@ -92,6 +98,7 @@
     const response = await fetch(buildUrl(path), {
       cache: "no-store",
       ...fetchOptions,
+      redirect: "error",
       headers: getHeaders({
         auth,
         body: fetchOptions.body,

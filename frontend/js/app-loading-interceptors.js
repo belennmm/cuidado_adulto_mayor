@@ -54,6 +54,7 @@
     }
 
     function navigate(url, { replace = false, message = "Abriendo página..." } = {}) {
+      url = window.CuidadoUrls.localUrl(url)
       if (!url) return
 
       if (!isLoadingEnabled()) {
@@ -90,10 +91,13 @@
         if (!anchor) return
 
         const href = anchor.getAttribute("href") || ""
+        if (!window.CuidadoUrls.httpUrl(href)) {
+          event.preventDefault()
+          return
+        }
         if (
           !href ||
           href.startsWith("#") ||
-          href.startsWith("javascript:") ||
           anchor.hasAttribute("download") ||
           anchor.target === "_blank"
         ) {

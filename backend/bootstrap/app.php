@@ -17,6 +17,7 @@ use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -70,6 +71,16 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Covers HttpResponseException and framework-rendered errors as well.
+        $exceptions->respond(function (Response $response) {
+            if (request()->is('api/*') && $response->getStatusCode() >= 500) {
+                $response->setContent(json_encode(['message' => 'Error interno del servidor.']));
+                $response->headers->set('Content-Type', 'application/json');
+                $response->headers->remove('Content-Length');
+            }
+
+            return $response;
+        });
         $exceptions->render(function (Throwable $exception, Request $request) {
             if (! $request->is('api/*')) {
                 return null;
@@ -78,9 +89,6 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($exception instanceof HttpExceptionInterface) {
                 $status = $exception->getStatusCode();
 
-                if (! in_array($status, [404, 405], true) && $status < 500) {
-                    return null;
-                }
             } elseif ($exception instanceof ValidationException
                 || $exception instanceof AuthenticationException
                 || $exception instanceof HttpResponseException) {
@@ -90,9 +98,11 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             $message = match ($status) {
+                401 => 'No autenticado.',
+                403 => 'No tienes permiso para realizar esta accion.',
                 404 => 'Recurso no encontrado.',
                 405 => 'Metodo HTTP no permitido.',
-                default => $status >= 500 ? 'Error interno del servidor.' : ($exception->getMessage() ?: 'Solicitud no valida.'),
+                default => $status >= 500 ? 'Error interno del servidor.' : 'Solicitud no valida.',
             };
 
             return response()->json(['message' => $message], $status);

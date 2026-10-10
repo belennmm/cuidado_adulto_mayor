@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../../css/logout-modal.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/page-user-settings.css">
 </head>
 
 <body>
@@ -58,25 +59,25 @@
         </aside>
 
         <main class="main-content">
-            <section style="padding-left: 36px;">
-                <h1 style="margin: 0 0 8px; font-size: 36px; font-weight: 700; color: #0a112f;">
+            <section class="page-style-1">
+                <h1 class="page-style-2">
                     Perfil
                 </h1>
-                <p style="margin: 0 0 18px; color: #70707a;">
+                <p class="page-style-3">
                     Configuración del usuario cuidador profesional.
                 </p>
 
-                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 720px;">
-                    <div style="padding: 16px; border-radius: 12px; background: #ffffff; border: 1px solid #e4e4e7;">
-                        <h2 style="margin: 0 0 6px; font-size: 20px; color: #0a112f;">Datos</h2>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 6px; color: #70707a;">
-                            <div><strong style="color:#0a112f;">Nombre:</strong> <span id="profileName">—</span></div>
-                            <div><strong style="color:#0a112f;">Email:</strong> <span id="profileEmail">—</span></div>
-                            <div><strong style="color:#0a112f;">Rol:</strong> <span id="profileRole">—</span></div>
+                <div class="page-style-4">
+                    <div class="page-style-5">
+                        <h2 class="page-style-6">Datos</h2>
+                        <div class="page-style-7">
+                            <div><strong class="page-style-8">Nombre:</strong> <span id="profileName">—</span></div>
+                            <div><strong class="page-style-9">Email:</strong> <span id="profileEmail">—</span></div>
+                            <div><strong class="page-style-10">Rol:</strong> <span id="profileRole">—</span></div>
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    <div class="page-style-11">
                         <a href="./dashboard.html" class="dashboard-button">Ir al dashboard</a>
                         <a href="./shift.html" class="dashboard-button">Ver turnos</a>
                         <a href="./routines.html" class="dashboard-button">Ver rutinas</a>
@@ -103,7 +104,8 @@
     </div>
 
 
-  <script src="../../js/app-loading-interceptors.js"></script>
+  <script src="../../js/url-utils.js"></script>
+    <script src="../../js/app-loading-interceptors.js"></script>
   <script src="../../js/app-loading.js"></script>
   <script src="../../js/app-popup-styles.js"></script>
   <script src="../../js/app-popup.js"></script>

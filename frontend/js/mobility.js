@@ -98,7 +98,8 @@ function openVideoModal(exercise) {
   
   const iframe = modal.querySelector("iframe")
   if (iframe) {
-    iframe.src = `https://www.youtube.com/embed/${exercise.videoId}?si=Gq6MbZVyFc6VBSXx`
+    iframe.src = /^[A-Za-z0-9_-]{11}$/.test(exercise.videoId || "")
+      ? `https://www.youtube.com/embed/${exercise.videoId}` : ""
     iframe.title = `Video: ${exercise.nombre}`
   }
   
