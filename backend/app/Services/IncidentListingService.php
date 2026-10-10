@@ -8,7 +8,6 @@ use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class IncidentListingService
 {
@@ -34,7 +33,13 @@ class IncidentListingService
     {
         $role = $user->roleEnum();
 
-        if (in_array($role, [UserRole::FAMILY, UserRole::PROFESSIONAL], true)
+        if (! in_array($role, UserRole::cases(), true)) {
+            abort(response()->json([
+                'message' => 'No tienes acceso para consultar incidentes.',
+            ], 403));
+        }
+
+        if (in_array($role, UserRole::cases(), true)
             && ! $user->is_approved) {
             abort(response()->json([
                 'message' => 'Tu cuenta debe estar aprobada para consultar incidentes.',
@@ -43,14 +48,7 @@ class IncidentListingService
 
         if ($role === UserRole::FAMILY) {
             $olderAdults = OlderAdult::query()
-                ->where(function (Builder $assignedQuery) use ($user) {
-                    $assignedQuery
-                        ->where('family_caregiver_id', $user->id)
-                        ->orWhere(function (Builder $legacyQuery) use ($user) {
-                            $legacyQuery->whereNull('family_caregiver_id')
-                                ->whereRaw('LOWER(caregiver_family) = ?', [Str::lower((string) $user->name)]);
-                        });
-                })
+                ->where('family_caregiver_id', $user->id)
                 ->get(['id', 'full_name']);
 
             $this->scopeToOlderAdults($query, $olderAdults);
@@ -70,23 +68,12 @@ class IncidentListingService
     private function scopeToOlderAdults(Builder $query, Collection $olderAdults): void
     {
         $adultIds = $olderAdults->pluck('id')->filter()->values();
-        $adultNames = $olderAdults->pluck('full_name')->filter()->values();
-
-        if ($adultIds->isEmpty() && $adultNames->isEmpty()) {
+        if ($adultIds->isEmpty()) {
             $query->whereRaw('1 = 0');
 
             return;
         }
 
-        $query->where(function (Builder $incidentQuery) use ($adultIds, $adultNames) {
-            $incidentQuery->whereIn('older_adult_id', $adultIds);
-
-            if ($adultNames->isNotEmpty()) {
-                $incidentQuery->orWhere(function (Builder $legacyQuery) use ($adultNames) {
-                    $legacyQuery->whereNull('older_adult_id')->whereIn('adult_name', $adultNames);
-                });
-            }
-        });
+        $query->whereIn('older_adult_id', $adultIds);
     }
-
 }

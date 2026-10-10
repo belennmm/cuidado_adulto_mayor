@@ -6,9 +6,9 @@ describe("CuidadoApi", () => {
     await import("../../js/api-config.js")
   })
 
-  it("construye URLs relativas y conserva URLs absolutas", () => {
+  it("construye URLs y rechaza destinos externos", () => {
     expect(window.CuidadoApi.buildUrl("/login")).toBe("https://api.example.test/api/login")
-    expect(window.CuidadoApi.buildUrl("https://otro.test/data")).toBe("https://otro.test/data")
+    expect(() => window.CuidadoApi.buildUrl("https://otro.test/data")).toThrow("URL de API no permitida")
   })
 
   it("agrega encabezados JSON y el token de autenticación", () => {

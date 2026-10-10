@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class CareFilterRequest extends FormRequest
+class CareFilterRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +13,7 @@ class CareFilterRequest extends FormRequest
     {
         return [
             'date' => ['nullable', 'date_format:Y-m-d'],
-            'older_adult_id' => ['nullable', 'integer'],
+            'older_adult_id' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }

@@ -1,0 +1,11 @@
+.page-style-1 { padding-left: 36px; }
+.page-style-2 { margin: 0 0 8px; font-size: 36px; font-weight: 700; color: #0a112f; }
+.page-style-3 { margin: 0 0 18px; color: #70707a; }
+.page-style-4 { display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 720px; }
+.page-style-5 { padding: 16px; border-radius: 12px; background: #ffffff; border: 1px solid #e4e4e7; }
+.page-style-6 { margin: 0 0 6px; font-size: 20px; color: #0a112f; }
+.page-style-7 { display: grid; grid-template-columns: 1fr; gap: 6px; color: #70707a; }
+.page-style-8 { color:#0a112f; }
+.page-style-9 { color:#0a112f; }
+.page-style-10 { color:#0a112f; }
+.page-style-11 { display: flex; flex-wrap: wrap; gap: 12px; }

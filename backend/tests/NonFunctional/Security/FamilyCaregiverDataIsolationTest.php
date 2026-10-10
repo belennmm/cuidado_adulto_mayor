@@ -10,8 +10,8 @@ use Tests\TestCase;
 
 class FamilyCaregiverDataIsolationTest extends TestCase
 {
-    use RefreshDatabase;
     use CreatesCareTestData;
+    use RefreshDatabase;
 
     public function test_family_caregiver_can_only_access_assigned_older_adult_data(): void
     {
@@ -52,14 +52,14 @@ class FamilyCaregiverDataIsolationTest extends TestCase
             ->assertJsonPath('older_adult.full_name', 'Rosa Martinez');
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$unassignedOlderAdult->id}")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$assignedOlderAdult->id}/incidents")
             ->assertOk()
             ->assertJsonPath('older_adult.id', $assignedOlderAdult->id);
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$unassignedOlderAdult->id}/incidents")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->assertDatabaseHas('older_adults', [
             'id' => $unassignedOlderAdult->id,
@@ -109,12 +109,10 @@ class FamilyCaregiverDataIsolationTest extends TestCase
             ->assertOk();
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$olderAdultOfCaregiver2->id}")
-            ->assertForbidden()
-            ->assertJsonMissing(['full_name' => 'Maria Sanchez'])
-            ->assertJsonMissing(['room' => 'A-102']);
+            ->assertNotFound();
 
         $this->withToken($token)->getJson("/api/family/older-adults/{$olderAdultOfCaregiver2->id}/incidents")
-            ->assertForbidden()
+            ->assertNotFound()
             ->assertJsonMissing(['full_name' => 'Maria Sanchez']);
 
         $this->assertDatabaseHas('older_adults', [

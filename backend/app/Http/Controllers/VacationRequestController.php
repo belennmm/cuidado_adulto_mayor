@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\VacationStoreRequest;
 use App\Http\Resources\VacationRequestResource;
 use App\Models\VacationRequest;
@@ -13,7 +14,7 @@ class VacationRequestController extends Controller
 {
     public function __construct(private readonly VacationRequestService $vacationService) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(EmptyInputRequest $request): JsonResponse
     {
         return $this->collectionResponse(
             $this->vacationService->forProfessional($request->user()),
@@ -32,12 +33,12 @@ class VacationRequestController extends Controller
         );
     }
 
-    public function adminIndex(Request $request): JsonResponse
+    public function adminIndex(EmptyInputRequest $request): JsonResponse
     {
         return $this->collectionResponse($this->vacationService->allForAdmin(), $request);
     }
 
-    public function approve(Request $request, VacationRequest $vacationRequest): JsonResponse
+    public function approve(EmptyInputRequest $request, VacationRequest $vacationRequest): JsonResponse
     {
         $vacationRequest = $this->vacationService->review(
             $vacationRequest, $request->user(), 'approved',
@@ -48,7 +49,7 @@ class VacationRequestController extends Controller
         );
     }
 
-    public function reject(Request $request, VacationRequest $vacationRequest): JsonResponse
+    public function reject(EmptyInputRequest $request, VacationRequest $vacationRequest): JsonResponse
     {
         $vacationRequest = $this->vacationService->review(
             $vacationRequest, $request->user(), 'rejected',

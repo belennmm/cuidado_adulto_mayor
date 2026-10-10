@@ -1,139 +1,65 @@
 (() => {
   function create({ state, DAY_NAMES, DAY_SHORT_NAMES, MONTH_NAMES, escapeHtml, startOfDay, addDays, startOfWeek, startOfMonth, isSameDay, formatDateKey, getStatusClass, statusLabel, normalizeTime, formatLongDate }) {
+    const el = window.CuidadoUi.element
     function renderEmptyState(container, message) {
-      container.innerHTML = `
-        <div class="calendar-empty-state">
-          <i class="bx bx-calendar-x"></i>
-          <strong>No hay turnos para esta vista.</strong>
-          <span>${escapeHtml(message)}</span>
-        </div>
-      `
+      container.replaceChildren(el("div", "calendar-empty-state", null, [el("i", "bx bx-calendar-x"), el("strong", "", "No hay turnos para esta vista."), el("span", "", message)]))
     }
-
     function renderLoadingState(container) {
-      container.innerHTML = `
-        <div class="calendar-loading-state">
-          <div class="calendar-loading-spinner"></div>
-          <strong>Cargando turnos...</strong>
-          <span>Estamos preparando el calendario para la vista seleccionada.</span>
-        </div>
-      `
+      container.replaceChildren(el("div", "calendar-loading-state", null, [el("div", "calendar-loading-spinner"), el("strong", "", "Cargando turnos..."), el("span", "", "Estamos preparando el calendario para la vista seleccionada.")]))
     }
-
     function renderErrorState(container, message) {
-      container.innerHTML = `
-        <div class="calendar-error-state">
-          <i class="bx bx-error-circle"></i>
-          <strong>No se pudo cargar el calendario.</strong>
-          <span>${escapeHtml(message)}</span>
-        </div>
-      `
+      container.replaceChildren(el("div", "calendar-error-state", null, [el("i", "bx bx-error-circle"), el("strong", "", "No se pudo cargar el calendario."), el("span", "", message)]))
     }
-
+    function shiftButton(shift, className, day = false, status = false) {
+      const range = `${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`
+      const content = day ? [
+        el("div", "day-shift-time", range), el("div", "day-shift-content", null, [el("strong", "", shift.caregiver_name), el("span", "", shift.older_adult_name)]),
+        el("span", `day-shift-status ${getStatusClass(shift.status)}`, statusLabel(shift.status)),
+      ] : [el("strong", "", shift.caregiver_name), el("span", "", shift.older_adult_name), el("span", "", range), status ? el("span", "", statusLabel(shift.status)) : null]
+      const button = el("button", `${className} ${getStatusClass(shift.status)}`, null, content)
+      button.type = "button"
+      button.dataset.shiftId = String(shift.id ?? "")
+      return button
+    }
     function renderMonthView(container, shifts) {
       const monthStart = startOfMonth(state.currentDate)
       const calendarStart = addDays(monthStart, -monthStart.getDay())
       const today = startOfDay(new Date())
       const days = []
-
       for (let index = 0; index < 42; index += 1) {
         const day = addDays(calendarStart, index)
-        const dayKey = formatDateKey(day)
-        const dayShifts = shifts.filter((shift) => shift.date === dayKey)
-        days.push(`
-          <div class="month-day-cell ${day.getMonth() !== state.currentDate.getMonth() ? "is-outside-month" : ""} ${isSameDay(day, today) ? "is-today" : ""}">
-            <span class="month-day-number">${day.getDate()}</span>
-            <div class="month-day-shifts">
-              ${dayShifts.length
-                ? dayShifts.map((shift) => `
-                  <button type="button" class="calendar-shift-chip ${getStatusClass(shift.status)}" data-shift-id="${shift.id}">
-                    <strong>${escapeHtml(shift.caregiver_name)}</strong>
-                    <span>${escapeHtml(shift.older_adult_name)}</span>
-                    <span>${escapeHtml(`${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`)}</span>
-                  </button>
-                `).join("")
-                : ""
-              }
-            </div>
-          </div>
-        `)
+        const dayShifts = shifts.filter((shift) => shift.date === formatDateKey(day))
+        const cell = el("div", "month-day-cell", null, [el("span", "month-day-number", day.getDate()), el("div", "month-day-shifts", null, dayShifts.map((shift) => shiftButton(shift, "calendar-shift-chip")))])
+        cell.classList.toggle("is-outside-month", day.getMonth() !== state.currentDate.getMonth())
+        cell.classList.toggle("is-today", isSameDay(day, today))
+        days.push(cell)
       }
-
-      container.innerHTML = `
-        <div class="month-calendar">
-          ${DAY_SHORT_NAMES.map((dayName) => `<div class="month-day-head">${dayName}</div>`).join("")}
-          ${days.join("")}
-        </div>
-      `
+      container.replaceChildren(el("div", "month-calendar", null, [DAY_SHORT_NAMES.map((name) => el("div", "month-day-head", name)), days]))
     }
-
     function renderWeekView(container, shifts) {
       const firstDay = startOfWeek(state.currentDate)
       const today = startOfDay(new Date())
       const columns = []
-
       for (let index = 0; index < 7; index += 1) {
         const day = addDays(firstDay, index)
-        const dayKey = formatDateKey(day)
-        const dayShifts = shifts.filter((shift) => shift.date === dayKey)
-
-        columns.push(`
-          <div class="week-day-column ${isSameDay(day, today) ? "is-today" : ""}">
-            <div class="week-day-title">
-              <strong>${DAY_NAMES[day.getDay()]}</strong>
-              <span>${day.getDate()} de ${MONTH_NAMES[day.getMonth()]}</span>
-            </div>
-            <div class="week-day-shifts">
-              ${dayShifts.length
-                ? dayShifts.map((shift) => `
-                  <button type="button" class="week-shift-card ${getStatusClass(shift.status)}" data-shift-id="${shift.id}">
-                    <strong>${escapeHtml(shift.caregiver_name)}</strong>
-                    <span>${escapeHtml(shift.older_adult_name)}</span>
-                    <span>${escapeHtml(`${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`)}</span>
-                    <span>${escapeHtml(statusLabel(shift.status))}</span>
-                  </button>
-                `).join("")
-                : `<div class="request-empty">Sin turnos</div>`
-              }
-            </div>
-          </div>
-        `)
+        const dayShifts = shifts.filter((shift) => shift.date === formatDateKey(day))
+        const column = el("div", "week-day-column", null, [
+          el("div", "week-day-title", null, [el("strong", "", DAY_NAMES[day.getDay()]), el("span", "", `${day.getDate()} de ${MONTH_NAMES[day.getMonth()]}`)]),
+          el("div", "week-day-shifts", null, dayShifts.length ? dayShifts.map((shift) => shiftButton(shift, "week-shift-card", false, true)) : [el("div", "request-empty", "Sin turnos")]),
+        ])
+        column.classList.toggle("is-today", isSameDay(day, today))
+        columns.push(column)
       }
-
-      container.innerHTML = `<div class="week-calendar">${columns.join("")}</div>`
+      container.replaceChildren(el("div", "week-calendar", null, columns))
     }
-
     function renderDayView(container, shifts) {
-      const currentDateKey = formatDateKey(state.currentDate)
-      const dayShifts = shifts
-        .filter((shift) => shift.date === currentDateKey)
-        .sort((firstShift, secondShift) => firstShift.start_time.localeCompare(secondShift.start_time))
-
-      if (!dayShifts.length) {
-        renderEmptyState(container, "No hay turnos programados para la fecha seleccionada.")
-        return
-      }
-
-      container.innerHTML = `
-        <div class="day-calendar">
-          <div class="day-summary-card">
-            <h2>${formatLongDate(currentDateKey)}</h2>
-            <p>${dayShifts.length} turno(s) programado(s) para esta fecha.</p>
-          </div>
-          <div class="day-shifts-list">
-            ${dayShifts.map((shift) => `
-              <button type="button" class="day-shift-card ${getStatusClass(shift.status)}" data-shift-id="${shift.id}">
-                <div class="day-shift-time">${escapeHtml(`${normalizeTime(shift.start_time)} - ${normalizeTime(shift.end_time)}`)}</div>
-                <div class="day-shift-content">
-                  <strong>${escapeHtml(shift.caregiver_name)}</strong>
-                  <span>${escapeHtml(shift.older_adult_name)}</span>
-                </div>
-                <span class="day-shift-status ${getStatusClass(shift.status)}">${escapeHtml(statusLabel(shift.status))}</span>
-              </button>
-            `).join("")}
-          </div>
-        </div>
-      `
+      const key = formatDateKey(state.currentDate)
+      const dayShifts = shifts.filter((shift) => shift.date === key).sort((a, b) => String(a.start_time).localeCompare(String(b.start_time)))
+      if (!dayShifts.length) return renderEmptyState(container, "No hay turnos programados para la fecha seleccionada.")
+      container.replaceChildren(el("div", "day-calendar", null, [
+        el("div", "day-summary-card", null, [el("h2", "", formatLongDate(key)), el("p", "", `${dayShifts.length} turno(s) programado(s) para esta fecha.`)]),
+        el("div", "day-shifts-list", null, dayShifts.map((shift) => shiftButton(shift, "day-shift-card", true))),
+      ]))
     }
 
     function eventTypeLabel(type) {

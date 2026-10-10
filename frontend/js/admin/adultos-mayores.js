@@ -3,7 +3,6 @@ const olderAdultsTableBody = document.getElementById("olderAdultsTableBody")
 
 let olderAdultsData = []
 
-const escapeHtml = window.CuidadoUi.escapeHtml
 
 function getStatusClass(status) {
   const normalizedStatus = String(status || "")
@@ -38,83 +37,42 @@ async function loadOlderAdults() {
 }
 
 function renderEmpty(message) {
-  olderAdultsTableBody.innerHTML = `
-    <div class="empty-state">
-      ${escapeHtml(message)}
-    </div>
-  `
+  olderAdultsTableBody.replaceChildren(window.CuidadoUi.element("div", "empty-state", message))
 }
 
 function renderOlderAdults(list) {
-  olderAdultsTableBody.innerHTML = ""
-
-  if (!list.length) {
-    renderEmpty("No se encontraron adultos mayores.")
-    return
-  }
-
-  list.forEach((olderAdult) => {
-    const row = document.createElement("article")
-    row.className = "older-adult-row"
-
-    row.innerHTML = `
-      <div class="older-adult-cell older-adult-name" data-label="Nombre">
-        <div class="older-adult-avatar"></div>
-        <span>${escapeHtml(olderAdult.full_name)}</span>
-      </div>
-
-      <div class="older-adult-cell" data-label="Edad">
-        ${escapeHtml(olderAdult.age || "Sin edad")}
-      </div>
-
-      <div class="older-adult-cell" data-label="Encargado">
-        ${escapeHtml(olderAdult.caregiver_family || "Sin encargado")}
-      </div>
-
-      <div class="older-adult-cell" data-label="Habitacion">
-        ${escapeHtml(olderAdult.room || "Sin habitacion")}
-      </div>
-
-      <div class="older-adult-cell" data-label="Estado">
-        <span class="status-badge ${getStatusClass(olderAdult.status)}">${escapeHtml(olderAdult.status || "Estable")}</span>
-      </div>
-
-      <div class="older-adult-cell older-adult-actions" data-label="Acción">
-        <button class="edit-button" data-id="${olderAdult.id}">Editar</button>
-        <button class="routine-button" data-id="${olderAdult.id}">Rutina</button>
-      </div>
-    `
-
-    olderAdultsTableBody.appendChild(row)
-  })
-
-  const editButtons = document.querySelectorAll(".edit-button")
-
-  editButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const olderAdultId = button.dataset.id
-      const destination = `./edit-adulto-mayor.html?id=${olderAdultId}`
-
-      if (window.navigateWithLoading) {
-        window.navigateWithLoading(destination)
-        return
-      }
-
-      window.location.assign(destination)
-    })
-  })
-
-  document.querySelectorAll(".routine-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const destination = `./routines.html?older_adult_id=${button.dataset.id}`
-
-      if (window.navigateWithLoading) {
-        window.navigateWithLoading(destination)
-        return
-      }
-
-      window.location.assign(destination)
-    })
+  const el = window.CuidadoUi.element
+  olderAdultsTableBody.replaceChildren()
+  if (!list.length) return renderEmpty("No se encontraron adultos mayores.")
+  list.forEach((adult) => {
+    const cell = (label, text, children = []) => {
+      const node = el("div", "older-adult-cell", text, children)
+      node.dataset.label = label
+      return node
+    }
+    const name = cell("Nombre", null, [el("div", "older-adult-avatar"), el("span", "", adult.full_name)])
+    name.classList.add("older-adult-name")
+    const actions = cell("Acción", null)
+    actions.classList.add("older-adult-actions")
+    for (const [className, label, page, parameter] of [
+      ["edit-button", "Editar", "edit-adulto-mayor.html", "id"],
+      ["routine-button", "Rutina", "routines.html", "older_adult_id"],
+    ]) {
+      const button = el("button", className, label)
+      button.type = "button"
+      button.dataset.id = String(adult.id ?? "")
+      button.addEventListener("click", () => {
+        const destination = `./${page}?${new URLSearchParams({ [parameter]: button.dataset.id })}`
+        if (window.navigateWithLoading) window.navigateWithLoading(destination)
+        else window.location.assign(destination)
+      })
+      actions.append(button)
+    }
+    olderAdultsTableBody.append(el("article", "older-adult-row", null, [
+      name, cell("Edad", adult.age ?? "Sin edad"), cell("Encargado", adult.caregiver_family || "Sin encargado"),
+      cell("Habitacion", adult.room || "Sin habitacion"),
+      cell("Estado", null, [el("span", `status-badge ${getStatusClass(adult.status)}`, adult.status || "Estable")]), actions,
+    ]))
   })
 }
 

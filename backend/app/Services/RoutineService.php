@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\Rutina;
 use App\Models\User;
+use App\Support\ResourceAccess as Access;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -16,9 +17,11 @@ class RoutineService
 {
     public function listFor(User $user, ?int $olderAdultId = null): Collection
     {
+        Gate::forUser($user)->authorize('viewAny', Rutina::class);
         $query = Rutina::query()->with('olderAdult:id,full_name,room,status');
 
         if ($olderAdultId !== null) {
+            Gate::forUser($user)->authorize('accessOlderAdult', [Rutina::class, $this->findOlderAdult($olderAdultId)]);
             $query->where('older_adult_id', $olderAdultId);
         } else {
             $this->scopeForUser($query, $user);
@@ -32,9 +35,7 @@ class RoutineService
         $olderAdult = OlderAdult::query()->find($id);
 
         if (! $olderAdult) {
-            throw ValidationException::withMessages([
-                'adulto_mayor_id' => ['El adulto mayor seleccionado no existe.'],
-            ]);
+            abort(404);
         }
 
         return $olderAdult;
@@ -42,6 +43,7 @@ class RoutineService
 
     public function create(array $data, OlderAdult $olderAdult, User $creator): Rutina
     {
+        Gate::forUser($creator)->authorize('accessOlderAdult', [Rutina::class, $olderAdult]);
         $routine = Rutina::create([
             'older_adult_id' => $olderAdult->id,
             'created_by' => $creator->id,
@@ -102,27 +104,26 @@ class RoutineService
 
     private function scopeForUser(Builder $query, User $user): void
     {
-        if ($user->hasRole(UserRole::ADMIN)) {
+        if (Access::admin($user)) {
             return;
         }
 
-        if ($user->hasRole(UserRole::PROFESSIONAL)) {
+        if (Access::professional($user)) {
             $query->whereHas('olderAdult', fn (Builder $olderAdultQuery) => $olderAdultQuery
                 ->where('professional_caregiver_id', $user->id));
 
             return;
         }
 
-        if ($user->hasRole(UserRole::FAMILY)) {
-            $normalizedName = $this->normalizeText($user->name);
-
+        if (Access::family($user)) {
             $query->whereHas('olderAdult', fn (Builder $olderAdultQuery) => $olderAdultQuery
-                ->where('family_caregiver_id', $user->id)
-                ->orWhere(function (Builder $legacyQuery) use ($normalizedName) {
-                    $legacyQuery->whereNull('family_caregiver_id')
-                        ->whereRaw('LOWER(caregiver_family) = ?', [$normalizedName]);
-                }));
+                ->where('family_caregiver_id', $user->id));
+
+            return;
         }
+
+        // Never return an unscoped query for a role without an explicit branch.
+        $query->whereRaw('1 = 0');
     }
 
     private function normalizedRoutineData(array $data): array

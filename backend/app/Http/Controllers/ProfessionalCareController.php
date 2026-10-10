@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CareFilterRequest;
+use App\Http\Requests\EmptyInputRequest;
 use App\Models\CaregiverSchedule;
 use App\Models\OlderAdult;
 use App\Services\CareDataService;
@@ -18,7 +19,7 @@ class ProfessionalCareController extends Controller
         private readonly CaregiverAccessService $caregiverAccess,
     ) {}
 
-    public function overview(Request $request): JsonResponse
+    public function overview(EmptyInputRequest $request): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();
@@ -50,7 +51,7 @@ class ProfessionalCareController extends Controller
         ]);
     }
 
-    public function olderAdults(Request $request): JsonResponse
+    public function olderAdults(EmptyInputRequest $request): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();
@@ -67,7 +68,7 @@ class ProfessionalCareController extends Controller
         ]);
     }
 
-    public function olderAdult(Request $request, OlderAdult $olderAdult): JsonResponse
+    public function olderAdult(EmptyInputRequest $request, OlderAdult $olderAdult): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();
@@ -115,7 +116,7 @@ class ProfessionalCareController extends Controller
         ]);
     }
 
-    public function schedules(Request $request): JsonResponse
+    public function schedules(EmptyInputRequest $request): JsonResponse
     {
         $this->authorize($request);
 

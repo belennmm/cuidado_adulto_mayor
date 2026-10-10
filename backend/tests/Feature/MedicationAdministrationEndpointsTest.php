@@ -69,7 +69,6 @@ class MedicationAdministrationEndpointsTest extends TestCase
         Sanctum::actingAs($other);
 
         $this->postJson("/api/medications/{$assignment->id}/taken")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 }
-

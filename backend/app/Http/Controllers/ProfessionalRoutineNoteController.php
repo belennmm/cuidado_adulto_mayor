@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\RoutineNoteRequest;
 use App\Http\Resources\RoutineNoteResource;
 use App\Models\RoutineNote;
@@ -52,7 +53,7 @@ class ProfessionalRoutineNoteController extends Controller
         return $this->noteResponse('Nota guardada correctamente.', $note, $request, 201);
     }
 
-    public function show(Request $request, RoutineNote $routineNote): JsonResponse
+    public function show(EmptyInputRequest $request, RoutineNote $routineNote): JsonResponse
     {
         $this->routineNoteService->authorize($request->user());
         $note = $this->routineNoteService->ownedNote($request->user(), $routineNote);
@@ -72,7 +73,7 @@ class ProfessionalRoutineNoteController extends Controller
         return $this->noteResponse('Nota actualizada correctamente.', $note, $request);
     }
 
-    public function destroy(Request $request, RoutineNote $routineNote): JsonResponse
+    public function destroy(EmptyInputRequest $request, RoutineNote $routineNote): JsonResponse
     {
         $this->routineNoteService->authorize($request->user());
         $note = $this->routineNoteService->ownedNote($request->user(), $routineNote);

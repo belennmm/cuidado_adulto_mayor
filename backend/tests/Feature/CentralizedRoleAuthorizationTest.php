@@ -54,4 +54,22 @@ class CentralizedRoleAuthorizationTest extends TestCase
 
         $this->getJson('/api/admin/users')->assertOk();
     }
+
+    public function test_administrator_alias_uses_real_tokens_and_loses_access_when_unapproved(): void
+    {
+        $user = User::factory()->create(['role' => 'administrador', 'password' => 'Alias-Secure!123', 'is_approved' => true]);
+        $token = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'Alias-Secure!123'])
+            ->assertOk()->json('token');
+        $this->withToken($token)->getJson('/api/admin/users')->assertOk();
+        $user->forceFill(['is_approved' => false])->save();
+        $this->withToken($token)->getJson('/api/admin/users')->assertUnauthorized();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
+    public function test_unapproved_administrator_alias_cannot_login(): void
+    {
+        $user = User::factory()->create(['role' => 'administrador', 'password' => 'Alias-Secure!123', 'is_approved' => false]);
+        $this->postJson('/api/login', ['email' => $user->email, 'password' => 'Alias-Secure!123'])->assertForbidden();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DateFilterRequest;
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Resources\IncidentResource;
 use App\Models\Incident;
 use App\Services\IncidentListingService;
@@ -21,7 +22,7 @@ class IncidentController extends Controller
         return $this->incidentsResponse($request, $date);
     }
 
-    public function today(Request $request): JsonResponse
+    public function today(EmptyInputRequest $request): JsonResponse
     {
         return $this->incidentsResponse($request, $this->date());
     }

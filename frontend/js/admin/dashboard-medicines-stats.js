@@ -93,21 +93,18 @@
     const filter = document.getElementById("inventoryOlderAdultFilter")
     const formSelect = document.getElementById("medicationOlderAdult")
     const currentFilter = state.selectedOlderAdultId
-    const options = state.olderAdults
-      .map((adult) => `<option value="${escapeHtml(adult.id)}">${escapeHtml(adult.full_name)}</option>`)
-      .join("")
-
+    const option = (value, label) => {
+      const node = window.CuidadoUi.element("option", "", label)
+      node.value = String(value ?? "")
+      return node
+    }
+    const adultOptions = () => state.olderAdults.map((adult) => option(adult.id, adult.full_name))
     if (filter) {
-      filter.innerHTML = `<option value="">Inventario general</option><option value="unassigned">Stock sin asignar</option>${options}`
-      filter.value = currentFilter === "unassigned" || state.olderAdults.some((adult) => String(adult.id) === String(currentFilter))
-        ? currentFilter
-        : ""
+      filter.replaceChildren(option("", "Inventario general"), option("unassigned", "Stock sin asignar"), ...adultOptions())
+      filter.value = currentFilter === "unassigned" || state.olderAdults.some((adult) => String(adult.id) === String(currentFilter)) ? currentFilter : ""
       updateOlderAdultSelection(filter.value)
     }
-
-    if (formSelect) {
-      formSelect.innerHTML = `<option value="">Stock sin asignar</option>${options}`
-    }
+    if (formSelect) formSelect.replaceChildren(option("", "Stock sin asignar"), ...adultOptions())
   }
 
   async function renderStats() {

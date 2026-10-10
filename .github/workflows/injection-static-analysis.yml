@@ -1,0 +1,29 @@
+name: Injection static analysis
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  injection-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Scan runtime PHP without executing it
+        run: php tests/security/php-sast.php
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Semgrep
+        run: python -m pip install semgrep
+      - name: Scan SQL, commands and DOM injection
+        run: semgrep scan --config tests/security/semgrep.yml --error --metrics=off --disable-version-check backend/app backend/routes frontend/js

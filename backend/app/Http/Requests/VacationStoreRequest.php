@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Support\ResourceAccess;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class VacationStoreRequest extends FormRequest
+class VacationStoreRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null && (ResourceAccess::professional($this->user()));
     }
 
     protected function failedAuthorization(): void

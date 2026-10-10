@@ -64,25 +64,18 @@
     chartTitle.textContent = `${medicine.name}: ${medicine.chartTitle.toLowerCase()}`
 
     const points = Array.isArray(medicine.chart) ? medicine.chart : []
-    const values = points.map((point) => Number(point.value) || 0)
-    const maxValue = Math.max(...values, 1)
-
-    chart.innerHTML = points
-      .map((point) => {
-        const value = Number(point.value) || 0
-        const height = Math.max((value / maxValue) * 100, value > 0 ? 12 : 4)
-
-        return `
-          <div class="chart-bar-card">
-            <span class="chart-bar-value">${escapeHtml(value)}</span>
-            <div class="chart-bar-track">
-              <div class="chart-bar-fill" style="height: ${height}%"></div>
-            </div>
-            <span class="chart-bar-label">${escapeHtml(point.label)}</span>
-          </div>
-        `
-      })
-      .join("")
+    const numericValue = (value) => Number.isFinite(Number(value)) ? Math.max(0, Number(value)) : 0
+    const maxValue = Math.max(...points.map((point) => numericValue(point.value)), 1)
+    const el = window.CuidadoUi.element
+    chart.replaceChildren(...points.map((point) => {
+      const value = numericValue(point.value)
+      const height = Math.min(100, Math.max((value / maxValue) * 100, value > 0 ? 12 : 4))
+      const fill = el("div", "chart-bar-fill")
+      fill.style.height = `${height}%`
+      return el("div", "chart-bar-card", null, [
+        el("span", "chart-bar-value", value), el("div", "chart-bar-track", null, [fill]), el("span", "chart-bar-label", point.label),
+      ])
+    }))
   }
 
   function renderSummary(selectedMedicine) {

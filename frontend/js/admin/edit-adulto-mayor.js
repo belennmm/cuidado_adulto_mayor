@@ -43,7 +43,7 @@ async function loadOlderAdult() {
       throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
     }
 
-    const data = await window.CuidadoApi.fetchJson(`/admin/older-adults/${olderAdultId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(olderAdultId)}`, {
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la operacion.",
     })
@@ -69,7 +69,7 @@ async function updateOlderAdult() {
     throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
   }
 
-  return window.CuidadoApi.fetchJson(`/admin/older-adults/${olderAdultId}`, {
+  return window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(olderAdultId)}`, {
     method: "PUT",
     body: JSON.stringify(payload),
     expectedRoles: ["admin"],
@@ -82,7 +82,7 @@ async function deleteOlderAdult() {
     throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
   }
 
-  return window.CuidadoApi.fetchJson(`/admin/older-adults/${olderAdultId}`, {
+  return window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(olderAdultId)}`, {
     method: "DELETE",
     expectedRoles: ["admin"],
     fallbackError: "No se pudo completar la operacion.",

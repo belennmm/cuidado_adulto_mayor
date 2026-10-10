@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class DateFilterRequest extends FormRequest
+class DateFilterRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {

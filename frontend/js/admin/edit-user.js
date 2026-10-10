@@ -66,7 +66,7 @@ async function loadUser() {
   setFormDisabled(true)
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}`, {
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la solicitud.",
     })
@@ -95,7 +95,7 @@ async function saveUser() {
   setFormDisabled(true)
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}`, {
       method: "PUT",
       body: JSON.stringify(payload),
       expectedRoles: ["admin"],
@@ -119,7 +119,7 @@ async function deleteUser() {
   setFormDisabled(true)
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}`, {
       method: "DELETE",
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la solicitud.",

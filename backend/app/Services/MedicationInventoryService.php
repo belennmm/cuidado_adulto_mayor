@@ -89,6 +89,10 @@ class MedicationInventoryService
                 abort(response()->json(['message' => 'La cantidad no puede quedar negativa.'], 422));
             }
 
+            if ($nextQuantity > 4294967295) {
+                abort(response()->json(['message' => 'La cantidad excede el limite del inventario.'], 422));
+            }
+
             $lockedItem->update(['quantity' => $nextQuantity]);
 
             if ($action === 'increase') {

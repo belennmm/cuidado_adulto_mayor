@@ -118,14 +118,17 @@
       if (empty) empty.hidden = alerts.length > 0
       if (!list) return
 
-      list.innerHTML = alerts
-        .map((alert) => `
-          <a class="care-notification-item" href="${escapeHtml(alert.url || "#")}">
-            <strong>${escapeHtml(alert.title)}</strong>
-            <span>${escapeHtml(alert.body)}</span>
-          </a>
-        `)
-        .join("")
+      list.replaceChildren(...alerts.map((alert) => {
+        const link = document.createElement("a")
+        link.className = "care-notification-item"
+        link.href = window.CuidadoUrls.localUrl(alert.url) || "#"
+        const title = document.createElement("strong")
+        title.textContent = alert.title ?? ""
+        const body = document.createElement("span")
+        body.textContent = alert.body ?? ""
+        link.append(title, body)
+        return link
+      }))
     }
 
     function mountCenter(instance) {

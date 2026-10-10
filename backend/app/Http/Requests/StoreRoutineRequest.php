@@ -9,10 +9,10 @@ class StoreRoutineRequest extends RoutineRequest
         return [
             'nombre' => ['required', 'string', 'max:255'],
             'horario' => ['required', 'date_format:H:i'],
-            'actividades' => ['required', 'array', 'min:1'],
+            'actividades' => ['required', 'array', 'list', 'min:1', 'max:100'],
             'actividades.*' => ['required', 'string', 'max:255'],
-            'adulto_mayor_id' => ['required_without:older_adult_id', 'integer'],
-            'older_adult_id' => ['required_without:adulto_mayor_id', 'integer'],
+            'adulto_mayor_id' => ['required_without:older_adult_id', 'integer', 'min:1', 'prohibits:older_adult_id'],
+            'older_adult_id' => ['required_without:adulto_mayor_id', 'integer', 'min:1', 'prohibits:adulto_mayor_id'],
         ];
     }
 }

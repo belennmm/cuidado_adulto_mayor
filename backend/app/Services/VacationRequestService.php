@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 class VacationRequestService
 {
@@ -37,7 +38,7 @@ class VacationRequestService
     {
         return VacationRequest::query()
             ->with(['user:id,name,email,role,is_approved', 'reviewer:id,name,email'])
-            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByRaw('CASE WHEN status = ? THEN 0 ELSE 1 END', ['pending'])
             ->orderByDesc('created_at')
             ->get();
     }
@@ -47,6 +48,7 @@ class VacationRequestService
         User $reviewer,
         string $status,
     ): VacationRequest {
+        Gate::forUser($reviewer)->authorize('review', $vacationRequest);
         if ($vacationRequest->status !== 'pending') {
             abort(response()->json(['message' => 'Esta solicitud ya fue revisada.'], 422));
         }

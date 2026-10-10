@@ -187,7 +187,8 @@
 
     function startEditNote(noteId) {
       const notesList = document.getElementById("professionalRoutineNotesList")
-      const noteCard = notesList?.querySelector(`[data-note-id="${noteId}"] p`)
+      const noteCard = Array.from(notesList?.querySelectorAll("[data-note-id]") || [])
+        .find((card) => card.dataset.noteId === String(noteId))?.querySelector("p")
       const textarea = document.getElementById("routineNoteInput")
       const title = document.getElementById("routineNoteFormTitle")
       const saveButton = document.getElementById("saveRoutineNoteButton")

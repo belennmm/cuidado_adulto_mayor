@@ -5,9 +5,11 @@
   function renderAdultSelector(adults, activeId) {
     const selector = document.getElementById("professionalRoutineAdultSelector")
     if (!selector) return
-    selector.innerHTML = adults.map((adult) => `
-      <option value="${api().escapeHtml(adult.id)}">${api().escapeHtml(adult.full_name || "Adulto mayor")}</option>
-    `).join("")
+    selector.replaceChildren(...adults.map((adult) => {
+      const option = window.CuidadoUi.element("option", "", adult.full_name || "Adulto mayor")
+      option.value = String(adult.id ?? "")
+      return option
+    }))
     if (activeId) selector.value = String(activeId)
   }
 
@@ -38,60 +40,83 @@
     }).format(date)
   }
 
+  function routineButton(label, action, id, index = null) {
+    const button = window.CuidadoUi.element("button", `routine-note-text-button${action === "delete" ? " is-danger" : ""}`, label)
+    button.type = "button"
+    button.dataset.customRoutineAction = action
+    button.dataset.id = String(id ?? "")
+    if (index !== null) button.dataset.activityIndex = String(index)
+    return button
+  }
+
   function renderCustomRoutine(routine) {
+    const el = window.CuidadoUi.element
     const activities = Array.isArray(routine.actividades) ? routine.actividades : []
     const completedActivities = routine.actividades_completadas || {}
     const isCompleted = Boolean(routine.completada)
     const completedAt = formatCompletedAt(routine.completada_at)
-    return `
-      <article class="routine-note-card custom-routine-card ${isCompleted ? "is-completed" : ""}">
-        <div class="routine-note-card-top">
-          <div><strong>${api().escapeHtml(routine.nombre || "Rutina")}</strong><span>${api().escapeHtml(routine.horario || "Sin horario")}${isCompleted && completedAt ? ` &middot; Completada ${api().escapeHtml(completedAt)}` : ""}</span></div>
-          <div class="routine-note-card-actions">
-            <span class="badge badge-blue">${activities.length} actividades</span>
-            ${isCompleted ? '<span class="badge badge-success">Rutina completada</span>' : ""}
-            <button type="button" class="routine-note-text-button" data-custom-routine-action="edit" data-id="${routine.id}">Editar</button>
-            <button type="button" class="routine-note-text-button is-danger" data-custom-routine-action="delete" data-id="${routine.id}">Eliminar</button>
-          </div>
-        </div>
-        <ul class="custom-routine-activity-list">${activities.map((activity, index) => {
-          const completed = completedActivities[index] || completedActivities[String(index)]
-          const activityCompleted = Boolean(completed?.completada)
-          const activityCompletedAt = formatCompletedAt(completed?.completada_at)
-          return `<li class="${activityCompleted ? "is-completed" : ""}"><span><strong>${api().escapeHtml(activity)}</strong>${activityCompleted && activityCompletedAt ? `<small>Completada ${api().escapeHtml(activityCompletedAt)}</small>` : ""}</span>${activityCompleted ? '<span class="badge badge-success">Completada</span>' : `<button type="button" class="routine-note-text-button" data-custom-routine-action="complete" data-id="${routine.id}" data-activity-index="${index}">Completar</button>`}</li>`
-        }).join("")}</ul>
-      </article>`
+    const actions = el("div", "routine-note-card-actions", null, [
+      el("span", "badge badge-blue", `${activities.length} actividades`),
+      isCompleted ? el("span", "badge badge-success", "Rutina completada") : null,
+      routineButton("Editar", "edit", routine.id), routineButton("Eliminar", "delete", routine.id),
+    ])
+    const items = activities.map((activity, index) => {
+      const completed = completedActivities[index]
+      const done = Boolean(completed?.completada)
+      const at = formatCompletedAt(completed?.completada_at)
+      return el("li", done ? "is-completed" : "", null, [
+        el("span", "", null, [el("strong", "", activity), done && at ? el("small", "", `Completada ${at}`) : null]),
+        done ? el("span", "badge badge-success", "Completada") : routineButton("Completar", "complete", routine.id, index),
+      ])
+    })
+    return el("article", `routine-note-card custom-routine-card${isCompleted ? " is-completed" : ""}`, null, [
+      el("div", "routine-note-card-top", null, [el("div", "", null, [
+        el("strong", "", routine.nombre || "Rutina"),
+        el("span", "", `${routine.horario || "Sin horario"}${isCompleted && completedAt ? ` · Completada ${completedAt}` : ""}`),
+      ]), actions]), el("ul", "custom-routine-activity-list", null, items),
+    ])
   }
 
   function renderCustomRoutines(routines) {
     const list = document.getElementById("professionalCustomRoutinesList")
     if (!list) return
     setText("professionalCustomRoutineTotal", routines.length)
-    list.innerHTML = routines.length
-      ? routines.map(renderCustomRoutine).join("")
-      : api().renderEmpty("No hay rutinas creadas para este adulto mayor.")
+    list.replaceChildren(...(routines.length ? routines.map(renderCustomRoutine) : [window.CuidadoUi.element("div", "empty-state", "No hay rutinas creadas para este adulto mayor.")]))
   }
 
   function renderNotes(notes) {
     const list = document.getElementById("professionalRoutineNotesList")
     if (!list) return
+    const el = window.CuidadoUi.element
     setText("professionalWeeklyNotesCount", notes.length)
+    list.replaceChildren()
     if (!notes.length) {
-      list.innerHTML = api().renderEmpty("No hay notas registradas para esta semana y este adulto mayor.")
+      list.append(el("div", "empty-state", "No hay notas registradas para esta semana y este adulto mayor."))
       return
     }
-    list.innerHTML = notes.map((note) => `
-      <article class="routine-note-card" data-note-id="${note.id}">
-        <div class="routine-note-card-top"><div><strong>${api().formatShortDate(note.note_date)}</strong><span>${api().escapeHtml(note.professional_caregiver?.name || "Cuidador profesional")}</span></div>
-          <div class="routine-note-card-actions"><button type="button" class="routine-note-text-button" data-action="edit" data-id="${note.id}">Editar</button><button type="button" class="routine-note-text-button is-danger" data-action="delete" data-id="${note.id}">Eliminar</button></div>
-        </div><p>${api().escapeHtml(note.content)}</p>
-      </article>`).join("")
+    for (const note of notes) {
+      const actions = el("div", "routine-note-card-actions")
+      for (const [action, label] of [["edit", "Editar"], ["delete", "Eliminar"]]) {
+        const button = el("button", `routine-note-text-button${action === "delete" ? " is-danger" : ""}`, label)
+        button.type = "button"
+        button.dataset.action = action
+        button.dataset.id = String(note.id ?? "")
+        actions.append(button)
+      }
+      const card = el("article", "routine-note-card", null, [
+        el("div", "routine-note-card-top", null, [el("div", "", null, [
+          el("strong", "", api().formatShortDate(note.note_date)), el("span", "", note.professional_caregiver?.name || "Cuidador profesional"),
+        ]), actions]), el("p", "", note.content),
+      ])
+      card.dataset.noteId = String(note.id ?? "")
+      list.append(card)
+    }
   }
 
   function renderEmpty(message) {
     ;["professionalRoutinesList", "professionalRoutineNotesList", "professionalCustomRoutinesList"].forEach((id) => {
       const list = document.getElementById(id)
-      if (list) list.innerHTML = api().renderEmpty(message)
+      if (list) list.replaceChildren(window.CuidadoUi.element("div", "empty-state", message))
     })
     ;["professionalRoutineTotal", "professionalRoutinePending", "professionalRoutineAdministered", "professionalWeeklyNotesCount", "professionalCustomRoutineTotal"].forEach((id) => setText(id, 0))
     setText("professionalRoutineWeekRange", "Sin semana activa")

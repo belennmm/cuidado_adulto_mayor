@@ -128,7 +128,7 @@ async function loadPendingRequests() {
 
 async function approveRequest(userId) {
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/approve`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}/approve`, {
       method: "PATCH",
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la solicitud.",
@@ -152,7 +152,7 @@ async function rejectRequest(userId) {
   }
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/reject`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}/reject`, {
       method: "DELETE",
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la solicitud.",
@@ -184,39 +184,23 @@ userForm.bindPasswordToggle()
 
 function renderRequests() {
   if (!requestList) return
-
-  requestList.innerHTML = ""
-
-  if (!pendingRequests.length) {
-    renderRequestState("No hay solicitudes pendientes.")
-    return
-  }
-
+  const el = window.CuidadoUi.element
+  requestList.replaceChildren()
+  if (!pendingRequests.length) return renderRequestState("No hay solicitudes pendientes.")
   pendingRequests.forEach((request) => {
-    const card = document.createElement("article")
-    card.className = "request-card"
-
-    card.innerHTML = `
-      <div class="request-top">
-        <div>
-          <h3 class="request-title">${escapeHtml(request.name)}</h3>
-          <div class="request-role">${escapeHtml(getRoleLabel(request.role))}</div>
-        </div>
-      </div>
-
-      <div class="request-info">
-        <span>Correo: ${escapeHtml(request.email || "Sin correo")}</span>
-        <span>Teléfono: ${escapeHtml(request.phone || "Sin teléfono")}</span>
-      </div>
-
-      <div class="request-actions">
-        <button class="secondary-button" data-id="${request.id}" type="button">Ver información</button>
-        <button class="accept-button" data-id="${request.id}" type="button">Aceptar</button>
-        <button class="deny-button" data-id="${request.id}" type="button">Rechazar</button>
-      </div>
-    `
-
-    requestList.appendChild(card)
+    const actions = el("div", "request-actions")
+    for (const [className, label] of [["secondary-button", "Ver información"], ["accept-button", "Aceptar"], ["deny-button", "Rechazar"]]) {
+      const button = el("button", className, label)
+      button.type = "button"
+      button.dataset.id = String(request.id ?? "")
+      actions.append(button)
+    }
+    requestList.append(el("article", "request-card", null, [
+      el("div", "request-top", null, [el("div", "", null, [
+        el("h3", "request-title", request.name), el("div", "request-role", getRoleLabel(request.role)),
+      ])]),
+      el("div", "request-info", null, [el("span", "", `Correo: ${request.email || "Sin correo"}`), el("span", "", `Teléfono: ${request.phone || "Sin teléfono"}`)]), actions,
+    ]))
   })
 }
 

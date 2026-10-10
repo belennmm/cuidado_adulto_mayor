@@ -434,14 +434,14 @@ class RutinaEndpointsTest extends TestCase
             'nombre' => 'Rutina editada',
             'horario' => '10:00',
             'actividades' => ['Actividad'],
-        ])->assertForbidden();
+        ])->assertNotFound();
 
         $this->deleteJson("/api/rutinas/{$rutina->id}")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->patchJson("/api/rutinas/{$rutina->id}/completar", [
             'actividad_index' => 0,
-        ])->assertForbidden();
+        ])->assertNotFound();
 
         $this->assertDatabaseHas('rutinas', [
             'id' => $rutina->id,
@@ -464,9 +464,8 @@ class RutinaEndpointsTest extends TestCase
             'actividades' => ['Tomar signos vitales'],
             'adulto_mayor_id' => 999,
         ])
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors(['adulto_mayor_id'])
-            ->assertJsonPath('errors.adulto_mayor_id.0', 'El adulto mayor seleccionado no existe.');
+            ->assertNotFound()
+            ->assertExactJson(['message' => 'Recurso no encontrado.']);
 
         $this->assertDatabaseCount('rutinas', 0);
     }
@@ -498,8 +497,8 @@ class RutinaEndpointsTest extends TestCase
             'actividades' => ['Cena', 'Preparacion para dormir'],
             'adulto_mayor_id' => $olderAdult->id,
         ])
-            ->assertForbidden()
-            ->assertJsonPath('message', 'No tienes acceso a la informacion de este adulto mayor.');
+            ->assertNotFound()
+            ->assertJsonPath('message', 'Recurso no encontrado.');
 
         $this->assertDatabaseCount('rutinas', 0);
     }

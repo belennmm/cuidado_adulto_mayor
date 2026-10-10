@@ -74,7 +74,7 @@ class ProfessionalIncidentEndpointsTest extends TestCase
         $this->postJson('/api/professional/incidents', [
             'older_adult_id' => $olderAdult->id,
             'title' => 'Caída leve',
-        ])->assertForbidden();
+        ])->assertNotFound();
 
         $this->assertSame(0, Incident::query()->count());
     }
@@ -139,6 +139,6 @@ class ProfessionalIncidentEndpointsTest extends TestCase
 
         $this->patchJson("/api/professional/incidents/{$incident->id}", [
             'description' => 'Intento de modificar.',
-        ])->assertForbidden();
+        ])->assertNotFound();
     }
 }

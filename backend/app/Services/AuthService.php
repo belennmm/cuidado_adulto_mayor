@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\OlderAdult;
 use App\Models\User;
+use App\Support\ResourceAccess;
+use App\Support\TokenAbilities;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -49,7 +52,7 @@ class AuthService
             'user' => $user,
             'token' => $user->createToken(
                 'API Token',
-                ['*'],
+                TokenAbilities::forUser($user),
                 now()->addMinutes($expirationMinutes),
             )->plainTextToken,
         ];
@@ -62,7 +65,8 @@ class AuthService
 
     public function register(array $data): User
     {
-        return User::create([
+        $user = new User;
+        $user->forceFill([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
@@ -73,38 +77,36 @@ class AuthService
             'birthdate' => $data['birthdate'] ?? null,
             'privacy_consent_at' => now(),
             'privacy_policy_version' => config('privacy.policy_version'),
-        ]);
+        ])->save();
+
+        return $user;
     }
 
     public function updateProfile(User $user, array $data): User
     {
-        $previousName = $user->name;
+        // The service enforces the same input boundary as the HTTP request.
+        $data = Arr::only($data, [
+            'name', 'email', 'location', 'phone', 'birthdate',
+            'current_password', 'new_password', 'new_password_confirmation',
+        ]);
 
         if (! empty($data['new_password'])) {
             $this->validateCurrentPassword($user, $data['current_password'] ?? '');
             $data['password'] = Hash::make($data['new_password']);
-            $passwordChanged = true;
         }
 
         unset($data['current_password'], $data['new_password'], $data['new_password_confirmation']);
-        $user->update($data);
 
-        if ($passwordChanged ?? false) {
-            $this->revokeCredentials($user);
-        }
+        return DB::transaction(function () use ($user, $data) {
+            $previousName = $user->name;
+            $user->forceFill($data)->save();
 
-        if ($user->hasRole(UserRole::FAMILY) && $previousName !== $user->name) {
-            $this->updateFamilyCaregiverName($user, $previousName);
-        }
+            if ($user->hasRole(UserRole::FAMILY) && $previousName !== $user->name) {
+                $this->updateFamilyCaregiverName($user);
+            }
 
-        return $user->refresh();
-    }
-
-    private function revokeCredentials(User $user): void
-    {
-        $user->tokens()->delete();
-        DB::table('sessions')->where('user_id', $user->getKey())->delete();
-        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+            return $user->refresh();
+        });
     }
 
     private function validateCurrentPassword(User $user, string $currentPassword): void
@@ -116,16 +118,10 @@ class AuthService
         }
     }
 
-    private function updateFamilyCaregiverName(User $user, string $previousName): void
+    private function updateFamilyCaregiverName(User $user): void
     {
         OlderAdult::query()
-            ->where(function ($query) use ($user, $previousName) {
-                $query->where('family_caregiver_id', $user->id)
-                    ->orWhere(function ($legacyQuery) use ($previousName) {
-                        $legacyQuery->whereNull('family_caregiver_id')
-                            ->whereRaw('LOWER(caregiver_family) = ?', [Str::lower($previousName)]);
-                    });
-            })
+            ->where('family_caregiver_id', $user->id)
             ->update(['caregiver_family' => $user->name]);
     }
 
@@ -140,6 +136,6 @@ class AuthService
 
     private function canLogin(User $user): bool
     {
-        return $user->hasRole(UserRole::ADMIN) || (bool) $user->is_approved;
+        return ResourceAccess::admin($user) || ResourceAccess::caregiver($user);
     }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Support\ResourceAccess;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class RoutineNoteRequest extends FormRequest
+class RoutineNoteRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null && (ResourceAccess::professional($this->user()));
     }
 
     protected function failedAuthorization(): void
@@ -20,9 +20,9 @@ class RoutineNoteRequest extends FormRequest
     public function rules(): array
     {
         return match ($this->route()?->getActionMethod()) {
-            'index' => ['older_adult_id' => ['required', 'integer']],
-            'store' => ['older_adult_id' => ['required', 'integer'], 'content' => ['required', 'string']],
-            default => ['content' => ['required', 'string']],
+            'index' => ['older_adult_id' => ['required', 'integer', 'min:1']],
+            'store' => ['older_adult_id' => ['required', 'integer', 'min:1'], 'content' => ['required', 'string', 'max:5000']],
+            default => ['content' => ['required', 'string', 'max:5000']],
         };
     }
 }

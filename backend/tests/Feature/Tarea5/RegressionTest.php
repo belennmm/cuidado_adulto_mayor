@@ -28,7 +28,9 @@ class RegressionTest extends TestCase
         Sanctum::actingAs($user);
         $this->putJson('/api/me', [
             'name' => 'Profesional T5', 'email' => $user->email, 'role' => 'admin',
-        ])->assertOk()->assertJsonPath('user.role', 'profesional');
+        ])->assertUnprocessable()->assertJsonValidationErrors('role');
+        $this->putJson('/api/me', ['name' => 'Profesional T5', 'email' => $user->email])
+            ->assertOk()->assertJsonPath('user.role', 'profesional');
         $this->assertDatabaseHas('users', ['id' => $user->id, 'name' => 'Profesional T5', 'role' => 'profesional']);
     }
 

@@ -27,7 +27,6 @@ function getStatusClass(status) {
   return "status-inactive"
 }
 
-const escapeHtml = window.CuidadoUi.escapeHtml
 
 async function loadUsers() {
   try {
@@ -39,11 +38,7 @@ async function loadUsers() {
     usersData = data.users || []
     renderUsers(usersData)
   } catch (error) {
-    usersTableBody.innerHTML = `
-      <div class="empty-state">
-        ${escapeHtml(error.message)}
-      </div>
-    `
+    usersTableBody.replaceChildren(window.CuidadoUi.element("div", "empty-state", error.message))
   }
 }
 
@@ -56,7 +51,7 @@ async function approveUser(userId) {
   }
 
   try {
-    const data = await window.CuidadoApi.fetchJson(`/admin/users/${userId}/approve`, {
+    const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}/approve`, {
       method: "PATCH",
       expectedRoles: ["admin"],
       fallbackError: "No se pudo aprobar el usuario.",
@@ -70,73 +65,34 @@ async function approveUser(userId) {
 }
 
 function renderUsers(list) {
-  usersTableBody.innerHTML = ""
-
+  const el = window.CuidadoUi.element
+  usersTableBody.replaceChildren()
   if (!list.length) {
-    usersTableBody.innerHTML = `
-      <div class="empty-state">
-        No se encontraron usuarios.
-      </div>
-    `
+    usersTableBody.append(el("div", "empty-state", "No se encontraron usuarios."))
     return
   }
-
   list.forEach((user) => {
     const status = getStatus(user)
-    const row = document.createElement("article")
-    row.className = "user-row"
-
-    const actionButton = status === "Pendiente"
-      ? `<button class="approve-button" data-id="${user.id}">Aprobar</button>`
-      : `<button class="edit-button" data-id="${user.id}">Editar</button>`
-
-    row.innerHTML = `
-      <div class="user-cell user-name" data-label="Nombre">
-        <div class="user-avatar"></div>
-        <span>${escapeHtml(user.name)}</span>
-      </div>
-
-      <div class="user-cell" data-label="Rol">
-        ${escapeHtml(getRoleLabel(user.role))}
-      </div>
-
-      <div class="user-cell" data-label="Correo">
-        ${escapeHtml(user.email)}
-      </div>
-
-      <div class="user-cell" data-label="Teléfono">
-        ${escapeHtml(user.phone || "Sin teléfono")}
-      </div>
-
-      <div class="user-cell" data-label="Estado">
-        <span class="status-badge ${getStatusClass(status)}">${status}</span>
-      </div>
-
-      <div class="user-cell" data-label="Acción">
-        ${actionButton}
-      </div>
-    `
-
-    usersTableBody.appendChild(row)
-  })
-
-  document.querySelectorAll(".approve-button").forEach((button) => {
+    const cell = (label, text, children = []) => {
+      const node = el("div", "user-cell", text, children)
+      node.dataset.label = label
+      return node
+    }
+    const name = cell("Nombre", null, [el("div", "user-avatar"), el("span", "", user.name)])
+    name.classList.add("user-name")
+    const button = el("button", status === "Pendiente" ? "approve-button" : "edit-button", status === "Pendiente" ? "Aprobar" : "Editar")
+    button.type = "button"
+    button.dataset.id = String(user.id ?? "")
     button.addEventListener("click", () => {
-      approveUser(button.dataset.id)
+      if (status === "Pendiente") return approveUser(button.dataset.id)
+      const destination = `./edit-user.html?${new URLSearchParams({ id: button.dataset.id })}`
+      if (window.navigateWithLoading) window.navigateWithLoading(destination)
+      else window.location.assign(destination)
     })
-  })
-
-  document.querySelectorAll(".edit-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const destination = `./edit-user.html?id=${button.dataset.id}`
-
-      if (window.navigateWithLoading) {
-        window.navigateWithLoading(destination)
-        return
-      }
-
-      window.location.assign(destination)
-    })
+    usersTableBody.append(el("article", "user-row", null, [
+      name, cell("Rol", getRoleLabel(user.role)), cell("Correo", user.email), cell("Teléfono", user.phone || "Sin teléfono"),
+      cell("Estado", null, [el("span", `status-badge ${getStatusClass(status)}`, status)]), cell("Acción", null, [button]),
+    ]))
   })
 }
 

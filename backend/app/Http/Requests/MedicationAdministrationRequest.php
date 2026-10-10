@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class MedicationAdministrationRequest extends FormRequest
+class MedicationAdministrationRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +13,7 @@ class MedicationAdministrationRequest extends FormRequest
     {
         return [
             'administration_time' => ['nullable', 'date_format:H:i'],
-            'notes' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string', 'max:10000'],
         ];
     }
 }

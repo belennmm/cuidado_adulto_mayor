@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CareFilterRequest;
 use App\Http\Requests\DateFilterRequest;
+use App\Http\Requests\EmptyInputRequest;
 use App\Models\OlderAdult;
 use App\Services\CareDataService;
 use App\Services\CaregiverAccessService;
@@ -18,7 +19,7 @@ class FamilyCareController extends Controller
         private readonly CaregiverAccessService $caregiverAccess,
     ) {}
 
-    public function overview(Request $request): JsonResponse
+    public function overview(EmptyInputRequest $request): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();
@@ -47,7 +48,7 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function olderAdults(Request $request): JsonResponse
+    public function olderAdults(EmptyInputRequest $request): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();
@@ -64,7 +65,7 @@ class FamilyCareController extends Controller
         ]);
     }
 
-    public function olderAdult(Request $request, OlderAdult $olderAdult): JsonResponse
+    public function olderAdult(EmptyInputRequest $request, OlderAdult $olderAdult): JsonResponse
     {
         $this->authorize($request);
         $today = $this->careData->today();

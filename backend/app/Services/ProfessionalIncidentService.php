@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
-use App\Enums\UserRole;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
+use App\Support\ResourceAccess;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
 class ProfessionalIncidentService
@@ -14,6 +15,7 @@ class ProfessionalIncidentService
     public function create(User $user, array $data): Incident
     {
         $olderAdult = $this->findOlderAdult((int) $data['older_adult_id']);
+        Gate::forUser($user)->authorize('createFor', [Incident::class, $olderAdult]);
 
         if (! $this->isAdmin($user) && (int) $olderAdult->professional_caregiver_id !== (int) $user->id) {
             abort(response()->json([
@@ -49,6 +51,7 @@ class ProfessionalIncidentService
 
     public function update(User $user, Incident $incident, array $data): Incident
     {
+        Gate::forUser($user)->authorize('update', $incident);
         $incident->load('olderAdult:id,professional_caregiver_id,full_name');
 
         if (! $incident->older_adult_id || ! $incident->olderAdult) {
@@ -77,9 +80,7 @@ class ProfessionalIncidentService
         $olderAdult = OlderAdult::query()->find($olderAdultId);
 
         if (! $olderAdult) {
-            throw ValidationException::withMessages([
-                'older_adult_id' => ['El adulto mayor seleccionado no existe.'],
-            ]);
+            abort(404);
         }
 
         return $olderAdult;
@@ -87,6 +88,6 @@ class ProfessionalIncidentService
 
     private function isAdmin(User $user): bool
     {
-        return $user->hasRole(UserRole::ADMIN);
+        return ResourceAccess::admin($user);
     }
 }

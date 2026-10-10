@@ -11,6 +11,12 @@ class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
+
+        if ($request->is('api/*') && $response->getStatusCode() >= 500) {
+            $response->setContent(json_encode(['message' => 'Error interno del servidor.']));
+            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->remove('Content-Length');
+        }
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('Referrer-Policy', 'no-referrer');

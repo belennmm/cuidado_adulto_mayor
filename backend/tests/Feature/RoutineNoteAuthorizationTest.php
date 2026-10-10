@@ -14,8 +14,11 @@ class RoutineNoteAuthorizationTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $otherProfessional;
+
     private OlderAdult $olderAdult;
+
     private RoutineNote $note;
 
     protected function setUp(): void
@@ -48,8 +51,8 @@ class RoutineNoteAuthorizationTest extends TestCase
     public function test_professional_cannot_view_another_professionals_note(): void
     {
         $this->getJson("/api/professional/routine-notes/{$this->note->id}")
-            ->assertForbidden()
-            ->assertJsonPath('message', 'No tienes acceso a esta nota.')
+            ->assertNotFound()
+            ->assertJsonPath('message', 'Recurso no encontrado.')
             ->assertJsonMissing(['content' => 'Contenido original']);
     }
 
@@ -65,7 +68,7 @@ class RoutineNoteAuthorizationTest extends TestCase
     {
         $this->putJson("/api/professional/routine-notes/{$this->note->id}", [
             'content' => 'Contenido alterado',
-        ])->assertForbidden();
+        ])->assertNotFound();
 
         $this->assertDatabaseHas('routine_notes', [
             'id' => $this->note->id,
@@ -77,7 +80,7 @@ class RoutineNoteAuthorizationTest extends TestCase
     public function test_professional_cannot_delete_another_professionals_note(): void
     {
         $this->deleteJson("/api/professional/routine-notes/{$this->note->id}")
-            ->assertForbidden();
+            ->assertNotFound();
 
         $this->assertDatabaseHas('routine_notes', [
             'id' => $this->note->id,

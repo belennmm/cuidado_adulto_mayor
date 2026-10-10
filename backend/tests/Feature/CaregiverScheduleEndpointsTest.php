@@ -157,7 +157,7 @@ class CaregiverScheduleEndpointsTest extends TestCase
             'day_of_week' => 5,
             'start_time' => '09:00',
             'end_time' => '17:00',
-        ])->assertForbidden();
+        ])->assertNotFound();
     }
 
     public function test_admin_can_assign_schedule_to_professional(): void

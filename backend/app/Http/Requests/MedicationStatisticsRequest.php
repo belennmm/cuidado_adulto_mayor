@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Services\MedicationStatisticsService;
+use Illuminate\Validation\Rule;
 
-class MedicationStatisticsRequest extends FormRequest
+class MedicationStatisticsRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
@@ -13,6 +14,6 @@ class MedicationStatisticsRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['filter' => ['nullable', 'in:day,month,year']];
+        return ['filter' => ['nullable', 'string', Rule::in(MedicationStatisticsService::FILTERS)]];
     }
 }

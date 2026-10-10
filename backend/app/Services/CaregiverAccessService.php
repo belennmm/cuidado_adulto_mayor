@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class CaregiverAccessService
@@ -21,11 +22,13 @@ class CaregiverAccessService
 
     public function authorize(User $user, string $caregiverType): void
     {
-        $allowedRole = $caregiverType === self::FAMILY
-            ? UserRole::FAMILY
-            : UserRole::PROFESSIONAL;
+        if (! in_array($caregiverType, [self::FAMILY, self::PROFESSIONAL], true)) {
+            abort(403, 'Tipo de cuidador no permitido.');
+        }
 
-        if ($user->hasRole($allowedRole) && (bool) $user->is_approved) {
+        $allowedRole = $caregiverType === self::FAMILY ? UserRole::FAMILY : UserRole::PROFESSIONAL;
+
+        if ((int) $user->id > 0 && $user->hasRole($allowedRole) && (bool) $user->is_approved) {
             return;
         }
 
@@ -38,6 +41,8 @@ class CaregiverAccessService
 
     public function assignedOlderAdults(User $user, string $caregiverType): Builder
     {
+        $this->authorize($user, $caregiverType);
+
         $query = OlderAdult::query()
             ->with([
                 'medicationAssignments.medication',
@@ -52,15 +57,7 @@ class CaregiverAccessService
         }
 
         return $query
-            ->where(function (Builder $assignedQuery) use ($user) {
-                $assignedQuery
-                    ->where('family_caregiver_id', $user->id)
-                    ->orWhere(function (Builder $legacyQuery) use ($user) {
-                        $legacyQuery
-                            ->whereNull('family_caregiver_id')
-                            ->whereRaw('LOWER(caregiver_family) = ?', [Str::lower((string) $user->name)]);
-                    });
-            })
+            ->where('family_caregiver_id', $user->id)
             ->orderBy('full_name');
     }
 
@@ -80,20 +77,18 @@ class CaregiverAccessService
             ->first();
 
         if ($olderAdult) {
+            Gate::forUser($user)->authorize('view', $olderAdult);
+
             return $olderAdult;
         }
 
-        abort(response()->json([
-            'message' => 'No tienes acceso a la informacion de este adulto mayor.',
-        ], 403));
+        abort(404);
     }
 
-    public function incidentsFor(Collection $olderAdults, ?Carbon $date = null, bool $includeLegacy = false): Collection
+    public function incidentsFor(Collection $olderAdults, ?Carbon $date = null, bool $includeReporter = false): Collection
     {
         $adultIds = $olderAdults->pluck('id')->filter()->values();
-        $adultNames = $olderAdults->pluck('full_name')->filter()->values();
-
-        if ($adultIds->isEmpty() && (! $includeLegacy || $adultNames->isEmpty())) {
+        if ($adultIds->isEmpty()) {
             return collect();
         }
 
@@ -104,15 +99,7 @@ class CaregiverAccessService
                 'olderAdult.professionalCaregiver:id,name,email,phone,location',
                 'olderAdult.medicationAssignments.medication',
             ])
-            ->where(function (Builder $incidentQuery) use ($adultIds, $adultNames, $includeLegacy) {
-                $incidentQuery->whereIn('older_adult_id', $adultIds);
-
-                if ($includeLegacy && $adultNames->isNotEmpty()) {
-                    $incidentQuery->orWhere(function (Builder $legacyQuery) use ($adultNames) {
-                        $legacyQuery->whereNull('older_adult_id')->whereIn('adult_name', $adultNames);
-                    });
-                }
-            });
+            ->whereIn('older_adult_id', $adultIds);
 
         if ($date) {
             $query->whereDate('incident_date', $date->toDateString());
@@ -124,7 +111,7 @@ class CaregiverAccessService
             ->orderByDesc('incident_time')
             ->orderByDesc('created_at')
             ->get()
-            ->map(fn (Incident $incident) => $this->formatIncident($incident, $olderAdults, $includeLegacy))
+            ->map(fn (Incident $incident) => $this->formatIncident($incident, $includeReporter))
             ->values();
     }
 
@@ -141,10 +128,9 @@ class CaregiverAccessService
         ];
     }
 
-    private function formatIncident(Incident $incident, Collection $olderAdults, bool $includeReporter): array
+    private function formatIncident(Incident $incident, bool $includeReporter): array
     {
-        $olderAdult = $incident->olderAdult
-            ?? $olderAdults->first(fn (OlderAdult $adult) => $this->normalizeText($adult->full_name) === $this->normalizeText($incident->adult_name));
+        $olderAdult = $incident->olderAdult;
 
         $formatted = [
             'id' => $incident->id,

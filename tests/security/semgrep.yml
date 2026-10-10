@@ -1,0 +1,45 @@
+rules:
+  - id: php-dynamic-raw-sql
+    languages: [php]
+    severity: ERROR
+    message: Use constant SQL with placeholders and separate bindings.
+    pattern-either:
+      - pattern: $DB->whereRaw($A . $B, ...)
+      - pattern: $DB->orderByRaw($A . $B, ...)
+      - pattern: $DB->selectRaw($A . $B, ...)
+      - pattern: DB::raw($A . $B)
+      - pattern: DB::statement($A . $B, ...)
+      - pattern: DB::select($A . $B, ...)
+      - pattern: DB::unprepared(...)
+  - id: php-command-execution
+    languages: [php]
+    severity: ERROR
+    message: Command execution requires an explicit security review.
+    pattern-either:
+      - pattern: shell_exec(...)
+      - pattern: exec(...)
+      - pattern: system(...)
+      - pattern: passthru(...)
+      - pattern: proc_open(...)
+      - pattern: eval(...)
+  - id: browser-input-to-html
+    languages: [javascript]
+    severity: ERROR
+    mode: taint
+    message: Render untrusted browser data with textContent or DOM nodes.
+    pattern-sources:
+      - pattern: location.search
+      - pattern: window.location.search
+      - pattern: location.hash
+      - pattern: window.location.hash
+      - pattern: localStorage.getItem(...)
+      - pattern: $EVENT.data
+      - pattern: $PARAMS.get(...)
+    pattern-sanitizers:
+      - pattern: escapeHtml(...)
+      - pattern: $UI.escapeHtml(...)
+    pattern-sinks:
+      - pattern: $ELEMENT.innerHTML = $VALUE
+      - pattern: $ELEMENT.outerHTML = $VALUE
+      - pattern: document.write(...)
+      - pattern: eval(...)

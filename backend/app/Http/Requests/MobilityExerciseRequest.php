@@ -3,10 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Models\MobilityExercise;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class MobilityExerciseRequest extends FormRequest
+class MobilityExerciseRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
@@ -18,10 +17,10 @@ class MobilityExerciseRequest extends FormRequest
         $exercise = $this->route('mobilityExercise');
 
         return [
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('mobility_exercises', 'slug')->ignore($exercise instanceof MobilityExercise ? $exercise->id : null)],
+            'slug' => ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/', Rule::unique('mobility_exercises', 'slug')->ignore($exercise instanceof MobilityExercise ? $exercise->id : null)],
             'title' => ['required', 'string', 'max:255'], 'focus' => ['required', 'string', 'max:255'],
             'duration_minutes' => ['required', 'integer', 'min:1', 'max:1440'], 'repetitions' => ['required', 'string', 'max:255'],
-            'instructions' => ['required', 'array', 'min:1', 'max:20'], 'instructions.*' => ['required', 'string', 'max:1000'],
+            'instructions' => ['required', 'array', 'list', 'min:1', 'max:20'], 'instructions.*' => ['required', 'string', 'max:1000'],
             'precaution' => ['required', 'string', 'max:2000'], 'is_active' => ['sometimes', 'boolean'], 'sort_order' => ['sometimes', 'integer', 'min:0', 'max:65535'],
         ];
     }

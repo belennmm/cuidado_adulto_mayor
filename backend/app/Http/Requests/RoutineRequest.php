@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-abstract class RoutineRequest extends FormRequest
+abstract class RoutineRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {

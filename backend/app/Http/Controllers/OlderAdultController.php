@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\OlderAdultRequest;
 use App\Http\Resources\OlderAdultResource;
 use App\Models\OlderAdult;
@@ -12,7 +13,7 @@ class OlderAdultController extends Controller
 {
     public function __construct(private readonly OlderAdultService $olderAdultService) {}
 
-    public function show(OlderAdult $olderAdult): JsonResponse
+    public function show(EmptyInputRequest $request, OlderAdult $olderAdult): JsonResponse
     {
         $olderAdult = $this->olderAdultService->loadRelations($olderAdult);
 
@@ -21,7 +22,7 @@ class OlderAdultController extends Controller
         ]);
     }
 
-    public function index(): JsonResponse
+    public function index(EmptyInputRequest $request): JsonResponse
     {
         $olderAdults = OlderAdult::query()
             ->with(['familyCaregiver', 'professionalCaregiver'])
@@ -52,7 +53,7 @@ class OlderAdultController extends Controller
         ]);
     }
 
-    public function destroy(OlderAdult $olderAdult): JsonResponse
+    public function destroy(EmptyInputRequest $request, OlderAdult $olderAdult): JsonResponse
     {
         $olderAdult->delete();
 

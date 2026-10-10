@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\MedicationStatisticsRequest;
 use App\Services\AdminDashboardService;
 use App\Services\MedicationStatisticsService;
@@ -14,7 +15,7 @@ class AdminDashboardController extends Controller
         private readonly MedicationStatisticsService $medicationStatisticsService,
     ) {}
 
-    public function summary(): JsonResponse
+    public function summary(EmptyInputRequest $request): JsonResponse
     {
         return response()->json($this->dashboardService->summary());
     }

@@ -27,8 +27,9 @@ class ProfileRoleProtectionTest extends TestCase
             'email' => 'mario.actualizado@example.com',
             'role' => 'admin',
         ])
-            ->assertOk()
-            ->assertJsonPath('user.role', 'profesional');
+            ->assertUnprocessable()->assertJsonValidationErrors('role');
+        $this->putJson('/api/me', ['name' => 'Mario Lopez Actualizado', 'email' => 'mario.actualizado@example.com'])
+            ->assertOk()->assertJsonPath('user.role', 'profesional');
 
         $this->assertDatabaseHas('users', [
             'id' => $professional->id,
@@ -54,8 +55,9 @@ class ProfileRoleProtectionTest extends TestCase
             'email' => 'maria.actualizada@example.com',
             'role' => 'admin',
         ])
-            ->assertOk()
-            ->assertJsonPath('user.role', 'familiar');
+            ->assertUnprocessable()->assertJsonValidationErrors('role');
+        $this->putJson('/api/me', ['name' => 'Maria Gonzalez Actualizada', 'email' => 'maria.actualizada@example.com'])
+            ->assertOk()->assertJsonPath('user.role', 'familiar');
 
         $this->assertDatabaseHas('users', [
             'id' => $familyCaregiver->id,

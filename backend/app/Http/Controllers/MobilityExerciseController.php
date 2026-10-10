@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\MobilityExerciseRequest;
+use App\Http\Requests\MobilityIndexRequest;
 use App\Http\Resources\MobilityExerciseResource;
 use App\Models\MobilityExercise;
 use App\Services\MobilityExerciseService;
@@ -13,12 +15,12 @@ class MobilityExerciseController extends Controller
 {
     public function __construct(private readonly MobilityExerciseService $mobilityService) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(MobilityIndexRequest $request): JsonResponse
     {
         $exercises = $this->mobilityService->listFor(
             $request->user(),
-            $request->query('active'),
-            $request->has('active'),
+            $request->validated('active'),
+            $request->validated('active') !== null,
         );
 
         return response()->json([
@@ -28,7 +30,7 @@ class MobilityExerciseController extends Controller
         ]);
     }
 
-    public function show(Request $request, MobilityExercise $mobilityExercise): JsonResponse
+    public function show(EmptyInputRequest $request, MobilityExercise $mobilityExercise): JsonResponse
     {
         $exercise = $this->mobilityService->accessibleExercise($request->user(), $mobilityExercise);
 
@@ -55,7 +57,7 @@ class MobilityExerciseController extends Controller
         );
     }
 
-    public function destroy(MobilityExercise $mobilityExercise): JsonResponse
+    public function destroy(EmptyInputRequest $request, MobilityExercise $mobilityExercise): JsonResponse
     {
         $mobilityExercise->delete();
 

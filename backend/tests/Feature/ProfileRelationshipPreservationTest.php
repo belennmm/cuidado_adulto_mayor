@@ -103,6 +103,12 @@ class ProfileRelationshipPreservationTest extends TestCase
             'professional_caregiver_id' => null,
             'created_by' => null,
         ])
+            ->assertUnprocessable()->assertJsonValidationErrors(['role', 'is_approved', 'professional_caregiver_id', 'created_by']);
+        $this->assertSame('Mario Lopez', $professional->refresh()->name);
+        $this->putJson('/api/me', [
+            'name' => 'Mario Lopez Actualizado', 'email' => 'mario.actualizado@example.com',
+            'phone' => '5555-0101', 'location' => 'Zona 10', 'birthdate' => '1990-05-24',
+        ])
             ->assertOk()
             ->assertJsonPath('user.name', 'Mario Lopez Actualizado')
             ->assertJsonPath('user.email', 'mario.actualizado@example.com')
