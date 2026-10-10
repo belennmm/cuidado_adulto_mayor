@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CompleteRoutineActivityRequest;
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\RoutineIndexRequest;
 use App\Http\Requests\StoreRoutineRequest;
 use App\Http\Requests\UpdateRoutineRequest;
@@ -10,7 +11,6 @@ use App\Http\Resources\RoutineResource;
 use App\Models\Rutina;
 use App\Services\RoutineService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class RutinaController extends Controller
@@ -80,7 +80,7 @@ class RutinaController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Rutina $rutina): JsonResponse
+    public function destroy(EmptyInputRequest $request, Rutina $rutina): JsonResponse
     {
         $this->routineService->loadForAuthorization($rutina);
         Gate::forUser($request->user())->authorize('delete', $rutina);

@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class MedicationStatisticsRequest extends FormRequest
+class MedicationStatisticsRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {

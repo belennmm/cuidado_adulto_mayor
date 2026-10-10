@@ -12,7 +12,7 @@ Seguimiento: [SCRUM-791 a SCRUM-794](PERMISOS_VIGENTES_MINIMOS_PRIVILEGIOS.md) a
 
 `OlderAdultService` filtra los campos de negocio y las asignaciones administrativas autorizadas. `created_by` se obtiene del actor al crear y no se puede sustituir al editar. Las asignaciones de medicamentos anidadas se buscan dentro del adulto editado: un ID perteneciente a otro adulto devuelve 404 y revierte la transacción. La actualización del nombre familiar al editar el perfil solo afecta adultos vinculados por `family_caregiver_id`, nunca coincidencias de nombre.
 
-Las claves adicionales no permitidas se ignoran; no se convierten automáticamente en errores de validación. Las pruebas también intentan inyectar propietarios, estados administrativos e identificadores en notas, rutinas, incidentes, horarios, vacaciones y tomas de medicamentos, y comprueban que los valores persistidos proceden del servidor y de operaciones autorizadas.
+En este bloque A01 las claves adicionales se descartaban. Desde [SCRUM-824 a SCRUM-827 (A03)](INVENTARIO_ENTRADAS_A03.md), los FormRequest HTTP rechazan el envío completo con 422 cuando contiene campos desconocidos o sensibles, incluidos los anidados. Las listas permitidas de servicios/modelos se mantienen como defensa adicional. Las pruebas comprueban el rechazo y después el éxito del payload limpio, conservando las verificaciones de propiedad y campos derivados del servidor.
 
 ## SCRUM-788: revocar credenciales
 

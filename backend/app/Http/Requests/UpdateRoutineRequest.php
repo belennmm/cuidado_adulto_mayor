@@ -9,7 +9,7 @@ class UpdateRoutineRequest extends RoutineRequest
         return [
             'nombre' => ['required', 'string', 'max:255'],
             'horario' => ['required', 'date_format:H:i'],
-            'actividades' => ['required', 'array', 'min:1'],
+            'actividades' => ['required', 'array', 'list', 'min:1', 'max:100'],
             'actividades.*' => ['required', 'string', 'max:255'],
         ];
     }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Str;
 
-class VacationStoreRequest extends FormRequest
+class VacationStoreRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {

@@ -23,7 +23,10 @@ class LeastPrivilegeTokensTest extends TestCase
     public function test_login_issues_only_the_scopes_for_the_approved_role(string $role, string $module, string $path): void
     {
         $user = User::factory()->create(['role' => $role, 'is_approved' => true]);
-        $response = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password', 'abilities' => ['*', 'admin:write']])->assertOk();
+        $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password', 'abilities' => ['*', 'admin:write']])
+            ->assertUnprocessable()->assertJsonValidationErrors('abilities');
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $response = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
         $plain = $response->json('token');
         $token = PersonalAccessToken::findToken($plain);
         $this->assertSame(['account:read', 'account:write', 'care:read', 'care:write', $module.':read', $module.':write'], $token->abilities);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AdminUserRequest;
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Resources\AdminUserResource;
 use App\Models\User;
 use App\Services\AdminUserService;
@@ -14,19 +15,19 @@ class AdminUserController extends Controller
 {
     public function __construct(private readonly AdminUserService $userService) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(EmptyInputRequest $request): JsonResponse
     {
         return $this->collectionResponse($this->userService->all(), $request);
     }
 
-    public function professionalCaregivers(Request $request): JsonResponse
+    public function professionalCaregivers(EmptyInputRequest $request): JsonResponse
     {
         return $this->collectionResponse(
             $this->userService->approvedCaregivers('profesional'), $request,
         );
     }
 
-    public function familyCaregivers(Request $request): JsonResponse
+    public function familyCaregivers(EmptyInputRequest $request): JsonResponse
     {
         return $this->collectionResponse(
             $this->userService->approvedCaregivers('familiar'), $request,
@@ -40,7 +41,7 @@ class AdminUserController extends Controller
         return $this->userResponse('Usuario creado correctamente.', $user, $request, 201);
     }
 
-    public function show(Request $request, User $user): JsonResponse
+    public function show(EmptyInputRequest $request, User $user): JsonResponse
     {
         return response()->json(['user' => $this->resource($user, $request)]);
     }
@@ -52,21 +53,21 @@ class AdminUserController extends Controller
         return $this->userResponse('Usuario actualizado correctamente.', $user, $request);
     }
 
-    public function approve(Request $request, User $user): JsonResponse
+    public function approve(EmptyInputRequest $request, User $user): JsonResponse
     {
         $user = $this->userService->approve($user);
 
         return $this->userResponse('Usuario aprobado correctamente.', $user, $request);
     }
 
-    public function reject(User $user): JsonResponse
+    public function reject(EmptyInputRequest $request, User $user): JsonResponse
     {
         $this->userService->reject($user);
 
         return response()->json(['message' => 'Solicitud rechazada correctamente.']);
     }
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(EmptyInputRequest $request, User $user): JsonResponse
     {
         $this->userService->delete($user);
 

@@ -112,8 +112,12 @@ class MassAssignmentProtectionTest extends TestCase
             'created_by' => $other->id, 'updated_by' => $other->id, 'id' => 999999, 'created_at' => '2000-01-01',
         ];
         $headers = ['Authorization' => 'Bearer '.$admin->createToken('audit')->plainTextToken];
-        $id = $this->postJson('/api/admin/mobility-exercises', $data, $headers)->assertCreated()->json('exercise.id');
-        $this->putJson('/api/admin/mobility-exercises/'.$id, $data, $headers)->assertOk();
+        $this->postJson('/api/admin/mobility-exercises', $data, $headers)->assertUnprocessable()->assertJsonValidationErrors(['created_by', 'updated_by', 'id', 'created_at']);
+        $this->assertDatabaseCount('mobility_exercises', 0);
+        $clean = array_diff_key($data, array_flip(['created_by', 'updated_by', 'id', 'created_at']));
+        $id = $this->postJson('/api/admin/mobility-exercises', $clean, $headers)->assertCreated()->json('exercise.id');
+        $this->putJson('/api/admin/mobility-exercises/'.$id, $data, $headers)->assertUnprocessable();
+        $this->putJson('/api/admin/mobility-exercises/'.$id, $clean, $headers)->assertOk();
         $exercise = MobilityExercise::findOrFail($id);
         $this->assertSame($admin->id, $exercise->created_by);
         $this->assertSame($admin->id, $exercise->updated_by);

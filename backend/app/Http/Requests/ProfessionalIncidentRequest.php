@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Str;
 
-class ProfessionalIncidentRequest extends FormRequest
+class ProfessionalIncidentRequest extends StrictFormRequest
 {
     public function authorize(): bool
     {
@@ -25,7 +24,7 @@ class ProfessionalIncidentRequest extends FormRequest
     {
         if ($this->route()?->getActionMethod() === 'store') {
             return [
-                'older_adult_id' => ['required', 'integer'], 'title' => ['required', 'string', 'max:255'],
+                'older_adult_id' => ['required', 'integer', 'min:1'], 'title' => ['required', 'string', 'max:255'],
                 'description' => ['nullable', 'string', 'max:2000'], 'severity' => ['nullable', 'in:baja,media,alta'],
                 'incident_date' => ['nullable', 'date_format:Y-m-d'], 'incident_time' => ['nullable', 'date_format:H:i'],
             ];

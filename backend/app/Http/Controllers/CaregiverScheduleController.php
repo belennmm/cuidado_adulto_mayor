@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\SaveCaregiverScheduleRequest;
 use App\Http\Requests\ScheduleCalendarRequest;
 use App\Http\Requests\ScheduleChangeRequest;
@@ -20,7 +21,7 @@ class CaregiverScheduleController extends Controller
         private readonly CaregiverScheduleService $scheduleService,
     ) {}
 
-    public function adminIndex(): JsonResponse
+    public function adminIndex(EmptyInputRequest $request): JsonResponse
     {
         return response()->json([
             'schedules' => CaregiverScheduleResource::collection($this->scheduleService->all())->resolve(),
@@ -73,7 +74,7 @@ class CaregiverScheduleController extends Controller
         );
     }
 
-    public function approveChangeRequest(Request $request, CaregiverSchedule $schedule): JsonResponse
+    public function approveChangeRequest(EmptyInputRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
         $schedule = $this->scheduleService->approveChange($schedule);
 
@@ -82,14 +83,14 @@ class CaregiverScheduleController extends Controller
         );
     }
 
-    public function rejectChangeRequest(Request $request, CaregiverSchedule $schedule): JsonResponse
+    public function rejectChangeRequest(EmptyInputRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
         $schedule = $this->scheduleService->rejectChange($schedule);
 
         return $this->scheduleResponse('Solicitud rechazada correctamente.', $schedule, $request);
     }
 
-    public function destroy(CaregiverSchedule $schedule): JsonResponse
+    public function destroy(EmptyInputRequest $request, CaregiverSchedule $schedule): JsonResponse
     {
         $schedule->delete();
 

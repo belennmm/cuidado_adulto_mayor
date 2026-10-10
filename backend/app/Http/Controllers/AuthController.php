@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuthService;
@@ -39,14 +40,14 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function logout(Request $request): JsonResponse
+    public function logout(EmptyInputRequest $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logout exitoso']);
     }
 
-    public function me(Request $request): JsonResponse
+    public function me(EmptyInputRequest $request): JsonResponse
     {
         return response()->json([
             'user' => $this->resource($request->user(), $request),

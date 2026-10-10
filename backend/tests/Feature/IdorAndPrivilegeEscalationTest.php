@@ -127,7 +127,7 @@ class IdorAndPrivilegeEscalationTest extends TestCase
         return [['admin'], ['profesional'], ['familiar'], ['cuidador_profesional'], ['cuidador_familiar']];
     }
 
-    public function test_valid_professional_operations_ignore_injected_owners_and_administrative_fields(): void
+    public function test_professional_operations_reject_injected_fields_and_accept_clean_payloads(): void
     {
         $own = $this->resources();
         $foreign = $this->resources();
@@ -141,25 +141,35 @@ class IdorAndPrivilegeEscalationTest extends TestCase
 
         $this->putJson("/api/professional/routine-notes/{$own['note']->id}", [
             ...$injected, 'content' => 'Nota permitida', 'older_adult_id' => $foreign['adult']->id,
-        ], $headers)->assertOk();
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('created_by');
+        $this->putJson("/api/professional/routine-notes/{$own['note']->id}", ['content' => 'Nota permitida'], $headers)->assertOk();
         $this->putJson("/api/rutinas/{$own['routine']->id}", [
             ...$injected, 'older_adult_id' => $foreign['adult']->id,
+            'nombre' => 'Rutina permitida', 'horario' => '10:00', 'actividades' => ['Caminar'],
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('created_by');
+        $this->putJson("/api/rutinas/{$own['routine']->id}", [
             'nombre' => 'Rutina permitida', 'horario' => '10:00', 'actividades' => ['Caminar'],
         ], $headers)->assertOk();
         $this->patchJson("/api/professional/incidents/{$own['incident']->id}", [
             ...$injected, 'older_adult_id' => $foreign['adult']->id, 'description' => 'Nota permitida', 'incident_date' => '2000-01-01',
-        ], $headers)->assertOk();
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('created_by');
+        $this->patchJson("/api/professional/incidents/{$own['incident']->id}", ['description' => 'Nota permitida'], $headers)->assertOk();
         $this->putJson("/api/schedules/{$own['schedule']->id}", [
             ...$injected, 'day_of_week' => 1, 'start_time' => '09:00', 'end_time' => '17:00',
             'change_request_status' => 'approved', 'change_request_message' => 'Inyectado',
-        ], $headers)->assertOk();
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('change_request_status');
+        $this->putJson("/api/schedules/{$own['schedule']->id}", ['day_of_week' => 1, 'start_time' => '09:00', 'end_time' => '17:00'], $headers)->assertOk();
         $this->postJson('/api/professional/vacation-requests', [
             ...$injected, 'start_date' => '2026-11-01', 'end_date' => '2026-11-02', 'reason' => 'Descanso',
             'status' => 'approved', 'reviewed_at' => now()->toISOString(),
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('status');
+        $this->postJson('/api/professional/vacation-requests', [
+            'start_date' => '2026-11-01', 'end_date' => '2026-11-02', 'reason' => 'Descanso',
         ], $headers)->assertCreated();
         $this->postJson("/api/medications/{$own['assignment']->id}/taken", [
             ...$injected, 'older_adult_id' => $foreign['adult']->id, 'administration_type' => 'extra', 'notes' => 'Toma permitida',
-        ], $headers)->assertOk();
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('administration_type');
+        $this->postJson("/api/medications/{$own['assignment']->id}/taken", ['notes' => 'Toma permitida'], $headers)->assertOk();
 
         $this->assertDatabaseHas('routine_notes', [
             'id' => $own['note']->id, 'older_adult_id' => $own['adult']->id, 'professional_caregiver_id' => $own['professional']->id,
@@ -184,12 +194,14 @@ class IdorAndPrivilegeEscalationTest extends TestCase
         $this->getJson("/api/admin/older-adults/{$foreign['adult']->id}", $headers)->assertOk();
         $this->putJson("/api/admin/older-adults/{$foreign['adult']->id}", [
             'full_name' => 'Cambio administrativo permitido', 'created_by' => $admin->id, 'id' => 999999,
-        ], $headers)->assertOk();
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors(['created_by', 'id']);
+        $this->putJson("/api/admin/older-adults/{$foreign['adult']->id}", ['full_name' => 'Cambio administrativo permitido'], $headers)->assertOk();
         $this->assertDatabaseHas('older_adults', ['id' => $foreign['adult']->id, 'created_by' => $foreign['professional']->id]);
 
-        $createdId = $this->postJson('/api/admin/older-adults', [
+        $this->postJson('/api/admin/older-adults', [
             'full_name' => 'Alta administrativa', 'created_by' => $foreign['professional']->id,
-        ], $headers)->assertCreated()->json('older_adult.id');
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors('created_by');
+        $createdId = $this->postJson('/api/admin/older-adults', ['full_name' => 'Alta administrativa'], $headers)->assertCreated()->json('older_adult.id');
         $this->assertDatabaseHas('older_adults', ['id' => $createdId, 'created_by' => $admin->id]);
     }
 

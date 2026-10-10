@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfessionalRoutineNoteController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\RutinaController;
 use App\Http\Controllers\VacationRequestController;
+use App\Http\Requests\EmptyInputRequest;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\MobilityExercise;
@@ -27,8 +28,13 @@ use App\Models\User;
 use App\Models\VacationRequest;
 use Illuminate\Support\Facades\Route;
 
+// Resource identifiers are decimal positive integers, never SQL fragments or aliases.
+foreach (['user', 'olderAdult', 'routineNote', 'rutina', 'schedule', 'assignment', 'inventoryItem', 'incident', 'vacationRequest', 'mobilityExercise'] as $parameter) {
+    Route::pattern($parameter, '[1-9][0-9]{0,18}');
+}
+
 // Public API: health probe, login and registration only.
-Route::get('/ping', function () {
+Route::get('/ping', function (EmptyInputRequest $request) {
     return response()->json(['ok' => true]);
 })->name('api.ping');
 

@@ -30,7 +30,10 @@ class ProtectedFieldsAndCredentialsTest extends TestCase
             'remember_token' => 'inyectado', 'privacy_consent_at' => '2000-01-01',
             'privacy_policy_version' => 'inyectada', 'created_at' => '2000-01-01',
             'user_id' => 999999, 'professional_caregiver_id' => 999999,
-        ], $headers)->assertOk()->assertJsonPath('user.role', $role)->assertJsonPath('user.is_approved', true);
+        ], $headers)->assertUnprocessable()->assertJsonValidationErrors(['role', 'is_approved', 'password', 'id']);
+        $this->assertNotSame('Nombre permitido', $user->refresh()->name);
+        $this->putJson('/api/me', ['name' => 'Nombre permitido', 'email' => $user->email], $headers)
+            ->assertOk()->assertJsonPath('user.role', $role)->assertJsonPath('user.is_approved', true);
 
         $user->refresh();
         $this->assertSame('Nombre permitido', $user->name);
@@ -79,6 +82,11 @@ class ProtectedFieldsAndCredentialsTest extends TestCase
             'password' => 'Secure-Test!123', 'role' => 'familiar', 'privacy_consent' => true,
             'is_approved' => true, 'id' => 999999, 'privacy_policy_version' => 'inyectada',
             'privacy_consent_at' => '2000-01-01', 'remember_token' => 'inyectado',
+        ])->assertUnprocessable()->assertJsonValidationErrors(['is_approved', 'id', 'remember_token']);
+        $this->assertDatabaseCount('users', 0);
+        $this->postJson('/api/register', [
+            'name' => 'Registro seguro', 'email' => 'registro-seguro@example.com',
+            'password' => 'Secure-Test!123', 'role' => 'familiar', 'privacy_consent' => true,
         ])->assertCreated()->assertJsonPath('user.role', 'familiar')->assertJsonPath('user.is_approved', false);
 
         $user = User::query()->sole();

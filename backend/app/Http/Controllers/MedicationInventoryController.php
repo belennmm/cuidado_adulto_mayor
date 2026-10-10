@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\MedicationInventoryRequest;
 use App\Http\Resources\MedicationInventoryResource;
 use App\Models\OlderAdultMedication;
@@ -66,7 +67,7 @@ class MedicationInventoryController extends Controller
         return $this->medicationResponse($message, $item, $request);
     }
 
-    public function destroy(OlderAdultMedication $inventoryItem): JsonResponse
+    public function destroy(EmptyInputRequest $request, OlderAdultMedication $inventoryItem): JsonResponse
     {
         $this->inventoryService->delete($inventoryItem);
 
