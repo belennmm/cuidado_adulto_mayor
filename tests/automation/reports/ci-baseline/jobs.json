@@ -1,0 +1,229 @@
+﻿{
+    "total_count":  2,
+    "jobs":  [
+                 {
+                     "id":  112590275212,
+                     "run_id":  37558532699,
+                     "workflow_name":  "Tarea 5 - Integracion y regresion",
+                     "head_branch":  "codex/tarea5-pruebas-automatizadas",
+                     "run_url":  "https://api.github.com/repos/belennmm/cuidado_adulto_mayor/actions/runs/37558532699",
+                     "run_attempt":  1,
+                     "node_id":  "CR_kwDOSD97Nc8AAAAaNudCjA",
+                     "head_sha":  "86808003ca3205bd16bd459315304246f8624e6f",
+                     "url":  "https://api.github.com/repos/belennmm/cuidado_adulto_mayor/actions/jobs/112590275212",
+                     "html_url":  "https://github.com/belennmm/cuidado_adulto_mayor/actions/runs/37558532699/job/112590275212",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "created_at":  "2026-10-07T01:43:47Z",
+                     "started_at":  "2026-10-07T01:43:49Z",
+                     "completed_at":  "2026-10-07T01:44:23Z",
+                     "name":  "frontend",
+                     "steps":  [
+                                   {
+                                       "name":  "Set up job",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  1,
+                                       "started_at":  "2026-10-07T01:43:49Z",
+                                       "completed_at":  "2026-10-07T01:43:50Z"
+                                   },
+                                   {
+                                       "name":  "Run actions/checkout@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  2,
+                                       "started_at":  "2026-10-07T01:43:50Z",
+                                       "completed_at":  "2026-10-07T01:43:51Z"
+                                   },
+                                   {
+                                       "name":  "Run actions/setup-node@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  3,
+                                       "started_at":  "2026-10-07T01:43:51Z",
+                                       "completed_at":  "2026-10-07T01:43:53Z"
+                                   },
+                                   {
+                                       "name":  "Preparar frontend",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  4,
+                                       "started_at":  "2026-10-07T01:43:53Z",
+                                       "completed_at":  "2026-10-07T01:43:56Z"
+                                   },
+                                   {
+                                       "name":  "Suite complementaria de frontend",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  5,
+                                       "started_at":  "2026-10-07T01:43:56Z",
+                                       "completed_at":  "2026-10-07T01:44:20Z"
+                                   },
+                                   {
+                                       "name":  "Conservar reporte del frontend",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  6,
+                                       "started_at":  "2026-10-07T01:44:20Z",
+                                       "completed_at":  "2026-10-07T01:44:20Z"
+                                   },
+                                   {
+                                       "name":  "Post Run actions/setup-node@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  11,
+                                       "started_at":  "2026-10-07T01:44:20Z",
+                                       "completed_at":  "2026-10-07T01:44:21Z"
+                                   },
+                                   {
+                                       "name":  "Post Run actions/checkout@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  12,
+                                       "started_at":  "2026-10-07T01:44:21Z",
+                                       "completed_at":  "2026-10-07T01:44:21Z"
+                                   },
+                                   {
+                                       "name":  "Complete job",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  13,
+                                       "started_at":  "2026-10-07T01:44:21Z",
+                                       "completed_at":  "2026-10-07T01:44:21Z"
+                                   }
+                               ],
+                     "check_run_url":  "https://api.github.com/repos/belennmm/cuidado_adulto_mayor/check-runs/112590275212",
+                     "labels":  [
+                                    "ubuntu-latest"
+                                ],
+                     "runner_id":  1000000207,
+                     "runner_name":  "GitHub Actions 1000000207",
+                     "runner_group_id":  0,
+                     "runner_group_name":  "GitHub Actions"
+                 },
+                 {
+                     "id":  112590275252,
+                     "run_id":  37558532699,
+                     "workflow_name":  "Tarea 5 - Integracion y regresion",
+                     "head_branch":  "codex/tarea5-pruebas-automatizadas",
+                     "run_url":  "https://api.github.com/repos/belennmm/cuidado_adulto_mayor/actions/runs/37558532699",
+                     "run_attempt":  1,
+                     "node_id":  "CR_kwDOSD97Nc8AAAAaNudCtA",
+                     "head_sha":  "86808003ca3205bd16bd459315304246f8624e6f",
+                     "url":  "https://api.github.com/repos/belennmm/cuidado_adulto_mayor/actions/jobs/112590275252",
+                     "html_url":  "https://github.com/belennmm/cuidado_adulto_mayor/actions/runs/37558532699/job/112590275252",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "created_at":  "2026-10-07T01:43:47Z",
+                     "started_at":  "2026-10-07T01:43:49Z",
+                     "completed_at":  "2026-10-07T01:44:26Z",
+                     "name":  "backend",
+                     "steps":  [
+                                   {
+                                       "name":  "Set up job",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  1,
+                                       "started_at":  "2026-10-07T01:43:51Z",
+                                       "completed_at":  "2026-10-07T01:43:52Z"
+                                   },
+                                   {
+                                       "name":  "Run actions/checkout@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  2,
+                                       "started_at":  "2026-10-07T01:43:52Z",
+                                       "completed_at":  "2026-10-07T01:43:53Z"
+                                   },
+                                   {
+                                       "name":  "Run shivammathur/setup-php@v2",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  3,
+                                       "started_at":  "2026-10-07T01:43:53Z",
+                                       "completed_at":  "2026-10-07T01:43:58Z"
+                                   },
+                                   {
+                                       "name":  "Run actions/setup-node@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  4,
+                                       "started_at":  "2026-10-07T01:43:58Z",
+                                       "completed_at":  "2026-10-07T01:43:58Z"
+                                   },
+                                   {
+                                       "name":  "Instalar dependencias del backend",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  5,
+                                       "started_at":  "2026-10-07T01:43:58Z",
+                                       "completed_at":  "2026-10-07T01:44:04Z"
+                                   },
+                                   {
+                                       "name":  "Pruebas y experimento de regresion",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  6,
+                                       "started_at":  "2026-10-07T01:44:04Z",
+                                       "completed_at":  "2026-10-07T01:44:07Z"
+                                   },
+                                   {
+                                       "name":  "Suite completa del backend",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  7,
+                                       "started_at":  "2026-10-07T01:44:07Z",
+                                       "completed_at":  "2026-10-07T01:44:21Z"
+                                   },
+                                   {
+                                       "name":  "Conservar evidencia incluso si hay fallos",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  8,
+                                       "started_at":  "2026-10-07T01:44:21Z",
+                                       "completed_at":  "2026-10-07T01:44:22Z"
+                                   },
+                                   {
+                                       "name":  "Resumen del proceso",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  9,
+                                       "started_at":  "2026-10-07T01:44:22Z",
+                                       "completed_at":  "2026-10-07T01:44:22Z"
+                                   },
+                                   {
+                                       "name":  "Post Run actions/setup-node@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  17,
+                                       "started_at":  "2026-10-07T01:44:22Z",
+                                       "completed_at":  "2026-10-07T01:44:22Z"
+                                   },
+                                   {
+                                       "name":  "Post Run actions/checkout@v4",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  18,
+                                       "started_at":  "2026-10-07T01:44:22Z",
+                                       "completed_at":  "2026-10-07T01:44:23Z"
+                                   },
+                                   {
+                                       "name":  "Complete job",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  19,
+                                       "started_at":  "2026-10-07T01:44:23Z",
+                                       "completed_at":  "2026-10-07T01:44:23Z"
+                                   }
+                               ],
+                     "check_run_url":  "https://api.github.com/repos/belennmm/cuidado_adulto_mayor/check-runs/112590275252",
+                     "labels":  [
+                                    "ubuntu-latest"
+                                ],
+                     "runner_id":  1000000208,
+                     "runner_name":  "GitHub Actions 1000000208",
+                     "runner_group_id":  0,
+                     "runner_group_name":  "GitHub Actions"
+                 }
+             ]
+}

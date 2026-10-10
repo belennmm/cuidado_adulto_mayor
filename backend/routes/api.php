@@ -18,34 +18,37 @@ use App\Http\Controllers\RutinaController;
 use App\Http\Controllers\VacationRequestController;
 use Illuminate\Support\Facades\Route;
 
+// Public API: health probe, login and registration only.
 Route::get('/ping', function () {
     return response()->json(['ok' => true]);
 });
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me', [AuthController::class, 'updateMe']);
-    Route::get('/incidents', [IncidentController::class, 'index']);
-    Route::get('/incidents/today', [IncidentController::class, 'today']);
+    Route::get('/incidents', [IncidentController::class, 'index'])->middleware('role:admin,profesional,familiar');
+    Route::get('/incidents/today', [IncidentController::class, 'today'])->middleware('role:admin,profesional,familiar');
 
-    Route::post('/medications/{assignment}/taken', [MedicationAdministrationController::class, 'markTaken']);
+    Route::post('/medications/{assignment}/taken', [MedicationAdministrationController::class, 'markTaken'])->middleware('role:profesional');
 
-    Route::post('/schedules', [CaregiverScheduleController::class, 'store']);
-    Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update']);
-    Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange']);
-    Route::get('/rutinas', [RutinaController::class, 'index']);
-    Route::post('/rutinas', [RutinaController::class, 'store']);
-    Route::patch('/rutinas/{rutina}/completar', [RutinaController::class, 'complete']);
-    Route::put('/rutinas/{rutina}', [RutinaController::class, 'update']);
-    Route::delete('/rutinas/{rutina}', [RutinaController::class, 'destroy']);
-    Route::get('/mobility-exercises', [MobilityExerciseController::class, 'index']);
-    Route::get('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'show']);
+    Route::post('/schedules', [CaregiverScheduleController::class, 'store'])->middleware('role:profesional');
+    Route::put('/schedules/{schedule}', [CaregiverScheduleController::class, 'update'])->middleware('role:admin,profesional');
+    Route::post('/schedules/{schedule}/change-request', [CaregiverScheduleController::class, 'requestChange'])->middleware('role:profesional');
+    Route::middleware('role:admin,profesional,familiar')->group(function () {
+        Route::get('/rutinas', [RutinaController::class, 'index']);
+        Route::post('/rutinas', [RutinaController::class, 'store']);
+        Route::patch('/rutinas/{rutina}/completar', [RutinaController::class, 'complete']);
+        Route::put('/rutinas/{rutina}', [RutinaController::class, 'update']);
+        Route::delete('/rutinas/{rutina}', [RutinaController::class, 'destroy']);
+    });
+    Route::get('/mobility-exercises', [MobilityExerciseController::class, 'index'])->middleware('role:admin,profesional');
+    Route::get('/mobility-exercises/{mobilityExercise}', [MobilityExerciseController::class, 'show'])->middleware('role:admin,profesional');
 
-    Route::prefix('family')->group(function () {
+    Route::middleware('role:familiar')->prefix('family')->group(function () {
         Route::get('/overview', [FamilyCareController::class, 'overview']);
         Route::get('/older-adults', [FamilyCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [FamilyCareController::class, 'olderAdult']);
@@ -55,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/routines', [FamilyCareController::class, 'routine']);
     });
 
-    Route::prefix('professional')->group(function () {
+    Route::middleware('role:profesional')->prefix('professional')->group(function () {
         Route::get('/overview', [ProfessionalCareController::class, 'overview']);
         Route::get('/older-adults', [ProfessionalCareController::class, 'olderAdults']);
         Route::get('/older-adults/{olderAdult}', [ProfessionalCareController::class, 'olderAdult']);

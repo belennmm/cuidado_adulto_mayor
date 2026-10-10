@@ -33,6 +33,12 @@ class IncidentListingService
     {
         $role = $this->normalizeRole($user->role);
 
+        if (! in_array($role, ['admin', 'familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true)) {
+            abort(response()->json([
+                'message' => 'No tienes acceso para consultar incidentes.',
+            ], 403));
+        }
+
         if (in_array($role, ['familiar', 'cuidador_familiar', 'profesional', 'cuidador_profesional'], true)
             && ! $user->is_approved) {
             abort(response()->json([

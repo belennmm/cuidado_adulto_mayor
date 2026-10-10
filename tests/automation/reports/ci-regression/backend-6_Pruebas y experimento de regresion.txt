@@ -1,0 +1,47 @@
+﻿2026-10-07T01:46:01.1137628Z ##[group]Run node tests/automation/run.mjs "$PHASE"
+2026-10-07T01:46:01.1138106Z [36;1mnode tests/automation/run.mjs "$PHASE"[0m
+2026-10-07T01:46:01.1203600Z shell: /usr/bin/bash -e {0}
+2026-10-07T01:46:01.1203815Z env:
+2026-10-07T01:46:01.1203991Z   PHASE: regression
+2026-10-07T01:46:01.1204212Z   TAREA5_REPORT_DIR: tests/automation/ci-reports
+2026-10-07T01:46:01.1204456Z   APP_ENV: testing
+2026-10-07T01:46:01.1204629Z   DB_CONNECTION: sqlite
+2026-10-07T01:46:01.1204809Z   DB_DATABASE: :memory:
+2026-10-07T01:46:01.1204983Z   CACHE_STORE: array
+2026-10-07T01:46:01.1205155Z   SESSION_DRIVER: array
+2026-10-07T01:46:01.1205336Z   COMPOSER_PROCESS_TIMEOUT: 0
+2026-10-07T01:46:01.1205539Z   COMPOSER_NO_INTERACTION: 1
+2026-10-07T01:46:01.1205728Z   COMPOSER_NO_AUDIT: 1
+2026-10-07T01:46:01.1205906Z ##[endgroup]
+2026-10-07T01:46:02.2363818Z 
+2026-10-07T01:46:02.2364344Z === regression ===
+2026-10-07T01:46:02.2364870Z PHPUnit 12.5.38 by Sebastian Bergmann and contributors.
+2026-10-07T01:46:02.2365187Z 
+2026-10-07T01:46:02.2365396Z Runtime:       PHP 8.3.35
+2026-10-07T01:46:02.2366074Z Configuration: /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/phpunit.xml
+2026-10-07T01:46:02.2366554Z 
+2026-10-07T01:46:02.2366843Z ...F..                                                              6 / 6 (100%)
+2026-10-07T01:46:02.2367352Z 
+2026-10-07T01:46:02.2367477Z Time: 00:00.821, Memory: 52.50 MB
+2026-10-07T01:46:02.2367617Z 
+2026-10-07T01:46:02.2367754Z Integration (Tests\Feature\Tarea5\Integration)
+2026-10-07T01:46:02.2368292Z  ✔ I01 login persists token and authenticates profile
+2026-10-07T01:46:02.2368672Z  ✔ I02 create adult persists medication and acquisition
+2026-10-07T01:46:02.2369033Z  ✔ I03 routine note links professional and adult in database
+2026-10-07T01:46:02.2369219Z 
+2026-10-07T01:46:02.2369360Z Regression (Tests\Feature\Tarea5\Regression)
+2026-10-07T01:46:02.2369694Z  ✘ R01 schedule rejects reversed times without persisting
+2026-10-07T01:46:02.2369951Z    │
+2026-10-07T01:46:02.2370380Z    │ Expected response status code [422] but received 201.
+2026-10-07T01:46:02.2370891Z    │ Failed asserting that 201 is identical to 422.
+2026-10-07T01:46:02.2371232Z    │
+2026-10-07T01:46:02.2372129Z    │ /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+2026-10-07T01:46:02.2373585Z    │ /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+2026-10-07T01:46:02.2374769Z    │ /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/tests/Feature/Tarea5/RegressionTest.php:21
+2026-10-07T01:46:02.2375172Z    │
+2026-10-07T01:46:02.2375474Z  ✔ R02 profile update preserves role in response and database
+2026-10-07T01:46:02.2375836Z  ✔ R03 pending caregiver cannot login or receive token
+2026-10-07T01:46:02.2376011Z 
+2026-10-07T01:46:02.2376193Z FAILURES!
+2026-10-07T01:46:02.2376406Z Tests: 6, Assertions: 23, Failures: 1.
+2026-10-07T01:46:02.2428556Z ##[error]Process completed with exit code 1.

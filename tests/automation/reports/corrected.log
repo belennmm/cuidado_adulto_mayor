@@ -1,0 +1,20 @@
+PHPUnit 11.5.55 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.2.12
+Configuration: C:\Projecto_Soft1\cuidado_adulto_mayor\backend\phpunit.xml
+
+......                                                              6 / 6 (100%)
+
+Time: 00:02.104, Memory: 44.00 MB
+
+Integration (Tests\Feature\Tarea5\Integration)
+ ✔ I01 login persists token and authenticates profile
+ ✔ I02 create adult persists medication and acquisition
+ ✔ I03 routine note links professional and adult in database
+
+Regression (Tests\Feature\Tarea5\Regression)
+ ✔ R01 schedule rejects reversed times without persisting
+ ✔ R02 profile update preserves role in response and database
+ ✔ R03 pending caregiver cannot login or receive token
+
+OK (6 tests, 26 assertions)

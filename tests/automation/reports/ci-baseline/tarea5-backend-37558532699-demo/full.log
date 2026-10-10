@@ -1,0 +1,320 @@
+PHPUnit 12.5.38 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.35
+Configuration: /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/phpunit.xml
+
+...............................................................  63 / 186 ( 33%)
+............................................................... 126 / 186 ( 67%)
+............................................................    186 / 186 (100%)
+
+Time: 00:13.273, Memory: 66.50 MB
+
+Admin Access And User Modification (Tests\Feature\AdminAccessAndUserModification)
+ ✔ Admin can log in and access admin routes
+ ✔ Admin can update user data
+ ✔ Admin can retrieve updated user details
+
+Admin Authorization (Tests\Feature\AdminAuthorization)
+ ✔ Family and professional users cannot access or modify administrator resources
+
+Admin Incident Endpoints (Tests\Feature\AdminIncidentEndpoints)
+ ✔ Admin can register incident for any older adult
+ ✔ Non admin cannot use admin incident endpoint
+
+Admin Medication Statistics (Tests\Feature\AdminMedicationStatistics)
+ ✔ Admin statistics sum acquired units for day month and year
+
+Admin Persistence And Availability (Tests\Feature\AdminPersistenceAndAvailability)
+ ✔ Admin changes are visible across different admin endpoints
+ ✔ Admin remains authenticated after user modifications
+ ✔ Admin can perform consecutive modifications without losing session
+ ✔ Admin routes remain available after modifications
+
+Admin User Management (Tests\Feature\AdminUserManagement)
+ ✔ Guest is rejected by sanctum on admin routes
+ ✔ Legacy public admin endpoints are not available
+ ✔ Non admin is rejected by admin middleware
+ ✔ Admin can create show update approve and delete users
+ ✔ Admin user creation validates payload
+ ✔ Only pending requests can be rejected
+
+Authentication (Tests\Feature\Authentication)
+ ✔ An approved user can login and receives a sanctum token
+ ✔ Login rejects invalid credentials
+ ✔ Login is blocked after five failed attempts
+ ✔ Successful login clears previous failed attempts
+ ✔ Pending non admin user cannot login
+ ✔ Registration creates a pending user and normalizes role
+ ✔ Registration requires privacy consent
+ ✔ Registration validates required unique and password fields
+ ✔ Authenticated user can read profile
+ ✔ Guest cannot read profile
+ ✔ Logout revokes the current sanctum token
+
+Authentication Validation (Tests\Feature\AuthenticationValidation)
+ ✔ Login and registration reject empty and malformed required fields without creating a user
+
+Caregiver Assignment Validation (Tests\Feature\CaregiverAssignmentValidation)
+ ✔ Admin can assign approved caregivers and rejects nonexistent or pending caregivers
+
+Caregiver Schedule Calendar Scrum (Tests\Feature\CaregiverScheduleCalendarScrum)
+ ✔ Scrum 615 admin creates several schedules
+ ✔ Scrum 616 authenticates an administrator
+ ✔ Scrum 617 admin queries the schedule calendar
+ ✔ Scrum 618 calendar returns 200 with expected json structure
+ ✔ Scrum 619 calendar returns correct dates and caregivers
+
+Caregiver Schedule Deletion (Tests\Feature\CaregiverScheduleDeletion)
+ ✔ Admin can delete an existing schedule
+
+Caregiver Schedule Endpoints (Tests\Feature\CaregiverScheduleEndpoints)
+ ✔ Professional can create schedule for day
+ ✔ Schedule requires valid time format
+ ✔ Schedule requires end time after start time
+ ✔ Pending professional cannot manage schedules
+ ✔ Non professional user cannot manage schedules
+ ✔ Professional can update own schedule
+ ✔ Professional cannot update other users schedule
+ ✔ Admin can assign schedule to professional
+ ✔ Admin can list assigned schedules
+ ✔ Professional can request schedule change
+ ✔ Admin can approve schedule change request
+ ✔ Admin can reject schedule change request
+ ✔ Admin cannot assign schedule to pending professional
+
+Caregiver Schedule End Time Validation (Tests\Feature\CaregiverScheduleEndTimeValidation)
+ ✔ Schedule cannot be created with end time before start time
+ ✔ Schedule cannot be updated with end time before start time
+
+Caregiver Schedule Invalid Format (Tests\Feature\CaregiverScheduleInvalidFormat)
+ ✔ Invalid schedule time format is rejected with data set "hora fuera de rango"
+ ✔ Invalid schedule time format is rejected with data set "texto no valido"
+
+Caregiver Schedule Unauthorized Modification (Tests\Feature\CaregiverScheduleUnauthorizedModification)
+ ✔ Professional cannot modify another professionals schedule
+
+Centralized Api Workflow (Tests\Feature\CentralizedApiWorkflow)
+ ✔ Admin login and core modules return json for centralized helper
+ ✔ Professional login and modules return json for centralized helper
+ ✔ Family login and modules return json for centralized helper
+
+Example (Tests\Feature\Example)
+ ✔ The application returns a successful response
+
+Example (Tests\Unit\Example)
+ ✔ That true is true
+
+Family Care Endpoints (Tests\Feature\FamilyCareEndpoints)
+ ✔ Family overview returns only assigned care information
+ ✔ Non family user cannot open family endpoints
+ ✔ Pending family user cannot open family endpoints
+ ✔ Family routines endpoint returns only assigned adult routines
+ ✔ Family routines endpoint validates requested adult belongs to family
+ ✔ Family can get complete assigned older adult info with incidents
+ ✔ Family incidents endpoint returns only assigned complete incidents
+ ✔ Family can get incidents for assigned older adult
+ ✔ Admin assigns older adult to real approved family caregiver
+ ✔ Admin cannot assign pending family caregiver to older adult
+ ✔ Family profile name update keeps assignments visible
+
+Family Caregiver Allowed Routes (Tests\Feature\FamilyCaregiverAllowedRoutes)
+ ✔ Approved family caregiver can log in and access every allowed read route
+
+Family Caregiver Data Isolation (Tests\Feature\FamilyCaregiverDataIsolation)
+ ✔ Family caregiver can only access assigned older adult data
+ ✔ Family caregiver cannot see other family caregivers older adults
+
+Family Caregiver Session Integrity (Tests\Feature\FamilyCaregiverSessionIntegrity)
+ ✔ Family caregiver session persists and unauthorized attempts do not modify data
+
+Family Caregiver Unauthorized Routes (Tests\Feature\FamilyCaregiverUnauthorizedRoutes)
+ ✔ Family caregiver cannot access or modify administrator routes
+ ✔ Family caregiver cannot access or modify professional routes
+
+Incident Endpoints (Tests\Feature\IncidentEndpoints)
+ ✔ Incidents endpoint defaults to today
+ ✔ Incidents endpoint filters by requested date
+ ✔ Incidents endpoint validates date format
+
+Integration (Tests\Feature\Tarea5\Integration)
+ ✔ I01 login persists token and authenticates profile
+ ✔ I02 create adult persists medication and acquisition
+ ✔ I03 routine note links professional and adult in database
+
+Medication Administration Endpoints (Tests\Feature\MedicationAdministrationEndpoints)
+ ✔ Professional can mark assigned medication as taken
+ ✔ Mark taken is idempotent for same day and assignment
+ ✔ Pending professional cannot mark taken
+ ✔ Professional cannot mark other professionals assignment
+
+Medication Inventory Endpoints (Tests\Feature\MedicationInventoryEndpoints)
+ ✔ Each older adult has an independent medication inventory
+ ✔ Inventory can be created as unassigned stock
+ ✔ Initial zero stock does not create an acquisition
+ ✔ Increasing stock records one acquisition and reducing stock records none
+ ✔ Updating one adults inventory does not change another adults stock
+ ✔ Stock adjustments only affect the selected adults inventory
+ ✔ Inventory requires an existing older adult and valid stock data
+ ✔ Deleting inventory for one adult keeps the other adults inventory
+ ✔ Non admin users cannot manage individual inventories
+ ✔ Editing an older adults clinical profile preserves its inventory
+
+Medication Inventory Status (Tests\Unit\MedicationInventoryStatus)
+ ✔ Inventory status follows expiration and stock rules with data set "expired"
+ ✔ Inventory status follows expiration and stock rules with data set "expiring soon"
+ ✔ Inventory status follows expiration and stock rules with data set "low stock"
+ ✔ Inventory status follows expiration and stock rules with data set "available"
+
+Mobility Exercise Endpoints (Tests\Feature\MobilityExerciseEndpoints)
+ ✔ Guest cannot list mobility exercises
+ ✔ Approved professional can list only active exercises
+ ✔ Unapproved professional and family user are forbidden
+ ✔ Admin can create show update and delete an exercise
+ ✔ Non admin cannot mutate exercises
+ ✔ Admin payload is validated
+ ✔ Inactive exercise is hidden from professional but visible to admin
+ ✔ Seeder creates the four default exercises idempotently
+
+Model Relationships (Tests\Feature\ModelRelationships)
+ ✔ Older adult relations return creator caregivers and incidents
+ ✔ User factory creates a pending family user with hashed password
+
+Older Adult Create (Tests\Feature\OlderAdultCreate)
+ ✔ Admin can create older adult
+
+Older Adult Create Payload (Tests\Feature\OlderAdultCreatePayload)
+ ✔ Admin can prepare valid older adult payload
+
+Older Adult Deletion (Tests\Feature\OlderAdultDeletion)
+ ✔ Admin can create and delete an older adult
+
+Older Adult Empty Listing (Tests\Feature\OlderAdultEmptyListing)
+ ✔ Admin receives empty older adult list
+
+Older Adult Listing (Tests\Feature\OlderAdultListing)
+ ✔ Admin can list older adults
+
+Older Adult Missing Show (Tests\Feature\OlderAdultMissingShow)
+ ✔ Admin receives not found for missing older adult
+
+Older Adult Show (Tests\Feature\OlderAdultShow)
+ ✔ Admin can show an older adult by id
+
+Older Adult Update (Tests\Feature\OlderAdultUpdate)
+ ✔ Admin can update an older adults information
+
+Pending Professional Routine Note (Tests\Feature\PendingProfessionalRoutineNote)
+ ✔ Pending professional cannot list routine notes
+ ✔ Pending professional cannot create routine notes
+
+Professional Care Endpoints (Tests\Feature\ProfessionalCareEndpoints)
+ ✔ Professional overview returns only assigned care information
+ ✔ Non professional user cannot open professional endpoints
+ ✔ Professional schedules returns own schedules
+
+Professional Caregiver Routine Workflow (Tests\Feature\ProfessionalCaregiverRoutineWorkflow)
+ ✔ Approved professional caregiver can create update and complete an assigned routine
+
+Professional Incident Endpoints (Tests\Feature\ProfessionalIncidentEndpoints)
+ ✔ Professional can register incident for assigned older adult
+ ✔ Unapproved professional cannot register incidents
+ ✔ Professional cannot register incident for other professionals older adult
+ ✔ Incident rejects invalid severity
+ ✔ Professional can update incident notes
+ ✔ Professional cannot update other professionals incident
+
+Profile Duplicate Email (Tests\Feature\ProfileDuplicateEmail)
+ ✔ Profile update rejects an email used by another user
+
+Profile Relationship Preservation (Tests\Feature\ProfileRelationshipPreservation)
+ ✔ Profile update preserves existing older adult schedule and routine relationships
+ ✔ Profile update only changes allowed profile fields
+
+Profile Role Protection (Tests\Feature\ProfileRoleProtection)
+ ✔ Professional cannot change role from profile update
+ ✔ Family caregiver cannot change role from profile update
+
+Profile Update Authentication (Tests\Feature\ProfileUpdateAuthentication)
+ ✔ Guest cannot update a profile
+
+Profile Update Persistence (Tests\Feature\ProfileUpdatePersistence)
+ ✔ Authenticated user can update allowed profile fields and changes are persisted
+
+Profile Update Validation (Tests\Feature\ProfileUpdateValidation)
+ ✔ Profile update rejects invalid phone email and birthdate without changing the profile
+
+Regression (Tests\Feature\Tarea5\Regression)
+ ✔ R01 schedule rejects reversed times without persisting
+ ✔ R02 profile update preserves role in response and database
+ ✔ R03 pending caregiver cannot login or receive token
+
+Reminder Endpoints (Tests\Feature\ReminderEndpoints)
+ ✔ Professional sees only assigned reminders for today
+ ✔ Reminders marks administered today when administration exists
+ ✔ Non professional user cannot open reminders
+
+Routine Note Authorization (Tests\Feature\RoutineNoteAuthorization)
+ ✔ Professional cannot view another professionals note
+ ✔ Listing does not expose another professionals notes
+ ✔ Professional cannot update another professionals note
+ ✔ Professional cannot delete another professionals note
+ ✔ Owner can view update and delete own note when assigned
+
+Routine Note Create (Tests\Feature\RoutineNoteCreate)
+ ✔ Professional can create routine note
+
+Routine Note Create Payload (Tests\Feature\RoutineNoteCreatePayload)
+ ✔ Professional can prepare routine note create payload
+
+Routine Note Listing (Tests\Feature\RoutineNoteListing)
+ ✔ Professional can list current week notes for an assigned older adult
+
+Routine Note Update (Tests\Feature\RoutineNoteUpdate)
+ ✔ Professional can update own routine note
+
+Routine Note Update Payload (Tests\Feature\RoutineNoteUpdatePayload)
+ ✔ Professional can prepare routine note update payload
+
+Routine Note Validation (Tests\Feature\RoutineNoteValidation)
+ ✔ Rejects a routine note with incomplete data
+
+Rutina Endpoints (Tests\Feature\RutinaEndpoints)
+ ✔ Get rutinas returns only assigned professional routines
+ ✔ Post rutinas creates a routine for assigned professional
+ ✔ Post rutinas requires valid schedule format
+ ✔ Put rutinas updates an assigned routine
+ ✔ Delete rutinas deletes an assigned routine
+ ✔ Patch rutinas completar marks existing activity as completed
+ ✔ Patch rutinas completar accepts activity index
+ ✔ Patch rutinas completar marks routine as completed when all activities are done
+ ✔ Patch rutinas completar rejects missing activity
+ ✔ Patch rutinas completar rejects missing activity index
+ ✔ Rutina update and delete reject unassigned routine
+ ✔ Post rutinas requires an existing older adult
+ ✔ Post rutinas rejects unassigned older adult
+ ✔ Post rutinas validates required fields
+
+Security Controls (Tests\Feature\SecurityControls)
+ ✔ Login uses a strong hash and issues an expiring token without leaking secrets
+ ✔ Password change immediately revokes all tokens
+ ✔ Api responses include security headers
+
+Security Headers And Cors (Tests\Feature\SecurityHeadersAndCors)
+ ✔ Api responses include security headers
+ ✔ Web responses include security headers
+ ✔ Allowed origin receives cors header
+ ✔ Untrusted origin does not receive cors permission
+ ✔ Preflight from untrusted origin grants no cors permission
+ ✔ Unknown api route returns normalized error without trace
+ ✔ Disallowed http method is rejected
+ ✔ Oversized request is rejected before controller execution
+
+Vacation Request Endpoints (Tests\Feature\VacationRequestEndpoints)
+ ✔ Professional can create vacation request
+ ✔ Pending professional cannot create vacation request
+ ✔ Vacation request requires end date after start date
+ ✔ Admin can list vacation requests
+ ✔ Admin can approve vacation request
+ ✔ Admin cannot review vacation request twice
+
+OK (186 tests, 1660 assertions)

@@ -1,0 +1,337 @@
+﻿2026-10-07T01:44:07.8793406Z ##[group]Run node tests/automation/run.mjs full
+2026-10-07T01:44:07.8793793Z [36;1mnode tests/automation/run.mjs full[0m
+2026-10-07T01:44:07.8857111Z shell: /usr/bin/bash -e {0}
+2026-10-07T01:44:07.8857366Z env:
+2026-10-07T01:44:07.8857548Z   PHASE: demo
+2026-10-07T01:44:07.8857795Z   TAREA5_REPORT_DIR: tests/automation/ci-reports
+2026-10-07T01:44:07.8858102Z   APP_ENV: testing
+2026-10-07T01:44:07.8858321Z   DB_CONNECTION: sqlite
+2026-10-07T01:44:07.8858546Z   DB_DATABASE: :memory:
+2026-10-07T01:44:07.8858757Z   CACHE_STORE: array
+2026-10-07T01:44:07.8858964Z   SESSION_DRIVER: array
+2026-10-07T01:44:07.8859184Z   COMPOSER_PROCESS_TIMEOUT: 0
+2026-10-07T01:44:07.8859427Z   COMPOSER_NO_INTERACTION: 1
+2026-10-07T01:44:07.8859659Z   COMPOSER_NO_AUDIT: 1
+2026-10-07T01:44:07.8859864Z ##[endgroup]
+2026-10-07T01:44:21.3636384Z 
+2026-10-07T01:44:21.3636915Z === full ===
+2026-10-07T01:44:21.3637625Z PHPUnit 12.5.38 by Sebastian Bergmann and contributors.
+2026-10-07T01:44:21.3638064Z 
+2026-10-07T01:44:21.3638270Z Runtime:       PHP 8.3.35
+2026-10-07T01:44:21.3638986Z Configuration: /home/runner/work/cuidado_adulto_mayor/cuidado_adulto_mayor/backend/phpunit.xml
+2026-10-07T01:44:21.3639427Z 
+2026-10-07T01:44:21.3639704Z ...............................................................  63 / 186 ( 33%)
+2026-10-07T01:44:21.3640255Z ............................................................... 126 / 186 ( 67%)
+2026-10-07T01:44:21.3640806Z ............................................................    186 / 186 (100%)
+2026-10-07T01:44:21.3641091Z 
+2026-10-07T01:44:21.3641246Z Time: 00:13.273, Memory: 66.50 MB
+2026-10-07T01:44:21.3641696Z 
+2026-10-07T01:44:21.3642094Z Admin Access And User Modification (Tests\Feature\AdminAccessAndUserModification)
+2026-10-07T01:44:21.3642858Z  ✔ Admin can log in and access admin routes
+2026-10-07T01:44:21.3643233Z  ✔ Admin can update user data
+2026-10-07T01:44:21.3643606Z  ✔ Admin can retrieve updated user details
+2026-10-07T01:44:21.3643867Z 
+2026-10-07T01:44:21.3644091Z Admin Authorization (Tests\Feature\AdminAuthorization)
+2026-10-07T01:44:21.3644750Z  ✔ Family and professional users cannot access or modify administrator resources
+2026-10-07T01:44:21.3645125Z 
+2026-10-07T01:44:21.3645410Z Admin Incident Endpoints (Tests\Feature\AdminIncidentEndpoints)
+2026-10-07T01:44:21.3645925Z  ✔ Admin can register incident for any older adult
+2026-10-07T01:44:21.3646382Z  ✔ Non admin cannot use admin incident endpoint
+2026-10-07T01:44:21.3646628Z 
+2026-10-07T01:44:21.3646934Z Admin Medication Statistics (Tests\Feature\AdminMedicationStatistics)
+2026-10-07T01:44:21.3647505Z  ✔ Admin statistics sum acquired units for day month and year
+2026-10-07T01:44:21.3647782Z 
+2026-10-07T01:44:21.3648178Z Admin Persistence And Availability (Tests\Feature\AdminPersistenceAndAvailability)
+2026-10-07T01:44:21.3648849Z  ✔ Admin changes are visible across different admin endpoints
+2026-10-07T01:44:21.3649364Z  ✔ Admin remains authenticated after user modifications
+2026-10-07T01:44:21.3649924Z  ✔ Admin can perform consecutive modifications without losing session
+2026-10-07T01:44:21.3650462Z  ✔ Admin routes remain available after modifications
+2026-10-07T01:44:21.3650778Z 
+2026-10-07T01:44:21.3651007Z Admin User Management (Tests\Feature\AdminUserManagement)
+2026-10-07T01:44:21.3651783Z  ✔ Guest is rejected by sanctum on admin routes
+2026-10-07T01:44:21.3652375Z  ✔ Legacy public admin endpoints are not available
+2026-10-07T01:44:21.3653112Z  ✔ Non admin is rejected by admin middleware
+2026-10-07T01:44:21.3653554Z  ✔ Admin can create show update approve and delete users
+2026-10-07T01:44:21.3653982Z  ✔ Admin user creation validates payload
+2026-10-07T01:44:21.3654327Z  ✔ Only pending requests can be rejected
+2026-10-07T01:44:21.3654675Z 
+2026-10-07T01:44:21.3654989Z Authentication (Tests\Feature\Authentication)
+2026-10-07T01:44:21.3655762Z  ✔ An approved user can login and receives a sanctum token
+2026-10-07T01:44:21.3656170Z  ✔ Login rejects invalid credentials
+2026-10-07T01:44:21.3656541Z  ✔ Login is blocked after five failed attempts
+2026-10-07T01:44:21.3657325Z  ✔ Successful login clears previous failed attempts
+2026-10-07T01:44:21.3657703Z  ✔ Pending non admin user cannot login
+2026-10-07T01:44:21.3658106Z  ✔ Registration creates a pending user and normalizes role
+2026-10-07T01:44:21.3658504Z  ✔ Registration requires privacy consent
+2026-10-07T01:44:21.3658927Z  ✔ Registration validates required unique and password fields
+2026-10-07T01:44:21.3659397Z  ✔ Authenticated user can read profile
+2026-10-07T01:44:21.3659709Z  ✔ Guest cannot read profile
+2026-10-07T01:44:21.3660068Z  ✔ Logout revokes the current sanctum token
+2026-10-07T01:44:21.3660266Z 
+2026-10-07T01:44:21.3660537Z Authentication Validation (Tests\Feature\AuthenticationValidation)
+2026-10-07T01:44:21.3661291Z  ✔ Login and registration reject empty and malformed required fields without creating a user
+2026-10-07T01:44:21.3661978Z 
+2026-10-07T01:44:21.3662299Z Caregiver Assignment Validation (Tests\Feature\CaregiverAssignmentValidation)
+2026-10-07T01:44:21.3662971Z  ✔ Admin can assign approved caregivers and rejects nonexistent or pending caregivers
+2026-10-07T01:44:21.3663324Z 
+2026-10-07T01:44:21.3663644Z Caregiver Schedule Calendar Scrum (Tests\Feature\CaregiverScheduleCalendarScrum)
+2026-10-07T01:44:21.3664152Z  ✔ Scrum 615 admin creates several schedules
+2026-10-07T01:44:21.3664515Z  ✔ Scrum 616 authenticates an administrator
+2026-10-07T01:44:21.3664896Z  ✔ Scrum 617 admin queries the schedule calendar
+2026-10-07T01:44:21.3665333Z  ✔ Scrum 618 calendar returns 200 with expected json structure
+2026-10-07T01:44:21.3665819Z  ✔ Scrum 619 calendar returns correct dates and caregivers
+2026-10-07T01:44:21.3666049Z 
+2026-10-07T01:44:21.3666318Z Caregiver Schedule Deletion (Tests\Feature\CaregiverScheduleDeletion)
+2026-10-07T01:44:21.3666767Z  ✔ Admin can delete an existing schedule
+2026-10-07T01:44:21.3666955Z 
+2026-10-07T01:44:21.3667235Z Caregiver Schedule Endpoints (Tests\Feature\CaregiverScheduleEndpoints)
+2026-10-07T01:44:21.3667700Z  ✔ Professional can create schedule for day
+2026-10-07T01:44:21.3668060Z  ✔ Schedule requires valid time format
+2026-10-07T01:44:21.3668412Z  ✔ Schedule requires end time after start time
+2026-10-07T01:44:21.3668792Z  ✔ Pending professional cannot manage schedules
+2026-10-07T01:44:21.3669183Z  ✔ Non professional user cannot manage schedules
+2026-10-07T01:44:21.3669549Z  ✔ Professional can update own schedule
+2026-10-07T01:44:21.3669927Z  ✔ Professional cannot update other users schedule
+2026-10-07T01:44:21.3670313Z  ✔ Admin can assign schedule to professional
+2026-10-07T01:44:21.3670652Z  ✔ Admin can list assigned schedules
+2026-10-07T01:44:21.3670991Z  ✔ Professional can request schedule change
+2026-10-07T01:44:21.3671363Z  ✔ Admin can approve schedule change request
+2026-10-07T01:44:21.3672144Z  ✔ Admin can reject schedule change request
+2026-10-07T01:44:21.3672836Z  ✔ Admin cannot assign schedule to pending professional
+2026-10-07T01:44:21.3673111Z 
+2026-10-07T01:44:21.3673470Z Caregiver Schedule End Time Validation (Tests\Feature\CaregiverScheduleEndTimeValidation)
+2026-10-07T01:44:21.3674083Z  ✔ Schedule cannot be created with end time before start time
+2026-10-07T01:44:21.3674566Z  ✔ Schedule cannot be updated with end time before start time
+2026-10-07T01:44:21.3674806Z 
+2026-10-07T01:44:21.3675130Z Caregiver Schedule Invalid Format (Tests\Feature\CaregiverScheduleInvalidFormat)
+2026-10-07T01:44:21.3675765Z  ✔ Invalid schedule time format is rejected with data set "hora fuera de rango"
+2026-10-07T01:44:21.3676749Z  ✔ Invalid schedule time format is rejected with data set "texto no valido"
+2026-10-07T01:44:21.3677050Z 
+2026-10-07T01:44:21.3677510Z Caregiver Schedule Unauthorized Modification (Tests\Feature\CaregiverScheduleUnauthorizedModification)
+2026-10-07T01:44:21.3678182Z  ✔ Professional cannot modify another professionals schedule
+2026-10-07T01:44:21.3678432Z 
+2026-10-07T01:44:21.3678687Z Centralized Api Workflow (Tests\Feature\CentralizedApiWorkflow)
+2026-10-07T01:44:21.3679205Z  ✔ Admin login and core modules return json for centralized helper
+2026-10-07T01:44:21.3679887Z  ✔ Professional login and modules return json for centralized helper
+2026-10-07T01:44:21.3680401Z  ✔ Family login and modules return json for centralized helper
+2026-10-07T01:44:21.3680648Z 
+2026-10-07T01:44:21.3680796Z Example (Tests\Feature\Example)
+2026-10-07T01:44:21.3681147Z  ✔ The application returns a successful response
+2026-10-07T01:44:21.3681370Z 
+2026-10-07T01:44:21.3681754Z Example (Tests\Unit\Example)
+2026-10-07T01:44:21.3682050Z  ✔ That true is true
+2026-10-07T01:44:21.3682188Z 
+2026-10-07T01:44:21.3682423Z Family Care Endpoints (Tests\Feature\FamilyCareEndpoints)
+2026-10-07T01:44:21.3682900Z  ✔ Family overview returns only assigned care information
+2026-10-07T01:44:21.3683318Z  ✔ Non family user cannot open family endpoints
+2026-10-07T01:44:21.3683761Z  ✔ Pending family user cannot open family endpoints
+2026-10-07T01:44:21.3684251Z  ✔ Family routines endpoint returns only assigned adult routines
+2026-10-07T01:44:21.3684792Z  ✔ Family routines endpoint validates requested adult belongs to family
+2026-10-07T01:44:21.3685722Z  ✔ Family can get complete assigned older adult info with incidents
+2026-10-07T01:44:21.3686678Z  ✔ Family incidents endpoint returns only assigned complete incidents
+2026-10-07T01:44:21.3687507Z  ✔ Family can get incidents for assigned older adult
+2026-10-07T01:44:21.3688312Z  ✔ Admin assigns older adult to real approved family caregiver
+2026-10-07T01:44:21.3689211Z  ✔ Admin cannot assign pending family caregiver to older adult
+2026-10-07T01:44:21.3689913Z  ✔ Family profile name update keeps assignments visible
+2026-10-07T01:44:21.3690147Z 
+2026-10-07T01:44:21.3690461Z Family Caregiver Allowed Routes (Tests\Feature\FamilyCaregiverAllowedRoutes)
+2026-10-07T01:44:21.3691081Z  ✔ Approved family caregiver can log in and access every allowed read route
+2026-10-07T01:44:21.3691384Z 
+2026-10-07T01:44:21.3692036Z Family Caregiver Data Isolation (Tests\Feature\FamilyCaregiverDataIsolation)
+2026-10-07T01:44:21.3692634Z  ✔ Family caregiver can only access assigned older adult data
+2026-10-07T01:44:21.3693168Z  ✔ Family caregiver cannot see other family caregivers older adults
+2026-10-07T01:44:21.3693438Z 
+2026-10-07T01:44:21.3693781Z Family Caregiver Session Integrity (Tests\Feature\FamilyCaregiverSessionIntegrity)
+2026-10-07T01:44:21.3694440Z  ✔ Family caregiver session persists and unauthorized attempts do not modify data
+2026-10-07T01:44:21.3694770Z 
+2026-10-07T01:44:21.3695119Z Family Caregiver Unauthorized Routes (Tests\Feature\FamilyCaregiverUnauthorizedRoutes)
+2026-10-07T01:44:21.3695720Z  ✔ Family caregiver cannot access or modify administrator routes
+2026-10-07T01:44:21.3696226Z  ✔ Family caregiver cannot access or modify professional routes
+2026-10-07T01:44:21.3696484Z 
+2026-10-07T01:44:21.3696683Z Incident Endpoints (Tests\Feature\IncidentEndpoints)
+2026-10-07T01:44:21.3697068Z  ✔ Incidents endpoint defaults to today
+2026-10-07T01:44:21.3697441Z  ✔ Incidents endpoint filters by requested date
+2026-10-07T01:44:21.3697822Z  ✔ Incidents endpoint validates date format
+2026-10-07T01:44:21.3698022Z 
+2026-10-07T01:44:21.3698201Z Integration (Tests\Feature\Tarea5\Integration)
+2026-10-07T01:44:21.3698621Z  ✔ I01 login persists token and authenticates profile
+2026-10-07T01:44:21.3699054Z  ✔ I02 create adult persists medication and acquisition
+2026-10-07T01:44:21.3699508Z  ✔ I03 routine note links professional and adult in database
+2026-10-07T01:44:21.3699936Z 
+2026-10-07T01:44:21.3700288Z Medication Administration Endpoints (Tests\Feature\MedicationAdministrationEndpoints)
+2026-10-07T01:44:21.3700854Z  ✔ Professional can mark assigned medication as taken
+2026-10-07T01:44:21.3701277Z  ✔ Mark taken is idempotent for same day and assignment
+2026-10-07T01:44:21.3702011Z  ✔ Pending professional cannot mark taken
+2026-10-07T01:44:21.3702450Z  ✔ Professional cannot mark other professionals assignment
+2026-10-07T01:44:21.3702691Z 
+2026-10-07T01:44:21.3702994Z Medication Inventory Endpoints (Tests\Feature\MedicationInventoryEndpoints)
+2026-10-07T01:44:21.3703537Z  ✔ Each older adult has an independent medication inventory
+2026-10-07T01:44:21.3704222Z  ✔ Inventory can be created as unassigned stock
+2026-10-07T01:44:21.3704629Z  ✔ Initial zero stock does not create an acquisition
+2026-10-07T01:44:21.3705149Z  ✔ Increasing stock records one acquisition and reducing stock records none
+2026-10-07T01:44:21.3705716Z  ✔ Updating one adults inventory does not change another adults stock
+2026-10-07T01:44:21.3706241Z  ✔ Stock adjustments only affect the selected adults inventory
+2026-10-07T01:44:21.3706750Z  ✔ Inventory requires an existing older adult and valid stock data
+2026-10-07T01:44:21.3707272Z  ✔ Deleting inventory for one adult keeps the other adults inventory
+2026-10-07T01:44:21.3707773Z  ✔ Non admin users cannot manage individual inventories
+2026-10-07T01:44:21.3708255Z  ✔ Editing an older adults clinical profile preserves its inventory
+2026-10-07T01:44:21.3708524Z 
+2026-10-07T01:44:21.3708786Z Medication Inventory Status (Tests\Unit\MedicationInventoryStatus)
+2026-10-07T01:44:21.3709385Z  ✔ Inventory status follows expiration and stock rules with data set "expired"
+2026-10-07T01:44:21.3710022Z  ✔ Inventory status follows expiration and stock rules with data set "expiring soon"
+2026-10-07T01:44:21.3710661Z  ✔ Inventory status follows expiration and stock rules with data set "low stock"
+2026-10-07T01:44:21.3711276Z  ✔ Inventory status follows expiration and stock rules with data set "available"
+2026-10-07T01:44:21.3711843Z 
+2026-10-07T01:44:21.3712128Z Mobility Exercise Endpoints (Tests\Feature\MobilityExerciseEndpoints)
+2026-10-07T01:44:21.3712596Z  ✔ Guest cannot list mobility exercises
+2026-10-07T01:44:21.3712994Z  ✔ Approved professional can list only active exercises
+2026-10-07T01:44:21.3713440Z  ✔ Unapproved professional and family user are forbidden
+2026-10-07T01:44:21.3713872Z  ✔ Admin can create show update and delete an exercise
+2026-10-07T01:44:21.3714247Z  ✔ Non admin cannot mutate exercises
+2026-10-07T01:44:21.3714549Z  ✔ Admin payload is validated
+2026-10-07T01:44:21.3714983Z  ✔ Inactive exercise is hidden from professional but visible to admin
+2026-10-07T01:44:21.3715477Z  ✔ Seeder creates the four default exercises idempotently
+2026-10-07T01:44:21.3715716Z 
+2026-10-07T01:44:21.3715917Z Model Relationships (Tests\Feature\ModelRelationships)
+2026-10-07T01:44:21.3716399Z  ✔ Older adult relations return creator caregivers and incidents
+2026-10-07T01:44:21.3716920Z  ✔ User factory creates a pending family user with hashed password
+2026-10-07T01:44:21.3717185Z 
+2026-10-07T01:44:21.3717381Z Older Adult Create (Tests\Feature\OlderAdultCreate)
+2026-10-07T01:44:21.3717746Z  ✔ Admin can create older adult
+2026-10-07T01:44:21.3717908Z 
+2026-10-07T01:44:21.3718153Z Older Adult Create Payload (Tests\Feature\OlderAdultCreatePayload)
+2026-10-07T01:44:21.3718607Z  ✔ Admin can prepare valid older adult payload
+2026-10-07T01:44:21.3718809Z 
+2026-10-07T01:44:21.3719016Z Older Adult Deletion (Tests\Feature\OlderAdultDeletion)
+2026-10-07T01:44:21.3719418Z  ✔ Admin can create and delete an older adult
+2026-10-07T01:44:21.3719627Z 
+2026-10-07T01:44:21.3719862Z Older Adult Empty Listing (Tests\Feature\OlderAdultEmptyListing)
+2026-10-07T01:44:21.3720286Z  ✔ Admin receives empty older adult list
+2026-10-07T01:44:21.3720478Z 
+2026-10-07T01:44:21.3720674Z Older Adult Listing (Tests\Feature\OlderAdultListing)
+2026-10-07T01:44:21.3721033Z  ✔ Admin can list older adults
+2026-10-07T01:44:21.3721330Z 
+2026-10-07T01:44:21.3721907Z Older Adult Missing Show (Tests\Feature\OlderAdultMissingShow)
+2026-10-07T01:44:21.3722401Z  ✔ Admin receives not found for missing older adult
+2026-10-07T01:44:21.3722624Z 
+2026-10-07T01:44:21.3722797Z Older Adult Show (Tests\Feature\OlderAdultShow)
+2026-10-07T01:44:21.3723170Z  ✔ Admin can show an older adult by id
+2026-10-07T01:44:21.3723345Z 
+2026-10-07T01:44:21.3723534Z Older Adult Update (Tests\Feature\OlderAdultUpdate)
+2026-10-07T01:44:21.3723933Z  ✔ Admin can update an older adults information
+2026-10-07T01:44:21.3724138Z 
+2026-10-07T01:44:21.3724458Z Pending Professional Routine Note (Tests\Feature\PendingProfessionalRoutineNote)
+2026-10-07T01:44:21.3725147Z  ✔ Pending professional cannot list routine notes
+2026-10-07T01:44:21.3725558Z  ✔ Pending professional cannot create routine notes
+2026-10-07T01:44:21.3725771Z 
+2026-10-07T01:44:21.3726046Z Professional Care Endpoints (Tests\Feature\ProfessionalCareEndpoints)
+2026-10-07T01:44:21.3726586Z  ✔ Professional overview returns only assigned care information
+2026-10-07T01:44:21.3727082Z  ✔ Non professional user cannot open professional endpoints
+2026-10-07T01:44:21.3727512Z  ✔ Professional schedules returns own schedules
+2026-10-07T01:44:21.3727714Z 
+2026-10-07T01:44:21.3728094Z Professional Caregiver Routine Workflow (Tests\Feature\ProfessionalCaregiverRoutineWorkflow)
+2026-10-07T01:44:21.3728818Z  ✔ Approved professional caregiver can create update and complete an assigned routine
+2026-10-07T01:44:21.3729161Z 
+2026-10-07T01:44:21.3729470Z Professional Incident Endpoints (Tests\Feature\ProfessionalIncidentEndpoints)
+2026-10-07T01:44:21.3730051Z  ✔ Professional can register incident for assigned older adult
+2026-10-07T01:44:21.3730516Z  ✔ Unapproved professional cannot register incidents
+2026-10-07T01:44:21.3731037Z  ✔ Professional cannot register incident for other professionals older adult
+2026-10-07T01:44:21.3731741Z  ✔ Incident rejects invalid severity
+2026-10-07T01:44:21.3732229Z  ✔ Professional can update incident notes
+2026-10-07T01:44:21.3732663Z  ✔ Professional cannot update other professionals incident
+2026-10-07T01:44:21.3732908Z 
+2026-10-07T01:44:21.3733153Z Profile Duplicate Email (Tests\Feature\ProfileDuplicateEmail)
+2026-10-07T01:44:21.3733631Z  ✔ Profile update rejects an email used by another user
+2026-10-07T01:44:21.3733855Z 
+2026-10-07T01:44:21.3734184Z Profile Relationship Preservation (Tests\Feature\ProfileRelationshipPreservation)
+2026-10-07T01:44:21.3734854Z  ✔ Profile update preserves existing older adult schedule and routine relationships
+2026-10-07T01:44:21.3735391Z  ✔ Profile update only changes allowed profile fields
+2026-10-07T01:44:21.3735638Z 
+2026-10-07T01:44:21.3735875Z Profile Role Protection (Tests\Feature\ProfileRoleProtection)
+2026-10-07T01:44:21.3736345Z  ✔ Professional cannot change role from profile update
+2026-10-07T01:44:21.3736787Z  ✔ Family caregiver cannot change role from profile update
+2026-10-07T01:44:21.3737029Z 
+2026-10-07T01:44:21.3737326Z Profile Update Authentication (Tests\Feature\ProfileUpdateAuthentication)
+2026-10-07T01:44:21.3737802Z  ✔ Guest cannot update a profile
+2026-10-07T01:44:21.3737964Z 
+2026-10-07T01:44:21.3738225Z Profile Update Persistence (Tests\Feature\ProfileUpdatePersistence)
+2026-10-07T01:44:21.3738824Z  ✔ Authenticated user can update allowed profile fields and changes are persisted
+2026-10-07T01:44:21.3739149Z 
+2026-10-07T01:44:21.3739394Z Profile Update Validation (Tests\Feature\ProfileUpdateValidation)
+2026-10-07T01:44:21.3740008Z  ✔ Profile update rejects invalid phone email and birthdate without changing the profile
+2026-10-07T01:44:21.3740352Z 
+2026-10-07T01:44:21.3740530Z Regression (Tests\Feature\Tarea5\Regression)
+2026-10-07T01:44:21.3740949Z  ✔ R01 schedule rejects reversed times without persisting
+2026-10-07T01:44:21.3741415Z  ✔ R02 profile update preserves role in response and database
+2026-10-07T01:44:21.3742179Z  ✔ R03 pending caregiver cannot login or receive token
+2026-10-07T01:44:21.3742403Z 
+2026-10-07T01:44:21.3742600Z Reminder Endpoints (Tests\Feature\ReminderEndpoints)
+2026-10-07T01:44:21.3743213Z  ✔ Professional sees only assigned reminders for today
+2026-10-07T01:44:21.3743688Z  ✔ Reminders marks administered today when administration exists
+2026-10-07T01:44:21.3744131Z  ✔ Non professional user cannot open reminders
+2026-10-07T01:44:21.3744337Z 
+2026-10-07T01:44:21.3744590Z Routine Note Authorization (Tests\Feature\RoutineNoteAuthorization)
+2026-10-07T01:44:21.3745073Z  ✔ Professional cannot view another professionals note
+2026-10-07T01:44:21.3745502Z  ✔ Listing does not expose another professionals notes
+2026-10-07T01:44:21.3745935Z  ✔ Professional cannot update another professionals note
+2026-10-07T01:44:21.3746513Z  ✔ Professional cannot delete another professionals note
+2026-10-07T01:44:21.3746956Z  ✔ Owner can view update and delete own note when assigned
+2026-10-07T01:44:21.3747193Z 
+2026-10-07T01:44:21.3747383Z Routine Note Create (Tests\Feature\RoutineNoteCreate)
+2026-10-07T01:44:21.3747770Z  ✔ Professional can create routine note
+2026-10-07T01:44:21.3747960Z 
+2026-10-07T01:44:21.3748219Z Routine Note Create Payload (Tests\Feature\RoutineNoteCreatePayload)
+2026-10-07T01:44:21.3748717Z  ✔ Professional can prepare routine note create payload
+2026-10-07T01:44:21.3748944Z 
+2026-10-07T01:44:21.3749139Z Routine Note Listing (Tests\Feature\RoutineNoteListing)
+2026-10-07T01:44:21.3749643Z  ✔ Professional can list current week notes for an assigned older adult
+2026-10-07T01:44:21.3749922Z 
+2026-10-07T01:44:21.3750118Z Routine Note Update (Tests\Feature\RoutineNoteUpdate)
+2026-10-07T01:44:21.3750513Z  ✔ Professional can update own routine note
+2026-10-07T01:44:21.3750720Z 
+2026-10-07T01:44:21.3750977Z Routine Note Update Payload (Tests\Feature\RoutineNoteUpdatePayload)
+2026-10-07T01:44:21.3751710Z  ✔ Professional can prepare routine note update payload
+2026-10-07T01:44:21.3751962Z 
+2026-10-07T01:44:21.3752201Z Routine Note Validation (Tests\Feature\RoutineNoteValidation)
+2026-10-07T01:44:21.3752645Z  ✔ Rejects a routine note with incomplete data
+2026-10-07T01:44:21.3752855Z 
+2026-10-07T01:44:21.3753041Z Rutina Endpoints (Tests\Feature\RutinaEndpoints)
+2026-10-07T01:44:21.3753472Z  ✔ Get rutinas returns only assigned professional routines
+2026-10-07T01:44:21.3753926Z  ✔ Post rutinas creates a routine for assigned professional
+2026-10-07T01:44:21.3754353Z  ✔ Post rutinas requires valid schedule format
+2026-10-07T01:44:21.3754714Z  ✔ Put rutinas updates an assigned routine
+2026-10-07T01:44:21.3755076Z  ✔ Delete rutinas deletes an assigned routine
+2026-10-07T01:44:21.3755521Z  ✔ Patch rutinas completar marks existing activity as completed
+2026-10-07T01:44:21.3755976Z  ✔ Patch rutinas completar accepts activity index
+2026-10-07T01:44:21.3756512Z  ✔ Patch rutinas completar marks routine as completed when all activities are done
+2026-10-07T01:44:21.3757026Z  ✔ Patch rutinas completar rejects missing activity
+2026-10-07T01:44:21.3757455Z  ✔ Patch rutinas completar rejects missing activity index
+2026-10-07T01:44:21.3757879Z  ✔ Rutina update and delete reject unassigned routine
+2026-10-07T01:44:21.3758287Z  ✔ Post rutinas requires an existing older adult
+2026-10-07T01:44:21.3758671Z  ✔ Post rutinas rejects unassigned older adult
+2026-10-07T01:44:21.3759029Z  ✔ Post rutinas validates required fields
+2026-10-07T01:44:21.3759215Z 
+2026-10-07T01:44:21.3759404Z Security Controls (Tests\Feature\SecurityControls)
+2026-10-07T01:44:21.3759919Z  ✔ Login uses a strong hash and issues an expiring token without leaking secrets
+2026-10-07T01:44:21.3760406Z  ✔ Password change immediately revokes all tokens
+2026-10-07T01:44:21.3760782Z  ✔ Api responses include security headers
+2026-10-07T01:44:21.3760975Z 
+2026-10-07T01:44:21.3761222Z Security Headers And Cors (Tests\Feature\SecurityHeadersAndCors)
+2026-10-07T01:44:21.3761861Z  ✔ Api responses include security headers
+2026-10-07T01:44:21.3762209Z  ✔ Web responses include security headers
+2026-10-07T01:44:21.3762544Z  ✔ Allowed origin receives cors header
+2026-10-07T01:44:21.3762919Z  ✔ Untrusted origin does not receive cors permission
+2026-10-07T01:44:21.3763543Z  ✔ Preflight from untrusted origin grants no cors permission
+2026-10-07T01:44:21.3764022Z  ✔ Unknown api route returns normalized error without trace
+2026-10-07T01:44:21.3764418Z  ✔ Disallowed http method is rejected
+2026-10-07T01:44:21.3764832Z  ✔ Oversized request is rejected before controller execution
+2026-10-07T01:44:21.3765085Z 
+2026-10-07T01:44:21.3765344Z Vacation Request Endpoints (Tests\Feature\VacationRequestEndpoints)
+2026-10-07T01:44:21.3765801Z  ✔ Professional can create vacation request
+2026-10-07T01:44:21.3766200Z  ✔ Pending professional cannot create vacation request
+2026-10-07T01:44:21.3766749Z  ✔ Vacation request requires end date after start date
+2026-10-07T01:44:21.3767121Z  ✔ Admin can list vacation requests
+2026-10-07T01:44:21.3767445Z  ✔ Admin can approve vacation request
+2026-10-07T01:44:21.3767801Z  ✔ Admin cannot review vacation request twice
+2026-10-07T01:44:21.3768007Z 
+2026-10-07T01:44:21.3768151Z OK (186 tests, 1660 assertions)
