@@ -37,7 +37,7 @@ class StrictInputValidationTest extends TestCase
             }
             $count++;
         }
-        $this->assertSame(79, $count);
+        $this->assertSame(81, $count);
     }
 
     public function test_nested_unknown_fields_reject_the_entire_write(): void

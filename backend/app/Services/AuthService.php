@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Support\PasswordPolicy;
 use App\Support\ResourceAccess;
 use App\Support\TokenAbilities;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -34,22 +36,14 @@ class AuthService
             }
         }
 
-        $user = User::query()->where('email', $email)->first();
-
-        if (! $user || ! Hash::check($password, $user->password)) {
+        $dummy = Cache::rememberForever('login-dummy:'.hash('sha256', json_encode(config('hashing'))), fn () => Hash::make(Str::random(64)));
+        $user = User::query()->whereRaw('LOWER(email) = ?', [Str::lower(trim($email))])->first();
+        $valid = Hash::check($password, $user?->password ?? $dummy);
+        if (! $valid || ! $user || ! $this->canLogin($user)) {
             foreach ($limits as $key => $maximum) {
                 RateLimiter::hit($key, (int) config('abuse.login_lockout_seconds', 300));
             }
             abort(response()->json(['message' => 'Credenciales invalidas'], 401));
-        }
-
-        if (! $this->canLogin($user)) {
-            foreach ($limits as $key => $maximum) {
-                RateLimiter::hit($key, (int) config('abuse.login_lockout_seconds', 300));
-            }
-            abort(response()->json([
-                'message' => 'Tu cuenta esta pendiente de aprobacion por un administrador.',
-            ], 403));
         }
 
         RateLimiter::clear($rateLimitKey);
@@ -71,22 +65,31 @@ class AuthService
         return 'login:'.sha1(Str::lower(trim($email)).'|'.$ipAddress);
     }
 
-    public function register(array $data): User
+    public function register(array $data): ?User
     {
         PasswordPolicy::validate($data['password']);
+        $hash = Hash::make($data['password']);
+        $data['email'] = Str::lower(trim($data['email']));
+        if (User::query()->whereRaw('LOWER(email) = ?', [$data['email']])->exists()) {
+            return null;
+        }
         $user = new User;
-        $user->forceFill([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => $this->normalizePublicRole($data['role'] ?? null),
-            'is_approved' => false,
-            'location' => $data['location'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'birthdate' => $data['birthdate'] ?? null,
-            'privacy_consent_at' => now(),
-            'privacy_policy_version' => config('privacy.policy_version'),
-        ])->save();
+        try {
+            $user->forceFill([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $hash,
+                'role' => $this->normalizePublicRole($data['role'] ?? null),
+                'is_approved' => false,
+                'location' => $data['location'] ?? null,
+                'phone' => $data['phone'] ?? null,
+                'birthdate' => $data['birthdate'] ?? null,
+                'privacy_consent_at' => now(),
+                'privacy_policy_version' => config('privacy.policy_version'),
+            ])->save();
+        } catch (UniqueConstraintViolationException) {
+            return null;
+        }
 
         return $user;
     }

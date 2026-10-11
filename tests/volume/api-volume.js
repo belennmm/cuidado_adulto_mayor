@@ -3,7 +3,8 @@ import { check, sleep } from 'k6';
 
 const BASE_URL = (__ENV.BASE_URL || 'http://host.docker.internal:8080/api').replace(/\/$/, '');
 const EMAIL = __ENV.K6_EMAIL || 'zap.admin@example.test';
-const PASSWORD = __ENV.K6_PASSWORD || 'ZapAdmin-2026!';
+const PASSWORD = __ENV.K6_PASSWORD;
+if (!PASSWORD) throw new Error('K6_PASSWORD es obligatorio; no hay claves predeterminadas.');
 
 export const options = {
   stages: [

@@ -40,7 +40,7 @@ class RegressionTest extends TestCase
             'role' => 'profesional', 'is_approved' => false, 'password' => Hash::make('secret123'),
         ]);
         $this->postJson('/api/login', ['email' => $user->email, 'password' => 'secret123'])
-            ->assertForbidden();
+            ->assertUnauthorized();
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 }

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\PasswordRecoveryRequest;
 use App\Http\Requests\RevokeSessionsRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\PasswordRecoveryService;
 use App\Support\AccountSecurityState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -56,12 +58,25 @@ class AuthController extends Controller
 
     public function register(AuthRequest $request): JsonResponse
     {
-        $user = $this->authService->register($request->validated());
+        $this->authService->register($request->validated());
 
-        return response()->json([
-            'message' => 'Registro enviado. Un administrador debe aprobar tu cuenta antes de iniciar sesion.',
-            'user' => $this->resource($user, $request),
-        ], 201);
+        return response()->json(['message' => 'Solicitud recibida. Si procede, tu cuenta quedara pendiente de aprobacion.'], 202);
+    }
+
+    public function forgotPassword(PasswordRecoveryRequest $request): JsonResponse
+    {
+        app(PasswordRecoveryService::class)->request($request->validated('email'));
+
+        return response()->json(['message' => 'Si la cuenta existe, recibiras un enlace para restablecer la contrasena.'], 202);
+    }
+
+    public function resetPassword(PasswordRecoveryRequest $request): JsonResponse
+    {
+        if (! app(PasswordRecoveryService::class)->reset($request->validated())) {
+            return response()->json(['message' => 'El enlace no es valido o ha expirado. Solicita uno nuevo.'], 422);
+        }
+
+        return response()->json(['message' => 'Contrasena restablecida. Inicia sesion nuevamente.']);
     }
 
     public function logout(EmptyInputRequest $request): JsonResponse

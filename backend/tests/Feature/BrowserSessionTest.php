@@ -8,6 +8,8 @@ use App\Support\AccountSecurityState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -278,5 +280,35 @@ class BrowserSessionTest extends TestCase
         app(CredentialRevocationService::class)->revoke($user->fresh());
         $user->forceFill(['name' => 'Updated name'])->save();
         $this->assertSame(2, $user->fresh()->session_version);
+    }
+
+    public function test_anonymous_recovery_and_reset_require_csrf(): void
+    {
+        Queue::fake();
+        $this->browser('POST', '/api/forgot-password', ['email' => 'anonymous@example.test'], false)->assertStatus(419);
+        $this->browser('POST', '/api/reset-password', [], false)->assertStatus(419);
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/forgot-password', ['email' => 'anonymous@example.test'])->assertStatus(202);
+    }
+
+    public function test_recovery_reset_revokes_existing_browser_and_bearer_credentials(): void
+    {
+        $user = $this->login();
+        $oldJar = $this->jar;
+        $bearer = $user->createToken('before-reset')->plainTextToken;
+        $token = Password::broker()->createToken($user);
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/reset-password', [
+            'email' => $user->email, 'token' => $token,
+            'password' => 'Browser-Recovery!2026', 'password_confirmation' => 'Browser-Recovery!2026',
+        ])->assertOk();
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+        $this->jar = $oldJar;
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $this->assertDatabaseMissing('sessions', ['user_id' => $user->id]);
+        Auth::forgetGuards();
+        $this->getJson('/api/me', ['Authorization' => 'Bearer '.$bearer])->assertUnauthorized();
     }
 }

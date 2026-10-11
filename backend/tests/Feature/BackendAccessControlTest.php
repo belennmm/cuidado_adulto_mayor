@@ -15,7 +15,7 @@ class BackendAccessControlTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PUBLIC_API = ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie'];
+    private const PUBLIC_API = ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie', 'api/forgot-password', 'api/reset-password'];
 
     private const ACCOUNT_API = ['api/me', 'api/logout', 'api/logout-all'];
 

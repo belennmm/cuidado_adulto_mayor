@@ -100,7 +100,7 @@
     const method = String(fetchOptions.method || "GET").toUpperCase()
     if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
       const endpoint = new URL(url, window.location.href).pathname.slice(apiBase.pathname.replace(/\/$/, "").length)
-      await ensureCsrf(["/login", "/register"].includes(endpoint))
+      await ensureCsrf(["/login", "/register", "/forgot-password", "/reset-password"].includes(endpoint))
     }
     const response = await fetch(url, {
       cache: "no-store",

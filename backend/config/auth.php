@@ -96,7 +96,7 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
+            'expire' => 15,
             'throttle' => 60,
         ],
     ],
@@ -111,6 +111,8 @@ return [
     | confirmation screen. By default, the timeout lasts for three hours.
     |
     */
+
+    'password_reset_url' => env('PASSWORD_RESET_URL', rtrim((string) env('APP_URL', 'http://localhost:3000'), '/').'/pages/reset-password.html'),
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 

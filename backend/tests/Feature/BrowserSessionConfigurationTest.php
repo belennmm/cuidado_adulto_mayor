@@ -37,6 +37,11 @@ class BrowserSessionConfigurationTest extends TestCase
             [['session.absolute_timeout' => -1], 'tiempos de sesion'],
             [['session.driver' => 'cookie'], 'SESSION_DRIVER'],
             [['session.driver' => 'array'], 'SESSION_DRIVER'],
+            [['auth.password_reset_url' => 'http://insecure.test/reset'], 'PASSWORD_RESET_URL'],
+            [['auth.password_reset_url' => 'https://cuidado.test/reset?next=external'], 'PASSWORD_RESET_URL'],
+            [['mail.default' => 'log'], 'MAIL_MAILER'],
+            [['mail.default' => 'failover'], 'MAIL_MAILER'],
+            [['mail.default' => 'custom', 'mail.mailers.custom.transport' => 'log'], 'MAIL_MAILER'],
         ];
     }
 }

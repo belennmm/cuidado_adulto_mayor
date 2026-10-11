@@ -24,6 +24,7 @@ use App\Policies\UserPolicy;
 use App\Policies\VacationRequestPolicy;
 use App\Support\ResourceAccess;
 use App\Support\RuntimeDatabaseAccount;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -44,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         $this->validateProductionConfiguration();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         User::observe(UserObserver::class);
+        ResetPassword::createUrlUsing(fn ($user, string $token) => config('auth.password_reset_url').'#'.http_build_query(['token' => $token, 'email' => $user->email]));
 
         Gate::policy(Rutina::class, RutinaPolicy::class);
         Gate::policy(OlderAdult::class, OlderAdultPolicy::class);
@@ -61,6 +63,14 @@ class AppServiceProvider extends ServiceProvider
         ]);
         RateLimiter::for('reauthentication', fn (Request $request) => [
             Limit::perMinute(5)->by('account:'.$request->user()->id),
+            Limit::perMinute(10)->by('ip:'.$request->ip()),
+        ]);
+        RateLimiter::for('recovery', fn (Request $request) => [
+            Limit::perHour(3)->by('account:'.hash('sha256', mb_strtolower(trim(is_string($request->input('email')) ? $request->input('email') : '')))),
+            Limit::perHour(10)->by('ip:'.$request->ip()),
+        ]);
+        RateLimiter::for('reset-password', fn (Request $request) => [
+            Limit::perMinute(5)->by('account:'.hash('sha256', mb_strtolower(trim(is_string($request->input('email')) ? $request->input('email') : '')))),
             Limit::perMinute(10)->by('ip:'.$request->ip()),
         ]);
         RateLimiter::for('registration', fn (Request $request) => [
@@ -130,6 +140,13 @@ class AppServiceProvider extends ServiceProvider
         if (! config('passwords.check_compromised')) {
             $missing[] = 'PASSWORD_CHECK_COMPROMISED debe ser true';
         }
+        if (! filter_var(config('auth.password_reset_url'), FILTER_VALIDATE_URL) || ! str_starts_with(config('auth.password_reset_url'), 'https://')
+            || parse_url(config('auth.password_reset_url'), PHP_URL_QUERY) || parse_url(config('auth.password_reset_url'), PHP_URL_FRAGMENT)) {
+            $missing[] = 'PASSWORD_RESET_URL debe usar HTTPS sin query ni fragmento';
+        }
+        if (! $this->deliversPrivateMail((string) config('mail.default'))) {
+            $missing[] = 'MAIL_MAILER debe entregar correos sin registrar tokens';
+        }
         $origins = config('cors.allowed_origins', []);
         if (array_filter($origins, fn (string $origin) => ! str_starts_with($origin, 'https://'))) {
             $missing[] = 'CORS_ALLOWED_ORIGINS debe usar HTTPS';
@@ -138,5 +155,26 @@ class AppServiceProvider extends ServiceProvider
         if ($missing !== []) {
             throw new RuntimeException('Configuracion de produccion insegura: '.implode(', ', $missing));
         }
+    }
+
+    private function deliversPrivateMail(string $name, array $visited = []): bool
+    {
+        if (in_array($name, $visited, true)) {
+            return false;
+        }
+        $mailer = config('mail.mailers.'.$name, []);
+        $transport = $mailer['transport'] ?? '';
+        if (in_array($transport, ['failover', 'roundrobin'], true)) {
+            $children = $mailer['mailers'] ?? [];
+            foreach ($children as $child) {
+                if (! $this->deliversPrivateMail($child, [...$visited, $name])) {
+                    return false;
+                }
+            }
+
+            return $children !== [];
+        }
+
+        return in_array($transport, ['smtp', 'sendmail', 'mailgun', 'ses', 'ses-v2', 'postmark', 'resend'], true);
     }
 }

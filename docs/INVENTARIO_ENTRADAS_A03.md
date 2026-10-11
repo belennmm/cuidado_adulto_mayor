@@ -6,7 +6,7 @@ Este bloque inventaría las entradas y completa su validación; no representa el
 
 ## Canales y respuesta
 
-Desde SCRUM-914, las 79 rutas API usan un `StrictFormRequest` concreto, incluidas consultas, aprobaciones, rechazos, eliminaciones y logout. La prueba `StrictInputValidationTest::test_every_api_action_declares_a_strict_form_request` recorre las rutas registradas y comprueba esta cobertura.
+Desde SCRUM-919, las 81 rutas API usan un `StrictFormRequest` concreto, incluidas consultas, aprobaciones, rechazos, eliminaciones y logout. La prueba `StrictInputValidationTest::test_every_api_action_declares_a_strict_form_request` recorre las rutas registradas y comprueba esta cobertura.
 
 | Entrada | Contrato efectivo |
 | --- | --- |
@@ -32,7 +32,7 @@ Las reglas ejecutables completas están en `backend/app/Http/Requests`. `nullabl
 | --- | --- |
 | `EmptyInputRequest` | Ningún campo de negocio. Rechaza datos en query/cuerpo para comandos sin parámetros y filtros no declarados en lecturas. |
 | `AuthRequest::login` | `email`: texto, email, máximo 254; `password`: texto, máximo 1024. Ambos obligatorios. Rechaza `abilities` y otros campos de control de tokens. |
-| `AuthRequest::register` | `name` texto obligatorio máximo 255; email obligatorio único máximo 254; contraseña obligatoria 15–128, mayúsculas/minúsculas, letras, números y símbolos; `role` opcional familiar/profesional y sus alias cuidador; `privacy_consent` obligatorio aceptado. `location`/`phone` opcionales texto máximo 255; nacimiento según regla común. Aprobación, auditoría, versión/fecha de consentimiento provienen del servidor. |
+| `AuthRequest::register` | `name` texto obligatorio máximo 255; email obligatorio máximo 254 (respuesta uniforme para cuentas existentes); contraseña obligatoria 15–128, mayúsculas/minúsculas, letras, números y símbolos; `role` opcional familiar/profesional y sus alias cuidador; `privacy_consent` obligatorio aceptado. `location`/`phone` opcionales texto máximo 255; nacimiento según regla común. Aprobación, auditoría, versión/fecha de consentimiento provienen del servidor. |
 | `AuthRequest::updateMe` | Nombre y email obligatorios; email único excluyendo usuario actual. Contacto/nacimiento como registro; `current_password` texto opcional máximo 1024; `new_password` fuerte y confirmada con `new_password_confirmation`, nueva contrasena de 15 a 128 caracteres; confirmacion maximo 1024. |
 | `AdminUserRequest` | Nombre/email/contacto/nacimiento como registro; email único excluyendo modelo enlazado. `role` obligatorio admin/familiar/profesional/cuidador_familiar/cuidador_profesional. Contraseña fuerte obligatoria al crear y opcional al editar. Sólo al editar: `is_approved` booleano obligatorio. |
 | `OlderAdultRequest` | Nombre obligatorio máximo 255; edad entero 0–130; nacimiento común; género femenino/masculino/otro; estado estable/atención/crítico/en observación (sin distinguir mayúsculas, con variantes sin acento). Habitación, cuidador familiar de compatibilidad, contacto de emergencia, teléfono y alergias texto opcional máximo 255. Historia clínica/notas máximo 10000. IDs de cuidadores positivos, existentes, aprobados y del rol correspondiente. |
@@ -152,3 +152,5 @@ Las cuatro rutas de infraestructura ajenas a /api son `/`, `/up`, `/sanctum/csrf
 - Laravel Pint: comprobación satisfactoria de Requests, controladores, servicio de inventario, rutas y pruebas del bloque.
 - Entorno realmente ejecutado: PHP **8.2.12**, Laravel **11.51.0**, PHPUnit **11.5.55**, SQLite en memoria. El manifiesto declara PHP ^8.3, Laravel ^13 y PHPUnit ^12; esta ejecución no certifica esas versiones. No se instalaron dependencias ni se ejecutaron migraciones contra la base de datos de la aplicación.
 - No se realizaron acciones de Git.
+
+`PasswordRecoveryRequest`: solicitud con email obligatorio máximo 254; restablecimiento exige además token hexadecimal de 64 caracteres, contraseña según PasswordPolicy y confirmación. Rechaza campos extra/query. Tokens de 15 minutos, de un solo uso.

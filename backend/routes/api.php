@@ -33,7 +33,7 @@ foreach (['user', 'olderAdult', 'routineNote', 'rutina', 'schedule', 'assignment
     Route::pattern($parameter, '[1-9][0-9]{0,18}');
 }
 
-// Public API: health probe, login and registration only.
+// Public authentication endpoints and health probe; resource routes require authentication.
 Route::get('/ping', function (EmptyInputRequest $request) {
     return response()->json(['ok' => true]);
 })->name('api.ping');
@@ -41,6 +41,8 @@ Route::get('/ping', function (EmptyInputRequest $request) {
 Route::get('/csrf-cookie', [AuthController::class, 'csrfCookie']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:recovery');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:reset-password');
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 
 Route::middleware(['auth:sanctum', 'throttle:sensitive-api'])->group(function () {

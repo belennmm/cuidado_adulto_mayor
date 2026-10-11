@@ -3,32 +3,31 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Support\SeedCredentials;
 use Illuminate\Database\Seeder;
 
 class SecurityScanSeeder extends Seeder
 {
     public function run(): void
     {
-        if (app()->environment('production')) {
-            throw new \LogicException('Las cuentas de escaneo no se pueden crear en produccion.');
-        }
+        SeedCredentials::guard();
         $accounts = [
             [
                 'name' => 'ZAP Admin',
                 'email' => 'zap.admin@example.test',
-                'password' => 'ZapAdmin-2026!',
+                'password' => SeedCredentials::password('scan_admin'),
                 'role' => 'admin',
             ],
             [
                 'name' => 'ZAP Professional',
                 'email' => 'zap.professional@example.test',
-                'password' => 'ZapPro-2026!',
+                'password' => SeedCredentials::password('scan_professional'),
                 'role' => 'profesional',
             ],
             [
                 'name' => 'ZAP Family',
                 'email' => 'zap.family@example.test',
-                'password' => 'ZapFamily-2026!',
+                'password' => SeedCredentials::password('scan_family'),
                 'role' => 'familiar',
             ],
         ];
