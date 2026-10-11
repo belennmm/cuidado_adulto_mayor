@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Monolog\Handler\NullHandler;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger as Monolog;
 use Tests\TestCase;
@@ -41,8 +42,27 @@ class AuthenticationSecretProtectionTest extends TestCase
         }
         $this->assertStringContainsString('[REDACTED]', $encoded);
         $this->assertSame('password=[REDACTED]', RedactSecrets::text('password="Sensitive password with spaces"'));
-        foreach (config('logging.channels') as $channel) {
-            $this->assertContains(RedactSecrets::class, $channel['tap']);
+        $this->assertConfiguredChannelsRedactSecrets();
+    }
+
+    public function test_framework_channels_without_taps_do_not_break_configured_channel_checks(): void
+    {
+        config(['logging.channels.framework-diagnostic' => [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+        ]]);
+
+        $this->assertConfiguredChannelsRedactSecrets();
+        $this->assertArrayNotHasKey('tap', config('logging.channels.framework-diagnostic'));
+    }
+
+    private function assertConfiguredChannelsRedactSecrets(): void
+    {
+        // Frameworks and packages may add runtime channels outside our configuration contract.
+        $configured = require config_path('logging.php');
+        foreach (array_keys($configured['channels']) as $name) {
+            $this->assertContains(RedactSecrets::class, config("logging.channels.{$name}.tap", []),
+                "Configured log channel [{$name}] must redact secrets.");
         }
     }
 
