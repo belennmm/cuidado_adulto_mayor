@@ -30,6 +30,12 @@ jobs:
         run: |
           cp .env.example .env
           find bootstrap/cache -maxdepth 1 -type f -name '*.php' -delete
+      - name: Validate PHP dependency lockfile
+        working-directory: backend
+        run: |
+          test -s composer.lock
+          composer validate --no-check-publish --check-lock
+          sha256sum composer.json composer.lock >> "$GITHUB_STEP_SUMMARY"
       - name: Install locked PHP dependencies
         working-directory: backend
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -49,6 +55,11 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - name: Record frontend dependency integrity
+        working-directory: frontend
+        run: |
+          test -s package-lock.json
+          sha256sum package.json package-lock.json >> "$GITHUB_STEP_SUMMARY"
       - name: Install locked frontend dependencies
         working-directory: frontend
         run: npm ci

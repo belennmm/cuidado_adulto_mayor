@@ -20,10 +20,17 @@ jobs:
           format: cyclonedx-json
           output-file: cuidado-adulto-mayor.cdx.json
           upload-artifact: false
+      - name: Record SBOM checksum and integrity inputs
+        run: |
+          sha256sum cuidado-adulto-mayor.cdx.json > cuidado-adulto-mayor.cdx.json.sha256
+          sha256sum backend/composer.json backend/composer.lock frontend/package.json frontend/package-lock.json backend/dockerfile frontend/dockerfile frontend/nginx.conf tests/security/semgrep.yml .github/workflows/*.yml > cuidado-integrity-inputs.sha256
       - name: Upload version SBOM
         uses: actions/upload-artifact@v7
         with:
           name: sbom-${{ github.ref_name }}
-          path: cuidado-adulto-mayor.cdx.json
+          path: |
+            cuidado-adulto-mayor.cdx.json
+            cuidado-adulto-mayor.cdx.json.sha256
+            cuidado-integrity-inputs.sha256
           if-no-files-found: error
           retention-days: 90

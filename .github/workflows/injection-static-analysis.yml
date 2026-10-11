@@ -24,6 +24,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install Semgrep
-        run: python -m pip install semgrep
+        # Release reference: https://pypi.org/project/semgrep/1.180.0/
+        run: python -m pip install --disable-pip-version-check semgrep==1.180.0
       - name: Scan SQL, commands and DOM injection
         run: semgrep scan --config tests/security/semgrep.yml --error --metrics=off --disable-version-check backend/app backend/routes frontend/js
