@@ -24,7 +24,6 @@ use App\Policies\UserPolicy;
 use App\Policies\VacationRequestPolicy;
 use App\Support\ResourceAccess;
 use App\Support\RuntimeDatabaseAccount;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -45,7 +44,6 @@ class AppServiceProvider extends ServiceProvider
         $this->validateProductionConfiguration();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         User::observe(UserObserver::class);
-        ResetPassword::createUrlUsing(fn ($user, string $token) => config('auth.password_reset_url').'#'.http_build_query(['token' => $token, 'email' => $user->email]));
 
         Gate::policy(Rutina::class, RutinaPolicy::class);
         Gate::policy(OlderAdult::class, OlderAdultPolicy::class);
@@ -73,6 +71,7 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(5)->by('account:'.hash('sha256', mb_strtolower(trim(is_string($request->input('email')) ? $request->input('email') : '')))),
             Limit::perMinute(10)->by('ip:'.$request->ip()),
         ]);
+        RateLimiter::for('mfa-verification', fn (Request $request) => [Limit::perMinute(10)->by('ip:'.$request->ip())]);
         RateLimiter::for('registration', fn (Request $request) => [
             Limit::perHour(10)->by($request->ip()),
         ]);

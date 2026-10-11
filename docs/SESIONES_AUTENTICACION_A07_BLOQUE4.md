@@ -48,4 +48,4 @@ No se ejecutaron migraciones, seeders, correos reales, Docker ni operaciones Git
 
 **612 pruebas backend / 8224 aserciones** y **196 pruebas frontend / 58 archivos**, sin fallos. Se agregaron 16 casos backend y 5 frontend respecto del bloque anterior. Pint aplicado a 23 archivos PHP; guard estatico PHP aprobado y sintaxis de 70 archivos JavaScript verificada. Se verifico la presencia unica de los controles de sesiones en los tres perfiles. Se conservan las limitaciones de versiones del entorno de los bloques anteriores: instalado PHP 8.2.12 / Laravel 11.51 / PHPUnit 11.5.55 y Vitest 3.2.7 / jsdom 26.1; manifiestos PHP 8.3 / Laravel 13 / PHPUnit 12 y Vitest 5 / jsdom 30. No se sustituyeron dependencias; falta verificar esas versiones declaradas en CI.
 
-Pendientes para el último bloque: SCRUM-928 a SCRUM-933.
+Las subtareas SCRUM-928 a SCRUM-933 se completaron posteriormente en el [bloque final de A07](SESIONES_AUTENTICACION_A07_BLOQUE5.md).

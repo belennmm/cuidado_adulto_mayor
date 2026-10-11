@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Jobs\SendPasswordRecovery;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Notifications\PasswordRecoveryCode as ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +37,7 @@ class PasswordRecoveryTest extends TestCase
         $this->assertDatabaseCount('password_reset_tokens', 0);
     }
 
-    public function test_job_sends_a_fixed_origin_fragment_link_and_stores_only_a_hash(): void
+    public function test_job_sends_a_fixed_origin_link_without_credentials_and_stores_only_a_hash(): void
     {
         Notification::fake();
         config(['auth.password_reset_url' => 'https://frontend.example/pages/reset-password.html']);
@@ -45,10 +45,10 @@ class PasswordRecoveryTest extends TestCase
         (new SendPasswordRecovery('mixedcase@example.test'))->handle();
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
             $url = $notification->toMail($user)->actionUrl;
-            $this->assertStringStartsWith(config('auth.password_reset_url').'#', $url);
+            $this->assertSame(config('auth.password_reset_url'), $url);
             $this->assertNull(parse_url($url, PHP_URL_QUERY));
-            parse_str(parse_url($url, PHP_URL_FRAGMENT), $fragment);
-            $this->assertSame($user->email, $fragment['email']);
+            $this->assertNull(parse_url($url, PHP_URL_FRAGMENT));
+            $this->assertContains($notification->token, $notification->toMail($user)->introLines);
             $stored = DB::table('password_reset_tokens')->where('email', $user->email)->value('token');
             $this->assertNotSame($notification->token, $stored);
             $this->assertTrue(Hash::check($notification->token, $stored));

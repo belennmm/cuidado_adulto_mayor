@@ -48,4 +48,13 @@ describe("CuidadoApi", () => {
     await expect(window.CuidadoApi.fetchJson("/me", { method: "PUT" }))
       .rejects.toMatchObject({ message: "El correo ya existe.", status: 422 })
   })
+
+  it("bloquea secretos en query antes de llamar al servidor", async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    for (const key of ['password', 'token', 'code', 'challenge', 'recovery_codes']) {
+      await expect(window.CuidadoApi.fetchJson(`/ping?${key}=sensitive`)).rejects.toThrow('credenciales')
+    }
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })

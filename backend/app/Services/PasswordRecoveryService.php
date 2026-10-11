@@ -32,6 +32,10 @@ class PasswordRecoveryService
             if (! $row || ! $row->created_at || now()->subMinutes((int) config('auth.passwords.users.expire'))->gte(Carbon::parse($row->created_at))) {
                 return false;
             }
+            if ($row->attempts >= 5) {
+                return false;
+            }
+            DB::table(config('auth.passwords.users.table'))->where('email', $user->email)->increment('attempts');
             $data['email'] = $user->email;
 
             return Password::broker()->reset($data, function (User $account, string $password) {

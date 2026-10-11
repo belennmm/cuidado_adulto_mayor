@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 async function setup(reset = false, fragment = '') {
   window.history.replaceState(null, '', `/pages/${reset ? 'reset' : 'forgot'}-password.html${fragment}`)
-  document.body.innerHTML = `<form id="recoveryForm" data-mode="${reset ? 'reset' : 'request'}"><input name="email"><input name="password"><input name="password_confirmation"><button>Enviar</button></form><p id="recoveryMessage"></p>`
+  document.body.innerHTML = `<form id="recoveryForm" data-mode="${reset ? 'reset' : 'request'}"><input name="email"><input name="token"><input name="password"><input name="password_confirmation"><button>Enviar</button></form><p id="recoveryMessage"></p>`
   window.CuidadoApi = { fetchJson: vi.fn().mockResolvedValue({ message: 'Solicitud recibida' }) }
   await import('../../js/password-recovery.js')
   return document.getElementById('recoveryForm')
@@ -25,6 +25,9 @@ describe('recuperación de contraseña', () => {
     expect(window.location.hash).toBe('')
     expect(localStorage.length).toBe(0)
     expect(sessionStorage.length).toBe(0)
+    expect(form.elements.token.value).toBe('')
+    form.elements.email.value = 'user@example.test'
+    form.elements.token.value = token
     form.elements.password.value = 'Exact-Password!2026'
     form.elements.password_confirmation.value = 'Exact-Password!2026'
     submit(form)
@@ -32,10 +35,11 @@ describe('recuperación de contraseña', () => {
     await vi.waitFor(() => expect(form.elements.password.value).toBe(''))
     expect(form.querySelector('button').disabled).toBe(true)
   })
-  it('rechaza un enlace incompleto sin enviar solicitudes', async () => {
+  it('ignora credenciales en enlaces antiguos', async () => {
     const form = await setup(true, '#token=invalid')
-    submit(form)
-    expect(form.querySelector('button').disabled).toBe(true)
+    expect(form.elements.token.value).toBe('')
+    expect(window.location.hash).toBe('')
+    expect(form.querySelector('button').disabled).toBe(false)
     expect(window.CuidadoApi.fetchJson).not.toHaveBeenCalled()
   })
   it('muestra errores como texto y permite reintentar', async () => {

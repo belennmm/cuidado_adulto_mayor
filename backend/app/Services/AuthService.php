@@ -48,16 +48,15 @@ class AuthService
 
         RateLimiter::clear($rateLimitKey);
 
-        $expirationMinutes = (int) config('sanctum.expiration', 60);
+        return DB::transaction(function () use ($user, $password, $issueToken) {
+            $current = User::query()->whereKey($user->id)->lockForUpdate()->first();
+            abort_unless($current && $this->canLogin($current) && Hash::check($password, $current->password), 401);
+            if ($current->mfa_enabled_at) {
+                return app(MfaService::class)->begin($current, app('request'));
+            }
 
-        return [
-            'user' => $user,
-            'token' => $issueToken ? $user->createToken(
-                'API Token',
-                TokenAbilities::forUser($user),
-                now()->addMinutes($expirationMinutes),
-            )->plainTextToken : null,
-        ];
+            return ['user' => $current, 'token' => $issueToken ? $current->createToken('API Token', TokenAbilities::forUser($current), now()->addMinutes((int) config('sanctum.expiration', 60)))->plainTextToken : null];
+        });
     }
 
     private function loginRateLimitKey(string $email, string $ipAddress): string

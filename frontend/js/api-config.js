@@ -26,6 +26,7 @@
       || !(url.pathname === prefix || url.pathname.startsWith(`${prefix}/`))) {
       throw new Error("URL de API no permitida.")
     }
+    for (const key of url.searchParams.keys()) if (/password|token|secret|authorization|cookie|challenge|(?:^|_)code(?:s|$)/i.test(key)) throw new Error("No envies credenciales en la URL.")
     return candidate
   }
 
@@ -100,7 +101,7 @@
     const method = String(fetchOptions.method || "GET").toUpperCase()
     if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
       const endpoint = new URL(url, window.location.href).pathname.slice(apiBase.pathname.replace(/\/$/, "").length)
-      await ensureCsrf(["/login", "/register", "/forgot-password", "/reset-password"].includes(endpoint))
+      await ensureCsrf(["/login", "/register", "/forgot-password", "/reset-password", "/mfa/verify"].includes(endpoint))
     }
     const response = await fetch(url, {
       cache: "no-store",

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\MfaRequest;
 use App\Http\Requests\PasswordRecoveryRequest;
 use App\Http\Requests\RevokeSessionsRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AccountSessionService;
 use App\Services\AuthService;
+use App\Services\MfaService;
 use App\Services\PasswordRecoveryService;
 use App\Support\AccountSecurityState;
 use Illuminate\Http\JsonResponse;
@@ -31,6 +33,15 @@ class AuthController extends Controller
             ! $request->attributes->get('browser_session', false)
         );
 
+        if ($authentication['mfa_required'] ?? false) {
+            return response()->json($authentication, 202);
+        }
+
+        return $this->finishLogin($request, $authentication);
+    }
+
+    private function finishLogin(Request $request, array $authentication): JsonResponse
+    {
         if ($request->attributes->get('browser_session')) {
             $previous = Auth::guard('web')->user();
             if ($previous && $request->session()->has('account_session_id')) {
@@ -163,6 +174,48 @@ class AuthController extends Controller
         app(AccountSessionService::class)->confirm($request, $request->validated('current_password'));
 
         return response()->json(['message' => 'Autenticacion confirmada.']);
+    }
+
+    public function verifyMfa(MfaRequest $request): JsonResponse
+    {
+        $authentication = app(MfaService::class)->complete($request, $request->validated());
+        if (! $authentication) {
+            return response()->json(['message' => 'Codigo no valido o expirado. Inicia sesion nuevamente.'], 422);
+        }
+
+        return $this->finishLogin($request, $authentication);
+    }
+
+    public function mfaStatus(EmptyInputRequest $request): JsonResponse
+    {
+        return response()->json(app(MfaService::class)->status($request->user()));
+    }
+
+    public function setupMfa(MfaRequest $request): JsonResponse
+    {
+        return $this->manageMfa($request, 'setup');
+    }
+
+    public function confirmMfa(MfaRequest $request): JsonResponse
+    {
+        return $this->manageMfa($request, 'confirm');
+    }
+
+    public function disableMfa(MfaRequest $request): JsonResponse
+    {
+        return $this->manageMfa($request, 'disable');
+    }
+
+    public function regenerateMfaCodes(MfaRequest $request): JsonResponse
+    {
+        return $this->manageMfa($request, 'regenerate');
+    }
+
+    private function manageMfa(MfaRequest $request, string $action): JsonResponse
+    {
+        $result = app(MfaService::class)->manage($request, $action, $request->validated());
+
+        return $result ? response()->json($result) : response()->json(['message' => 'Codigo no valido o expirado.'], 422);
     }
 
     private function resource(User $user, Request $request): array

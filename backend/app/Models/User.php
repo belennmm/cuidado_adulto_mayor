@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Notifications\PasswordRecoveryCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -25,7 +26,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'session_version',
+        'session_version', 'mfa_secret', 'mfa_pending_secret', 'mfa_enabled_at', 'mfa_pending_expires_at', 'mfa_last_step', 'mfa_setup_attempts',
     ];
 
     protected function casts(): array
@@ -35,9 +36,17 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_approved' => 'boolean',
             'session_version' => 'integer',
+            'mfa_secret' => 'encrypted', 'mfa_pending_secret' => 'encrypted',
+            'mfa_enabled_at' => 'datetime', 'mfa_pending_expires_at' => 'datetime',
+            'mfa_last_step' => 'integer', 'mfa_setup_attempts' => 'integer',
             'birthdate' => 'date',
             'privacy_consent_at' => 'datetime',
         ];
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new PasswordRecoveryCode($token));
     }
 
     public function roleEnum(): ?UserRole

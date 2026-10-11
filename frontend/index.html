@@ -19,7 +19,8 @@
     <div class="login-form">
         <div class="login-form-child"></div>
         <main class="frame-parent">
-            <form class="rectangle-parent">
+            <section class="rectangle-parent">
+            <form class="login-credentials">
                 <div class="frame-child"></div>
                 <div class="inicia-sesin-parent">
                     <h1 class="inicia-sesin">Inicia sesión</h1>
@@ -72,6 +73,12 @@
                 <a href="./pages/forgot-password.html">Recuperar contraseña</a>
                 <p class="login-message" id="loginMessage" aria-live="polite"></p>
             </form>
+            <form id="loginMfaForm" hidden>
+                <label for="loginMfaCode">Codigo del autenticador o de recuperacion</label>
+                <input id="loginMfaCode" name="code" required autocomplete="one-time-code" maxlength="32" pattern="([0-9]{6}|[a-f0-9]{32})">
+                <button type="submit">Verificar codigo</button>
+            </form>
+            </section>
             <section class="canvas-parent">
                 <div class="canvas"></div>
                 <div class="brand-panel">

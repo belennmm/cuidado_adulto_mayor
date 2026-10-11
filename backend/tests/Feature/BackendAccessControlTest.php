@@ -15,9 +15,9 @@ class BackendAccessControlTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PUBLIC_API = ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie', 'api/forgot-password', 'api/reset-password'];
+    private const PUBLIC_API = ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie', 'api/forgot-password', 'api/reset-password', 'api/mfa/verify'];
 
-    private const ACCOUNT_API = ['api/me', 'api/logout', 'api/logout-all', 'api/sessions', 'api/sessions/{accountSession}', 'api/reauthenticate'];
+    private const ACCOUNT_API = ['api/me', 'api/logout', 'api/logout-all', 'api/sessions', 'api/sessions/{accountSession}', 'api/reauthenticate', 'api/mfa', 'api/mfa/setup', 'api/mfa/confirm', 'api/mfa/recovery-codes'];
 
     public function test_every_private_api_route_requires_authentication(): void
     {

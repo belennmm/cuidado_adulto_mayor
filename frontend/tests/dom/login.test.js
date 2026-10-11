@@ -14,6 +14,7 @@ describe("formulario de inicio de sesión", () => {
         <button type="submit">Ingresar</button>
         <p id="loginMessage"></p>
       </form>
+      <form id="loginMfaForm" hidden><input name="code"><button type="submit">Verificar</button></form>
       <button id="solicitarCuentaText">Solicitar cuenta</button>`
     fetchJson = vi.fn()
     saveSession = vi.fn(() => true)
@@ -54,5 +55,24 @@ describe("formulario de inicio de sesión", () => {
     fireEvent.submit(document.querySelector("form"))
 
     await vi.waitFor(() => expect(document.getElementById("loginMessage").textContent).toBe("Credenciales invalidas"))
+  })
+
+  it("solicita el segundo factor sin guardar una sesion ni secretos", async () => {
+    fetchJson.mockResolvedValueOnce({ mfa_required: true, challenge: 'a'.repeat(64) })
+    document.querySelector('.ingrese-usuario').value = 'user@test.com'
+    document.getElementById('passwordInput').value = 'password123'
+    fireEvent.submit(document.querySelector('.rectangle-parent'))
+    await vi.waitFor(() => expect(document.getElementById('loginMfaForm').hidden).toBe(false))
+    expect(saveSession).not.toHaveBeenCalled()
+    expect(document.getElementById('passwordInput').value).toBe('')
+    expect(localStorage.length).toBe(0)
+    expect(sessionStorage.length).toBe(0)
+    fetchJson.mockResolvedValueOnce({ user: { id: 1, role: 'admin' } })
+    const form = document.getElementById('loginMfaForm')
+    form.elements.code.value = '123456'
+    fireEvent.submit(form)
+    await vi.waitFor(() => expect(saveSession).toHaveBeenCalledWith({ id: 1, role: 'admin' }))
+    expect(fetchJson).toHaveBeenLastCalledWith('/mfa/verify', expect.objectContaining({ auth: false, body: JSON.stringify({ challenge: 'a'.repeat(64), code: '123456' }) }))
+    expect(form.elements.code.value).toBe('')
   })
 })

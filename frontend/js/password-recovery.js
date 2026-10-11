@@ -3,17 +3,8 @@
   const message = document.getElementById('recoveryMessage')
   const submit = form.querySelector('button')
   const resetting = form.dataset.mode === 'reset'
-  const fragment = new URLSearchParams(window.location.hash.slice(1))
-  const token = fragment.get('token') || ''
-  const email = fragment.get('email') || ''
-  if (resetting) {
-    window.history.replaceState(null, '', window.location.pathname)
-    form.elements.email.value = email
-    if (!/^[a-f0-9]{64}$/i.test(token) || !email) {
-      message.textContent = 'El enlace no es válido. Solicita uno nuevo.'
-      submit.disabled = true
-    }
-  }
+  // Secrets are entered in the form, never taken from query/fragment or Web Storage.
+  if (resetting) window.history.replaceState(null, '', window.location.pathname)
   form.addEventListener('submit', async (event) => {
     event.preventDefault()
     if (submit.disabled) return
@@ -21,7 +12,7 @@
     message.textContent = ''
     const payload = { email: form.elements.email.value.trim() }
     if (resetting) {
-      payload.token = token
+      payload.token = form.elements.token.value.trim()
       payload.password = form.elements.password.value
       payload.password_confirmation = form.elements.password_confirmation.value
     }

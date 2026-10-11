@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Services\CredentialRevocationService;
 use App\Support\AccountSecurityState;
+use App\Support\Totp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -411,5 +412,33 @@ class BrowserSessionTest extends TestCase
         } finally {
             File::deleteDirectory($directory);
         }
+    }
+
+    public function test_mfa_browser_challenge_requires_csrf_same_cookie_and_second_factor_before_session(): void
+    {
+        $secret = Totp::secret();
+        $user = User::factory()->approvedProfessional()->create();
+        $user->forceFill(['mfa_secret' => $secret, 'mfa_enabled_at' => now()])->save();
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $initial = $this->jar;
+        $challenge = $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'])->assertStatus(202)->assertJsonMissingPath('user')->json('challenge');
+        $bound = $this->jar;
+        $code = Totp::code($secret, intdiv(now()->timestamp, 30));
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+        $this->browser('POST', '/api/mfa/verify', compact('challenge', 'code'), false)->assertStatus(419);
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/mfa/verify', compact('challenge', 'code'))->assertUnprocessable();
+        $this->jar = $bound;
+        $this->browser('POST', '/api/mfa/verify', compact('challenge', 'code'))->assertOk()->assertJsonMissingPath('token');
+        $authenticated = $this->jar;
+        $this->assertNotSame($bound[config('session.cookie')], $authenticated[config('session.cookie')]);
+        $this->browser('GET', '/api/me')->assertOk();
+        $this->jar = $initial;
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+        $this->jar = $authenticated;
+        DB::table('users')->where('id', $user->id)->update(['is_approved' => false]);
+        $this->browser('POST', '/api/reauthenticate', ['current_password' => 'password'])->assertUnauthorized();
+        $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 }

@@ -40,6 +40,7 @@ class CredentialRevocationService
 
     private function revokeSessionsAndResets(User $user, ?string $previousEmail = null): void
     {
+        DB::table('mfa_challenges')->where('user_id', $user->getKey())->delete();
         DB::table('account_sessions')->where('user_id', $user->getKey())->delete();
         DB::table('sessions')->where('user_id', $user->getKey())->delete();
         DB::table('password_reset_tokens')->whereIn('email', array_filter([$user->email, $previousEmail]))->delete();

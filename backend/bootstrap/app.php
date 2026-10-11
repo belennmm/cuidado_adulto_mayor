@@ -7,6 +7,7 @@ use App\Http\Middleware\EnsureApproved;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTokenScope;
 use App\Http\Middleware\RejectDisallowedMethods;
+use App\Http\Middleware\RejectSecretsInUrl;
 use App\Http\Middleware\RequireAccessRule;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ValidateCurrentAccess;
@@ -18,6 +19,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -44,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [
             SecurityHeaders::class,
+            RejectSecretsInUrl::class,
             BrowserSessions::class,
         ], append: [ValidateCurrentAccess::class, EnsureTokenScope::class, RequireAccessRule::class]);
 
@@ -76,6 +79,14 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->dontFlash(['current_password', 'new_password', 'new_password_confirmation', 'token', 'code', 'challenge', 'secret', 'recovery_codes']);
+        $exceptions->report(function (Throwable $exception) {
+            if (request()->is('api/*')) {
+                Log::error('API request failed.', ['exception_type' => $exception::class]);
+
+                return false;
+            }
+        });
         // Covers HttpResponseException and framework-rendered errors as well.
         $exceptions->respond(function (Response $response) {
             if (request()->is('api/*') && $response->getStatusCode() >= 500) {

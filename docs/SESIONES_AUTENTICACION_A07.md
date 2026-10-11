@@ -57,3 +57,6 @@ Las credenciales antiguas del navegador se eliminan y requieren nuevo login; no 
 Los resultados finales y el entorno efectivo se registran al cerrar la verificación. El entorno local instalado usa PHP 8.2.12, Laravel 11.51 y PHPUnit 11.5.55; el manifiesto solicita PHP 8.3 / Laravel 13 / PHPUnit 12. El frontend se verificó con Vitest 3.2.7 y jsdom 26.1 instalados, frente a Vitest 5 / jsdom 30 declarados. No se sustituyeron dependencias. Debe validarse ese entorno declarado en CI antes de publicar.
 
 Referencias del framework: [autenticación SPA con Sanctum](https://laravel.com/framework/docs/11.x/sanctum) y [middleware CSRF de Laravel 13](https://github.com/laravel/framework/blob/13.x/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php). Se reutilizan sesiones, cifrado de cookies y validación de tokens del framework.
+
+
+Cierre posterior (2026-10-11): las 26 subtareas SCRUM-908 a SCRUM-933 quedan implementadas entre los cinco bloques. Resultado final: 630 pruebas backend / 8650 aserciones y 200 frontend, sin fallos. [MFA, proteccion de secretos, migracion pendiente y validacion final](SESIONES_AUTENTICACION_A07_BLOQUE5.md). El correo de recuperacion del bloque 3 fue actualizado para entregar el codigo separado de la URL.

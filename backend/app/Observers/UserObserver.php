@@ -11,7 +11,7 @@ class UserObserver
 
     public function updated(User $user): void
     {
-        if ($user->wasChanged(['role', 'password'])
+        if ($user->wasChanged(['role', 'password', 'mfa_secret', 'mfa_enabled_at'])
             || $user->wasChanged('is_approved')) {
             $this->credentials->revoke($user, $user->getOriginal('email'));
         }

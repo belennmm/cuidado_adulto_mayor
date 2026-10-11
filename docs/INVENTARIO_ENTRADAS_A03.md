@@ -6,7 +6,7 @@ Este bloque inventaría las entradas y completa su validación; no representa el
 
 ## Canales y respuesta
 
-Desde SCRUM-927, las 84 rutas API usan un `StrictFormRequest` concreto, incluidas consultas, aprobaciones, rechazos, eliminaciones y logout. La prueba `StrictInputValidationTest::test_every_api_action_declares_a_strict_form_request` recorre las rutas registradas y comprueba esta cobertura.
+Desde SCRUM-933, las 90 rutas API usan un `StrictFormRequest` concreto, incluidas consultas, aprobaciones, rechazos, eliminaciones y logout. La prueba `StrictInputValidationTest::test_every_api_action_declares_a_strict_form_request` recorre las rutas registradas y comprueba esta cobertura.
 
 | Entrada | Contrato efectivo |
 | --- | --- |
@@ -156,3 +156,5 @@ Las cuatro rutas de infraestructura ajenas a /api son `/`, `/up`, `/sanctum/csrf
 `PasswordRecoveryRequest`: solicitud con email obligatorio máximo 254; restablecimiento exige además token hexadecimal de 64 caracteres, contraseña según PasswordPolicy y confirmación. Rechaza campos extra/query. Tokens de 15 minutos, de un solo uso.
 
 SCRUM-926/927: `{accountSession}` usa UUID, a diferencia de los identificadores numéricos de recursos. Listado y cierre individual usan EmptyInputRequest; reautenticación usa RevokeSessionsRequest y admite sólo current_password. PUT `/api/me` devuelve 428 si falta autenticación reciente, salvo confirmación válida mediante current_password.
+
+SCRUM-928/933: MfaRequest admite challenge hexadecimal de 64 caracteres y code TOTP de seis digitos o codigo de recuperacion hexadecimal de 32 caracteres en verify; las operaciones privadas reciben current_password y code (opcional solo al preparar). GET de estado usa EmptyInputRequest. Se rechazan campos extra, query con credenciales y asignacion masiva de campos MFA. La recuperacion de contrasena ahora recibe el token copiado del correo en el formulario: no se incorpora en URLs ni fragmentos.
