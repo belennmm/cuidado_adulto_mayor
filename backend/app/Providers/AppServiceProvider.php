@@ -22,8 +22,8 @@ use App\Policies\RoutineNotePolicy;
 use App\Policies\RutinaPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\VacationRequestPolicy;
-use App\Support\RuntimeDatabaseAccount;
 use App\Support\ResourceAccess;
+use App\Support\RuntimeDatabaseAccount;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -108,6 +108,19 @@ class AppServiceProvider extends ServiceProvider
 
         if (config('app.debug')) {
             $missing[] = 'APP_DEBUG debe ser false';
+        }
+
+        if (! config('session.secure') || ! config('session.http_only')) {
+            $missing[] = 'SESSION_SECURE_COOKIE y SESSION_HTTP_ONLY deben ser true';
+        }
+        if (! in_array(config('session.same_site'), ['lax', 'strict', 'none'], true)) {
+            $missing[] = 'SESSION_SAME_SITE no valido';
+        }
+        if ((int) config('session.idle_timeout') < 1 || (int) config('session.absolute_timeout') < 1) {
+            $missing[] = 'Los tiempos de sesion deben ser positivos';
+        }
+        if (in_array(config('session.driver'), ['cookie', 'array', 'null'], true)) {
+            $missing[] = 'SESSION_DRIVER debe persistir las sesiones en el servidor';
         }
 
         $origins = config('cors.allowed_origins', []);

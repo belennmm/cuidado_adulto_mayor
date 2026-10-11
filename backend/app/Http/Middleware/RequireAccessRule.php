@@ -16,7 +16,7 @@ class RequireAccessRule
 
         // These are the only endpoints outside the resource-policy contract.
         if (($route?->getName() === 'api.ping' && in_array($request->method(), ['GET', 'HEAD'], true))
-            || in_array($action, [AuthController::class.'@login', AuthController::class.'@register'], true)) {
+            || in_array($action, [AuthController::class.'@login', AuthController::class.'@register', AuthController::class.'@csrfCookie'], true)) {
             return $next($request);
         }
 

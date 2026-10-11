@@ -35,14 +35,14 @@ describe("formulario de inicio de sesión", () => {
   })
 
   it("envía credenciales, guarda la sesión y redirige según el rol", async () => {
-    fetchJson.mockResolvedValue({ token: "token", user: { id: 1, role: "admin" } })
+    fetchJson.mockResolvedValue({ user: { id: 1, role: "admin" } })
     document.querySelector(".ingrese-usuario").value = "admin@test.com"
     document.getElementById("passwordInput").value = "password123"
 
     fireEvent.click(getByRole(document.body, "button", { name: "Ingresar" }))
 
     await vi.waitFor(() => expect(fetchJson).toHaveBeenCalledWith("/login", expect.objectContaining({ method: "POST", auth: false })))
-    expect(saveSession).toHaveBeenCalledWith("token", { id: 1, role: "admin" })
+    expect(saveSession).toHaveBeenCalledWith({ id: 1, role: "admin" })
     expect(window.navigateWithLoading).toHaveBeenCalledWith("./pages/admin/home-page.html")
   })
 

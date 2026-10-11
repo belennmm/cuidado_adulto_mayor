@@ -71,6 +71,7 @@ Las columnas muestran los controles efectivos después de SCRUM-795/796. `auth:s
 | GET / HEAD | `/api/family/routines` | F | `auth:sanctum + role + can:viewAny,Rutina` | `FamilyCareController@routine` |
 | GET / HEAD | `/api/incidents` | A, P, F | `auth:sanctum + role + can:viewAny,Incident` | `IncidentController@index` |
 | GET / HEAD | `/api/incidents/today` | A, P, F | `auth:sanctum + role + can:viewAny,Incident` | `IncidentController@today` |
+| GET / HEAD | `/api/csrf-cookie` | P�blico | `Sesi�n + cookie CSRF; sin datos privados` | `AuthController@csrfCookie` |
 | POST | `/api/login` | Público | `Validación + límite de intentos fallidos` | `AuthController@login` |
 | POST | `/api/logout` | Sesión | `auth:sanctum` | `AuthController@logout` |
 | GET / HEAD | `/api/me` | Sesión | `auth:sanctum` | `AuthController@me` |

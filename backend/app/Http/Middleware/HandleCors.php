@@ -33,9 +33,10 @@ class HandleCors
     {
         $response->headers->set('Access-Control-Allow-Origin', $origin);
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN, X-CSRF-TOKEN, X-Cuidado-Session');
         $response->headers->set('Access-Control-Max-Age', '600');
-        $response->headers->set('Vary', 'Origin');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->setVary('Origin', false);
 
         return $response;
     }

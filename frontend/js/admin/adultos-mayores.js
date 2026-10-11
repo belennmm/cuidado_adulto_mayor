@@ -18,9 +18,9 @@ function getStatusClass(status) {
 
 async function loadOlderAdults(page = 1) {
   const sequence = ++adultsLoadSequence
-  const token = window.CuidadoApi.getToken(["admin"])
+  const hasSession = window.CuidadoApi.hasSession(["admin"])
 
-  if (!token) {
+  if (!hasSession) {
     renderEmpty("Inicia sesión como administrador para ver adultos mayores.")
     return
   }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BrowserSessions;
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureApproved;
@@ -43,6 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [
             SecurityHeaders::class,
+            BrowserSessions::class,
         ], append: [ValidateCurrentAccess::class, EnsureTokenScope::class, RequireAccessRule::class]);
 
         $middleware->alias([
@@ -105,6 +107,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 403 => 'No tienes permiso para realizar esta accion.',
                 404 => 'Recurso no encontrado.',
                 405 => 'Metodo HTTP no permitido.',
+                419 => 'La proteccion CSRF expiro. Recarga la pagina e intenta nuevamente.',
                 429 => 'Demasiadas solicitudes. Intenta nuevamente mas tarde.',
                 default => $status >= 500 ? 'Error interno del servidor.' : 'Solicitud no valida.',
             };

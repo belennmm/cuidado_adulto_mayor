@@ -38,6 +38,8 @@ Route::get('/ping', function (EmptyInputRequest $request) {
     return response()->json(['ok' => true]);
 })->name('api.ping');
 
+Route::get('/csrf-cookie', [AuthController::class, 'csrfCookie']);
+
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 

@@ -26,12 +26,12 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Accept', 'Authorization', 'Content-Type', 'X-Requested-With'],
+    'allowed_headers' => ['Accept', 'Authorization', 'Content-Type', 'X-Requested-With', 'X-XSRF-TOKEN', 'X-CSRF-TOKEN', 'X-Cuidado-Session'],
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];

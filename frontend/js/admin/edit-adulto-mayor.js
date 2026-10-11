@@ -39,7 +39,7 @@ async function loadOlderAdult() {
   }
 
   try {
-    if (!window.CuidadoApi.getToken(["admin"])) {
+    if (!window.CuidadoApi.hasSession(["admin"])) {
       throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
     }
 
@@ -65,7 +65,7 @@ async function updateOlderAdult() {
     throw new Error("Ingresa el nombre completo del adulto mayor.")
   }
 
-  if (!window.CuidadoApi.getToken(["admin"])) {
+  if (!window.CuidadoApi.hasSession(["admin"])) {
     throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
   }
 
@@ -78,7 +78,7 @@ async function updateOlderAdult() {
 }
 
 async function deleteOlderAdult() {
-  if (!window.CuidadoApi.getToken(["admin"])) {
+  if (!window.CuidadoApi.hasSession(["admin"])) {
     throw new Error("Inicia sesión como administrador para gestionar adultos mayores.")
   }
 

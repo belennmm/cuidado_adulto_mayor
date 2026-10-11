@@ -24,7 +24,7 @@ describe("listados administrativos con datos especiales", () => {
 
   it("renderiza adultos y mantiene el ID dentro de un único parámetro URL", async () => {
     document.body.innerHTML = '<input id="olderAdultSearchInput"><div id="olderAdultsTableBody"></div>'
-    window.CuidadoApi = { getToken: () => "token", fetchJson: vi.fn().mockResolvedValue({ older_adults: [{ id: payload, full_name: payload, room: payload, caregiver_family: payload, status: "Estable" }] }) }
+    window.CuidadoApi = { hasSession: () => "token", fetchJson: vi.fn().mockResolvedValue({ older_adults: [{ id: payload, full_name: payload, room: payload, caregiver_family: payload, status: "Estable" }] }) }
     window.navigateWithLoading = vi.fn()
     await import("../../js/ui-utils.js")
     await import("../../js/admin/adultos-mayores.js")

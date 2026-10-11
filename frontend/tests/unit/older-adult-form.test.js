@@ -35,7 +35,7 @@ describe("OlderAdultForm", () => {
   it("carga opciones de cuidadores y conserva la selección", async () => {
     document.body.innerHTML = '<select id="caregiver"></select>'
     window.CuidadoApi = {
-      getToken: vi.fn(() => "token"),
+      hasSession: vi.fn(() => "token"),
       fetchJson: vi.fn().mockResolvedValue({ users: [{ id: 2, name: "Marta" }] }),
     }
 
@@ -121,7 +121,7 @@ describe("OlderAdultForm", () => {
       <div id="medicines"></div>
     `
     window.CuidadoApi = {
-      getToken: vi.fn(() => "token"),
+      hasSession: vi.fn(() => "token"),
       fetchJson: vi.fn()
         .mockResolvedValueOnce({ users: [{ id: 3, name: "Marta" }] })
         .mockResolvedValueOnce({ users: [{ id: 5, name: "Pedro" }] }),

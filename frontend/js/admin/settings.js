@@ -70,7 +70,7 @@
 
   async function loadAdminData() {
     try {
-      if (!window.CuidadoApi.getToken(["admin"])) {
+      if (!window.CuidadoApi.hasSession(["admin"])) {
         throw new Error("Inicia sesión como administrador para ver configuración.")
       }
 

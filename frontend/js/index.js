@@ -72,7 +72,7 @@ if (loginForm) {
         clearSession()
 
         const email = usernameInput ? usernameInput.value.trim() : ""
-        const password = passwordInput ? passwordInput.value.trim() : ""
+        const password = passwordInput ? passwordInput.value : ""
 
         if (!email || !password) {
             await showLoginPopup("Completa el correo electrónico y la contraseña", { variant: "error" })
@@ -86,7 +86,7 @@ if (loginForm) {
                 body: JSON.stringify({ email, password }),
                 fallbackError: "Credenciales inválidas",
             })
-            if (!window.AuthSession?.saveSession(data.token, data.user)) {
+            if (!window.AuthSession?.saveSession(data.user)) {
                 await showLoginPopup("No se pudo guardar la sesión", { variant: "error" })
                 return
             }

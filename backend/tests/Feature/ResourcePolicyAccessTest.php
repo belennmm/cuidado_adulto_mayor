@@ -81,7 +81,7 @@ class ResourcePolicyAccessTest extends TestCase
     public function test_care_routes_all_declare_a_policy(): void
     {
         foreach (Route::getRoutes() as $route) {
-            if (! str_starts_with($route->uri(), 'api/') || in_array($route->uri(), ['api/ping', 'api/login', 'api/register', 'api/me', 'api/logout'], true)) {
+            if (! str_starts_with($route->uri(), 'api/') || in_array($route->uri(), ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie', 'api/me', 'api/logout'], true)) {
                 continue;
             }
 

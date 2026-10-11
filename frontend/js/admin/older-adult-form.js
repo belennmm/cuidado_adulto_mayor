@@ -101,7 +101,7 @@
   }
 
   async function loadCaregiverOptions(select, { path, placeholder, selectedId = null }) {
-    if (!select || !window.CuidadoApi.getToken(["admin"])) return
+    if (!select || !window.CuidadoApi.hasSession(["admin"])) return
 
     try {
       const data = await window.CuidadoApi.fetchJson(path, {

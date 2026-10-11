@@ -27,7 +27,17 @@ if (logoutModal) {
 }
 
 if (confirmLogout) {
-  confirmLogout.addEventListener("click", () => {
+  confirmLogout.addEventListener("click", async () => {
+    confirmLogout.disabled = true
+    try {
+      await window.CuidadoApi.fetchJson("/logout", { method: "POST" })
+    } catch (error) {
+      if (error.status !== 401) {
+        confirmLogout.disabled = false
+        if (window.showAppAlert) await window.showAppAlert(error.message, { variant: "error" })
+        return
+      }
+    }
     window.AuthSession?.clearSession()
     if (window.navigateWithLoading) {
       window.navigateWithLoading("../../index.html")

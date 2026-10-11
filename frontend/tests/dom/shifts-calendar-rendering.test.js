@@ -15,7 +15,7 @@ describe("presentación de turnos en calendario", () => {
     `
     window.AuthSession = { getUser: vi.fn(() => ({ role: "admin" })) }
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn().mockResolvedValue({
         shifts: [{ id: 10, caregiver_name: "Pedro", older_adult_name: "Carlos", date: todayKey(), start_time: "09:30:00", end_time: "17:30:00", status: "completed" }],
         events: [],

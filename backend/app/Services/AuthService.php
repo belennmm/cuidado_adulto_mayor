@@ -20,7 +20,7 @@ class AuthService
 
     private const LOGIN_LOCKOUT_SECONDS = 300;
 
-    public function authenticate(string $email, string $password, string $ipAddress = 'unknown'): array
+    public function authenticate(string $email, string $password, string $ipAddress = 'unknown', bool $issueToken = true): array
     {
         $rateLimitKey = $this->loginRateLimitKey($email, $ipAddress);
 
@@ -50,11 +50,11 @@ class AuthService
 
         return [
             'user' => $user,
-            'token' => $user->createToken(
+            'token' => $issueToken ? $user->createToken(
                 'API Token',
                 TokenAbilities::forUser($user),
                 now()->addMinutes($expirationMinutes),
-            )->plainTextToken,
+            )->plainTextToken : null,
         ];
     }
 

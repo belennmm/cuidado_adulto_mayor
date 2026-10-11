@@ -1,66 +1,16 @@
 (() => {
-  function safeJsonParse(value) {
-    try {
-      return JSON.parse(value)
-    } catch {
-      return null
-    }
+  document.documentElement.style.visibility = "hidden"
+  const allowedRoles = ["familiar", "cuidador_familiar"]
+  const paths = { admin: "admin", administrador: "admin", profesional: "cuidador-profesional", cuidador_profesional: "cuidador-profesional", familiar: "cuidador-familiar", cuidador_familiar: "cuidador-familiar" }
+  function navigate(url) {
+    if (window.navigateWithLoading) window.navigateWithLoading(url)
+    else window.location.assign(url)
   }
-
-  function getUser() {
-    return window.AuthSession?.getUser(["familiar", "cuidador_familiar"]) || null
-  }
-
-  function redirectToLogin() {
-    if (window.navigateWithLoading) {
-      window.navigateWithLoading("../../index.html")
+  window.AuthSession.refresh().then(user => {
+    if (!allowedRoles.includes(user.role)) {
+      navigate(paths[user.role] ? `../${paths[user.role]}/home-page.html` : "../../index.html")
       return
     }
-
-    window.location.assign("../../index.html")
-  }
-
-  function redirectByRole(role) {
-    const normalized = String(role || "").trim().toLowerCase()
-
-    const roleRedirects = {
-      admin: "../admin/home-page.html",
-      cuidador_profesional: "../cuidador-profesional/home-page.html",
-      cuidador_familiar: "./home-page.html",
-      profesional: "../cuidador-profesional/home-page.html",
-      familiar: "./home-page.html",
-    }
-
-    const destination = roleRedirects[normalized]
-    if (destination) {
-      if (window.navigateWithLoading) {
-        window.navigateWithLoading(destination)
-        return
-      }
-
-      window.location.assign(destination)
-      return
-    }
-
-    redirectToLogin()
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const token = window.AuthSession?.getToken(["familiar", "cuidador_familiar"]) || ""
-    if (!token) {
-      redirectToLogin()
-      return
-    }
-
-    const user = getUser()
-    if (!user) {
-      redirectToLogin()
-      return
-    }
-
-    const role = String(user.role || "").trim().toLowerCase()
-    if (role !== "familiar" && role !== "cuidador_familiar") {
-      redirectByRole(role)
-    }
-  })
+    document.documentElement.style.visibility = ""
+  }).catch(() => navigate("../../index.html"))
 })()

@@ -23,7 +23,7 @@ async function showPopup(message, options = {}) {
 }
 
 async function createOlderAdult(payload) {
-  if (!window.CuidadoApi.getToken(["admin"])) {
+  if (!window.CuidadoApi.hasSession(["admin"])) {
     throw new Error("Inicia sesión como administrador para crear adultos mayores.")
   }
 

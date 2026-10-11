@@ -7,8 +7,10 @@ use App\Http\Requests\EmptyInputRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Support\AccountSecurityState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -20,14 +22,35 @@ class AuthController extends Controller
         $authentication = $this->authService->authenticate(
             $data['email'],
             $data['password'],
-            $request->ip() ?? 'unknown'
+            $request->ip() ?? 'unknown',
+            ! $request->attributes->get('browser_session', false)
         );
+
+        if ($request->attributes->get('browser_session')) {
+            Auth::guard('web')->login($authentication['user']);
+            $request->session()->regenerate(true);
+            $request->session()->put([
+                'auth_fingerprint' => AccountSecurityState::fingerprint($authentication['user']),
+                'auth_last_activity' => now()->timestamp,
+                'auth_expires_at' => now()->addMinutes((int) config('session.absolute_timeout', 60))->timestamp,
+            ]);
+
+            return response()->json([
+                'message' => 'Login exitoso',
+                'user' => $this->resource($authentication['user'], $request),
+            ]);
+        }
 
         return response()->json([
             'message' => 'Login exitoso',
             'token' => $authentication['token'],
             'user' => $this->resource($authentication['user'], $request),
         ]);
+    }
+
+    public function csrfCookie(EmptyInputRequest $request): JsonResponse
+    {
+        return response()->json(['message' => 'Proteccion CSRF inicializada.']);
     }
 
     public function register(AuthRequest $request): JsonResponse
@@ -42,7 +65,13 @@ class AuthController extends Controller
 
     public function logout(EmptyInputRequest $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        if ($request->attributes->get('browser_session')) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        } else {
+            $request->user()->currentAccessToken()->delete();
+        }
 
         return response()->json(['message' => 'Logout exitoso']);
     }
