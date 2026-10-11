@@ -8,12 +8,14 @@ use App\Http\Requests\PasswordRecoveryRequest;
 use App\Http\Requests\RevokeSessionsRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\AccountSessionService;
 use App\Services\AuthService;
 use App\Services\PasswordRecoveryService;
 use App\Support\AccountSecurityState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -30,6 +32,10 @@ class AuthController extends Controller
         );
 
         if ($request->attributes->get('browser_session')) {
+            $previous = Auth::guard('web')->user();
+            if ($previous && $request->session()->has('account_session_id')) {
+                app(AccountSessionService::class)->close($previous, $request->session()->get('account_session_id'));
+            }
             Auth::guard('web')->login($authentication['user']);
             $request->session()->regenerate(true);
             $request->session()->put([
@@ -37,6 +43,8 @@ class AuthController extends Controller
                 'auth_last_activity' => now()->timestamp,
                 'auth_expires_at' => now()->addMinutes((int) config('session.absolute_timeout', 60))->timestamp,
             ]);
+
+            $request->session()->put('account_session_id', app(AccountSessionService::class)->start($authentication['user'], null, $request));
 
             return response()->json([
                 'message' => 'Login exitoso',
@@ -82,6 +90,10 @@ class AuthController extends Controller
     public function logout(EmptyInputRequest $request): JsonResponse
     {
         if ($request->attributes->get('browser_session')) {
+            $row = app(AccountSessionService::class)->current($request);
+            if ($row) {
+                app(AccountSessionService::class)->close($request->user(), $row->id);
+            }
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -113,12 +125,44 @@ class AuthController extends Controller
 
     public function updateMe(AuthRequest $request): JsonResponse
     {
-        $user = $this->authService->updateProfile($request->user(), $request->validated());
+        $user = DB::transaction(function () use ($request) {
+            $locked = User::query()->whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
+            abort_unless(hash_equals(AccountSecurityState::fingerprint($locked), AccountSecurityState::fingerprint($request->user())), 401);
+            app(AccountSessionService::class)->requireRecent($request);
+
+            return $this->authService->updateProfile($locked, $request->validated());
+        });
 
         return response()->json([
             'message' => 'Perfil actualizado correctamente.',
             'user' => $this->resource($user, $request),
         ]);
+    }
+
+    public function sessions(EmptyInputRequest $request): JsonResponse
+    {
+        return response()->json(['sessions' => app(AccountSessionService::class)->listing($request)]);
+    }
+
+    public function closeSession(EmptyInputRequest $request, string $accountSession): JsonResponse
+    {
+        $service = app(AccountSessionService::class);
+        $current = $service->current($request)?->id === $accountSession;
+        $service->close($request->user(), $accountSession);
+        if ($current && $request->attributes->get('browser_session')) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return response()->json(['message' => 'Sesion cerrada.', 'current' => $current]);
+    }
+
+    public function reauthenticate(RevokeSessionsRequest $request): JsonResponse
+    {
+        app(AccountSessionService::class)->confirm($request, $request->validated('current_password'));
+
+        return response()->json(['message' => 'Autenticacion confirmada.']);
     }
 
     private function resource(User $user, Request $request): array

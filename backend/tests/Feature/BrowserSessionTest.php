@@ -7,6 +7,7 @@ use App\Services\CredentialRevocationService;
 use App\Support\AccountSecurityState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Queue;
@@ -310,5 +311,105 @@ class BrowserSessionTest extends TestCase
         $this->assertDatabaseMissing('sessions', ['user_id' => $user->id]);
         Auth::forgetGuards();
         $this->getJson('/api/me', ['Authorization' => 'Bearer '.$bearer])->assertUnauthorized();
+    }
+
+    public function test_an_old_api_token_cannot_revoke_a_new_browser_session_after_external_role_change(): void
+    {
+        $user = $this->login();
+        $oldToken = $user->createToken('old')->plainTextToken;
+        DB::table('users')->where('id', $user->id)->update(['role' => 'profesional']);
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $this->unencryptedCookies = [];
+        $this->defaultCookies = [];
+        Auth::forgetGuards();
+        $this->getJson('/api/me', ['Authorization' => 'Bearer '.$oldToken])->assertUnauthorized();
+        $this->browser('GET', '/api/me')->assertOk();
+    }
+
+    public function test_mixed_sessions_are_capped_and_eviction_rejects_a_captured_cookie(): void
+    {
+        config(['session.max_per_user' => 2]);
+        $user = $this->login();
+        $old = $this->jar;
+        $this->travel(1)->seconds();
+        $user->createToken('api-device');
+        $this->travel(1)->seconds();
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $this->assertDatabaseCount('account_sessions', 2);
+        $this->browser('GET', '/api/sessions')->assertOk()->assertJsonCount(2, 'sessions');
+        $this->jar = $old;
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+    }
+
+    public function test_listing_records_metadata_and_closes_only_the_selected_device(): void
+    {
+        $user = $this->login();
+        $first = $this->jar;
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'], true, ['User-Agent' => 'Phone browser'])->assertOk();
+        $rows = $this->browser('GET', '/api/sessions', [], true, ['User-Agent' => 'Phone browser'])->assertOk()->json('sessions');
+        $this->assertCount(2, $rows);
+        $other = collect($rows)->firstWhere('current', false);
+        $current = collect($rows)->firstWhere('current', true);
+        $this->assertSame('Phone browser', $current['device']);
+        $this->assertSame('127.0.0.1', $current['ip_address']);
+        $this->assertArrayNotHasKey('browser_hash', $current);
+        $this->browser('DELETE', '/api/sessions/'.$other['id'], [], false)->assertStatus(419);
+        $this->browser('DELETE', '/api/sessions/'.$other['id'])->assertOk()->assertJsonPath('current', false);
+        $this->browser('GET', '/api/me')->assertOk();
+        $this->jar = $first;
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+    }
+
+    public function test_recent_authentication_expires_even_while_the_session_is_active(): void
+    {
+        $user = $this->login();
+        $payload = ['name' => 'Updated', 'email' => $user->email];
+        $this->browser('PUT', '/api/me', $payload)->assertOk();
+        $this->travel(5)->minutes();
+        $this->browser('GET', '/api/me')->assertOk();
+        $this->browser('PUT', '/api/me', $payload)->assertStatus(428)->assertJsonPath('code', 'reauthentication_required');
+        $this->browser('POST', '/api/reauthenticate', ['current_password' => 'wrong'])->assertUnprocessable();
+        $this->browser('PUT', '/api/me', $payload)->assertStatus(428);
+        $this->browser('POST', '/api/reauthenticate', ['current_password' => 'password'], false)->assertStatus(419);
+        $this->browser('POST', '/api/reauthenticate', ['current_password' => 'password'])->assertOk();
+        $this->browser('PUT', '/api/me', $payload)->assertOk();
+    }
+
+    public function test_closing_the_current_browser_session_logs_it_out(): void
+    {
+        $this->login();
+        $row = collect($this->browser('GET', '/api/sessions')->assertOk()->json('sessions'))->firstWhere('current', true);
+        $this->browser('DELETE', '/api/sessions/'.$row['id'])->assertOk()->assertJsonPath('current', true);
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+    }
+
+    public function test_password_reset_revokes_file_sessions_and_keeps_other_accounts_active(): void
+    {
+        $directory = storage_path('framework/testing-sessions-'.bin2hex(random_bytes(8)));
+        File::ensureDirectoryExists($directory);
+        config(['session.driver' => 'file', 'session.files' => $directory]);
+        try {
+            $user = $this->login();
+            $old = $this->jar;
+            $this->jar = [];
+            $this->login();
+            $other = $this->jar;
+            $token = Password::broker()->createToken($user);
+            $this->jar = [];
+            $this->browser('GET', '/api/csrf-cookie')->assertOk();
+            $this->browser('POST', '/api/reset-password', ['email' => $user->email, 'token' => $token, 'password' => 'File-Recovery!2026', 'password_confirmation' => 'File-Recovery!2026'])->assertOk();
+            $this->jar = $old;
+            $this->browser('GET', '/api/me')->assertUnauthorized();
+            $this->jar = $other;
+            $this->browser('GET', '/api/me')->assertOk();
+        } finally {
+            File::deleteDirectory($directory);
+        }
     }
 }

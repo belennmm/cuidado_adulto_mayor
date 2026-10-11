@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Services\AccountSessionService;
 use App\Services\CredentialRevocationService;
 use App\Support\AccountSecurityState;
 use App\Support\ResourceAccess;
@@ -10,6 +11,7 @@ use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,6 +54,12 @@ class ValidateCurrentAccess
             }
         }
 
+        if ($token instanceof PersonalAccessToken && $token->exists) {
+            $row = DB::table('account_sessions')->where('user_id', $current->id)->where('token_id', $token->id)->first();
+            if (! $row || ! app(AccountSessionService::class)->touch($current, $row->id, $request)) {
+                throw new AuthenticationException;
+            }
+        }
         $current->withAccessToken($token);
         Auth::guard('sanctum')->setUser($current);
         $request->setUserResolver(fn () => $current);

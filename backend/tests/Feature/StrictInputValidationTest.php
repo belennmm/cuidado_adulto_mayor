@@ -33,11 +33,15 @@ class StrictInputValidationTest extends TestCase
             $this->assertNotNull($request, $route->uri());
             $this->assertTrue(is_subclass_of($request->getType()?->getName() ?? '', StrictFormRequest::class), $route->uri());
             foreach ($route->parameterNames() as $parameter) {
-                $this->assertSame('[1-9][0-9]{0,18}', $route->wheres[$parameter] ?? null, $route->uri());
+                if ($parameter === 'accountSession') {
+                    $this->assertSame('[\\da-fA-F]{8}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{12}', $route->wheres[$parameter] ?? null, $route->uri());
+                } else {
+                    $this->assertSame('[1-9][0-9]{0,18}', $route->wheres[$parameter] ?? null, $route->uri());
+                }
             }
             $count++;
         }
-        $this->assertSame(81, $count);
+        $this->assertSame(84, $count);
     }
 
     public function test_nested_unknown_fields_reject_the_entire_write(): void

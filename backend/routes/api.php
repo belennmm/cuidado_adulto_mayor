@@ -48,8 +48,11 @@ Route::post('/register', [AuthController::class, 'register'])->middleware('throt
 Route::middleware(['auth:sanctum', 'throttle:sensitive-api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout-all', [AuthController::class, 'logoutAll'])->middleware('throttle:reauthentication');
+    Route::get('/sessions', [AuthController::class, 'sessions']);
+    Route::delete('/sessions/{accountSession}', [AuthController::class, 'closeSession'])->whereUuid('accountSession');
+    Route::post('/reauthenticate', [AuthController::class, 'reauthenticate'])->middleware('throttle:reauthentication');
     Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/me', [AuthController::class, 'updateMe']);
+    Route::put('/me', [AuthController::class, 'updateMe'])->middleware('throttle:reauthentication');
     Route::get('/incidents', [IncidentController::class, 'index'])->middleware('role:admin,profesional,familiar')->can('viewAny', Incident::class);
     Route::get('/incidents/today', [IncidentController::class, 'today'])->middleware('role:admin,profesional,familiar')->can('viewAny', Incident::class);
 

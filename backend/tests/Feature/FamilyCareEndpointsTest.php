@@ -685,7 +685,7 @@ class FamilyCareEndpointsTest extends TestCase
 
         Sanctum::actingAs($family);
 
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Laura Ramirez',
             'email' => 'laura.ramirez@example.com',
             'location' => 'Guatemala',

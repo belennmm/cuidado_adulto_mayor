@@ -21,14 +21,26 @@ class CredentialRevocationService
 
     public function revokeOutdated(User $user): void
     {
-        $fingerprint = AccountSecurityState::fingerprint($user);
-        $user->tokens()->where(fn ($query) => $query
-            ->whereNull('security_fingerprint')->orWhere('security_fingerprint', '!=', $fingerprint))->delete();
-        $this->revokeSessionsAndResets($user);
+        DB::transaction(function () use ($user) {
+            $user = User::query()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $fingerprint = AccountSecurityState::fingerprint($user);
+            $user->tokens()->where(fn ($query) => $query
+                ->whereNull('security_fingerprint')->orWhere('security_fingerprint', '!=', $fingerprint))->delete();
+            DB::table('account_sessions')->where('user_id', $user->getKey())->whereNull('token_id')
+                ->where(fn ($query) => $query->whereNull('security_fingerprint')->orWhere('security_fingerprint', '!=', $fingerprint))->delete();
+            $validHashes = DB::table('account_sessions')->where('user_id', $user->getKey())->whereNull('token_id')->pluck('browser_hash')->all();
+            foreach (DB::table('sessions')->where('user_id', $user->getKey())->get(['id']) as $session) {
+                if (! in_array(hash('sha256', $session->id), $validHashes, true)) {
+                    DB::table('sessions')->where('id', $session->id)->delete();
+                }
+            }
+            DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+        });
     }
 
     private function revokeSessionsAndResets(User $user, ?string $previousEmail = null): void
     {
+        DB::table('account_sessions')->where('user_id', $user->getKey())->delete();
         DB::table('sessions')->where('user_id', $user->getKey())->delete();
         DB::table('password_reset_tokens')->whereIn('email', array_filter([$user->email, $previousEmail]))->delete();
     }

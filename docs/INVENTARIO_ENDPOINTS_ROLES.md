@@ -2,7 +2,7 @@
 
 Fecha: 2026-10-09. Historia SCRUM-779 (A01), sprint 9.
 
-Cobertura actualizada por A07 bloque 3 (2026-10-11): **85 rutas HTTP**, incluidas **81 rutas API** (6 públicas y 75 privadas).
+Cobertura actualizada por A07 bloque 4 (2026-10-11): **88 rutas HTTP**, incluidas **84 rutas API** (6 públicas y 78 privadas).
 
 Inventario obtenido de `php artisan route:list --json`, contrastado con `routes/api.php`, `routes/web.php`, `bootstrap/app.php`, Requests, servicios y `RutinaPolicy`. Cada fila representa una combinación de ruta y métodos registrados; GET incluye HEAD. Las rutas API llevan el prefijo `/api`.
 
@@ -17,7 +17,7 @@ Inventario obtenido de `php artisan route:list --json`, contrastado con `routes/
 - Sin autenticación válida, las rutas privadas API responden 401. Un rol no permitido recibe 403 antes del enlace de modelos y de la validación del payload.
 - Dentro de un módulo permitido, consultar o modificar un recurso ajeno devuelve el mismo 404 y mensaje genérico que un identificador inexistente: `Recurso no encontrado.`
 - Cada solicitud privada recarga usuario y credencial vigente antes de comprobar roles. También exige el alcance de lectura/escritura del token y los permisos actuales del usuario; una capacidad del token no sustituye la Policy.
-- El navegador usa sesiones del servidor con cookies HttpOnly y CSRF. Los clientes API conservan Bearer. Cambiar contraseña, rol o aprobación invalida las credenciales; cerrar todas las sesiones incrementa la versión de seguridad de la cuenta. Las credenciales emitidas antes de la nueva huella requieren nuevo login. Ver [A07 bloque 3](SESIONES_AUTENTICACION_A07_BLOQUE2.md).
+- El navegador usa sesiones del servidor con cookies HttpOnly y CSRF. Los clientes API conservan Bearer. Cambiar contraseña, rol o aprobación invalida las credenciales; cerrar todas las sesiones incrementa la versión de seguridad de la cuenta. Las credenciales emitidas antes de la nueva huella requieren nuevo login. Ver [A07 bloque 4](SESIONES_AUTENTICACION_A07_BLOQUE2.md).
 
 ## Inventario completo
 
@@ -169,3 +169,5 @@ Validación SCRUM-791/792/793/794 del 2026-10-09: **48 casos adicionales**; suit
 Validación final SCRUM-795/796 del 2026-10-09: **23 casos nuevos y 2464 aserciones**; suite completa de cierre: **325 pruebas, 6188 aserciones, sin fallos**. Pint verificó los 11 archivos PHP del bloque final. La implementación cubre SCRUM-781 a SCRUM-796; la migración de huella se aplicó únicamente en las bases efímeras de pruebas.
 
 Desde SCRUM-919 se agregan POST `/api/forgot-password` y POST `/api/reset-password`: públicas, con StrictFormRequest, CSRF para navegador y límites propios por correo/IP. Registro ahora responde 202 sin datos de cuenta, tanto para correos nuevos como existentes.
+
+Desde SCRUM-926/927: GET `/api/sessions`, DELETE `/api/sessions/{accountSession}` (UUID) y POST `/api/reauthenticate`, todas autenticadas y limitadas. Las dos primeras consultan/cierran sólo credenciales propias; la tercera exige la contraseña actual. PUT `/api/me` requiere autenticación reciente. Detalle: [bloque 4 de A07](SESIONES_AUTENTICACION_A07_BLOQUE4.md).

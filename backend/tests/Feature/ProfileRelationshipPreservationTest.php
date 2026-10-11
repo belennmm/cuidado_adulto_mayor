@@ -48,7 +48,7 @@ class ProfileRelationshipPreservationTest extends TestCase
 
         Sanctum::actingAs($professional);
 
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Mario Lopez Actualizado',
             'email' => 'mario.actualizado@example.com',
             'phone' => '5555-0101',
@@ -92,7 +92,7 @@ class ProfileRelationshipPreservationTest extends TestCase
 
         Sanctum::actingAs($professional);
 
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Mario Lopez Actualizado',
             'email' => 'mario.actualizado@example.com',
             'phone' => '5555-0101',
@@ -105,7 +105,7 @@ class ProfileRelationshipPreservationTest extends TestCase
         ])
             ->assertUnprocessable()->assertJsonValidationErrors(['role', 'is_approved', 'professional_caregiver_id', 'created_by']);
         $this->assertSame('Mario Lopez', $professional->refresh()->name);
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Mario Lopez Actualizado', 'email' => 'mario.actualizado@example.com',
             'phone' => '5555-0101', 'location' => 'Zona 10', 'birthdate' => '1990-05-24',
         ])

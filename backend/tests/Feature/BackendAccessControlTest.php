@@ -17,7 +17,7 @@ class BackendAccessControlTest extends TestCase
 
     private const PUBLIC_API = ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie', 'api/forgot-password', 'api/reset-password'];
 
-    private const ACCOUNT_API = ['api/me', 'api/logout', 'api/logout-all'];
+    private const ACCOUNT_API = ['api/me', 'api/logout', 'api/logout-all', 'api/sessions', 'api/sessions/{accountSession}', 'api/reauthenticate'];
 
     public function test_every_private_api_route_requires_authentication(): void
     {
@@ -170,6 +170,6 @@ class BackendAccessControlTest extends TestCase
 
     private function resourceUrl(string $uri): string
     {
-        return '/'.preg_replace('/\{[^}]+\}/', '999999', $uri);
+        return '/'.preg_replace('/\{[^}]+\}/', '999999', str_replace('{accountSession}', '11111111-1111-4111-8111-111111111111', $uri));
     }
 }

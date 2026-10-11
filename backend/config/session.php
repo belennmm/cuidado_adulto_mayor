@@ -215,6 +215,9 @@ return [
     |
     */
 
+    'max_per_user' => (int) env('SESSION_MAX_PER_USER', 5),
+    'reauthentication_timeout' => (int) env('SESSION_REAUTHENTICATION_TIMEOUT', 5),
+
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AccountSessionService;
 use App\Support\AccountSecurityState;
 use App\Support\ResourceAccess;
 use Closure;
@@ -25,6 +26,9 @@ class EnforceBrowserSession
                 && now()->timestamp - $last < (int) config('session.idle_timeout', 15) * 60
                 && now()->timestamp < $expires
                 && hash_equals(AccountSecurityState::fingerprint($current), $fingerprint);
+            if ($valid) {
+                $valid = app(AccountSessionService::class)->touch($current, (string) $request->session()->get('account_session_id'), $request);
+            }
             if (! $valid) {
                 $guard->logout();
                 $request->session()->invalidate();

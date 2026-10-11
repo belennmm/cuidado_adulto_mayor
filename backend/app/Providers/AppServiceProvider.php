@@ -137,6 +137,9 @@ class AppServiceProvider extends ServiceProvider
             $missing[] = 'SESSION_DRIVER debe persistir las sesiones en el servidor';
         }
 
+        if ((int) config('session.max_per_user') < 1 || (int) config('session.reauthentication_timeout') < 1) {
+            $missing[] = 'SESSION_MAX_PER_USER y SESSION_REAUTHENTICATION_TIMEOUT deben ser positivos';
+        }
         if (! config('passwords.check_compromised')) {
             $missing[] = 'PASSWORD_CHECK_COMPROMISED debe ser true';
         }
