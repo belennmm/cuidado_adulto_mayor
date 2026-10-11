@@ -12,7 +12,7 @@ Fecha: 2026-10-11. Entrega local preparada para que el responsable cree su commi
 | SCRUM-911 | Comprobación en el servidor de 15 minutos de inactividad y límite absoluto de 60 minutos, configurables. Al vencer se invalida la sesión y se devuelve 401. |
 | SCRUM-912 | Login regenera el identificador de sesión destruyendo el anterior y renueva CSRF. Una cookie anterior no permite consultar `/api/me`. |
 
-La entrega cubre estas cinco subtareas. Las otras 21 pertenecen a bloques posteriores: 5 + 5 + 5 + 5 + 1.
+Este documento describe las primeras cinco subtareas. El [segundo bloque, SCRUM-913 a SCRUM-917](SESIONES_AUTENTICACION_A07_BLOQUE2.md), completa otras cinco; quedan 16 para bloques posteriores: 5 + 5 + 5 + 1.
 
 ## Flujo de navegador
 
@@ -54,6 +54,6 @@ Las credenciales antiguas del navegador se eliminan y requieren nuevo login; no 
 - Pruebas frontend de eliminación de credenciales legadas, metadatos sin token, identidad validada en servidor, guardias de página, cookies/CSRF, concurrencia de inicialización, cookies bloqueadas, errores 401/419 y confirmación de logout en el servidor.
 - Las pruebas de CSRF no utilizan la exención habitual de Laravel durante pruebas. La validación de token permanece obligatoria también con versiones que aceptan Sec-Fetch-Site.
 
-Los resultados finales y el entorno efectivo se registran al cerrar la verificación. El entorno local instalado usa PHP 8.2.12, Laravel 11.51 y PHPUnit 11.5.55; el manifiesto solicita PHP 8.3 / Laravel 13 / PHPUnit 12. El frontend se verific� con Vitest 3.2.7 y jsdom 26.1 instalados, frente a Vitest 5 / jsdom 30 declarados. No se sustituyeron dependencias. Debe validarse ese entorno declarado en CI antes de publicar.
+Los resultados finales y el entorno efectivo se registran al cerrar la verificación. El entorno local instalado usa PHP 8.2.12, Laravel 11.51 y PHPUnit 11.5.55; el manifiesto solicita PHP 8.3 / Laravel 13 / PHPUnit 12. El frontend se verificó con Vitest 3.2.7 y jsdom 26.1 instalados, frente a Vitest 5 / jsdom 30 declarados. No se sustituyeron dependencias. Debe validarse ese entorno declarado en CI antes de publicar.
 
 Referencias del framework: [autenticación SPA con Sanctum](https://laravel.com/framework/docs/11.x/sanctum) y [middleware CSRF de Laravel 13](https://github.com/laravel/framework/blob/13.x/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php). Se reutilizan sesiones, cifrado de cookies y validación de tokens del framework.

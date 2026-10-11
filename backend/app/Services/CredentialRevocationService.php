@@ -10,8 +10,13 @@ class CredentialRevocationService
 {
     public function revoke(User $user, ?string $previousEmail = null): void
     {
-        $user->tokens()->delete();
-        $this->revokeSessionsAndResets($user, $previousEmail);
+        DB::transaction(function () use ($user, $previousEmail) {
+            DB::table('users')->where('id', $user->getKey())->increment('session_version');
+            $user->setAttribute('session_version', (int) DB::table('users')->where('id', $user->getKey())->value('session_version'));
+            $user->syncOriginalAttribute('session_version');
+            $user->tokens()->delete();
+            $this->revokeSessionsAndResets($user, $previousEmail);
+        });
     }
 
     public function revokeOutdated(User $user): void

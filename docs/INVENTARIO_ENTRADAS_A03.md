@@ -6,7 +6,7 @@ Este bloque inventaría las entradas y completa su validación; no representa el
 
 ## Canales y respuesta
 
-Desde SCRUM-908, las 78 rutas API usan un `StrictFormRequest` concreto, incluidas consultas, aprobaciones, rechazos, eliminaciones y logout. La prueba `StrictInputValidationTest::test_every_api_action_declares_a_strict_form_request` recorre las rutas registradas y comprueba esta cobertura.
+Desde SCRUM-914, las 79 rutas API usan un `StrictFormRequest` concreto, incluidas consultas, aprobaciones, rechazos, eliminaciones y logout. La prueba `StrictInputValidationTest::test_every_api_action_declares_a_strict_form_request` recorre las rutas registradas y comprueba esta cobertura.
 
 | Entrada | Contrato efectivo |
 | --- | --- |
@@ -14,7 +14,7 @@ Desde SCRUM-908, las 78 rutas API usan un `StrictFormRequest` concreto, incluida
 | Query | Sólo filtros de lectura declarados en el Request de la tabla. Las escrituras rechazan cualquier query con 422, incluso si repite un campo permitido en el cuerpo. |
 | JSON | Objeto con campos explícitos. JSON inválido, escalares y listas no vacías en la raíz reciben 422 (`errors._body`). Se mantiene `[]` vacío por compatibilidad con comandos sin datos; los campos obligatorios siguen siendo exigidos. |
 | Formulario | Mismas reglas y rechazo de campos extra que JSON. No hay campos de carga de archivos autorizados. `_method` sólo se admite como metadato de un POST cuando coincide con el método efectivo PUT/PATCH/DELETE; nunca pasa a los datos validados. |
-| Authorization | `Bearer` del login en rutas privadas, validado por Sanctum, huella de seguridad, aprobación, rol, alcance y Policy. Desde A07, el navegador usa cookies HttpOnly y CSRF, y los clientes API conservan Bearer; ambos aplican aprobaci�n, rol y Policy. |
+| Authorization | `Bearer` del login en rutas privadas, validado por Sanctum, huella de seguridad, aprobación, rol, alcance y Policy. Desde A07, el navegador usa cookies HttpOnly y CSRF, y los clientes API conservan Bearer; ambos aplican aprobación, rol y Policy. |
 | Content-Type / Accept | JSON se interpreta mediante `Content-Type: application/json`; formularios mediante el parser de Laravel. Cuerpos no vacíos de otros tipos reciben 422. Los errores de FormRequest siempre responden JSON 422, incluso sin `Accept: application/json`. No se usan encabezados para asignar propietarios ni roles. |
 | Content-Length | El middleware existente limita a `app.max_request_bytes` (2 MiB por defecto) el tamaño declarado. La configuración del servidor también debe limitar el cuerpo real. |
 | Origin / encabezados CORS | El middleware CORS compara el origen con la lista configurada y sólo concede permisos CORS a coincidencias exactas. Publica métodos y encabezados admitidos para el navegador; no sustituye autenticación/autorización. OPTIONS es transporte, sin operación de negocio. |
@@ -32,8 +32,8 @@ Las reglas ejecutables completas están en `backend/app/Http/Requests`. `nullabl
 | --- | --- |
 | `EmptyInputRequest` | Ningún campo de negocio. Rechaza datos en query/cuerpo para comandos sin parámetros y filtros no declarados en lecturas. |
 | `AuthRequest::login` | `email`: texto, email, máximo 254; `password`: texto, máximo 1024. Ambos obligatorios. Rechaza `abilities` y otros campos de control de tokens. |
-| `AuthRequest::register` | `name` texto obligatorio máximo 255; email obligatorio único máximo 254; contraseña obligatoria 12–1024, mayúsculas/minúsculas, letras, números y símbolos; `role` opcional familiar/profesional y sus alias cuidador; `privacy_consent` obligatorio aceptado. `location`/`phone` opcionales texto máximo 255; nacimiento según regla común. Aprobación, auditoría, versión/fecha de consentimiento provienen del servidor. |
-| `AuthRequest::updateMe` | Nombre y email obligatorios; email único excluyendo usuario actual. Contacto/nacimiento como registro; `current_password` texto opcional máximo 1024; `new_password` fuerte y confirmada con `new_password_confirmation`, ambos máximo 1024. |
+| `AuthRequest::register` | `name` texto obligatorio máximo 255; email obligatorio único máximo 254; contraseña obligatoria 15–128, mayúsculas/minúsculas, letras, números y símbolos; `role` opcional familiar/profesional y sus alias cuidador; `privacy_consent` obligatorio aceptado. `location`/`phone` opcionales texto máximo 255; nacimiento según regla común. Aprobación, auditoría, versión/fecha de consentimiento provienen del servidor. |
+| `AuthRequest::updateMe` | Nombre y email obligatorios; email único excluyendo usuario actual. Contacto/nacimiento como registro; `current_password` texto opcional máximo 1024; `new_password` fuerte y confirmada con `new_password_confirmation`, nueva contrasena de 15 a 128 caracteres; confirmacion maximo 1024. |
 | `AdminUserRequest` | Nombre/email/contacto/nacimiento como registro; email único excluyendo modelo enlazado. `role` obligatorio admin/familiar/profesional/cuidador_familiar/cuidador_profesional. Contraseña fuerte obligatoria al crear y opcional al editar. Sólo al editar: `is_approved` booleano obligatorio. |
 | `OlderAdultRequest` | Nombre obligatorio máximo 255; edad entero 0–130; nacimiento común; género femenino/masculino/otro; estado estable/atención/crítico/en observación (sin distinguir mayúsculas, con variantes sin acento). Habitación, cuidador familiar de compatibilidad, contacto de emergencia, teléfono y alergias texto opcional máximo 255. Historia clínica/notas máximo 10000. IDs de cuidadores positivos, existentes, aprobados y del rol correspondiente. |
 | `OlderAdultRequest::medications` | Lista opcional máximo 100. Cada elemento: nombre obligatorio máximo 255; ID opcional positivo, sujeto a propiedad del adulto en servicio; presentación/dosis/horario máximo 255; unidad máximo 80; cantidad y mínimo de stock enteros 0–4294967295; vencimiento YYYY-MM-DD; notas máximo 2000; días lista máximo 7 de lunes/martes/miércoles/jueves/viernes/sábado/domingo, con variantes sin acento y sin distinguir mayúsculas. No acepta propietarios, auditoría ni `medication_id` inyectados. |
@@ -54,6 +54,8 @@ Las reglas ejecutables completas están en `backend/app/Http/Requests`. `nullabl
 | `MedicationStatisticsRequest` | Filtro opcional day/month/year. |
 
 Reglas comunes: nacimiento YYYY-MM-DD entre 1800-01-01 y hoy; booleanos según Laravel (`true`, `false`, 0, 1, "0", "1"); números enteros admiten representación decimal de formularios. Límites de texto se expresan en caracteres. Colecciones son listas consecutivas desde índice 0. Las relaciones no confían en nombres como prueba de autorización.
+
+SCRUM-913 a SCRUM-917 centralizan la politica de contrasenas y agregan cierre global autenticado. Detalles en [SESIONES_AUTENTICACION_A07_BLOQUE2.md](SESIONES_AUTENTICACION_A07_BLOQUE2.md).
 
 ## Inventario por ruta
 
@@ -108,6 +110,7 @@ GET incluye HEAD. En lecturas, la columna Request define los filtros permitidos 
 | GET / HEAD | `/api/incidents/today` | `EmptyInputRequest` |
 | GET / HEAD | `/api/csrf-cookie` | `EmptyInputRequest` |
 | POST | `/api/login` | `AuthRequest` |
+| POST | `/api/logout-all` | `RevokeSessionsRequest` |
 | POST | `/api/logout` | `EmptyInputRequest` |
 | GET / HEAD | `/api/me` | `EmptyInputRequest` |
 | PUT | `/api/me` | `AuthRequest` |

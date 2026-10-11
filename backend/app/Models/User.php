@@ -25,6 +25,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'session_version',
     ];
 
     protected function casts(): array
@@ -33,6 +34,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_approved' => 'boolean',
+            'session_version' => 'integer',
             'birthdate' => 'date',
             'privacy_consent_at' => 'datetime',
         ];

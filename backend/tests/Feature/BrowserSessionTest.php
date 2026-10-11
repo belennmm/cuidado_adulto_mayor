@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\CredentialRevocationService;
+use App\Support\AccountSecurityState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -187,5 +190,93 @@ class BrowserSessionTest extends TestCase
         ])->assertNoContent()->assertHeader('Access-Control-Allow-Credentials', 'true');
         $this->browser('GET', '/api/csrf-cookie', [], true, ['Origin' => 'https://evil.test'])
             ->assertHeaderMissing('Access-Control-Allow-Origin')->assertHeaderMissing('Access-Control-Allow-Credentials');
+    }
+
+    public function test_logout_all_requires_csrf_and_password_and_revokes_only_the_current_account(): void
+    {
+        $user = $this->login();
+        $jarA = $this->jar;
+        $tokenA = $user->createToken('device-a')->accessToken;
+        $tokenB = $user->createToken('device-b')->accessToken;
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $jarB = $this->jar;
+        $this->jar = [];
+        $other = $this->login();
+        $otherJar = $this->jar;
+        $otherToken = $other->createToken('other-device')->accessToken;
+        $this->jar = $jarA;
+        $this->browser('POST', '/api/logout-all', ['current_password' => 'password'], false)->assertStatus(419);
+        $this->browser('POST', '/api/logout-all', ['current_password' => 'wrong'])->assertUnprocessable()->assertJsonValidationErrors('current_password');
+        $this->browser('POST', '/api/logout-all', ['current_password' => 'password', 'user_id' => $other->id])->assertUnprocessable();
+        $this->browser('GET', '/api/me')->assertOk();
+        $this->browser('POST', '/api/logout-all', ['current_password' => 'password'])->assertOk();
+        $this->assertDatabaseMissing('sessions', ['user_id' => $user->id]);
+        $this->assertDatabaseMissing('personal_access_tokens', ['id' => $tokenA->id]);
+        $this->assertDatabaseMissing('personal_access_tokens', ['id' => $tokenB->id]);
+        $this->assertSame(1, $user->fresh()->session_version);
+        foreach ([$jarA, $jarB, $this->jar] as $jar) {
+            $this->jar = $jar;
+            $this->browser('GET', '/api/me')->assertUnauthorized();
+        }
+        $this->jar = $otherJar;
+        $this->browser('GET', '/api/me')->assertOk()->assertJsonPath('user.id', $other->id);
+        $this->assertDatabaseHas('personal_access_tokens', ['id' => $otherToken->id]);
+    }
+
+    public function test_normal_logout_keeps_another_device_session_active(): void
+    {
+        $user = $this->login();
+        $jarA = $this->jar;
+        $this->jar = [];
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $jarB = $this->jar;
+        $this->jar = $jarA;
+        $this->browser('POST', '/api/logout')->assertOk();
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+        $this->jar = $jarB;
+        $this->browser('GET', '/api/me')->assertOk();
+    }
+
+    public function test_security_version_invalidates_sessions_even_when_privileges_are_restored(): void
+    {
+        $user = $this->login();
+        $originalFingerprint = AccountSecurityState::fingerprint($user->fresh());
+        $user->forceFill(['role' => 'profesional'])->save();
+        $user->forceFill(['role' => 'familiar'])->save();
+        $this->assertSame(2, $user->fresh()->session_version);
+        $this->assertNotSame($originalFingerprint, AccountSecurityState::fingerprint($user->fresh()));
+        $this->browser('GET', '/api/me')->assertUnauthorized();
+        $this->browser('GET', '/api/csrf-cookie')->assertOk();
+        $this->browser('POST', '/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $this->browser('GET', '/api/me')->assertOk();
+    }
+
+    public function test_logout_all_revokes_file_sessions_without_relying_on_the_database_session_table(): void
+    {
+        $directory = storage_path('framework/testing-sessions-'.bin2hex(random_bytes(8)));
+        File::ensureDirectoryExists($directory);
+        config(['session.driver' => 'file', 'session.files' => $directory]);
+        try {
+            $this->login();
+            $captured = $this->jar;
+            $this->assertDatabaseCount('sessions', 0);
+            $this->browser('POST', '/api/logout-all', ['current_password' => 'password'])->assertOk();
+            $this->jar = $captured;
+            $this->browser('GET', '/api/me')->assertUnauthorized();
+        } finally {
+            File::deleteDirectory($directory);
+        }
+    }
+
+    public function test_saving_a_stale_model_does_not_undo_a_later_revocation(): void
+    {
+        $user = $this->login();
+        app(CredentialRevocationService::class)->revoke($user);
+        app(CredentialRevocationService::class)->revoke($user->fresh());
+        $user->forceFill(['name' => 'Updated name'])->save();
+        $this->assertSame(2, $user->fresh()->session_version);
     }
 }

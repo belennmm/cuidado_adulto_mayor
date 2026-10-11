@@ -30,7 +30,7 @@ form.addEventListener("submit", async(e) => {
 
     const name = document.getElementById("username").value.trim()
     const email = document.getElementById("email").value.trim()
-    const password = document.getElementById("password").value.trim()
+    const password = document.getElementById("password").value
     const role = document.getElementById("userType").value
     const location = document.getElementById("location").value
     const phone = document.getElementById("phone").value.trim()

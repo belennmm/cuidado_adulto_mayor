@@ -45,6 +45,7 @@ Route::post('/register', [AuthController::class, 'register'])->middleware('throt
 
 Route::middleware(['auth:sanctum', 'throttle:sensitive-api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout-all', [AuthController::class, 'logoutAll'])->middleware('throttle:reauthentication');
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me', [AuthController::class, 'updateMe']);
     Route::get('/incidents', [IncidentController::class, 'index'])->middleware('role:admin,profesional,familiar')->can('viewAny', Incident::class);

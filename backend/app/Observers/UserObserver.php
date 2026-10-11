@@ -12,7 +12,7 @@ class UserObserver
     public function updated(User $user): void
     {
         if ($user->wasChanged(['role', 'password'])
-            || ($user->wasChanged('is_approved') && ! $user->is_approved)) {
+            || $user->wasChanged('is_approved')) {
             $this->credentials->revoke($user, $user->getOriginal('email'));
         }
     }

@@ -34,7 +34,7 @@ describe("formulario de registro", () => {
     fetchJson.mockResolvedValue({ message: "Registro enviado" })
     document.getElementById("username").value = "Laura Pérez"
     document.getElementById("email").value = "laura@test.com"
-    document.getElementById("password").value = "password123"
+    document.getElementById("password").value = "  Unique-Secret!2048  "
     document.getElementById("userType").value = "familiar"
     document.getElementById("privacyConsent").checked = true
 
@@ -45,7 +45,7 @@ describe("formulario de registro", () => {
     expect(path).toBe("/register")
     expect(options).toMatchObject({ method: "POST", auth: false })
     expect(JSON.parse(options.body)).toMatchObject({
-      name: "Laura Pérez", email: "laura@test.com", password: "password123", role: "familiar", privacy_consent: true,
+      name: "Laura Pérez", email: "laura@test.com", password: "  Unique-Secret!2048  ", role: "familiar", privacy_consent: true,
     })
     expect(document.getElementById("registerMessage").textContent).toBe("Registro enviado")
   })
@@ -54,7 +54,7 @@ describe("formulario de registro", () => {
     fetchJson.mockRejectedValue(new Error("El correo ya existe"))
     document.getElementById("username").value = "Laura"
     document.getElementById("email").value = "repetido@test.com"
-    document.getElementById("password").value = "password123"
+    document.getElementById("password").value = "  Unique-Secret!2048  "
     document.getElementById("userType").value = "familiar"
     document.getElementById("privacyConsent").checked = true
 
@@ -68,7 +68,7 @@ describe("formulario de registro", () => {
   it("impide el registro sin aceptar la política de privacidad", () => {
     document.getElementById("username").value = "Laura"
     document.getElementById("email").value = "laura@test.com"
-    document.getElementById("password").value = "password123"
+    document.getElementById("password").value = "  Unique-Secret!2048  "
     document.getElementById("userType").value = "familiar"
 
     fireEvent.submit(document.querySelector("form"))

@@ -160,7 +160,7 @@
                       id="password"
                       name="password"
                       placeholder="Dejar en blanco para no cambiar"
-                    />
+                     minlength="15" maxlength="128" autocomplete="new-password" aria-describedby="passwordPolicyHint" />
                     <button type="button" class="toggle-password" id="togglePassword">
                       <i class="bx bx-hide"></i>
                     </button>
@@ -177,7 +177,8 @@
                   Guardar cambios
                 </button>
               </div>
-            </form>
+            <p id="passwordPolicyHint">Usa de 15 a 128 caracteres, con mayusculas, minusculas, numeros y simbolos. Evita contrasenas comunes o filtradas.</p>
+</form>
           </section>
         </section>
       </main>

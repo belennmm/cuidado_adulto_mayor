@@ -23,7 +23,7 @@ class RequireAccessRule
         $middleware = $route?->gatherMiddleware() ?? [];
         $authenticated = in_array('auth:sanctum', $middleware, true);
         $accountAction = in_array($action, [
-            AuthController::class.'@me', AuthController::class.'@updateMe', AuthController::class.'@logout',
+            AuthController::class.'@me', AuthController::class.'@updateMe', AuthController::class.'@logout', AuthController::class.'@logoutAll',
         ], true);
         $hasPolicy = (bool) array_filter($middleware, fn (string $rule) => str_starts_with($rule, 'can:'));
 

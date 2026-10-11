@@ -17,7 +17,7 @@ class BackendAccessControlTest extends TestCase
 
     private const PUBLIC_API = ['api/ping', 'api/login', 'api/register', 'api/csrf-cookie'];
 
-    private const ACCOUNT_API = ['api/me', 'api/logout'];
+    private const ACCOUNT_API = ['api/me', 'api/logout', 'api/logout-all'];
 
     public function test_every_private_api_route_requires_authentication(): void
     {

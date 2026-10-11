@@ -30,7 +30,7 @@ final class TokenAbilities
         $action = $route?->getActionName();
         $uri = $route?->uri() ?? '';
         $module = match (true) {
-            in_array($action, [AuthController::class.'@me', AuthController::class.'@updateMe', AuthController::class.'@logout'], true) => 'account',
+            in_array($action, [AuthController::class.'@me', AuthController::class.'@updateMe', AuthController::class.'@logout', AuthController::class.'@logoutAll'], true) => 'account',
             in_array('admin', $route?->gatherMiddleware() ?? [], true) => 'admin',
             str_starts_with($uri, 'api/family/') => 'family',
             str_starts_with($uri, 'api/professional/'), str_starts_with($uri, 'api/medications/') => 'professional',

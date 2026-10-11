@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\RevokeSessionsRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AuthService;
@@ -74,6 +75,18 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => 'Logout exitoso']);
+    }
+
+    public function logoutAll(RevokeSessionsRequest $request): JsonResponse
+    {
+        $this->authService->revokeAllSessions($request->user(), $request->validated('current_password'));
+        if ($request->attributes->get('browser_session')) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return response()->json(['message' => 'Todas las sesiones fueron cerradas. Inicia sesion nuevamente.']);
     }
 
     public function me(EmptyInputRequest $request): JsonResponse

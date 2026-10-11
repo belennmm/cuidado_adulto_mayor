@@ -59,11 +59,15 @@ class AppServiceProvider extends ServiceProvider
             // The service separately limits failed attempts for each email/IP pair.
             Limit::perMinute(config('abuse.login_per_minute'))->by($request->ip()),
         ]);
+        RateLimiter::for('reauthentication', fn (Request $request) => [
+            Limit::perMinute(5)->by('account:'.$request->user()->id),
+            Limit::perMinute(10)->by('ip:'.$request->ip()),
+        ]);
         RateLimiter::for('registration', fn (Request $request) => [
             Limit::perHour(10)->by($request->ip()),
         ]);
         RateLimiter::for('sensitive-api', function (Request $request) {
-            if ($request->route()?->getActionMethod() === 'logout') {
+            if (in_array($request->route()?->getActionMethod(), ['logout', 'logoutAll'], true)) {
                 return Limit::none();
             }
 
@@ -123,6 +127,9 @@ class AppServiceProvider extends ServiceProvider
             $missing[] = 'SESSION_DRIVER debe persistir las sesiones en el servidor';
         }
 
+        if (! config('passwords.check_compromised')) {
+            $missing[] = 'PASSWORD_CHECK_COMPROMISED debe ser true';
+        }
         $origins = config('cors.allowed_origins', []);
         if (array_filter($origins, fn (string $origin) => ! str_starts_with($origin, 'https://'))) {
             $missing[] = 'CORS_ALLOWED_ORIGINS debe usar HTTPS';
