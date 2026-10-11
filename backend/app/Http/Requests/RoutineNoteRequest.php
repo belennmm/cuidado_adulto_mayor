@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Support\ResourceAccess;
+use App\Support\ListPage;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RoutineNoteRequest extends StrictFormRequest
@@ -20,7 +21,7 @@ class RoutineNoteRequest extends StrictFormRequest
     public function rules(): array
     {
         return match ($this->route()?->getActionMethod()) {
-            'index' => ['older_adult_id' => ['required', 'integer', 'min:1']],
+            'index' => [...ListPage::rules(), 'older_adult_id' => ['required', 'integer', 'min:1']],
             'store' => ['older_adult_id' => ['required', 'integer', 'min:1'], 'content' => ['required', 'string', 'max:5000']],
             default => ['content' => ['required', 'string', 'max:5000']],
         };

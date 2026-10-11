@@ -35,6 +35,8 @@
     shifts: [],
     events: [],
     requestId: 0,
+    page: 1,
+    eventsPage: 1,
   }
 
   function safeJsonParse(value) {
@@ -77,6 +79,8 @@
       start_date: formatDateKey(startDate),
       end_date: formatDateKey(endDate),
     })
+    if (state.page > 1) params.set("page", String(state.page))
+    if (state.eventsPage > 1) params.set("events_page", String(state.eventsPage))
 
     const data = await window.CuidadoApi.fetchJson(`/admin/schedules/calendar?${params.toString()}`, {
       expectedRoles: ["admin"],
@@ -86,6 +90,8 @@
     return {
       shifts: data.shifts || [],
       events: data.events || [],
+      pagination: data.pagination,
+      eventsPagination: data.events_pagination,
     }
   }
 
@@ -190,6 +196,12 @@
       state.shifts = data.shifts
       state.events = data.events
       renderCalendar()
+      window.CuidadoUi.pagination(container, data.pagination, async (page) => { state.page = page; await refreshCalendar() })
+      window.CuidadoUi.pagination("calendarEventsList", data.eventsPagination, async (page) => { state.eventsPage = page; await refreshCalendar() })
+      if (data.eventsPagination) {
+        const total = data.eventsPagination.total
+        window.CuidadoUi.setText("calendarEventsCount", `${total} ${total === 1 ? "evento" : "eventos"}`)
+      }
     } catch (error) {
       if (currentRequestId !== state.requestId) return
       state.shifts = []
@@ -200,6 +212,8 @@
   }
 
   async function moveCalendar(direction) {
+    state.page = 1
+    state.eventsPage = 1
     if (state.view === VIEW_LABELS.day) {
       state.currentDate = addDays(state.currentDate, direction)
     } else if (state.view === VIEW_LABELS.week) {
@@ -212,11 +226,15 @@
   }
 
   async function setToday() {
+    state.page = 1
+    state.eventsPage = 1
     state.currentDate = startOfDay(new Date())
     await refreshCalendar()
   }
 
   async function setView(view) {
+    state.page = 1
+    state.eventsPage = 1
     state.view = view
     await refreshCalendar()
   }

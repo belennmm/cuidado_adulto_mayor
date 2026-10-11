@@ -6,6 +6,8 @@ use App\Enums\UserRole;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\User;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -85,16 +87,16 @@ class CaregiverAccessService
         abort(404);
     }
 
-    public function incidentsFor(Collection $olderAdults, ?Carbon $date = null, bool $includeReporter = false): Collection
+    public function incidentsFor(Collection $olderAdults, ?Carbon $date = null, bool $includeReporter = false, ?array $input = null): Collection|LengthAwarePaginator
     {
         $adultIds = $olderAdults->pluck('id')->filter()->values();
         if ($adultIds->isEmpty()) {
-            return collect();
+            return $input === null ? collect() : ListPage::collection(collect(), $input);
         }
 
         $query = Incident::query()
             ->with([
-                'reporter:id,name,email',
+                'reporter:id,name',
                 'olderAdult.familyCaregiver:id,name,email,phone,location',
                 'olderAdult.professionalCaregiver:id,name,email,phone,location',
                 'olderAdult.medicationAssignments.medication',
@@ -105,14 +107,32 @@ class CaregiverAccessService
             $query->whereDate('incident_date', $date->toDateString());
         }
 
-        return $query
+        $query
             ->orderByDesc('incident_date')
             ->orderByRaw('incident_time IS NULL')
             ->orderByDesc('incident_time')
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(fn (Incident $incident) => $this->formatIncident($incident, $includeReporter))
-            ->values();
+            ->orderByDesc('created_at')->orderByDesc('id');
+        if ($input !== null) {
+            $page = ListPage::query($query, $input);
+            $page->setCollection($page->getCollection()->map(fn (Incident $incident) => $this->formatIncident($incident, $includeReporter)));
+
+            return $page;
+        }
+
+        return $query->get()->map(fn (Incident $incident) => $this->formatIncident($incident, $includeReporter))->values();
+    }
+
+    public function incidentCounts(Collection $olderAdults, ?Carbon $date = null): array
+    {
+        $query = Incident::query()->whereIn('older_adult_id', $olderAdults->pluck('id'));
+        if ($date) {
+            $query->whereDate('incident_date', $date->toDateString());
+        }
+        $counts = $query->selectRaw('status, COUNT(*) AS aggregate')->groupBy('status')->get();
+        $total = (int) $counts->sum('aggregate');
+        $resolved = (int) $counts->filter(fn ($row) => $this->isResolved($row->status))->sum('aggregate');
+
+        return ['total' => $total, 'open' => $total - $resolved, 'resolved' => $resolved];
     }
 
     public function incidentSummary(Collection $incidents): array
@@ -150,7 +170,6 @@ class CaregiverAccessService
             $formatted['reporter'] = $incident->reporter ? [
                 'id' => $incident->reporter->id,
                 'name' => $incident->reporter->name,
-                'email' => $incident->reporter->email,
             ] : null;
         }
 

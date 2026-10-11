@@ -120,11 +120,12 @@
     })
   }
 
-  async function loadIncidentsForAdult(adultId) {
-    const data = await api.fetchJson(`/family/older-adults/${encodeURIComponent(adultId)}/incidents`)
+  async function loadIncidentsForAdult(adultId, page = 1) {
+    const data = await api.fetchJson(window.CuidadoUi.pagePath(`/family/older-adults/${encodeURIComponent(adultId)}/incidents`, page))
     renderIncidents(data.incidents || [])
     renderAdultSelector(adultId)
     updateAdultUrl(adultId)
+    window.CuidadoUi.pagination("incidentsList", data.pagination, (next) => loadIncidentsForAdult(adultId, next))
   }
 
   async function loadIncidents() {
@@ -138,11 +139,17 @@
       }
 
       const requestedAdultId = getRequestedAdultId()
+      if (requestedAdultId && !assignedAdults.some((adult) => String(adult.id) === requestedAdultId)) {
+        const detail = await api.fetchJson(`/family/older-adults/${encodeURIComponent(requestedAdultId)}`)
+        assignedAdults.push(detail.older_adult)
+      }
       const selectedAdultId = assignedAdults.some((adult) => String(adult.id) === String(requestedAdultId))
         ? requestedAdultId
         : assignedAdults[0].id
 
       await loadIncidentsForAdult(selectedAdultId)
+      window.CuidadoUi.pagedSelect("incidentsAdultSelector", "/family/older-adults", "older_adults", adultsData, { expectedRoles: ["familiar", "cuidador_familiar"] },
+        (rows) => { assignedAdults = rows })
     } catch (error) {
       renderEmpty(error.message)
     }

@@ -4,33 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AdminUserRequest;
 use App\Http\Requests\EmptyInputRequest;
+use App\Http\Requests\ListRequest;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Resources\AdminUserResource;
 use App\Models\User;
 use App\Services\AdminUserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class AdminUserController extends Controller
 {
     public function __construct(private readonly AdminUserService $userService) {}
 
-    public function index(EmptyInputRequest $request): JsonResponse
+    public function index(ListRequest $request): JsonResponse
     {
-        return $this->collectionResponse($this->userService->all(), $request);
+        return $this->collectionResponse($this->userService->all($request->validated()), $request);
     }
 
-    public function professionalCaregivers(EmptyInputRequest $request): JsonResponse
+    public function professionalCaregivers(ListRequest $request): JsonResponse
     {
         return $this->collectionResponse(
-            $this->userService->approvedCaregivers('profesional'), $request,
+            $this->userService->approvedCaregivers('profesional', $request->validated()), $request,
         );
     }
 
-    public function familyCaregivers(EmptyInputRequest $request): JsonResponse
+    public function familyCaregivers(ListRequest $request): JsonResponse
     {
         return $this->collectionResponse(
-            $this->userService->approvedCaregivers('familiar'), $request,
+            $this->userService->approvedCaregivers('familiar', $request->validated()), $request,
         );
     }
 
@@ -74,11 +76,9 @@ class AdminUserController extends Controller
         return response()->json(['message' => 'Usuario eliminado correctamente.']);
     }
 
-    private function collectionResponse(Collection $users, Request $request): JsonResponse
+    private function collectionResponse(LengthAwarePaginator $users, Request $request): JsonResponse
     {
-        return response()->json([
-            'users' => $users->map(fn (User $user) => $this->resource($user, $request))->values(),
-        ]);
+        return response()->json(ListPage::payload($users, 'users', fn (User $user) => $this->resource($user, $request)));
     }
 
     private function userResponse(

@@ -130,10 +130,16 @@
       }
 
       const requestedAdultId = getRequestedAdultId()
+      if (requestedAdultId && !assignedAdults.some((adult) => String(adult.id) === requestedAdultId)) {
+        const detail = await api.fetchJson(`/family/older-adults/${encodeURIComponent(requestedAdultId)}`)
+        assignedAdults.push(detail.older_adult)
+      }
       const selectedAdultId = requestedAdultId || assignedAdults[0].id
 
       renderAdultSelector(selectedAdultId)
       await loadAdultDetail(selectedAdultId)
+      window.CuidadoUi.pagedSelect("adultSelector", "/family/older-adults", "older_adults", data, { expectedRoles: ["familiar", "cuidador_familiar"] },
+        (rows) => { assignedAdults = rows })
     } catch (error) {
       renderEmpty(error.message)
     }

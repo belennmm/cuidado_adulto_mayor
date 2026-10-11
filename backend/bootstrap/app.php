@@ -105,9 +105,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 403 => 'No tienes permiso para realizar esta accion.',
                 404 => 'Recurso no encontrado.',
                 405 => 'Metodo HTTP no permitido.',
+                429 => 'Demasiadas solicitudes. Intenta nuevamente mas tarde.',
                 default => $status >= 500 ? 'Error interno del servidor.' : 'Solicitud no valida.',
             };
 
-            return response()->json(['message' => $message], $status);
+            return response()->json(['message' => $message], $status,
+                $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : []);
         });
     })->create();

@@ -102,7 +102,7 @@ async function createUser() {
   }
 }
 
-async function loadPendingRequests() {
+async function loadPendingRequests(page = 1) {
   if (!window.CuidadoApi.getToken(["admin"])) {
     renderRequestState("Inicia sesión como administrador para ver las solicitudes.")
     return
@@ -111,7 +111,7 @@ async function loadPendingRequests() {
   renderRequestState("Cargando solicitudes...", "loading-requests")
 
   try {
-    const data = await window.CuidadoApi.fetchJson("/admin/users", {
+    const data = await window.CuidadoApi.fetchJson(window.CuidadoUi.pagePath("/admin/users?is_approved=0", page), {
       expectedRoles: ["admin"],
       fallbackError: "No se pudo completar la solicitud.",
     })
@@ -121,6 +121,7 @@ async function loadPendingRequests() {
     })
 
     renderRequests()
+    window.CuidadoUi.pagination(requestList, data.pagination, loadPendingRequests)
   } catch (error) {
     renderRequestState(error.message)
   }

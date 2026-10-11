@@ -8,6 +8,7 @@ use App\Models\OlderAdult;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class OlderAdultService
 {
@@ -40,6 +41,7 @@ class OlderAdultService
         $data['status'] = $data['status'] ?? 'Estable';
 
         DB::transaction(function () use ($olderAdult, $data, $medications, $shouldSyncMedications) {
+            $olderAdult = OlderAdult::query()->lockForUpdate()->findOrFail($olderAdult->getKey());
             $olderAdult->update($data);
 
             if ($shouldSyncMedications) {
@@ -115,8 +117,13 @@ class OlderAdultService
             ];
 
             $assignmentId = $medicationData['id'] ?? null;
+            if ($assignmentId && in_array((int) $assignmentId, $keptAssignmentIds, true)) {
+                throw ValidationException::withMessages([
+                    'medications' => ['Una asignación no puede aparecer más de una vez.'],
+                ]);
+            }
             $assignment = $assignmentId
-                ? $olderAdult->medicationAssignments()->find($assignmentId)
+                ? $olderAdult->medicationAssignments()->lockForUpdate()->find($assignmentId)
                 : null;
 
             if ($assignmentId && ! $assignment) {
@@ -145,12 +152,17 @@ class OlderAdultService
                 }
             }
 
-            $keptAssignmentIds[] = $assignment->id;
+            $keptAssignmentIds[] = (int) $assignment->id;
         }
 
-        $olderAdult->medicationAssignments()
+        $removedAssignments = $olderAdult->medicationAssignments()
             ->when($keptAssignmentIds, fn ($query) => $query->whereNotIn('id', $keptAssignmentIds))
-            ->delete();
+            ->orderBy('id')->lockForUpdate()->get();
+
+        foreach ($removedAssignments as $assignment) {
+            // Reuse the inventory guard; the enclosing transaction rolls back the whole profile.
+            app(MedicationInventoryService::class)->delete($assignment);
+        }
     }
 
     private function normalizeDays(mixed $days): array

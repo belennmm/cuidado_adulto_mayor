@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Generate repository SBOM (CycloneDX JSON)
         uses: anchore/sbom-action@v0.24.3
         with:
@@ -20,10 +22,38 @@ jobs:
           format: cyclonedx-json
           output-file: cuidado-adulto-mayor.cdx.json
           upload-artifact: false
+      - name: Record build identity
+        shell: pwsh
+        run: |
+          $metadata = [ordered]@{
+            repository = $env:GITHUB_REPOSITORY
+            commit = $env:GITHUB_SHA
+            ref = $env:GITHUB_REF
+            event = $env:GITHUB_EVENT_NAME
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            workflow_ref = $env:GITHUB_WORKFLOW_REF
+            workflow_sha = $env:GITHUB_WORKFLOW_SHA
+            run_url = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+            sbom_scope = 'repository: backend/composer.lock and frontend/package-lock.json; not built images'
+            signed = $false
+          }
+          $metadata | ConvertTo-Json | Set-Content -LiteralPath 'cuidado-build-metadata.json' -Encoding utf8
+      - name: Record SBOM checksum and integrity inputs
+        run: |
+          sha256sum cuidado-adulto-mayor.cdx.json > cuidado-adulto-mayor.cdx.json.sha256
+          sha256sum cuidado-build-metadata.json > cuidado-build-metadata.json.sha256
+          sha256sum backend/composer.json backend/composer.lock frontend/package.json frontend/package-lock.json backend/dockerfile frontend/dockerfile backend/.dockerignore frontend/.dockerignore backend/docker/entrypoint.sh frontend/nginx.conf docker-compose.yml .github/dependabot.yml tests/security/semgrep.yml .github/workflows/*.yml > cuidado-integrity-inputs.sha256
+          find backend/database/migrations backend/database/seeders backend/app/Policies backend/app/Http/Middleware backend/app/Http/Requests backend/app/Support backend/app/Services backend/config tests/security -type f ! -path 'tests/security/semgrep.yml' -print0 | sort -z | xargs -0 sha256sum >> cuidado-integrity-inputs.sha256
       - name: Upload version SBOM
         uses: actions/upload-artifact@v7
         with:
           name: sbom-${{ github.ref_name }}
-          path: cuidado-adulto-mayor.cdx.json
+          path: |
+            cuidado-adulto-mayor.cdx.json
+            cuidado-adulto-mayor.cdx.json.sha256
+            cuidado-integrity-inputs.sha256
+            cuidado-build-metadata.json
+            cuidado-build-metadata.json.sha256
           if-no-files-found: error
           retention-days: 90

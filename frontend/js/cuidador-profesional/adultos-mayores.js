@@ -18,15 +18,16 @@
     `
   }
 
-  async function loadAdults() {
+  async function loadAdults(page = 1) {
     const list = document.getElementById("professionalAdultsList")
     if (!list) return
 
     try {
-      const data = await api.fetchJson("/professional/older-adults")
+      const data = await api.fetchJson(window.CuidadoUi.pagePath("/professional/older-adults", Number.isInteger(page) ? page : 1))
       list.innerHTML = data.older_adults?.length
         ? data.older_adults.map(renderAdult).join("")
         : api.renderEmpty("No tienes adultos mayores asignados por ahora.")
+      window.CuidadoUi.pagination(list, data.pagination, loadAdults)
     } catch (error) {
       list.innerHTML = api.renderEmpty(error.message)
     }

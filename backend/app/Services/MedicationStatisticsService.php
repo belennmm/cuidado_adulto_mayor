@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\MedicationAcquisition;
 use App\Models\OlderAdultMedication;
+use App\Support\ListPage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
@@ -12,7 +13,7 @@ class MedicationStatisticsService
 {
     public const FILTERS = ['day', 'month', 'year'];
 
-    public function statistics(string $filter): array
+    public function statistics(string $filter, array $input = []): array
     {
         if (! in_array($filter, self::FILTERS, true)) {
             throw ValidationException::withMessages(['filter' => ['El filtro debe ser day, month o year.']]);
@@ -36,12 +37,13 @@ class MedicationStatisticsService
 
         return [
             'filter' => $filter,
+            'leader' => $items[0] ?? null,
             'period' => [
                 'start' => $startDate->toDateString(),
                 'end' => $endDate->toDateString(),
             ],
-            'items' => $items,
-            'inventory' => $this->medicationInventory(),
+            ...ListPage::payload(ListPage::collection(collect($items), $input), 'items'),
+            ...$this->medicationInventory($input),
         ];
     }
 
@@ -140,15 +142,14 @@ class MedicationStatisticsService
             ->all();
     }
 
-    private function medicationInventory(): array
+    private function medicationInventory(array $input): array
     {
-        return OlderAdultMedication::query()
+        $query = OlderAdultMedication::query()
             ->with(['medication:id,name', 'olderAdult:id,full_name'])
             ->withCount('administrations')
             ->orderBy('older_adult_id')
-            ->orderBy('medication_id')
-            ->get()
-            ->map(function (OlderAdultMedication $inventoryItem) {
+            ->orderBy('medication_id')->orderBy('id');
+        $payload = ListPage::payload(ListPage::query($query, $input), 'inventory', function (OlderAdultMedication $inventoryItem) {
                 $status = $inventoryItem->inventoryStatus();
 
                 return [
@@ -169,8 +170,8 @@ class MedicationStatisticsService
                     'active_assignments' => $inventoryItem->older_adult_id !== null && $inventoryItem->is_active ? 1 : 0,
                     'administrations_count' => (int) $inventoryItem->administrations_count,
                 ];
-            })
-            ->values()
-            ->all();
+            });
+
+        return ['inventory' => $payload['inventory'], 'inventory_pagination' => $payload['pagination']];
     }
 }

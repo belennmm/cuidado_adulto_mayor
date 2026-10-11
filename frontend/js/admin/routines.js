@@ -1,5 +1,6 @@
 (() => {
   const state = { olderAdults: [], activeOlderAdultId: "", currentRoutines: [], editingRoutineId: null }
+  let routineLoadSequence = 0
 
   const escapeHtml = window.CuidadoUi.escapeHtml
 
@@ -40,9 +41,19 @@
       fallbackError: "No se pudo completar la acción.",
     })
     state.olderAdults = data.older_adults || []
+    const requested = getRequestedAdultId()
+    if (requested && !state.olderAdults.some((adult) => String(adult.id) === requested)) {
+      const detail = await window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(requested)}`, { expectedRoles: ["admin"] })
+      state.olderAdults.push(detail.older_adult)
+    }
+    renderAdultSelector()
+    window.CuidadoUi.pagedSelect("adminRoutineAdultSelector", "/admin/older-adults", "older_adults", data,
+      { expectedRoles: ["admin"] }, (rows) => { state.olderAdults = rows })
   }
 
   async function loadRoutines() {
+    const sequence = ++routineLoadSequence
+    const adultId = state.activeOlderAdultId
     if (!state.activeOlderAdultId) {
       renderMeta(null)
       renderEmpty("adminRoutinesList", "Selecciona un adulto mayor para ver sus rutinas.")
@@ -52,21 +63,26 @@
       return
     }
 
-    const [routineData, adultData] = await Promise.all([
-      window.CuidadoApi.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(state.activeOlderAdultId)}`, {
+    let [routineData, adultData] = await Promise.all([
+      window.CuidadoApi.fetchJson(`/rutinas?older_adult_id=${encodeURIComponent(adultId)}`, {
         expectedRoles: ["admin"],
         fallbackError: "No se pudo completar la acción.",
       }),
-      window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(state.activeOlderAdultId)}`, {
+      window.CuidadoApi.fetchJson(`/admin/older-adults/${encodeURIComponent(adultId)}`, {
         expectedRoles: ["admin"],
         fallbackError: "No se pudo completar la acción.",
       }),
     ])
+    if (sequence !== routineLoadSequence) return
+    routineData = await window.CuidadoUi.allPages(`/rutinas?older_adult_id=${encodeURIComponent(adultId)}`, "rutinas", routineData,
+      (url) => window.CuidadoApi.fetchJson(url, { expectedRoles: ["admin"] }))
+    if (sequence !== routineLoadSequence) return
     const adult = adultData.older_adult || state.olderAdults.find((item) => String(item.id) === String(state.activeOlderAdultId))
 
     renderMeta(adult)
     renderMedications(adult)
     renderRoutines(routineData.rutinas || [])
+    if (routineData.pagination) setText("adminRoutineTotal", routineData.pagination.total)
     updateAdultUrl(state.activeOlderAdultId)
   }
 

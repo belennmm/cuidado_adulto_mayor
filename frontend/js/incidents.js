@@ -81,7 +81,8 @@ async function loadAssignedOlderAdults() {
     submitIncidentForm.disabled = true
 
     try {
-        const olderAdults = await incidentsService.loadOlderAdults()
+        let pageData
+        const olderAdults = await incidentsService.loadOlderAdults((data) => { pageData = data })
 
         incidentOlderAdult.innerHTML = `
             <option value="">Selecciona un adulto mayor</option>
@@ -93,6 +94,9 @@ async function loadAssignedOlderAdults() {
         incidentOlderAdult.disabled = olderAdults.length === 0
         submitIncidentForm.disabled = olderAdults.length === 0
         assignedOlderAdultsLoaded = olderAdults.length > 0
+        window.CuidadoUi.pagedSelect(incidentOlderAdult,
+            incidentsService.isAdminContext() ? "/admin/older-adults" : "/professional/older-adults",
+            "older_adults", pageData || {}, { expectedRoles: incidentsService.getContextRoles() })
 
         if (!olderAdults.length) {
             const message = incidentsService.isAdminContext()
@@ -186,7 +190,7 @@ async function saveIncident(event) {
 
 const { renderEmpty, renderIncidents } = window.IncidentsView.create({ incidentsList, incidentsCount, escapeHtml, formatDate, formatTime })
 
-async function loadTodayIncidents(requestedDate = "") {
+async function loadTodayIncidents(requestedDate = "", page = 1) {
     if (!incidentsService.hasSession()) {
         const message = "Inicia sesión para ver los incidentes del día."
         renderEmpty(message)
@@ -197,7 +201,7 @@ async function loadTodayIncidents(requestedDate = "") {
 
     try {
         const selectedDate = requestedDate || incidentsDateInput?.value || getSearchDate()
-        const data = await incidentsService.loadIncidents(selectedDate)
+        const data = await incidentsService.loadIncidents(selectedDate, page)
 
         incidentsDate.textContent = formatDate(data.date)
 
@@ -210,6 +214,8 @@ async function loadTodayIncidents(requestedDate = "") {
         }
 
         renderIncidents(data.incidents || [])
+        if (data.pagination) incidentsCount.textContent = String(data.pagination.total)
+        window.CuidadoUi.pagination(incidentsList, data.pagination, (next) => loadTodayIncidents(selectedDate, next))
         return true
     } catch (error) {
         incidentsCount.textContent = "0"

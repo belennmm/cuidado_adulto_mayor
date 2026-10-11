@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\OlderAdult;
 use App\Models\RoutineNote;
 use App\Models\User;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
@@ -27,19 +29,20 @@ class RoutineNoteService
         );
     }
 
-    public function notesForCurrentWeek(User $user, OlderAdult $olderAdult): Collection
+    public function notesForCurrentWeek(User $user, OlderAdult $olderAdult, ?array $input = null): Collection|LengthAwarePaginator
     {
         Gate::forUser($user)->authorize('createFor', [RoutineNote::class, $olderAdult]);
         [$weekStart, $weekEnd] = $this->currentWeekRange();
 
-        return RoutineNote::query()
+        $query = RoutineNote::query()
             ->with('professionalCaregiver:id,name')
             ->where('older_adult_id', $olderAdult->id)
             ->where('professional_caregiver_id', $user->id)
             ->whereBetween('note_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
             ->orderByDesc('note_date')
-            ->orderByDesc('updated_at')
-            ->get();
+            ->orderByDesc('updated_at')->orderByDesc('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     public function create(User $user, OlderAdult $olderAdult, string $content): RoutineNote

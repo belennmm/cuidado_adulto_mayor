@@ -2,12 +2,17 @@
   const OPTIONS = Object.freeze({ expectedRoles: ["admin"], fallbackError: "No se pudo completar la solicitud." })
   const api = () => window.CuidadoApi
 
-  function loadStatistics(filter) {
-    return api().fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(filter)}`, OPTIONS)
+  function loadStatistics(filter, page = 1) {
+    return api().fetchJson(`/admin/medication-statistics?filter=${encodeURIComponent(filter)}${page > 1 ? `&page=${page}` : ""}`, OPTIONS)
   }
 
-  function loadInventory() {
-    return api().fetchJson("/admin/medications/inventory", OPTIONS)
+  function loadInventory(selection = "", page = 1) {
+    const params = new URLSearchParams()
+    if (selection === "unassigned") params.set("scope", "unassigned")
+    else if (selection) params.set("older_adult_id", selection)
+    else params.set("scope", "general")
+    if (page > 1) params.set("page", String(page))
+    return api().fetchJson(`/admin/medications/inventory?${params}`, OPTIONS)
   }
 
   function loadOlderAdults() {

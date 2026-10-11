@@ -6,12 +6,13 @@ use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\VacationRequest;
+use App\Support\ListPage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class ScheduleCalendarService
 {
-    public function build(Carbon $startDate, Carbon $endDate): array
+    public function build(Carbon $startDate, Carbon $endDate, array $input = []): array
     {
         $schedules = CaregiverSchedule::query()
             ->with('user:id,name,email,role,is_approved')
@@ -43,13 +44,17 @@ class ScheduleCalendarService
             $endDate
         );
 
+        $events = ListPage::payload(ListPage::collection($this->buildEvents($shifts, $startDate, $endDate)->values(), [
+            ...$input, 'page' => $input['events_page'] ?? 1,
+        ]), 'events');
+
         return [
             'range' => [
                 'start_date' => $startDate->toDateString(),
                 'end_date' => $endDate->toDateString(),
             ],
-            'shifts' => $shifts->values(),
-            'events' => $this->buildEvents($shifts, $startDate, $endDate)->values(),
+            ...ListPage::payload(ListPage::collection($shifts->values(), $input), 'shifts'),
+            'events' => $events['events'], 'events_pagination' => $events['pagination'],
         ];
     }
 

@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+
+  pgadmin:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+
+  backend:
+    build:
+      target: testing
+    read_only: false
+
+  frontend:
+    read_only: false
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+      - /var/cache/nginx:size=32m,noexec,nosuid,mode=0777
+      - /run:size=16m,nosuid,mode=0777

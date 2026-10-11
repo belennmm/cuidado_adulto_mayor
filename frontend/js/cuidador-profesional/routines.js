@@ -3,6 +3,9 @@
   const state = { assignedAdults: [], activeOlderAdultId: "", editingNoteId: null, editingCustomRoutineId: null, currentCustomRoutines: [] }
   const routineForm = window.ProfessionalRoutineForm
   const routineService = window.ProfessionalRoutinesService
+  let adultsPageData = {}
+  let adultPaginationBound = false
+  let routineLoadSequence = 0
 
   function getRequestedAdultId() {
     const params = new URLSearchParams(window.location.search)
@@ -92,10 +95,16 @@
   }
 
   async function loadAdults() {
-    state.assignedAdults = await routineService.loadAdults()
+    state.assignedAdults = await routineService.loadAdults((data) => { adultsPageData = data })
+    const requested = getRequestedAdultId()
+    if (requested && !state.assignedAdults.some((adult) => String(adult.id) === requested)) {
+      const detail = await api.fetchJson(`/professional/older-adults/${encodeURIComponent(requested)}`)
+      state.assignedAdults.push(detail.older_adult)
+    }
   }
 
   async function loadRoutinesAndNotes() {
+    const sequence = ++routineLoadSequence
     if (!state.activeOlderAdultId) {
       renderEmptyState("No tienes adultos mayores asignados por ahora.")
       return
@@ -104,6 +113,7 @@
     try {
       const selectedAdult = state.assignedAdults.find((adult) => String(adult.id) === String(state.activeOlderAdultId))
       const [routineData, notesData, customRoutineData] = await routineService.loadDashboard(state.activeOlderAdultId)
+      if (sequence !== routineLoadSequence) return
 
       renderSummary(routineData, selectedAdult)
       renderWeekRange(notesData.week)
@@ -115,8 +125,16 @@
       }
       renderNotes(notesData.notes || [])
       renderCustomRoutines(customRoutineData.rutinas || [])
+      if (notesData.pagination) setText("professionalWeeklyNotesCount", notesData.pagination.total)
+      if (customRoutineData.pagination) setText("professionalCustomRoutineTotal", customRoutineData.pagination.total)
+      if (!adultPaginationBound) {
+        window.CuidadoUi.pagedSelect("professionalRoutineAdultSelector", "/professional/older-adults", "older_adults", adultsPageData, { expectedRoles: ["profesional", "cuidador_profesional"] },
+          (rows) => { state.assignedAdults = rows })
+        adultPaginationBound = true
+      }
       updateAdultUrl(state.activeOlderAdultId)
     } catch (error) {
+      if (sequence !== routineLoadSequence) return
       renderEmptyState(error.message)
     }
   }

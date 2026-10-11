@@ -5,18 +5,22 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Models\CaregiverSchedule;
 use App\Models\User;
+use App\Support\ListPage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 
 class CaregiverScheduleService
 {
-    public function all(): Collection
+    public function all(?array $input = null): Collection|LengthAwarePaginator
     {
-        return CaregiverSchedule::query()
+        $query = CaregiverSchedule::query()
             ->with('user:id,name,email,role,is_approved')
             ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->get();
+            ->orderBy('start_time')->orderBy('id');
+
+        return $input === null ? $query->get() : ListPage::query($query, $input);
     }
 
     public function saveForCaregiver(User $user, array $data): CaregiverSchedule
@@ -39,54 +43,88 @@ class CaregiverScheduleService
     {
         Gate::forUser($actor)->authorize('update', $schedule);
 
-        $schedule->update($this->scheduleAttributes($data));
+        return $this->withLockedSchedule($schedule, function ($schedule) use ($data) {
+            $this->ensureNoPendingChange($schedule);
+            $schedule->update($this->scheduleAttributes($data));
 
-        return $schedule;
+            return $schedule;
+        });
     }
 
     public function requestChange(User $actor, CaregiverSchedule $schedule, array $data): CaregiverSchedule
     {
         Gate::forUser($actor)->authorize('requestChange', $schedule);
-        $schedule->update([
-            'change_request_status' => 'pending',
-            'change_request_start_time' => $data['start_time'],
-            'change_request_end_time' => $data['end_time'],
-            'change_request_notes' => $data['notes'] ?? null,
-            'change_request_message' => $data['message'],
-        ]);
+        return $this->withLockedSchedule($schedule, function ($schedule) use ($data) {
+            $this->ensureNoPendingChange($schedule);
+            $schedule->update([
+                'change_request_status' => 'pending',
+                'change_request_start_time' => $data['start_time'],
+                'change_request_end_time' => $data['end_time'],
+                'change_request_notes' => $data['notes'] ?? null,
+                'change_request_message' => $data['message'],
+            ]);
 
-        return $schedule;
+            return $schedule;
+        });
     }
 
     public function approveChange(CaregiverSchedule $schedule): CaregiverSchedule
     {
-        $this->ensurePendingChange($schedule);
-        $schedule->fill([
-            'start_time' => $schedule->change_request_start_time,
-            'end_time' => $schedule->change_request_end_time,
-            'notes' => $schedule->change_request_notes,
-        ]);
-        $this->clearChangeRequest($schedule);
-        $schedule->save();
+        return $this->withLockedSchedule($schedule, function ($schedule) {
+            $this->ensurePendingChange($schedule);
+            $schedule->fill([
+                'start_time' => $schedule->change_request_start_time,
+                'end_time' => $schedule->change_request_end_time,
+                'notes' => $schedule->change_request_notes,
+            ]);
+            $this->clearChangeRequest($schedule);
+            $schedule->save();
 
-        return $this->loadUser($schedule);
+            return $this->loadUser($schedule);
+        });
     }
 
     public function rejectChange(CaregiverSchedule $schedule): CaregiverSchedule
     {
-        $this->ensurePendingChange($schedule);
-        $this->clearChangeRequest($schedule);
-        $schedule->save();
+        return $this->withLockedSchedule($schedule, function ($schedule) {
+            $this->ensurePendingChange($schedule);
+            $this->clearChangeRequest($schedule);
+            $schedule->save();
 
-        return $this->loadUser($schedule);
+            return $this->loadUser($schedule);
+        });
     }
 
     private function save(User $caregiver, array $data): CaregiverSchedule
     {
-        return CaregiverSchedule::updateOrCreate(
-            ['user_id' => $caregiver->id, 'day_of_week' => $data['day_of_week']],
-            $this->scheduleAttributes($data),
-        );
+        return DB::transaction(function () use ($caregiver, $data) {
+            // Serialize upserts for a caregiver, including a day without an existing row.
+            $caregiver = User::query()->lockForUpdate()->findOrFail($caregiver->getKey());
+            $this->ensureCaregiverCanManage($caregiver);
+            $existing = CaregiverSchedule::query()->where('user_id', $caregiver->id)
+                ->where('day_of_week', $data['day_of_week'])->lockForUpdate()->first();
+            if ($existing) {
+                $this->ensureNoPendingChange($existing);
+            }
+            return CaregiverSchedule::updateOrCreate(
+                ['user_id' => $caregiver->id, 'day_of_week' => $data['day_of_week']],
+                $this->scheduleAttributes($data),
+            );
+        });
+    }
+
+    private function withLockedSchedule(CaregiverSchedule $schedule, callable $operation): CaregiverSchedule
+    {
+        return DB::transaction(fn () => $operation(
+            CaregiverSchedule::query()->lockForUpdate()->findOrFail($schedule->getKey()),
+        ));
+    }
+
+    private function ensureNoPendingChange(CaregiverSchedule $schedule): void
+    {
+        if ($schedule->change_request_status === 'pending') {
+            abort(response()->json(['message' => 'Revisa la solicitud pendiente antes de modificar este turno.'], 422));
+        }
     }
 
     private function scheduleAttributes(array $data): array

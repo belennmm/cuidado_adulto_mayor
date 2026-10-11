@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmptyInputRequest;
+use App\Support\ListPage;
 use App\Http\Requests\MedicationInventoryRequest;
 use App\Http\Resources\MedicationInventoryResource;
 use App\Models\OlderAdultMedication;
@@ -16,13 +17,12 @@ class MedicationInventoryController extends Controller
 
     public function index(MedicationInventoryRequest $request): JsonResponse
     {
-        $items = $this->inventoryService->inventory($request->validated('older_adult_id'));
+        if ($request->validated('scope') === 'general') {
+            return response()->json(ListPage::payload($this->inventoryService->consolidatedInventory($request->validated()), 'inventory'));
+        }
+        $items = $this->inventoryService->inventory($request->validated('older_adult_id'), $request->validated());
 
-        return response()->json([
-            'inventory' => $items
-                ->map(fn (OlderAdultMedication $item) => $this->resource($item, $request))
-                ->values(),
-        ]);
+        return response()->json(ListPage::payload($items, 'inventory', fn (OlderAdultMedication $item) => $this->resource($item, $request)));
     }
 
     public function store(MedicationInventoryRequest $request): JsonResponse

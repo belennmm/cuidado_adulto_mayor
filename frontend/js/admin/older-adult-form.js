@@ -114,6 +114,17 @@
         option.selected = selectedId !== null && String(user.id) === String(selectedId)
         select.appendChild(option)
       })
+      if (selectedId && ![...select.options].some((option) => option.value === String(selectedId))) {
+        const result = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(selectedId)}`, { expectedRoles: ["admin"] })
+        const user = result.user
+        const professional = path.includes("professional")
+        if (user?.is_approved && (professional
+          ? ["profesional", "cuidador_profesional"].includes(user.role)
+          : ["familiar", "cuidador_familiar"].includes(user.role))) {
+          select.append(new Option(user.name, String(user.id), false, true))
+        }
+      }
+      window.CuidadoUi.pagedSelect(select, path, "users", data, { expectedRoles: ["admin"] })
     } catch (error) {
       select.replaceChildren(new Option("No se pudieron cargar los cuidadores", ""))
     }

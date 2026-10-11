@@ -1,3 +1,23 @@
 @import url("./components.parts/01-styles.css");
 @import url("./components.parts/02-styles.css");
 @import url("./components.parts/03-styles.css");
+
+.list-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.list-pagination button {
+  width: auto;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.list-pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

@@ -2,6 +2,7 @@ const olderAdultSearchInput = document.getElementById("olderAdultSearchInput")
 const olderAdultsTableBody = document.getElementById("olderAdultsTableBody")
 
 let olderAdultsData = []
+let adultsLoadSequence = 0
 
 
 function getStatusClass(status) {
@@ -15,7 +16,8 @@ function getStatusClass(status) {
   return "status-critical"
 }
 
-async function loadOlderAdults() {
+async function loadOlderAdults(page = 1) {
+  const sequence = ++adultsLoadSequence
   const token = window.CuidadoApi.getToken(["admin"])
 
   if (!token) {
@@ -24,14 +26,17 @@ async function loadOlderAdults() {
   }
 
   try {
-    const data = await window.CuidadoApi.fetchJson("/admin/older-adults", {
+    const data = await window.CuidadoApi.fetchJson(window.CuidadoUi.pagePath("/admin/older-adults", page, { q: olderAdultSearchInput?.value.trim() || "" }), {
       expectedRoles: ["admin"],
       fallbackError: "No se pudieron cargar los adultos mayores.",
     })
 
+    if (sequence !== adultsLoadSequence) return
     olderAdultsData = data.older_adults || []
     renderOlderAdults(olderAdultsData)
+    window.CuidadoUi.pagination(olderAdultsTableBody, data.pagination, loadOlderAdults)
   } catch (error) {
+    if (sequence !== adultsLoadSequence) return
     renderEmpty(error.message)
   }
 }
@@ -93,7 +98,12 @@ function filterOlderAdults() {
 }
 
 if (olderAdultSearchInput) {
-  olderAdultSearchInput.addEventListener("input", filterOlderAdults)
+  let timer
+  olderAdultSearchInput.addEventListener("input", () => {
+    adultsLoadSequence++
+    clearTimeout(timer)
+    timer = setTimeout(() => loadOlderAdults(1), 400)
+  })
 }
 
 loadOlderAdults()

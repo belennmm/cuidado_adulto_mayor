@@ -1,6 +1,7 @@
 (() => {
   const api = window.FamilyCare
   let assignedAdults = []
+  let routineLoadSequence = 0
 
   function setValue(id, value) {
     const element = document.getElementById(id)
@@ -142,8 +143,11 @@
   }
 
   async function loadRoutineForAdult(adultId) {
+    const sequence = ++routineLoadSequence
     const adult = assignedAdults.find((item) => String(item.id) === String(adultId))
-    const data = await api.fetchJson(`/family/routines?older_adult_id=${encodeURIComponent(adultId)}`)
+    const path = `/family/routines?older_adult_id=${encodeURIComponent(adultId)}`
+    const data = await window.CuidadoUi.allPages(path, "routine", await api.fetchJson(path), (url) => api.fetchJson(url))
+    if (sequence !== routineLoadSequence) return
     renderRoutine(data, adult)
     renderAdultSelector(adultId)
     updateAdultUrl(adultId)
@@ -160,11 +164,17 @@
       }
 
       const requestedAdultId = getRequestedAdultId()
+      if (requestedAdultId && !assignedAdults.some((adult) => String(adult.id) === requestedAdultId)) {
+        const detail = await api.fetchJson(`/family/older-adults/${encodeURIComponent(requestedAdultId)}`)
+        assignedAdults.push(detail.older_adult)
+      }
       const selectedAdultId = assignedAdults.some((adult) => String(adult.id) === String(requestedAdultId))
         ? requestedAdultId
         : assignedAdults[0].id
 
       await loadRoutineForAdult(selectedAdultId)
+      window.CuidadoUi.pagedSelect("routineAdultSelector", "/family/older-adults", "older_adults", adultsData, { expectedRoles: ["familiar", "cuidador_familiar"] },
+        (rows) => { assignedAdults = rows })
     } catch (error) {
       renderError(error.message)
     }

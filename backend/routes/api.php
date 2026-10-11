@@ -38,10 +38,10 @@ Route::get('/ping', function (EmptyInputRequest $request) {
     return response()->json(['ok' => true]);
 })->name('api.ping');
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:sensitive-api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me', [AuthController::class, 'updateMe']);
@@ -92,7 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum', 'admin', 'throttle:sensitive-api'])->prefix('admin')->group(function () {
     Route::get('/dashboard-summary', [AdminDashboardController::class, 'summary'])->can('viewAny', User::class);
     Route::get('/users', [AdminUserController::class, 'index'])->can('viewAny', User::class);
     Route::post('/users', [AdminUserController::class, 'store'])->can('create', User::class);

@@ -186,11 +186,12 @@ class StrictInputValidationTest extends TestCase
     {
         $item = OlderAdultMedication::create([
             'medication_id' => Medication::create(['name' => 'Pastilla'])->id,
-            'quantity' => 4294967295, 'presentation' => 'Tableta', 'unit' => 'unidad', 'minimum_stock' => 0,
+            'quantity' => 2147483647, 'presentation' => 'Tableta', 'unit' => 'unidad', 'minimum_stock' => 0,
         ]);
         $this->patchJson('/api/admin/medications/inventory/'.$item->id.'/stock', ['action' => 'increase', 'amount' => 1], $this->headers())
-            ->assertUnprocessable();
-        $this->assertSame(4294967295, $item->refresh()->quantity);
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'La cantidad excede el limite del inventario.');
+        $this->assertSame(2147483647, $item->refresh()->quantity);
         $this->assertDatabaseCount('medication_acquisitions', 0);
     }
 

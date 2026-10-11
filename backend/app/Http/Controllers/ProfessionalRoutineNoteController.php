@@ -6,6 +6,7 @@ use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\RoutineNoteRequest;
 use App\Http\Resources\RoutineNoteResource;
 use App\Models\RoutineNote;
+use App\Support\ListPage;
 use App\Services\RoutineNoteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class ProfessionalRoutineNoteController extends Controller
             (int) $request->validated('older_adult_id'),
         );
         [$weekStart, $weekEnd] = $this->routineNoteService->currentWeekRange();
-        $notes = $this->routineNoteService->notesForCurrentWeek($user, $olderAdult);
+        $notes = $this->routineNoteService->notesForCurrentWeek($user, $olderAdult, $request->validated());
 
         return response()->json([
             'older_adult' => [
@@ -36,9 +37,7 @@ class ProfessionalRoutineNoteController extends Controller
                 'start' => $weekStart->toDateString(),
                 'end' => $weekEnd->toDateString(),
             ],
-            'notes' => $notes
-                ->map(fn (RoutineNote $note) => RoutineNoteResource::make($note)->toArray($request))
-                ->values(),
+            ...ListPage::payload($notes, 'notes', fn (RoutineNote $note) => RoutineNoteResource::make($note)->toArray($request)),
         ]);
     }
 
