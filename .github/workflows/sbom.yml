@@ -44,6 +44,7 @@ jobs:
           sha256sum cuidado-adulto-mayor.cdx.json > cuidado-adulto-mayor.cdx.json.sha256
           sha256sum cuidado-build-metadata.json > cuidado-build-metadata.json.sha256
           sha256sum backend/composer.json backend/composer.lock frontend/package.json frontend/package-lock.json backend/dockerfile frontend/dockerfile backend/.dockerignore frontend/.dockerignore backend/docker/entrypoint.sh frontend/nginx.conf docker-compose.yml .github/dependabot.yml tests/security/semgrep.yml .github/workflows/*.yml > cuidado-integrity-inputs.sha256
+          find backend/database/migrations backend/database/seeders backend/app/Policies backend/app/Http/Middleware backend/app/Http/Requests backend/app/Support backend/app/Services backend/config tests/security -type f ! -path 'tests/security/semgrep.yml' -print0 | sort -z | xargs -0 sha256sum >> cuidado-integrity-inputs.sha256
       - name: Upload version SBOM
         uses: actions/upload-artifact@v7
         with:

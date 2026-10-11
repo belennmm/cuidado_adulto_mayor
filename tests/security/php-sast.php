@@ -11,10 +11,10 @@ final class InjectionStaticAnalysis
             if ($token === '`' || (is_array($token) && $token[0] === T_EVAL)) {
                 $findings[] = 'Dynamic code or shell execution';
             }
-            if (! is_array($token) || $token[0] !== T_STRING || ($tokens[$index + 1] ?? null) !== '(') {
+            if (! is_array($token) || ! in_array($token[0], [T_STRING, T_NAME_FULLY_QUALIFIED], true) || ($tokens[$index + 1] ?? null) !== '(') {
                 continue;
             }
-            $name = strtolower($token[1]);
+            $name = strtolower(ltrim($token[1], '\\'));
             $previous = $tokens[$index - 1] ?? null;
             $isMethod = is_array($previous) && in_array($previous[0], [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON], true);
             if (! $isMethod && in_array($name, ['exec', 'shell_exec', 'system', 'passthru', 'popen', 'proc_open', 'unserialize', 'mail', 'header', 'fputcsv'], true)) {
