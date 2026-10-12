@@ -12,40 +12,28 @@ class PerformanceTestSeeder extends Seeder
     {
         SeedCredentials::guard();
 
-        $accounts = [
-            [
-                'name' => 'Performance Admin',
-                'email' => 'admin@performance.test',
-                'password' => SeedCredentials::password('performance'),
-                'role' => 'admin',
-            ],
-            [
-                'name' => 'Performance Professional',
-                'email' => 'professional@performance.test',
-                'password' => SeedCredentials::password('performance'),
-                'role' => 'profesional',
-            ],
-            [
-                'name' => 'Performance Family',
-                'email' => 'family@performance.test',
-                'password' => SeedCredentials::password('performance'),
-                'role' => 'familiar',
-            ],
+        $count = max(1, min(200, (int) env('PERFORMANCE_USERS_PER_ROLE', 120)));
+        $roles = [
+            'administrator' => ['name' => 'Admin', 'role' => 'admin', 'password' => SeedCredentials::password('performance_admin')],
+            'professional' => ['name' => 'Professional', 'role' => 'profesional', 'password' => SeedCredentials::password('performance_professional')],
+            'family' => ['name' => 'Family', 'role' => 'familiar', 'password' => SeedCredentials::password('performance_family')],
         ];
 
-        foreach ($accounts as $account) {
-            $user = User::query()->updateOrCreate(
-                ['email' => $account['email']],
-                [
-                    'name' => $account['name'],
-                    'password' => $account['password'],
-                    'role' => $account['role'],
-                    'is_approved' => true,
-                    'location' => 'Ambiente local de pruebas',
-                ],
-            );
+        foreach ($roles as $slug => $settings) {
+            for ($index = 1; $index <= $count; $index++) {
+                $user = User::query()->updateOrCreate(
+                    ['email' => sprintf('perf-%s-%03d@performance.test', $slug, $index)],
+                    [
+                        'name' => sprintf('Performance %s %03d', $settings['name'], $index),
+                        'password' => $settings['password'],
+                        'role' => $settings['role'],
+                        'is_approved' => true,
+                        'location' => 'Ambiente local de pruebas',
+                    ],
+                );
 
-            $user->tokens()->delete();
+                $user->tokens()->delete();
+            }
         }
     }
 }

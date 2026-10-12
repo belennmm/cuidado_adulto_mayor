@@ -1,6 +1,6 @@
 # Pruebas de volumen con k6
 
-La prueba genera trafico autenticado concurrente para los roles administrador, profesional y familiar. Cada usuario virtual consulta tres endpoints de lectura y espera un segundo antes de repetir el flujo.
+La prueba genera trafico autenticado concurrente para los roles administrador, profesional y familiar. Cada usuario virtual usa una cuenta independiente, consulta tres endpoints de lectura y espera un segundo antes de repetir el flujo. Esto evita que el limite por cuenta distorsione la medicion de capacidad.
 
 ## Perfiles
 
@@ -30,7 +30,7 @@ docker compose up -d --build
 .\tests\performance\run-k6.ps1 -Profile volume100
 ```
 
-El script prepara las mismas cuentas aisladas usadas por OWASP ZAP. Los archivos JSON se generan en `tests/performance/reports` y se excluyen de Git porque corresponden a evidencia de cada ejecucion.
+El script prepara 120 cuentas locales por rol, suficientes para todos los perfiles. Cada VU inicia sesion una vez con la cuenta cuyo numero coincide con su identificador global. El limite de login se omite exclusivamente para cuentas `perf-*@performance.test` cuando `APP_ENV` es `local` o `testing`; las protecciones de produccion y las cuentas normales no cambian. Los archivos JSON se generan en `tests/performance/reports` y se excluyen de Git porque corresponden a evidencia de cada ejecucion.
 
 No ejecute `load` o `stress` contra produccion sin autorizacion y monitoreo de infraestructura.
 
