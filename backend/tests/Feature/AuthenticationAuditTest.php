@@ -120,7 +120,7 @@ class AuthenticationAuditTest extends TestCase
         $this->assertSame($actorId, $event['actor_id']);
         $this->assertSame($response->headers->get('X-Correlation-ID'), $event['correlation_id']);
         $this->assertNotEmpty($event['correlation_id']);
-        $this->assertSame('127.0.0.1', $event['ip_address']);
+        $this->assertSame('127.0.0.0', $event['ip_address']);
 
         return $event;
     }

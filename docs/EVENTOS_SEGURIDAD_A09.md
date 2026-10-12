@@ -185,3 +185,27 @@ nunca deben construirse a partir de texto libre del usuario.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Unit/SecurityEventPrivacyTest.php tests/Feature/SecurityEventRecorderTest.php --testdox
 ```
+
+## SCRUM-965: enmascaramiento de información personal
+
+El filtro central reduce la precisión de la IP antes de escribir el evento:
+
+| Dirección recibida | Dirección registrada | Prefijo conservado |
+| --- | --- | --- |
+| `192.0.2.123` | `192.0.2.0` | IPv4 /24 |
+| `2001:db8:abcd:1234::10` | `2001:db8:abcd::` | IPv6 /48 |
+| `::ffff:192.0.2.123` | `192.0.2.0` | IPv4 /24 |
+
+Las direcciones IPv4 representadas dentro de IPv6 se normalizan y reciben la misma
+protección. Los nombres, correos, teléfonos y datos clínicos continúan excluidos;
+no se agregan campos con versiones originales o completas de la IP.
+
+Se conservan los IDs internos del actor/recurso y la correlación para investigar
+eventos. Este enmascaramiento reduce exposición, pero no convierte los registros
+en datos anónimos. Tampoco modifica la solicitud original: los controles de acceso
+y límites de intentos siguen utilizando la IP original. La IP registrada identifica
+una red, no permite distinguir dispositivos dentro del mismo prefijo.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Unit/SecurityEventPersonalDataMaskingTest.php --testdox
+```

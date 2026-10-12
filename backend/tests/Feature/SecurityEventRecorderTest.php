@@ -20,6 +20,7 @@ class SecurityEventRecorderTest extends TestCase
         string $result,
         ?string $ip,
         ?string $correlationId,
+        ?string $maskedIp,
     ): void {
         $request = Request::create('/api/example', 'GET', [], [], [], array_filter([
             'REMOTE_ADDR' => $ip,
@@ -63,7 +64,7 @@ class SecurityEventRecorderTest extends TestCase
         $this->assertSame($actorId, $record['actor_id']);
         $this->assertSame($resourceType, $record['resource_type']);
         $this->assertSame($resourceId, $record['resource_id']);
-        $this->assertSame($ip, $record['ip_address']);
+        $this->assertSame($maskedIp, $record['ip_address']);
         $this->assertSame($correlationId, $record['correlation_id']);
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/', $record['occurred_at']);
         $timestamp = new DateTimeImmutable($record['occurred_at']);
@@ -74,9 +75,9 @@ class SecurityEventRecorderTest extends TestCase
     public static function eventContexts(): array
     {
         return [
-            'authenticated IPv4 access' => [42, 'older_adult', 10, 'success', '192.0.2.10', '11111111-1111-4111-8111-111111111111'],
-            'anonymous IPv6 denial' => [null, 'route', 'api/admin/users', 'denied', '2001:db8::10', '22222222-2222-4222-8222-222222222222'],
-            'unknown context remains explicit' => [null, null, null, 'blocked', null, null],
+            'authenticated IPv4 access' => [42, 'older_adult', 10, 'success', '192.0.2.10', '11111111-1111-4111-8111-111111111111', '192.0.2.0'],
+            'anonymous IPv6 denial' => [null, 'route', 'api/admin/users', 'denied', '2001:db8::10', '22222222-2222-4222-8222-222222222222', '2001:db8::'],
+            'unknown context remains explicit' => [null, null, null, 'blocked', null, null, null],
         ];
     }
 
@@ -107,5 +108,7 @@ class SecurityEventRecorderTest extends TestCase
         }
         $this->assertSame(42, $records[0]['actor_id']);
         $this->assertSame(10, $records[0]['resource_id']);
+        $this->assertSame('192.0.2.0', $records[0]['ip_address']);
+        $this->assertStringNotContainsString('192.0.2.10', $encoded);
     }
 }
