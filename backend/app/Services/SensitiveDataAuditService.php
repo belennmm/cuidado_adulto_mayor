@@ -12,15 +12,15 @@ use App\Http\Controllers\ProfessionalIncidentController;
 use App\Http\Controllers\ProfessionalRoutineNoteController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\RutinaController;
-use App\Support\SecurityEvent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class SensitiveDataAuditService
 {
+    public function __construct(private readonly SecurityEventRecorder $recorder) {}
+
     private const RESOURCES = [
         OlderAdultController::class => ['older_adult', 'olderAdult', 'older_adult'],
         ProfessionalRoutineNoteController::class => ['routine_note', 'routineNote', 'note'],
@@ -82,18 +82,16 @@ class SensitiveDataAuditService
             $resourceId = null;
         }
 
-        $event = new SecurityEvent(
+        $this->recorder->record(
+            request: $request,
             event: $action === 'read' ? 'sensitive_data.access' : 'sensitive_data.change',
             action: $action,
             result: 'success',
             actorId: (int) $request->user()->getAuthIdentifier(),
             resourceType: $type,
             resourceId: $resourceId,
-            ipAddress: $request->ip(),
-            correlationId: $request->attributes->get('correlation_id'),
         );
 
-        Log::info('security.event', $event->toArray());
         $request->attributes->set('sensitive_data_audited', true);
     }
 }

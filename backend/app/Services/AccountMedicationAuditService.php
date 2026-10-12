@@ -5,15 +5,15 @@ namespace App\Services;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MedicationInventoryController;
-use App\Support\SecurityEvent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AccountMedicationAuditService
 {
+    public function __construct(private readonly SecurityEventRecorder $recorder) {}
+
     public function recordResponse(Request $request, Response $response): void
     {
         if (! $request->is('api/*') || $response->getStatusCode() < 200
@@ -69,17 +69,15 @@ class AccountMedicationAuditService
         }
 
         foreach ($events as $name) {
-            $event = new SecurityEvent(
+            $this->recorder->record(
+                request: $request,
                 event: $name,
                 action: $action,
                 result: 'success',
                 actorId: $method === 'register' ? null : $request->user()?->getAuthIdentifier(),
                 resourceType: $type,
                 resourceId: $resourceId,
-                ipAddress: $request->ip(),
-                correlationId: $request->attributes->get('correlation_id'),
             );
-            Log::info('security.event', $event->toArray());
         }
 
         $request->attributes->set('account_medication_audited', true);

@@ -3,15 +3,15 @@
 namespace App\Services;
 
 use App\Support\ResourceAccess;
-use App\Support\SecurityEvent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdministrativeAuditService
 {
+    public function __construct(private readonly SecurityEventRecorder $recorder) {}
+
     public function recordResponse(Request $request, Response $response): void
     {
         if (! $request->is('api/*') || $response->getStatusCode() < 200
@@ -75,17 +75,15 @@ class AdministrativeAuditService
             }
         }
 
-        $event = new SecurityEvent(
+        $this->recorder->record(
+            request: $request,
             event: $export ? 'administrative.export' : ($deletion ? 'resource.deleted' : 'administrative.action'),
             action: $action,
             result: 'success',
             actorId: (int) $actor->getAuthIdentifier(),
             resourceType: $type,
             resourceId: $id,
-            ipAddress: $request->ip(),
-            correlationId: $request->attributes->get('correlation_id'),
         );
-        Log::info('security.event', $event->toArray());
         $request->attributes->set('administrative_audited', true);
     }
 }

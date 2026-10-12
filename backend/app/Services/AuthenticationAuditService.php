@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Http\Controllers\AuthController;
-use App\Support\SecurityEvent;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticationAuditService
 {
+    public function __construct(private readonly SecurityEventRecorder $recorder) {}
+
     public function recordResponse(Request $request, Response $response): void
     {
         if (! $request->is('api/*') || $request->attributes->get('authentication_audited')) {
@@ -43,18 +43,16 @@ class AuthenticationAuditService
             ? $request->attributes->get('authenticated_actor_id')
             : $request->user()?->getAuthIdentifier();
 
-        $securityEvent = new SecurityEvent(
+        $this->recorder->record(
+            request: $request,
             event: $event,
             action: $action,
             result: $success ? 'success' : ($status === 429 ? 'blocked' : 'denied'),
             actorId: $actorId === null ? null : (int) $actorId,
             resourceType: 'route',
             resourceId: $request->route()?->uri(),
-            ipAddress: $request->ip(),
-            correlationId: $request->attributes->get('correlation_id'),
         );
 
-        Log::info('security.event', $securityEvent->toArray());
         $request->attributes->set('authentication_audited', true);
     }
 }

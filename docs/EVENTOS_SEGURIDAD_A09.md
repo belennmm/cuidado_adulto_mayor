@@ -141,3 +141,24 @@ No guarda el nombre del archivo ni ejecuta o copia su contenido para auditarlo.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/AdministrativeAuditTest.php --testdox
 ```
+
+## SCRUM-963: contexto uniforme en todos los eventos
+
+Los cuatro servicios de auditoría delegan la escritura a `SecurityEventRecorder`.
+Este punto común genera la fecha UTC y obtiene la IP y correlación de la solicitud
+actual. La correlación se toma del atributo generado por el servidor, nunca del
+header aportado por el cliente.
+
+Cada llamada exige actor, acción, resultado, tipo e ID del recurso. Si el actor o
+recurso no se conocen, el campo permanece presente con valor `null`. Todos los
+eventos incluyen la misma versión y las mismas diez claves del esquema; no se
+omite contexto porque el usuario sea anónimo. No se mantiene contexto estático o
+compartido entre solicitudes.
+
+Las pruebas verifican el esquema completo, valores conocidos y desconocidos,
+direcciones IPv4/IPv6 y el instante de creación en UTC. Las pruebas de los cuatro
+servicios verifican que la centralización conserva sus eventos y correlación.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/SecurityEventRecorderTest.php --testdox
+```
