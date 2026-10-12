@@ -330,3 +330,16 @@ También llegan al colector si está configurado. No se han configurado correo,
 SMS ni un SIEM real: el responsable debe monitorizar ese canal. Si la caché falla,
 se conserva el evento base y se emite `security_alert_detection_unavailable` en
 el log operativo; la detección queda degradada y requiere intervención.
+
+## SCRUM-970: pruebas y procedimiento de respuesta
+
+`SecurityAlertResponseTest` recorre endpoints reales con el middleware activo y
+escritura JSON firmada: logins fallidos, denegaciones por usuario, lecturas sensibles
+con cambio de IP, éxito público, falla de caché y alteración de evidencia. Complementa
+las pruebas de umbral, expiración, aislamiento por IP y pausa de `SecurityAlertTest`.
+
+El procedimiento manual y la matriz de ensayo están en
+[RESPUESTA_ALERTAS_A09.md](RESPUESTA_ALERTAS_A09.md). Incluyen responsables,
+preservación y verificación de evidencia, investigación, contención autorizada,
+recuperación y cierre. La entrega a un colector y la respuesta humana requieren
+un ensayo en staging; no se presentan como verificadas por estas pruebas locales.
