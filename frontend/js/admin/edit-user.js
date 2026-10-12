@@ -59,7 +59,7 @@ async function loadUser() {
     return
   }
 
-  if (!window.CuidadoApi.getToken(["admin"])) {
+  if (!window.CuidadoApi.hasSession(["admin"])) {
     await showPopup("Inicia sesión como administrador para editar usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return

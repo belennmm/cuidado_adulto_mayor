@@ -108,7 +108,7 @@ class SensitiveRouteMethodsTest extends TestCase
             if (! str_starts_with($route->uri(), 'api/') || ! in_array('auth:sanctum', $route->gatherMiddleware(), true)) {
                 continue;
             }
-            $path = '/'.preg_replace('/\{[^}]+\}/', '999999', $route->uri());
+            $path = '/'.preg_replace('/\{[^}]+\}/', '999999', str_replace('{accountSession}', '11111111-1111-4111-8111-111111111111', $route->uri()));
             foreach ($route->methods() as $method) {
                 $paths[$path][$method] = $route->gatherMiddleware();
             }

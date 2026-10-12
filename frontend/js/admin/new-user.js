@@ -69,7 +69,7 @@ function clearForm() {
 }
 
 async function createUser() {
-  if (!window.CuidadoApi.getToken(["admin"])) {
+  if (!window.CuidadoApi.hasSession(["admin"])) {
     await showPopup("Inicia sesión como administrador para crear usuarios.", { variant: "error" })
     navigateTo("../../index.html")
     return
@@ -103,7 +103,7 @@ async function createUser() {
 }
 
 async function loadPendingRequests(page = 1) {
-  if (!window.CuidadoApi.getToken(["admin"])) {
+  if (!window.CuidadoApi.hasSession(["admin"])) {
     renderRequestState("Inicia sesión como administrador para ver las solicitudes.")
     return
   }

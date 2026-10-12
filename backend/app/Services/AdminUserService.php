@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Enums\UserRole;
-use App\Support\ListPage;
-use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\User;
+use App\Support\ListPage;
+use App\Support\PasswordPolicy;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -76,6 +77,7 @@ class AdminUserService
     {
         $data = $this->allowedData($data);
         $data['role'] = $this->normalizeRole($data['role']);
+        PasswordPolicy::validate($data['password']);
         $data['password'] = Hash::make($data['password']);
         $data['is_approved'] = true;
 
@@ -91,6 +93,7 @@ class AdminUserService
         $data['role'] = $this->normalizeRole($data['role']);
 
         if (! empty($data['password'])) {
+            PasswordPolicy::validate($data['password'], 'password', $user);
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);

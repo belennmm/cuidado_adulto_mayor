@@ -27,7 +27,7 @@ describe("creación de adulto mayor", () => {
     window.navigateWithLoading = vi.fn()
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path) => {
         if (path.includes("caregivers")) return Promise.resolve({ users: [] })
         return Promise.resolve({ message: "Adulto mayor creado correctamente." })

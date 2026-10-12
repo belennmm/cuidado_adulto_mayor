@@ -45,8 +45,8 @@ class SecurityControlsTest extends TestCase
             'name' => $user->name,
             'email' => $user->email,
             'current_password' => 'Old-Secure!123',
-            'new_password' => 'New-Secure!456',
-            'new_password_confirmation' => 'New-Secure!456',
+            'new_password' => 'New-Secure!45678',
+            'new_password_confirmation' => 'New-Secure!45678',
         ])->assertOk();
 
         $this->assertDatabaseCount('personal_access_tokens', 0);

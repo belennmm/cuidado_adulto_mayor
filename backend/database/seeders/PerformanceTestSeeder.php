@@ -3,34 +3,32 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Support\SeedCredentials;
 use Illuminate\Database\Seeder;
-use RuntimeException;
 
 class PerformanceTestSeeder extends Seeder
 {
     public function run(): void
     {
-        if (app()->environment('production')) {
-            throw new RuntimeException('Las cuentas de rendimiento no pueden crearse en producción.');
-        }
+        SeedCredentials::guard();
 
         $accounts = [
             [
                 'name' => 'Performance Admin',
                 'email' => 'admin@performance.test',
-                'password' => 'Performance123!',
+                'password' => SeedCredentials::password('performance'),
                 'role' => 'admin',
             ],
             [
                 'name' => 'Performance Professional',
                 'email' => 'professional@performance.test',
-                'password' => 'Performance123!',
+                'password' => SeedCredentials::password('performance'),
                 'role' => 'profesional',
             ],
             [
                 'name' => 'Performance Family',
                 'email' => 'family@performance.test',
-                'password' => 'Performance123!',
+                'password' => SeedCredentials::password('performance'),
                 'role' => 'familiar',
             ],
         ];

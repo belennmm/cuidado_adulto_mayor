@@ -22,7 +22,7 @@ describe("aprobación y eliminación de usuarios", () => {
     document.body.innerHTML = '<input id="userSearchInput"><div id="usersTableBody"></div>'
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path, options = {}) => {
         if (options.method === "PATCH") return Promise.resolve({ message: "Usuario aprobado correctamente." })
         return Promise.resolve({ users: [{ id: 8, name: "Ana", role: "cuidador_familiar", email: "ana@example.test", is_approved: false }] })
@@ -46,7 +46,7 @@ describe("aprobación y eliminación de usuarios", () => {
     window.navigateWithLoading = vi.fn()
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path, options = {}) => {
         if (options.method === "DELETE") return Promise.resolve({ message: "Usuario eliminado correctamente." })
         return Promise.resolve({ user: { id: 12, name: "Luis", email: "luis@example.test", role: "cuidador_familiar", is_approved: true } })

@@ -32,7 +32,10 @@ return [
     |
     */
 
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
+    'lifetime' => (int) env('SESSION_LIFETIME', 60),
+
+    'idle_timeout' => (int) env('SESSION_IDLE_TIMEOUT', 15),
+    'absolute_timeout' => (int) env('SESSION_ABSOLUTE_TIMEOUT', 60),
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
@@ -211,6 +214,9 @@ return [
     | when flagged "secure" and the Same-Site attribute is set to "none".
     |
     */
+
+    'max_per_user' => (int) env('SESSION_MAX_PER_USER', 5),
+    'reauthentication_timeout' => (int) env('SESSION_REAUTHENTICATION_TIMEOUT', 5),
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 

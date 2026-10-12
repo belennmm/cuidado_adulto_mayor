@@ -26,10 +26,10 @@ class RegressionTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'profesional', 'is_approved' => true]);
         Sanctum::actingAs($user);
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Profesional T5', 'email' => $user->email, 'role' => 'admin',
         ])->assertUnprocessable()->assertJsonValidationErrors('role');
-        $this->putJson('/api/me', ['name' => 'Profesional T5', 'email' => $user->email])
+        $this->putJson('/api/me', ['current_password' => 'password', 'name' => 'Profesional T5', 'email' => $user->email])
             ->assertOk()->assertJsonPath('user.role', 'profesional');
         $this->assertDatabaseHas('users', ['id' => $user->id, 'name' => 'Profesional T5', 'role' => 'profesional']);
     }
@@ -40,7 +40,7 @@ class RegressionTest extends TestCase
             'role' => 'profesional', 'is_approved' => false, 'password' => Hash::make('secret123'),
         ]);
         $this->postJson('/api/login', ['email' => $user->email, 'password' => 'secret123'])
-            ->assertForbidden();
+            ->assertUnauthorized();
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 }

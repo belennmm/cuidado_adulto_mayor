@@ -126,6 +126,7 @@ class MassAssignmentProtectionTest extends TestCase
 
     public function test_explicit_test_account_seeder_remains_compatible_with_guarded_fields(): void
     {
+        config(['seeding.passwords.scan_admin' => 'Explicit-Scan!2026']);
         $seeder = new SecurityScanSeeder;
         $seeder->run();
         $seeder->run();
@@ -133,16 +134,17 @@ class MassAssignmentProtectionTest extends TestCase
         $admin = User::query()->where('email', 'zap.admin@example.test')->sole();
         $this->assertSame('admin', $admin->role);
         $this->assertTrue($admin->is_approved);
-        $this->assertTrue(Hash::check('ZapAdmin-2026!', $admin->password));
+        $this->assertTrue(Hash::check('Explicit-Scan!2026', $admin->password));
     }
 
     public function test_demonstration_seeder_uses_explicit_security_attribute_writes(): void
     {
+        config(['seeding.passwords.demo' => 'Explicit-Demo!2026']);
         (new InitialDataSeeder)->run();
         $admin = User::query()->where('email', 'belen@gmail.com')->sole();
         $this->assertSame('admin', $admin->role);
         $this->assertTrue($admin->is_approved);
-        $this->assertTrue(Hash::check('belen123', $admin->password));
+        $this->assertTrue(Hash::check('Explicit-Demo!2026', $admin->password));
         $this->assertDatabaseHas('older_adults', ['created_by' => $admin->id]);
         $this->assertDatabaseHas('users', ['role' => 'profesional', 'is_approved' => true]);
         $this->assertDatabaseHas('users', ['role' => 'familiar', 'is_approved' => false]);

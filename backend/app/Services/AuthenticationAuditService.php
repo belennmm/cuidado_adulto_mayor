@@ -20,6 +20,9 @@ class AuthenticationAuditService
         $controllerAction = $request->route()?->getActionName();
         $login = $controllerAction === AuthController::class.'@login';
         $logout = $controllerAction === AuthController::class.'@logout';
+        if ($login && $status === 202) {
+            return;
+        }
         $success = $status >= 200 && $status < 300;
 
         if ($login && ($success || in_array($status, [401, 403, 429], true))) {

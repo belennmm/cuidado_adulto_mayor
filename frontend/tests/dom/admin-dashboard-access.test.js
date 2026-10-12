@@ -9,14 +9,14 @@ describe("acceso exclusivo al panel administrativo", () => {
 
   it("muestra el panel cuando el usuario es administrador", async () => {
     window.AuthSession = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       getUser: vi.fn(() => ({ id: 1, role: "admin" })),
+      refresh: vi.fn().mockResolvedValue({ id: 1, role: "admin" }),
     }
 
     await import("../../js/auth-guard-admin.js")
 
-    expect(window.AuthSession.getToken).toHaveBeenCalledWith(["admin", "administrador"])
-    expect(window.AuthSession.getUser).toHaveBeenCalledWith(["admin", "administrador"])
+    expect(window.AuthSession.refresh).toHaveBeenCalledOnce()
     expect(document.documentElement.style.visibility).toBe("")
     expect(window.navigateWithLoading).not.toHaveBeenCalled()
   })
@@ -26,8 +26,9 @@ describe("acceso exclusivo al panel administrativo", () => {
     ["familiar", "../cuidador-familiar/home-page.html"],
   ])("oculta el panel y redirige al usuario %s", async (role, destination) => {
     window.AuthSession = {
-      getToken: vi.fn(() => `${role}-token`),
+      hasSession: vi.fn(() => `${role}-token`),
       getUser: vi.fn(() => ({ id: 2, role })),
+      refresh: vi.fn().mockResolvedValue({ id: 2, role }),
     }
 
     await import("../../js/auth-guard-admin.js")
@@ -38,8 +39,9 @@ describe("acceso exclusivo al panel administrativo", () => {
 
   it("oculta el panel y redirige al login cuando no existe sesión", async () => {
     window.AuthSession = {
-      getToken: vi.fn(() => ""),
+      hasSession: vi.fn(() => ""),
       getUser: vi.fn(() => null),
+      refresh: vi.fn().mockRejectedValue(new Error("401")),
     }
 
     await import("../../js/auth-guard-admin.js")

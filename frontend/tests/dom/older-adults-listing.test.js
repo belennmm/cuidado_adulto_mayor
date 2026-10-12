@@ -12,7 +12,7 @@ describe("listado de adultos mayores", () => {
       <div id="olderAdultsTableBody"></div>
     `
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn().mockResolvedValue({
         older_adults: [{ id: 1, full_name: "Rosa Martínez", age: 82, caregiver_family: "Ana", room: "12", status: "Estable" }],
       }),
@@ -22,7 +22,7 @@ describe("listado de adultos mayores", () => {
     await import("../../js/admin/adultos-mayores.js")
     await flushRequests()
 
-    expect(window.CuidadoApi.getToken).toHaveBeenCalledWith(["admin"])
+    expect(window.CuidadoApi.hasSession).toHaveBeenCalledWith(["admin"])
     expect(window.CuidadoApi.fetchJson).toHaveBeenCalledWith("/admin/older-adults", expect.objectContaining({
       expectedRoles: ["admin"],
     }))

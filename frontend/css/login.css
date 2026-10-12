@@ -2,3 +2,7 @@
 @import url("./login.parts/02-styles.css");
 @import url("./login.parts/03-styles.css");
 @import url("./login.parts/04-styles.css");
+
+.login-credentials { display: contents; }
+#loginMfaForm:not([hidden]) { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 430px; }
+#loginMfaForm input, #loginMfaForm button { padding: 12px; border-radius: 10px; font: inherit; }

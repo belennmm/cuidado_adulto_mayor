@@ -43,17 +43,19 @@ export const options = {
 const accounts = {
   administrator: {
     email: __ENV.ADMIN_EMAIL || 'zap.admin@example.test',
-    password: __ENV.ADMIN_PASSWORD || 'ZapAdmin-2026!',
+    password: __ENV.ADMIN_PASSWORD,
   },
   professional: {
     email: __ENV.PROFESSIONAL_EMAIL || 'zap.professional@example.test',
-    password: __ENV.PROFESSIONAL_PASSWORD || 'ZapPro-2026!',
+    password: __ENV.PROFESSIONAL_PASSWORD,
   },
   family: {
     email: __ENV.FAMILY_EMAIL || 'zap.family@example.test',
-    password: __ENV.FAMILY_PASSWORD || 'ZapFamily-2026!',
+    password: __ENV.FAMILY_PASSWORD,
   },
 };
+
+if (Object.values(accounts).some(account => !account.password)) throw new Error('Configure ADMIN_PASSWORD, PROFESSIONAL_PASSWORD y FAMILY_PASSWORD.');
 
 function login(account) {
   const response = http.post(`${apiUrl}/login`, JSON.stringify(account), {

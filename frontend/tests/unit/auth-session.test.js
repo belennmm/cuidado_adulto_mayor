@@ -1,52 +1,50 @@
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-describe("AuthSession", () => {
-  beforeEach(async () => {
-    await import("../../js/auth-session.js")
-  })
-
-  it("guarda y recupera una sesión según el rol", () => {
+describe("AuthSession con cookie del servidor", () => {
+  beforeEach(async () => { await import("../../js/auth-session.js") })
+  it("guarda solo metadatos de interfaz en sessionStorage", () => {
     const user = { id: 1, name: "Ana", role: "profesional" }
-
-    expect(window.AuthSession.saveSession("abc123", user)).toBe(true)
-    expect(window.AuthSession.getToken(["profesional"])).toBe("abc123")
+    expect(window.AuthSession.saveSession(user)).toBe(true)
+    expect(window.AuthSession.hasSession(["profesional"])).toBe(true)
     expect(window.AuthSession.getUser(["profesional"])).toEqual(user)
-  })
-
-  it("no devuelve una sesión para un rol diferente", () => {
-    window.AuthSession.saveSession("admin-token", { id: 1, role: "admin" })
-
+    expect(window.AuthSession.getSession()).not.toHaveProperty("token")
+    expect(localStorage.length).toBe(0)
+    expect(sessionStorage.length).toBe(1)
+    expect(sessionStorage.getItem("cuidado.session.user")).toBe(JSON.stringify(user))
     expect(window.AuthSession.getSession(["familiar"])).toBeNull()
   })
-
-  it("elimina la sesión activa", () => {
-    window.AuthSession.saveSession("abc123", { id: 1, role: "familiar" })
-    window.AuthSession.clearSession("familiar")
-
-    expect(window.AuthSession.getToken(["familiar"])).toBe("")
-    expect(window.AuthSession.getUser(["familiar"])).toBeNull()
-    expect(localStorage.getItem("cuidado.auth.cuidador_familiar.token")).toBeNull()
-    expect(localStorage.getItem("cuidado.auth.cuidador_familiar.user")).toBeNull()
+  it("elimina tokens legados en ambos almacenamientos al cargar", async () => {
+    localStorage.setItem("token", "secret")
+    localStorage.setItem("cuidado.auth.admin.token", "secret")
+    sessionStorage.setItem("cuidado.auth.tab.token", "secret")
+    localStorage.setItem("theme", "dark")
+    vi.resetModules()
+    await import("../../js/auth-session.js")
+    expect(localStorage.getItem("token")).toBeNull()
+    expect(localStorage.getItem("cuidado.auth.admin.token")).toBeNull()
+    expect(sessionStorage.length).toBe(0)
+    expect(localStorage.getItem("theme")).toBe("dark")
+  })
+  it("revalida en el servidor y comparte solicitudes simultaneas", async () => {
+    window.AuthSession.saveSession({ id: 999, role: "admin" })
+    window.CuidadoApi = { fetchJson: vi.fn().mockResolvedValue({ user: { id: 2, role: "familiar" } }) }
+    const users = await Promise.all([window.AuthSession.refresh(), window.AuthSession.refresh()])
+    expect(users[0]).toEqual({ id: 2, role: "familiar" })
+    expect(window.CuidadoApi.fetchJson).toHaveBeenCalledOnce()
+    expect(window.AuthSession.getUser()).toEqual(users[0])
+  })
+  it("borra metadatos cuando el servidor rechaza la sesion", async () => {
+    window.AuthSession.saveSession({ id: 1, role: "admin" })
+    window.CuidadoApi = { fetchJson: vi.fn().mockRejectedValue(new Error("401")) }
+    await expect(window.AuthSession.refresh()).rejects.toThrow("401")
+    expect(window.AuthSession.hasSession()).toBe(false)
     expect(sessionStorage.length).toBe(0)
   })
-
-  it("elimina datos incompletos o corruptos al validar la sesión", () => {
-    localStorage.setItem("cuidado.auth.admin.token", "admin-token")
-    localStorage.setItem("cuidado.auth.admin.user", "{bad-json")
-    localStorage.setItem("cuidado.auth.activeRole", "admin")
-    sessionStorage.setItem("cuidado.auth.tab.token", "tab-token")
-    sessionStorage.setItem("cuidado.auth.tab.user", "{bad-json")
-    sessionStorage.setItem("cuidado.auth.tab.role", "admin")
-    localStorage.setItem("token", "legacy-token")
-    localStorage.setItem("user", "{bad-json")
-
-    expect(window.AuthSession.getSession(["admin"])).toBeNull()
-
-    expect(localStorage.getItem("cuidado.auth.admin.token")).toBeNull()
-    expect(localStorage.getItem("cuidado.auth.admin.user")).toBeNull()
-    expect(localStorage.getItem("cuidado.auth.activeRole")).toBeNull()
-    expect(localStorage.getItem("token")).toBeNull()
-    expect(localStorage.getItem("user")).toBeNull()
+  it("limpia la sesion local", () => {
+    window.AuthSession.saveSession({ id: 1, role: "familiar" })
+    window.AuthSession.clearSession()
+    expect(window.AuthSession.getUser()).toBeNull()
+    expect(window.AuthSession.hasSession()).toBe(false)
     expect(sessionStorage.length).toBe(0)
   })
 })

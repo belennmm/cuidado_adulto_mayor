@@ -8,7 +8,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use RuntimeException;
 use Tests\TestCase;
 
 class SessionContextAuditTest extends TestCase
@@ -136,7 +135,7 @@ class SessionContextAuditTest extends TestCase
 
     public function test_reference_expires_after_one_hour_without_activity(): void
     {
-        config(['sanctum.expiration' => 180]);
+        config(['sanctum.expiration' => 180, 'session.idle_timeout' => 180, 'session.absolute_timeout' => 180]);
         $user = User::factory()->approvedFamily()->create();
         $token = $user->createToken('session', ['*'], now()->addHours(3));
         $this->withToken($token->plainTextToken)->withHeader('User-Agent', 'Browser-A')->getJson('/api/me')->assertOk();
@@ -153,7 +152,7 @@ class SessionContextAuditTest extends TestCase
     public function test_cache_failure_does_not_prevent_login_and_records_degraded_detection(): void
     {
         $user = User::factory()->approvedFamily()->create();
-        Cache::partialMock()->shouldReceive('store')->with('array')->andThrow(new RuntimeException('private-cache-secret'));
+        config(['security_audit.session_cache_store' => 'audit_failure']);
         $response = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
         $this->assertNotEmpty($response->json('token'));
         $this->assertSame(['session.context_unavailable'], array_column($this->events, 'event'));

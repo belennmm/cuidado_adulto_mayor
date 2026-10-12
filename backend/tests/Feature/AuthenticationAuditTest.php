@@ -52,12 +52,25 @@ class AuthenticationAuditTest extends TestCase
         $this->assertEvent($response, 'authentication.login', 'denied', null);
     }
 
+    public function test_pending_mfa_does_not_record_a_successful_login(): void
+    {
+        $user = User::factory()->approvedFamily()->create(['mfa_enabled_at' => now()]);
+
+        $this->postJson('/api/login', [
+            'email' => $user->email, 'password' => 'password',
+        ])->assertStatus(202)->assertJsonPath('mfa_required', true)
+            ->assertJsonMissingPath('user')->assertJsonMissingPath('token');
+
+        $this->assertSame([], $this->events);
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
     public function test_pending_accounts_record_a_login_denial(): void
     {
         $user = User::factory()->pendingProfessional()->create();
         $response = $this->postJson('/api/login', [
             'email' => $user->email, 'password' => 'password',
-        ])->assertForbidden();
+        ])->assertUnauthorized();
 
         $this->assertEvent($response, 'authentication.login', 'denied', null);
     }

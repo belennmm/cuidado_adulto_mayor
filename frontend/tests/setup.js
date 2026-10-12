@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, vi } from "vitest"
 
 beforeEach(async () => {
+  document.cookie = "XSRF-TOKEN=test-csrf; path=/"
   await import("../js/url-utils.js")
   vi.spyOn(console, "error").mockImplementation(() => {})
 })
 
 afterEach(() => {
+  for (const cookie of document.cookie.split(";")) document.cookie = `${cookie.split("=")[0].trim()}=; Max-Age=0; path=/`
   document.body.innerHTML = ""
   document.head.innerHTML = ""
   localStorage.clear()

@@ -48,7 +48,14 @@ class AccountMedicationAuditService
         }
 
         [$type, $parameter, $responseKey] = $resource;
+        if ($controller === AuthController::class && $method === 'register'
+            && ! $request->attributes->has('registered_account_id')) {
+            return;
+        }
         $resourceId = $parameter === null ? null : $route->parameter($parameter);
+        if ($controller === AuthController::class && $method === 'register') {
+            $resourceId = $request->attributes->get('registered_account_id');
+        }
         if ($resourceId instanceof Model) {
             $resourceId = $resourceId->getKey();
         }

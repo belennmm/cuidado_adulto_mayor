@@ -102,9 +102,23 @@ class AccountMedicationAuditTest extends TestCase
         $response = $this->postJson('/api/register', [
             'name' => 'Nuevo Usuario', 'email' => 'registro-audit@example.com',
             'password' => 'Secure-Test!123', 'role' => 'familiar', 'privacy_consent' => true,
-        ])->assertCreated();
+        ])->assertStatus(202)->assertJsonMissingPath('user');
 
-        $this->assertEvents($response, ['account.create'], $response->json('user.id'), null);
+        $target = User::query()->where('email', 'registro-audit@example.com')->sole();
+        $this->assertEvents($response, ['account.create'], $target->id, null);
+    }
+
+    public function test_duplicate_registration_does_not_claim_an_account_was_created(): void
+    {
+        $user = User::factory()->approvedFamily()->create();
+
+        $this->postJson('/api/register', [
+            'name' => 'Nuevo Usuario', 'email' => $user->email,
+            'password' => 'Secure-Test!123', 'role' => 'familiar', 'privacy_consent' => true,
+        ])->assertStatus(202)->assertJsonMissingPath('user');
+
+        $this->assertSame([], $this->events);
+        $this->assertDatabaseCount('users', 1);
     }
 
     public function test_profile_updates_are_audited(): void
@@ -113,6 +127,7 @@ class AccountMedicationAuditTest extends TestCase
         Sanctum::actingAs($user, ['*']);
         $response = $this->putJson('/api/me', [
             'name' => 'Perfil Actualizado', 'email' => $user->email,
+            'current_password' => 'password',
         ])->assertOk();
 
         $this->assertEvents($response, ['account.update'], $user->id, $user->id);

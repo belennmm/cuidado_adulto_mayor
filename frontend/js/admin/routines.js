@@ -107,7 +107,7 @@
     }
 
     try {
-      if (!window.CuidadoApi.getToken(["admin"])) {
+      if (!window.CuidadoApi.hasSession(["admin"])) {
         throw new Error("Inicia sesión como administrador para gestionar rutinas.")
       }
 
@@ -175,7 +175,7 @@
     if (!confirmed) return
 
     try {
-      if (!window.CuidadoApi.getToken(["admin"])) {
+      if (!window.CuidadoApi.hasSession(["admin"])) {
         throw new Error("Inicia sesión como administrador para gestionar rutinas.")
       }
 
@@ -198,7 +198,7 @@
 
   async function initialize() {
     try {
-      if (!window.CuidadoApi.getToken(["admin"])) {
+      if (!window.CuidadoApi.hasSession(["admin"])) {
         throw new Error("Inicia sesión como administrador para gestionar rutinas.")
       }
 

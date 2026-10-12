@@ -382,11 +382,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    const token = window.CuidadoApi.getToken(["admin"])
-    const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
-    const role = String(user?.role || "").trim().toLowerCase()
+    const hasSession = window.CuidadoApi.hasSession(["admin"])
 
-    if (!token || role !== "admin") {
+    if (!hasSession) {
       navigateToLogin()
       return
     }

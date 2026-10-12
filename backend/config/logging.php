@@ -1,12 +1,13 @@
 <?php
 
+use App\Logging\RedactSecrets;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-return [
+$configuration = [
 
     /*
     |--------------------------------------------------------------------------
@@ -143,3 +144,10 @@ return [
     ],
 
 ];
+
+foreach ($configuration['channels'] as &$channel) {
+    $channel['tap'][] = RedactSecrets::class;
+}
+unset($channel);
+
+return $configuration;

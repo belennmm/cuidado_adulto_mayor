@@ -34,7 +34,8 @@ return [
     |
     */
 
-    // This API issues Bearer credentials; a web session must not bypass token invalidation.
+    // BrowserSessions enables the web guard only inside the protected cookie/CSRF pipeline.
+    // Non-browser clients keep scoped Bearer authentication.
     'guard' => [],
 
     /*

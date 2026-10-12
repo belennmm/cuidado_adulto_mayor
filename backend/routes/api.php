@@ -33,18 +33,32 @@ foreach (['user', 'olderAdult', 'routineNote', 'rutina', 'schedule', 'assignment
     Route::pattern($parameter, '[1-9][0-9]{0,18}');
 }
 
-// Public API: health probe, login and registration only.
+// Public authentication endpoints and health probe; resource routes require authentication.
 Route::get('/ping', function (EmptyInputRequest $request) {
     return response()->json(['ok' => true]);
 })->name('api.ping');
 
+Route::get('/csrf-cookie', [AuthController::class, 'csrfCookie']);
+
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/mfa/verify', [AuthController::class, 'verifyMfa'])->middleware('throttle:mfa-verification');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:recovery');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:reset-password');
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 
 Route::middleware(['auth:sanctum', 'throttle:sensitive-api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout-all', [AuthController::class, 'logoutAll'])->middleware('throttle:reauthentication');
+    Route::get('/mfa', [AuthController::class, 'mfaStatus']);
+    Route::post('/mfa/setup', [AuthController::class, 'setupMfa'])->middleware('throttle:reauthentication');
+    Route::post('/mfa/confirm', [AuthController::class, 'confirmMfa'])->middleware('throttle:reauthentication');
+    Route::delete('/mfa', [AuthController::class, 'disableMfa'])->middleware('throttle:reauthentication');
+    Route::post('/mfa/recovery-codes', [AuthController::class, 'regenerateMfaCodes'])->middleware('throttle:reauthentication');
+    Route::get('/sessions', [AuthController::class, 'sessions']);
+    Route::delete('/sessions/{accountSession}', [AuthController::class, 'closeSession'])->whereUuid('accountSession');
+    Route::post('/reauthenticate', [AuthController::class, 'reauthenticate'])->middleware('throttle:reauthentication');
     Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/me', [AuthController::class, 'updateMe']);
+    Route::put('/me', [AuthController::class, 'updateMe'])->middleware('throttle:reauthentication');
     Route::get('/incidents', [IncidentController::class, 'index'])->middleware('role:admin,profesional,familiar')->can('viewAny', Incident::class);
     Route::get('/incidents/today', [IncidentController::class, 'today'])->middleware('role:admin,profesional,familiar')->can('viewAny', Incident::class);
 

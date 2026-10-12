@@ -22,13 +22,13 @@ class ProfileRoleProtectionTest extends TestCase
 
         Sanctum::actingAs($professional);
 
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Mario Lopez Actualizado',
             'email' => 'mario.actualizado@example.com',
             'role' => 'admin',
         ])
             ->assertUnprocessable()->assertJsonValidationErrors('role');
-        $this->putJson('/api/me', ['name' => 'Mario Lopez Actualizado', 'email' => 'mario.actualizado@example.com'])
+        $this->putJson('/api/me', ['current_password' => 'password', 'name' => 'Mario Lopez Actualizado', 'email' => 'mario.actualizado@example.com'])
             ->assertOk()->assertJsonPath('user.role', 'profesional');
 
         $this->assertDatabaseHas('users', [
@@ -50,13 +50,13 @@ class ProfileRoleProtectionTest extends TestCase
 
         Sanctum::actingAs($familyCaregiver);
 
-        $this->putJson('/api/me', [
+        $this->putJson('/api/me', ['current_password' => 'password',
             'name' => 'Maria Gonzalez Actualizada',
             'email' => 'maria.actualizada@example.com',
             'role' => 'admin',
         ])
             ->assertUnprocessable()->assertJsonValidationErrors('role');
-        $this->putJson('/api/me', ['name' => 'Maria Gonzalez Actualizada', 'email' => 'maria.actualizada@example.com'])
+        $this->putJson('/api/me', ['current_password' => 'password', 'name' => 'Maria Gonzalez Actualizada', 'email' => 'maria.actualizada@example.com'])
             ->assertOk()->assertJsonPath('user.role', 'familiar');
 
         $this->assertDatabaseHas('users', [

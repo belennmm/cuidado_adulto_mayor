@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 describe("acceso a página protegida sin sesión", () => {
   beforeEach(() => {
     window.navigateWithLoading = vi.fn()
+    window.CuidadoApi = { fetchJson: vi.fn().mockRejectedValue(new Error("401")) }
   })
 
   it.each([
@@ -23,7 +24,8 @@ describe("acceso a página protegida sin sesión", () => {
   it("permite cargar la página administrativa cuando la sesión es válida", async () => {
     document.documentElement.style.visibility = "hidden"
     await import("../../js/auth-session.js")
-    window.AuthSession.saveSession("admin-token", { id: 1, role: "admin" })
+    window.AuthSession.saveSession({ id: 1, role: "admin" })
+    window.CuidadoApi.fetchJson.mockResolvedValue({user: { id: 1, role: "admin" }})
     await import("../../js/auth-guard-admin.js")
 
     expect(window.navigateWithLoading).not.toHaveBeenCalled()
@@ -32,14 +34,14 @@ describe("acceso a página protegida sin sesión", () => {
 
   it("redirige al usuario con rol incorrecto hacia su área permitida", async () => {
     window.AuthSession = {
-      getToken: vi.fn(() => "professional-token"),
+      hasSession: vi.fn(() => "professional-token"),
       getUser: vi.fn(() => ({ id: 2, role: "profesional" })),
+      refresh: vi.fn().mockResolvedValue({ id: 2, role: "profesional" }),
     }
 
     await import("../../js/auth-guard-admin.js")
 
-    expect(window.AuthSession.getToken).toHaveBeenCalledWith(["admin", "administrador"])
-    expect(window.AuthSession.getUser).toHaveBeenCalledWith(["admin", "administrador"])
+    expect(window.AuthSession.refresh).toHaveBeenCalledOnce()
     expect(window.navigateWithLoading).toHaveBeenCalledWith("../cuidador-profesional/home-page.html")
   })
 
@@ -47,8 +49,9 @@ describe("acceso a página protegida sin sesión", () => {
     document.documentElement.style.visibility = ""
     document.body.innerHTML = '<main id="adminContent">Panel administrativo</main>'
     window.AuthSession = {
-      getToken: vi.fn(() => "family-token"),
+      hasSession: vi.fn(() => "family-token"),
       getUser: vi.fn(() => ({ id: 3, role: "familiar" })),
+      refresh: vi.fn().mockResolvedValue({ id: 3, role: "familiar" }),
     }
 
     await import("../../js/auth-guard-admin.js")
@@ -57,7 +60,7 @@ describe("acceso a página protegida sin sesión", () => {
     expect(document.documentElement.style.visibility).toBe("hidden")
   })
 
-  it("mantiene la página administrativa oculta hasta redirigir cuando falta el token", async () => {
+  it("mantiene la página administrativa oculta hasta redirigir mientras el servidor verifica la sesion", async () => {
     await import("../../js/auth-session.js")
     await import("../../js/auth-guard-admin.js")
 

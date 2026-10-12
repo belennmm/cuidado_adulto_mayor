@@ -76,7 +76,10 @@ class AuditLogLimitsTest extends TestCase
     {
         config(['security_audit.limits.record_bytes' => 1024]);
         Log::forgetChannel('security_audit');
-        $context = (new SecurityEvent('security.example', 'read', 'success', resourceId: str_repeat('1', 2000)))->toArray();
+        $context = (new SecurityEvent(
+            str_repeat('z', 128), str_repeat('z', 128), str_repeat('z', 128),
+            resourceType: 'route', resourceId: 'api/'.str_repeat('z', 500),
+        ))->toArray();
         Log::channel('security_audit')->info('security.event', $context);
         $this->assertFileDoesNotExist($this->path);
         $this->write('info');

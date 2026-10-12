@@ -5,12 +5,14 @@ use App\Http\Middleware\AuditAccountMedicationChanges;
 use App\Http\Middleware\AuditAdministrativeActions;
 use App\Http\Middleware\AuditAuthentication;
 use App\Http\Middleware\AuditSensitiveData;
+use App\Http\Middleware\BrowserSessions;
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureApproved;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTokenScope;
 use App\Http\Middleware\RejectDisallowedMethods;
+use App\Http\Middleware\RejectSecretsInUrl;
 use App\Http\Middleware\RequireAccessRule;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ValidateCurrentAccess;
@@ -22,6 +24,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -53,6 +56,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [
             SecurityHeaders::class,
+            RejectSecretsInUrl::class,
+            BrowserSessions::class,
         ], append: [ValidateCurrentAccess::class, EnsureTokenScope::class, RequireAccessRule::class]);
 
         $middleware->alias([
@@ -84,6 +89,14 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->dontFlash(['current_password', 'new_password', 'new_password_confirmation', 'token', 'code', 'challenge', 'secret', 'recovery_codes']);
+        $exceptions->report(function (Throwable $exception) {
+            if (request()->is('api/*')) {
+                Log::error('API request failed.', ['exception_type' => $exception::class]);
+
+                return false;
+            }
+        });
         // Covers HttpResponseException and framework-rendered errors as well.
         $exceptions->respond(function (Response $response) {
             $correlationId = request()->attributes->get('correlation_id');
@@ -122,6 +135,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 403 => 'No tienes permiso para realizar esta accion.',
                 404 => 'Recurso no encontrado.',
                 405 => 'Metodo HTTP no permitido.',
+                419 => 'La proteccion CSRF expiro. Recarga la pagina e intenta nuevamente.',
                 429 => 'Demasiadas solicitudes. Intenta nuevamente mas tarde.',
                 default => $status >= 500 ? 'Error interno del servidor.' : 'Solicitud no valida.',
             };
