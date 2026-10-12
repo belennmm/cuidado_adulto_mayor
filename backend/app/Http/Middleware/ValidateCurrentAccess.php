@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use App\Services\CredentialRevocationService;
+use App\Services\SessionContextAuditService;
 use App\Support\AccountSecurityState;
 use App\Support\ResourceAccess;
 use Closure;
@@ -55,6 +56,10 @@ class ValidateCurrentAccess
         $current->withAccessToken($token);
         Auth::guard('sanctum')->setUser($current);
         $request->setUserResolver(fn () => $current);
+
+        if ($token instanceof \App\Models\PersonalAccessToken && $token->exists) {
+            app(SessionContextAuditService::class)->observe($token, $request);
+        }
 
         return $next($request);
     }

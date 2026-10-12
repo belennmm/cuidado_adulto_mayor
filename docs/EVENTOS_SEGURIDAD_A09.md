@@ -385,3 +385,32 @@ inválidas y escrituras reales al canal con intentos de crear líneas falsas o f
 datos mediante contexto/extra. Comprueban cantidad de líneas, JSON válido y firma
 verificable después del saneamiento. Esto no protege contra código comprometido que
 reemplace el canal o contra un atacante con acceso a la clave de firma.
+
+## SCRUM-973: cambios de contexto durante una sesión
+
+Cada token persistente de Sanctum mantiene huellas HMAC separadas de IP y
+`User-Agent`, ocultas al serializar el modelo. No almacena esos valores en claro.
+El login establece la referencia; los tokens anteriores o creados fuera del login
+la establecen en su primera solicitud autenticada válida. Después se compara con
+la última referencia válida de ese token, nunca con la de otros dispositivos del
+mismo usuario. La comparación se actualiza bajo transacción y bloqueo de fila.
+
+Después de validar vigencia, propietario, estado y permisos de la cuenta, un cambio
+genera `session.ip_changed` o `session.user_agent_changed`, de nivel `warning`, con
+actor y correlación. El log no incluye token, identificador de token, huellas,
+User-Agent ni IP completa; la IP actual se enmascara. Valores ausentes o inválidos
+no borran la referencia previa. IPv4 y su representación IPv6 mapeada se normalizan.
+Un contexto sin cambios no produce eventos adicionales; una nueva transición sí.
+
+`User-Agent` es solo una señal declarada por el cliente: puede falsificarse y cambiar
+por actualizaciones del navegador. La IP puede variar por red móvil, VPN o proxies.
+No se confirma robo de sesión ni se bloquea automáticamente. No hay geolocalización
+implementada y no se confía en cabeceras de país/ubicación enviadas por el cliente.
+Configurar proxies confiables antes de interpretar IPs en producción. Al rotar
+`APP_KEY`, renovar sesiones para evitar diferencias de huella por cambio de clave.
+
+Antes de desplegar ejecutar la nueva migración con el procedimiento habitual de
+respaldo y cuenta de migraciones: `php artisan migrate --force`. Esta detección cubre
+tokens persistentes de la API; no pretende cubrir sesiones web por cookie ni los
+tokens transitorios usados por `Sanctum::actingAs` en pruebas. Las huellas desaparecen
+al eliminar el token; incluir tokens expirados en la limpieza habitual de Sanctum.

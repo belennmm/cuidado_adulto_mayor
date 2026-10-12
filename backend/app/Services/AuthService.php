@@ -47,14 +47,16 @@ class AuthService
         RateLimiter::clear($rateLimitKey);
 
         $expirationMinutes = (int) config('sanctum.expiration', 60);
+        $issued = $user->createToken(
+            'API Token',
+            TokenAbilities::forUser($user),
+            now()->addMinutes($expirationMinutes),
+        );
+        app(SessionContextAuditService::class)->initialize($issued->accessToken, request());
 
         return [
             'user' => $user,
-            'token' => $user->createToken(
-                'API Token',
-                TokenAbilities::forUser($user),
-                now()->addMinutes($expirationMinutes),
-            )->plainTextToken,
+            'token' => $issued->plainTextToken,
         ];
     }
 

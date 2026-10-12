@@ -7,7 +7,7 @@ use Laravel\Sanctum\PersonalAccessToken as SanctumToken;
 
 class PersonalAccessToken extends SanctumToken
 {
-    protected $hidden = ['token', 'security_fingerprint'];
+    protected $hidden = ['token', 'security_fingerprint', 'session_ip_fingerprint', 'session_agent_fingerprint'];
 
     protected static function booted(): void
     {
