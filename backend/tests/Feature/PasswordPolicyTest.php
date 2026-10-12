@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\OutboundDnsResolver;
 use App\Support\PasswordPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
@@ -16,6 +17,18 @@ use Tests\TestCase;
 class PasswordPolicyTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->app->instance(OutboundDnsResolver::class, new class extends OutboundDnsResolver
+        {
+            public function resolve(string $host, array $visited = []): array
+            {
+                return ['93.184.216.34'];
+            }
+        });
+    }
 
     #[DataProvider('weakPasswords')]
     public function test_new_passwords_reject_weak_and_common_values(string $password): void

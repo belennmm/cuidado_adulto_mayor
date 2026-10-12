@@ -8,6 +8,7 @@ final class SecurityEventSeverity
     {
         return match (true) {
             $event === 'security.alert.mass_access' && $result === 'triggered' => 'critical',
+            $event === 'security.alert.large_response' && $result === 'triggered' => 'critical',
             in_array($result, ['error', 'failure'], true) => 'error',
             in_array($result, ['denied', 'blocked', 'triggered'], true) => 'warning',
             default => 'info',

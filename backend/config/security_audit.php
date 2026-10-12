@@ -6,6 +6,8 @@ return [
     'collector_url' => env('SECURITY_AUDIT_COLLECTOR_URL'),
     'retention_days' => env('SECURITY_AUDIT_RETENTION_DAYS', 90),
     'session_cache_store' => env('SECURITY_SESSION_CACHE_STORE', 'file'),
+    'large_response_bytes' => env('SECURITY_AUDIT_LARGE_RESPONSE_BYTES', 1048576),
+    'large_response_rows' => env('SECURITY_AUDIT_LARGE_RESPONSE_ROWS', 100),
     'limits' => [
         'events_per_minute' => env('SECURITY_AUDIT_EVENTS_PER_MINUTE', 500),
         'urgent_per_minute' => env('SECURITY_AUDIT_URGENT_PER_MINUTE', 100),

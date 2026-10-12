@@ -6,6 +6,7 @@ use App\Http\Requests\AdminUserRequest;
 use App\Http\Requests\EmptyInputRequest;
 use App\Http\Requests\ListRequest;
 use App\Support\ListPage;
+use App\Support\ResourceAccess;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Resources\AdminUserResource;
 use App\Models\User;
@@ -50,6 +51,7 @@ class AdminUserController extends Controller
 
     public function update(AdminUserRequest $request, User $user): JsonResponse
     {
+        request()->attributes->set('administrative_account', ResourceAccess::admin($user));
         $user = $this->userService->update($user, $request->validated());
 
         return $this->userResponse('Usuario actualizado correctamente.', $user, $request);
@@ -64,6 +66,7 @@ class AdminUserController extends Controller
 
     public function reject(EmptyInputRequest $request, User $user): JsonResponse
     {
+        request()->attributes->set('administrative_account', ResourceAccess::admin($user));
         $this->userService->reject($user);
 
         return response()->json(['message' => 'Solicitud rechazada correctamente.']);
@@ -71,6 +74,7 @@ class AdminUserController extends Controller
 
     public function destroy(EmptyInputRequest $request, User $user): JsonResponse
     {
+        request()->attributes->set('administrative_account', ResourceAccess::admin($user));
         $this->userService->delete($user);
 
         return response()->json(['message' => 'Usuario eliminado correctamente.']);
@@ -87,6 +91,7 @@ class AdminUserController extends Controller
         Request $request,
         int $status = 200,
     ): JsonResponse {
+        request()->attributes->set('administrative_account', request()->attributes->get('administrative_account', false) || ResourceAccess::admin($user));
         request()->attributes->set('changed_account_fields', array_values(array_filter(
             ['role', 'is_approved', 'password'],
             fn (string $field) => $user->wasChanged($field),

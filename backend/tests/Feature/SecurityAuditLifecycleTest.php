@@ -96,7 +96,9 @@ class SecurityAuditLifecycleTest extends TestCase
         $roleChanged = $this->putJson('/api/admin/users/'.$target->id, [
             'name' => $target->name, 'email' => $target->email, 'role' => 'profesional', 'is_approved' => false,
         ])->assertOk();
-        $this->assertSame(['user.update', 'user.role_changed', 'account.status_changed'], $this->namesFor($roleChanged));
+        $this->assertSame([
+            'user.update', 'user.role_changed', 'security.alert.account_change', 'account.status_changed',
+        ], $this->namesFor($roleChanged));
         $deleted = $this->deleteJson('/api/admin/older-adults/'.$adultId)->assertOk();
         $this->assertSame(['sensitive_data.change'], $this->namesFor($deleted));
         $this->assertDatabaseMissing('older_adults', ['id' => $adultId]);

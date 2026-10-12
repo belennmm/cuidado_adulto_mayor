@@ -51,3 +51,16 @@ Artisan::command('security:audit-prune {--dry-run}', function (AuditLogRetention
 })->purpose('Limpiar exclusivamente archivos diarios de auditoria vencidos');
 
 Schedule::command('security:audit-prune')->dailyAt('02:00')->withoutOverlapping();
+
+Artisan::command('security:audit-health', function (App\Services\SecurityAuditHealthCheck $health) {
+    if (! $health->verify()) {
+        $this->error('Auditoria no disponible o evento de control no verificable.');
+
+        return 1;
+    }
+    $this->info('Generacion, almacenamiento y firma de auditoria verificados.');
+
+    return 0;
+})->purpose('Escribir y verificar un evento de control de auditoria');
+
+Schedule::command('security:audit-health')->everyFiveMinutes()->withoutOverlapping();

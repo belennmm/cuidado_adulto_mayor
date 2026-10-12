@@ -53,6 +53,13 @@ class AppServiceProvider extends ServiceProvider
         config(['logging.channels.security_audit.days' => $this->app->make(AuditLogRetention::class)->days()]);
         $this->app->make(SecurityAlertService::class)->settings();
         AuditLogLimits::settings();
+        foreach (['large_response_bytes' => 104857600, 'large_response_rows' => 10000] as $name => $maximum) {
+            if (filter_var(config('security_audit.'.$name), FILTER_VALIDATE_INT, [
+                'options' => ['min_range' => 1, 'max_range' => $maximum],
+            ]) === false) {
+                throw new RuntimeException('Umbral invalido de auditoria: '.$name);
+            }
+        }
         $this->app->make(AuditRecordIntegrity::class);
         $collector = config('security_audit.collector_url');
         if (is_string($collector) && $collector !== '') {
