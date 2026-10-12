@@ -94,3 +94,27 @@ modificaciones directas de base de datos fuera de la API.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/SensitiveDataAuditTest.php --testdox
 ```
+
+## SCRUM-961: usuarios, roles, cuentas y medicamentos
+
+`AuditAccountMedicationChanges` registra operaciones HTTP exitosas de creación,
+edición, aprobación, rechazo y eliminación de usuarios; registro público y edición
+del perfil; creación, edición, ajuste de stock y eliminación de inventario.
+
+Los eventos son `user.create/update/approve/reject/delete`,
+`account.create/update` y `medication_inventory.create/update/adjust_stock/delete`.
+Una edición administrativa que cambia efectivamente el rol, aprobación o
+contraseña genera además `user.role_changed`, `account.status_changed` o
+`account.credentials_changed`, respectivamente. Estos eventos adicionales
+comparten el ID de correlación de la misma operación; no contienen valores
+anteriores o nuevos. El registro público tiene actor `null` e ID de la cuenta creada.
+
+Los cambios se identifican después de guardar el usuario, mediante `wasChanged`.
+Los rechazos de validación no generan eventos de cambio exitoso. No se registran
+nombres, correos, contraseñas, dosis ni contenido de los cuerpos HTTP. El ID del
+inventario corresponde a `older_adult_medications`, no al catálogo `medications`.
+Los ajustes de aumento y disminución usan la acción común `adjust_stock`.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/AccountMedicationAuditTest.php --testdox
+```

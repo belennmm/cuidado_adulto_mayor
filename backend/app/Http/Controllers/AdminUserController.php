@@ -87,6 +87,11 @@ class AdminUserController extends Controller
         Request $request,
         int $status = 200,
     ): JsonResponse {
+        request()->attributes->set('changed_account_fields', array_values(array_filter(
+            ['role', 'is_approved', 'password'],
+            fn (string $field) => $user->wasChanged($field),
+        )));
+
         return response()->json([
             'message' => $message,
             'user' => $this->resource($user, $request),
