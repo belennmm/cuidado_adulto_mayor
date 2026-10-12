@@ -51,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(AuditSensitiveData::class);
         $middleware->prepend(AuditAccountMedicationChanges::class);
         $middleware->prepend(AuditAdministrativeActions::class);
+        $middleware->prepend(App\Http\Middleware\AuditSecuritySignals::class);
         $middleware->prepend(AssignCorrelationId::class);
         $middleware->append(SecurityHeaders::class);
 
@@ -92,6 +93,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->dontFlash(['current_password', 'new_password', 'new_password_confirmation', 'token', 'code', 'challenge', 'secret', 'recovery_codes']);
         $exceptions->report(function (Throwable $exception) {
             if (request()->is('api/*')) {
+                if ($exception instanceof Illuminate\Database\QueryException) {
+                    app(App\Services\SecurityInfrastructureAudit::class)->record('database');
+                } elseif ($exception instanceof Illuminate\Contracts\Filesystem\FileNotFoundException
+                    || $exception instanceof League\Flysystem\FilesystemException) {
+                    app(App\Services\SecurityInfrastructureAudit::class)->record('storage');
+                }
                 Log::error('API request failed.', ['exception_type' => $exception::class]);
 
                 return false;
@@ -105,6 +112,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             app(App\Services\AuthenticationAuditService::class)->recordResponse(request(), $response);
+            app(App\Services\SecuritySignalAuditService::class)->recordResponse(request(), $response);
 
             if (request()->is('api/*') && $response->getStatusCode() >= 500) {
                 $response->setContent(json_encode(['message' => 'Error interno del servidor.']));

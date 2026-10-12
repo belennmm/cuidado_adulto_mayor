@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Client\ConnectionException;
+use App\Support\OutboundRequestException;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
 class CompromisedPasswords
 {
@@ -17,9 +16,8 @@ class CompromisedPasswords
         $prefix = substr($digest, 0, 5);
         $body = Cache::remember('pwned-range:'.$prefix, 3600, function () use ($prefix) {
             try {
-                $response = Http::connectTimeout(2)->timeout(4)->withOptions(['allow_redirects' => false])
-                    ->withHeaders(['Add-Padding' => 'true'])->get('https://api.pwnedpasswords.com/range/'.$prefix);
-            } catch (ConnectionException) {
+                $response = app(SecureExternalHttpClient::class)->passwordRange($prefix);
+            } catch (OutboundRequestException) {
                 abort(503);
             }
             if (! $response->successful() || strlen($response->body()) > 1000000) {

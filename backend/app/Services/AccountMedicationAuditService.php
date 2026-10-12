@@ -68,6 +68,9 @@ class AccountMedicationAuditService
 
         $events = [$type.'.'.$action];
         if ($controller === AdminUserController::class) {
+            if ($request->attributes->get('administrative_account')) {
+                $events[] = 'administrative_account.'.(in_array($action, ['delete', 'reject'], true) ? 'delete' : $action);
+            }
             foreach (['role' => 'user.role_changed', 'is_approved' => 'account.status_changed', 'password' => 'account.credentials_changed'] as $field => $event) {
                 if (in_array($field, $request->attributes->get('changed_account_fields', []), true)) {
                     $events[] = $event;

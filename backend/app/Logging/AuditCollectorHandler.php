@@ -2,6 +2,7 @@
 
 namespace App\Logging;
 
+use App\Services\OutboundDestinationPolicy;
 use InvalidArgumentException;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\SocketHandler;
@@ -29,12 +30,20 @@ class AuditCollectorHandler extends SocketHandler
 
     protected function fsockopen()
     {
+        $destination = app(OutboundDestinationPolicy::class)->resolve($this->getConnectionString(), 'tls', config('outbound.tls_hosts', []));
+        $address = $destination['addresses'][0];
+        $pinned = str_contains($address, ':') ? '['.$address.']' : $address;
         $context = stream_context_create(['ssl' => [
             'verify_peer' => true, 'verify_peer_name' => true, 'allow_self_signed' => false,
             'peer_name' => $this->peerName, 'SNI_enabled' => true,
         ]]);
 
-        return @stream_socket_client($this->getConnectionString(), $errorCode, $errorMessage, 2, STREAM_CLIENT_CONNECT, $context);
+        return $this->openPinnedConnection('tls://'.$pinned.':'.$destination['port'], $context);
+    }
+
+    protected function openPinnedConnection(string $endpoint, $context)
+    {
+        return @stream_socket_client($endpoint, $errorCode, $errorMessage, 2, STREAM_CLIENT_CONNECT, $context);
     }
 
     protected function write(LogRecord $record): void

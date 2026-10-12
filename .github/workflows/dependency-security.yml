@@ -25,7 +25,7 @@ jobs:
         with:
           php-version: "8.3"
           tools: composer:2.10.2
-          extensions: mbstring, pdo_sqlite
+          extensions: mbstring, pdo_sqlite, curl
           coverage: none
       - name: Prepare clean Laravel test environment
         working-directory: backend

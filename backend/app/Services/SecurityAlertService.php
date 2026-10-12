@@ -32,8 +32,10 @@ class SecurityAlertService
     {
         $rule = match (true) {
             $context['event'] === 'authentication.login' && in_array($context['result'], ['denied', 'blocked'], true) => 'brute_force',
-            in_array($context['event'], ['authorization.denied', 'authentication.required'], true) => 'denials',
+            in_array($context['event'], ['authorization.denied', 'authentication.required', 'resource.not_found'], true) => 'denials',
             $context['event'] === 'sensitive_data.access' && $context['result'] === 'success' => 'mass_access',
+            $context['event'] === 'sensitive_data.large_response' => 'large_response',
+            in_array($context['event'], ['user.role_changed', 'account.status_changed'], true) => 'account_change',
             default => null,
         };
         if ($rule === null || $request->attributes->get('security_alert_counted_'.$rule)) {
@@ -46,11 +48,22 @@ class SecurityAlertService
             return;
         }
         $settings = $this->settings();
-        $key = 'security-alert:'.$rule.':'.hash_hmac('sha256', $subject, (string) config('app.key'));
+        $subjects = [$subject];
+        $email = $request->input('email');
+        if ($rule === 'brute_force' && is_string($email) && strlen($email) <= 254 && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $subjects[] = 'account:'.mb_strtolower(trim($email));
+        }
 
         try {
-            $count = RateLimiter::hit($key, $settings['window_seconds']);
-            if ($count < $settings[$rule] || ! Cache::add($key.':cooldown', true, $settings['cooldown_seconds'])) {
+            $triggered = $rule === 'account_change';
+            foreach ($rule === 'account_change' ? [] : $subjects as $identity) {
+                $key = 'security-alert:'.$rule.':'.hash_hmac('sha256', $identity, (string) config('app.key'));
+                $count = RateLimiter::hit($key, $settings['window_seconds']);
+                if ($count >= ($settings[$rule] ?? 1) && Cache::add($key.':cooldown', true, $settings['cooldown_seconds'])) {
+                    $triggered = true;
+                }
+            }
+            if (! $triggered) {
                 return;
             }
         } catch (Throwable) {
