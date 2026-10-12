@@ -19,6 +19,7 @@ class AccountMedicationAuditTest extends TestCase
     {
         parent::setUp();
 
+        Log::shouldReceive('channel')->with('security_audit')->andReturnSelf();
         Log::shouldReceive('info')->andReturnUsing(function (string $message, array $context) {
             $this->assertSame('security.event', $message);
             $this->events[] = $context;

@@ -209,3 +209,25 @@ una red, no permite distinguir dispositivos dentro del mismo prefijo.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Unit/SecurityEventPersonalDataMaskingTest.php --testdox
 ```
+
+## SCRUM-966: separación de logs operativos y auditoría
+
+Todos los eventos de `SecurityEventRecorder` se escriben exclusivamente en el canal
+`security_audit`, archivo `backend/storage/logs/security-audit.log`. El canal usa
+JSON por línea y bloqueo de escritura. Su nivel mínimo `info` es independiente del
+`LOG_LEVEL` operativo, para no descartar eventos por tener `LOG_LEVEL=warning`.
+
+Los mensajes operativos continúan utilizando el canal predeterminado (`LOG_CHANNEL`),
+sin copiar los eventos de auditoría allí. El archivo de auditoría permanece bajo
+`storage`, fuera de `public`, y está excluido de Git por el `.gitignore` de logs.
+No se agrega `security_audit` al stack operativo.
+
+Una prueba escribe archivos temporales reales para comprobar la separación,
+estructura JSON y enmascaramiento. Las pruebas de los cuatro servicios también
+exigen que la escritura seleccione explícitamente el canal de auditoría.
+La protección y centralización adicionales, rotación y retención se completan
+en SCRUM-967 y SCRUM-968.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/SecurityAuditChannelTest.php --testdox
+```

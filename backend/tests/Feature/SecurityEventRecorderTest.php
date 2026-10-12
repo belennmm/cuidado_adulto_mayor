@@ -34,6 +34,7 @@ class SecurityEventRecorderTest extends TestCase
         }
 
         $records = [];
+        Log::shouldReceive('channel')->with('security_audit')->once()->andReturnSelf();
         Log::shouldReceive('info')->once()->andReturnUsing(function (string $message, array $context) use (&$records) {
             $this->assertSame('security.event', $message);
             $records[] = $context;
@@ -96,6 +97,7 @@ class SecurityEventRecorderTest extends TestCase
         $request->attributes->set('correlation_id', '11111111-1111-4111-8111-111111111111');
 
         $records = [];
+        Log::shouldReceive('channel')->with('security_audit')->once()->andReturnSelf();
         Log::shouldReceive('info')->once()->andReturnUsing(function (string $message, array $context) use (&$records) {
             $records[] = $context;
         });
