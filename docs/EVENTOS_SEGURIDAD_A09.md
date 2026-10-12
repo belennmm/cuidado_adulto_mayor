@@ -388,12 +388,12 @@ reemplace el canal o contra un atacante con acceso a la clave de firma.
 
 ## SCRUM-973: cambios de contexto durante una sesión
 
-Cada token persistente de Sanctum mantiene huellas HMAC separadas de IP y
-`User-Agent`, ocultas al serializar el modelo. No almacena esos valores en claro.
+Cada token persistente de Sanctum mantiene en caché huellas HMAC separadas de IP y
+`User-Agent`, fuera del modelo y de la base de datos. No almacena esos valores en claro.
 El login establece la referencia; los tokens anteriores o creados fuera del login
 la establecen en su primera solicitud autenticada válida. Después se compara con
 la última referencia válida de ese token, nunca con la de otros dispositivos del
-mismo usuario. La comparación se actualiza bajo transacción y bloqueo de fila.
+mismo usuario. La comparación se actualiza bajo bloqueo atómico de caché por token.
 
 Después de validar vigencia, propietario, estado y permisos de la cuenta, un cambio
 genera `session.ip_changed` o `session.user_agent_changed`, de nivel `warning`, con
@@ -409,11 +409,25 @@ implementada y no se confía en cabeceras de país/ubicación enviadas por el cl
 Configurar proxies confiables antes de interpretar IPs en producción. Al rotar
 `APP_KEY`, renovar sesiones para evitar diferencias de huella por cambio de clave.
 
-Antes de desplegar ejecutar la nueva migración con el procedimiento habitual de
-respaldo y cuenta de migraciones: `php artisan migrate --force`. Esta detección cubre
-tokens persistentes de la API; no pretende cubrir sesiones web por cookie ni los
-tokens transitorios usados por `Sanctum::actingAs` en pruebas. Las huellas desaparecen
-al eliminar el token; incluir tokens expirados en la limpieza habitual de Sanctum.
+Por decisión del equipo, esta funcionalidad no requiere nuevas columnas ni migración.
+`SECURITY_SESSION_CACHE_STORE=file` usa el almacenamiento de archivos existente de
+Laravel, sin tablas nuevas. Para varios hosts seleccionar un almacén compartido con
+soporte de bloqueos, por ejemplo `redis`, y configurarlo previamente. `array` es solo
+para pruebas: no conserva la referencia entre procesos. Restringir acceso a los
+archivos de caché y asegurar permisos de escritura del servicio.
+
+La clave de caché es un HMAC del identificador y hash almacenado del token, nunca
+del bearer en claro. La referencia vence tras una hora sin actividad o antes si
+vence el token. Si la caché se limpia, vence o pierde datos, la siguiente solicitud
+válida crea una referencia nueva sin afirmar un cambio; no hay detección histórica
+durante ese intervalo. Al revocar un token sus huellas pueden permanecer hasta ese
+vencimiento, pero no se consultan para permitir acceso ni validan credenciales.
+
+Una falla de caché o de bloqueo no impide el login: se registra
+`session.context_unavailable` de nivel `error` y el aviso operativo seguro
+`security_session_context_unavailable`, sin la excepción. La detección queda degradada
+y debe revisarse. Esta funcionalidad cubre tokens persistentes de la API, no sesiones
+web por cookie ni tokens transitorios de `Sanctum::actingAs`.
 
 ## SCRUM-974: límites contra saturación de auditoría
 
@@ -448,11 +462,16 @@ no se agregan registros hasta el siguiente día. En varios hosts con discos sepa
 los presupuestos son por host; no se presenta como cuota global distribuida. Usar
 un volumen con bloqueos fiables y no escribir por fuera del canal protegido.
 
-### Pendiente fundamental antes de usar o desplegar
+### Conectividad local pendiente
 
-Corregir las credenciales locales de PostgreSQL y aplicar las migraciones pendientes
-con `php backend/artisan migrate` desde la raíz. Luego comprobar login y rutas
-autenticadas. La migración de contexto de sesión aún no se aplicó a la base local
-por un error de contraseña; las pruebas usan una base aislada y no sustituyen ese
-paso. No ejecutar `migrate:fresh` para resolverlo. En producción usar la cuenta y
-el procedimiento autorizado de migraciones, manteniendo SSL habilitado.
+Se retiró la migración de contexto de sesión, que no se había aplicado, y su código
+ya no depende de columnas nuevas. No se requiere ejecutarla ni hacer rollback.
+Si otro entorno ya la aplicó, esas columnas quedan sin uso: no eliminarlas con un
+rollback indiscriminado. Las demás migraciones del proyecto no se modifican.
+
+La contraseña local de PostgreSQL sigue pendiente: el backend necesita una conexión
+válida para usuarios y tokens aunque esta detección use caché de archivos. Este
+rediseño no corrige credenciales ni sustituye la base de datos. Antes de probar el
+backend local, recuperar el acceso y verificar login y rutas autenticadas; las pruebas
+automatizadas usan una base aislada. Mantener SSL habilitado en producción y no usar
+`migrate:fresh` para resolver problemas de conexión.

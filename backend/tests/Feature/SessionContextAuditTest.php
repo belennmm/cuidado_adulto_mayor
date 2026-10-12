@@ -5,7 +5,10 @@ namespace Tests\Feature;
 use App\Models\PersonalAccessToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use RuntimeException;
 use Tests\TestCase;
 
 class SessionContextAuditTest extends TestCase
@@ -17,10 +20,11 @@ class SessionContextAuditTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config(['security_audit.session_cache_store' => 'array']);
         Log::shouldReceive('channel')->with('security_audit')->andReturnSelf();
         Log::shouldReceive('log')->andReturnUsing(function (string $level, string $message, array $context) {
             if (str_starts_with($context['event'] ?? '', 'session.')) {
-                $this->assertSame('warning', $level);
+                $this->assertSame($context['result'] === 'failure' ? 'error' : 'warning', $level);
                 $this->assertSame('security.event', $message);
                 $this->events[] = $context;
             }
@@ -33,10 +37,13 @@ class SessionContextAuditTest extends TestCase
         $response = $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.10'])
             ->withHeader('User-Agent', 'Browser-A')->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
         $token = PersonalAccessToken::query()->sole();
-        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $token->session_ip_fingerprint);
-        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $token->session_agent_fingerprint);
-        $this->assertArrayNotHasKey('session_ip_fingerprint', $token->toArray());
-        $this->assertArrayNotHasKey('session_agent_fingerprint', $token->toArray());
+        $context = Cache::store('array')->get($this->cacheKey($token));
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $context['ip']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $context['agent']);
+        $this->assertFalse(Schema::hasColumn('personal_access_tokens', 'session_ip_fingerprint'));
+        $this->assertFalse(Schema::hasColumn('personal_access_tokens', 'session_agent_fingerprint'));
+        $this->assertStringNotContainsString($context['ip'], $response->getContent());
+        $this->assertStringNotContainsString($context['agent'], $response->getContent());
         $this->withToken($response->json('token'))->getJson('/api/me')->assertOk();
         $this->getJson('/api/me')->assertOk();
         $this->assertSame([], $this->events);
@@ -60,8 +67,9 @@ class SessionContextAuditTest extends TestCase
             $this->assertSame($response->headers->get('X-Correlation-ID'), $event['correlation_id']);
         }
         $encoded = json_encode($this->events, JSON_THROW_ON_ERROR);
+        $context = Cache::store('array')->get($this->cacheKey($token->accessToken));
         foreach (['Browser-A', 'Browser-B', '192.0.2.10', '198.51.100.20', $token->plainTextToken,
-            $token->accessToken->fresh()->session_ip_fingerprint, $token->accessToken->fresh()->session_agent_fingerprint] as $secret) {
+            $context['ip'], $context['agent']] as $secret) {
             $this->assertStringNotContainsString($secret, $encoded);
         }
         $this->getJson('/api/me')->assertOk();
@@ -94,9 +102,9 @@ class SessionContextAuditTest extends TestCase
         $user = User::factory()->approvedFamily()->create();
         $token = $user->createToken('session', ['*'], now()->addHour());
         $this->withToken($token->plainTextToken)->withHeader('User-Agent', 'Browser-A')->getJson('/api/me')->assertOk();
-        $fingerprint = $token->accessToken->fresh()->session_agent_fingerprint;
+        $fingerprint = Cache::store('array')->get($this->cacheKey($token->accessToken))['agent'];
         $this->withHeader('User-Agent', "forged\nlog")->getJson('/api/me')->assertOk();
-        $this->assertSame($fingerprint, $token->accessToken->fresh()->session_agent_fingerprint);
+        $this->assertSame($fingerprint, Cache::store('array')->get($this->cacheKey($token->accessToken))['agent']);
         $this->assertSame([], $this->events);
     }
 
@@ -105,12 +113,72 @@ class SessionContextAuditTest extends TestCase
         $user = User::factory()->approvedFamily()->create();
         $token = $user->createToken('session', ['*'], now()->addHour());
         $this->withToken($token->plainTextToken)->withHeader('User-Agent', 'Browser-A')->getJson('/api/me')->assertOk();
-        $fingerprint = $token->accessToken->fresh()->session_agent_fingerprint;
+        $fingerprint = Cache::store('array')->get($this->cacheKey($token->accessToken))['agent'];
         $token->accessToken->forceFill(['expires_at' => now()->subMinute()])->save();
         $this->withHeader('User-Agent', 'Browser-B')->getJson('/api/me')->assertUnauthorized();
-        $this->assertSame($fingerprint, $token->accessToken->fresh()->session_agent_fingerprint);
+        $this->assertSame($fingerprint, Cache::store('array')->get($this->cacheKey($token->accessToken))['agent']);
         $token->accessToken->delete();
         $this->getJson('/api/me')->assertUnauthorized();
         $this->assertSame([], $this->events);
+    }
+
+    public function test_cleared_cache_establishes_a_new_reference_then_detects_subsequent_changes(): void
+    {
+        $user = User::factory()->approvedFamily()->create();
+        $token = $user->createToken('session', ['*'], now()->addHour());
+        $this->withToken($token->plainTextToken)->withHeader('User-Agent', 'Browser-A')->getJson('/api/me')->assertOk();
+        Cache::store('array')->forget($this->cacheKey($token->accessToken));
+        $this->withHeader('User-Agent', 'Browser-B')->getJson('/api/me')->assertOk();
+        $this->assertSame([], $this->events);
+        $this->withHeader('User-Agent', 'Browser-C')->getJson('/api/me')->assertOk();
+        $this->assertSame(['session.user_agent_changed'], array_column($this->events, 'event'));
+    }
+
+    public function test_reference_expires_after_one_hour_without_activity(): void
+    {
+        config(['sanctum.expiration' => 180]);
+        $user = User::factory()->approvedFamily()->create();
+        $token = $user->createToken('session', ['*'], now()->addHours(3));
+        $this->withToken($token->plainTextToken)->withHeader('User-Agent', 'Browser-A')->getJson('/api/me')->assertOk();
+        try {
+            $this->travel(3601)->seconds();
+            $this->assertNull(Cache::store('array')->get($this->cacheKey($token->accessToken)));
+            $this->withHeader('User-Agent', 'Browser-B')->getJson('/api/me')->assertOk();
+            $this->assertSame([], $this->events);
+        } finally {
+            $this->travelBack();
+        }
+    }
+
+    public function test_cache_failure_does_not_prevent_login_and_records_degraded_detection(): void
+    {
+        $user = User::factory()->approvedFamily()->create();
+        Cache::partialMock()->shouldReceive('store')->with('array')->andThrow(new RuntimeException('private-cache-secret'));
+        $response = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $this->assertNotEmpty($response->json('token'));
+        $this->assertSame(['session.context_unavailable'], array_column($this->events, 'event'));
+        $this->assertSame($user->id, $this->events[0]['actor_id']);
+        $this->assertStringNotContainsString('private-cache-secret', json_encode($this->events, JSON_THROW_ON_ERROR));
+    }
+
+    public function test_reference_does_not_outlive_token_expiration(): void
+    {
+        $user = User::factory()->approvedFamily()->create();
+        $token = $user->createToken('session', ['*'], now()->addSeconds(10));
+        $this->withToken($token->plainTextToken)->getJson('/api/me')->assertOk();
+        $this->assertNotNull(Cache::store('array')->get($this->cacheKey($token->accessToken)));
+        try {
+            $this->travel(11)->seconds();
+            $this->assertNull(Cache::store('array')->get($this->cacheKey($token->accessToken)));
+            $this->getJson('/api/me')->assertUnauthorized();
+            $this->assertSame([], $this->events);
+        } finally {
+            $this->travelBack();
+        }
+    }
+
+    private function cacheKey(PersonalAccessToken $token): string
+    {
+        return 'security-session:'.hash_hmac('sha256', $token->getKey().':'.$token->token, (string) config('app.key'));
     }
 }

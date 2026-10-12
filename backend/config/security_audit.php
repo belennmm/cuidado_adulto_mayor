@@ -5,6 +5,7 @@ return [
     'key_id' => env('SECURITY_AUDIT_KEY_ID', 'v1'),
     'collector_url' => env('SECURITY_AUDIT_COLLECTOR_URL'),
     'retention_days' => env('SECURITY_AUDIT_RETENTION_DAYS', 90),
+    'session_cache_store' => env('SECURITY_SESSION_CACHE_STORE', 'file'),
     'limits' => [
         'events_per_minute' => env('SECURITY_AUDIT_EVENTS_PER_MINUTE', 500),
         'urgent_per_minute' => env('SECURITY_AUDIT_URGENT_PER_MINUTE', 100),
