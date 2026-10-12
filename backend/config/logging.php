@@ -59,6 +59,8 @@ return [
             'path' => storage_path('logs/security-audit.log'),
             'level' => 'info',
             'locking' => true,
+            'permission' => 0600,
+            'tap' => [App\Logging\ProtectSecurityAuditLog::class],
             'formatter' => JsonFormatter::class,
         ],
 

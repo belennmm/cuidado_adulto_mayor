@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services\SecurityEventRecorder;
+use App\Support\AuditRecordIntegrity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +22,7 @@ class SecurityAuditChannelTest extends TestCase
         $this->assertNotSame(config('logging.channels.single.path'), $audit['path']);
         $this->assertSame(JsonFormatter::class, $audit['formatter']);
         $this->assertTrue($audit['locking']);
+        $this->assertSame(0600, $audit['permission']);
         $this->assertSame('info', $audit['level']);
     }
 
@@ -36,6 +38,7 @@ class SecurityAuditChannelTest extends TestCase
                 'driver' => 'single', 'path' => $operationalPath, 'level' => 'debug',
             ],
             'logging.channels.security_audit.path' => $auditPath,
+            'security_audit.collector_url' => null,
         ]);
         Log::forgetChannel('security_audit');
 
@@ -61,6 +64,11 @@ class SecurityAuditChannelTest extends TestCase
             $this->assertSame('security.example', $record['context']['event']);
             $this->assertSame('192.0.2.0', $record['context']['ip_address']);
             $this->assertSame(42, $record['context']['actor_id']);
+            $this->assertTrue(app(AuditRecordIntegrity::class)->verify($record));
+            $this->artisan('security:audit-verify', ['path' => $auditPath])->assertExitCode(0);
+            $record['context']['actor_id'] = 99;
+            File::put($auditPath, json_encode($record, JSON_THROW_ON_ERROR)."\n");
+            $this->artisan('security:audit-verify', ['path' => $auditPath])->assertExitCode(1);
         } finally {
             foreach (['security_audit', 'audit_test_operational'] as $channel) {
                 Log::channel($channel)->getLogger()->close();

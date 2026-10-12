@@ -231,3 +231,43 @@ en SCRUM-967 y SCRUM-968.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/SecurityAuditChannelTest.php --testdox
 ```
+
+## SCRUM-967: centralización y protección contra alteraciones
+
+El archivo de auditoría usa permisos `0600` en sistemas POSIX y bloqueo de escritura.
+En Windows se deben aplicar ACL al directorio de logs para permitir lectura solo
+al servicio y al personal autorizado. `storage` debe permanecer fuera del acceso web.
+
+Cada línea incluye `extra.audit_integrity`: versión, algoritmo HMAC-SHA256,
+identificador de clave y firma. La firma protege el mensaje, canal, nivel y contexto
+completo del evento, incluida su fecha `occurred_at`. El verificador detecta cambios
+de esos campos y registros sin firma. No detecta eliminación o reordenamiento de
+líneas completas, ni impide falsificación si se compromete la clave.
+
+En producción se requiere `SECURITY_AUDIT_INTEGRITY_KEY` aleatoria de al menos 32
+bytes (admite prefijo `base64:`), almacenada como secreto fuera de Git y de los logs.
+`SECURITY_AUDIT_KEY_ID` identifica la clave, no contiene el secreto. Para desarrollo
+y pruebas, si no se configura una clave dedicada se usa `APP_KEY`. Conservar las
+claves anteriores de forma segura para verificar archivos históricos.
+
+Desde `backend`, verificar un archivo con su clave correspondiente:
+
+```powershell
+php artisan security:audit-verify
+php artisan security:audit-verify storage/logs/security-audit.log
+```
+
+Para envío central configurar `SECURITY_AUDIT_COLLECTOR_URL=tls://host:puerto` con
+un colector que acepte JSON por línea sobre TLS. Se verifica certificado y nombre
+del servidor; no se aceptan TCP plano, certificados autofirmados, credenciales o
+rutas en la URL. Primero se escribe la copia local firmada y luego se envía la misma
+línea al colector con límites de tiempo de 2 segundos. Si falla el envío, se conserva
+la copia local y se emite un aviso operativo sin datos del evento. No hay reintentos
+persistentes: se debe configurar un agente de recolección para reenviar el archivo
+local si se requiere entrega garantizada.
+
+La centralización remota queda implementada y configurable; no se ha conectado a
+un servidor real en este entorno. Se debe desplegar el colector con cuenta y permisos
+independientes de la aplicación y almacenamiento de solo anexado o inmutable.
+Los archivos previos a este cambio no tienen firma y fallarán la verificación;
+conservarlos identificados como históricos sin firmar.
