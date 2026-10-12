@@ -364,3 +364,24 @@ también generan un registro firmado `security.alert.detection_unavailable` de n
 auditados por los servicios actuales no se registran automáticamente por este cambio.
 El canal admite desde `info`, de modo que conserva los cuatro niveles. Ajustar la
 prioridad de monitoreo del colector sin descartar la evidencia de menor severidad.
+
+## SCRUM-972: protección contra inyección en logs
+
+Los campos de texto con CR, LF, tabulaciones, bytes nulos, controles C0/C1,
+separadores Unicode de línea/párrafo, controles bidireccionales o UTF-8 inválido
+se sustituyen por `null`; no se concatenan ni se corrigen para parecer datos válidos.
+Se mantienen las listas de valores permitidos, identificadores tipados y fechas UTC
+canónicas válidas. La versión de esquema la fija el servidor.
+
+El canal `security_audit` aplica `SanitizeSecurityAuditLog` antes de firmar, incluso
+en escrituras directas que no usen el recorder. Solo admite los mensajes fijos
+`security.event` y `security.alert`, descarta contexto ajeno al esquema y elimina
+`extra` previo; después se agrega únicamente la firma. El JSON por línea evita
+interpretar datos como registros independientes. El colector usa el mismo registro
+saneado y firmado. No se cambia el formato de los logs operativos.
+
+Las pruebas cubren controles y UTF-8 inválido en todos los campos de texto, fechas
+inválidas y escrituras reales al canal con intentos de crear líneas falsas o filtrar
+datos mediante contexto/extra. Comprueban cantidad de líneas, JSON válido y firma
+verificable después del saneamiento. Esto no protege contra código comprometido que
+reemplace el canal o contra un atacante con acceso a la clave de firma.

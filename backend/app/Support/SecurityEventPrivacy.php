@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use DateTimeImmutable;
+use DateTimeZone;
+
 final class SecurityEventPrivacy
 {
     private const FIELDS = [
@@ -14,7 +17,21 @@ final class SecurityEventPrivacy
         $filtered = [];
         foreach (self::FIELDS as $field) {
             $value = $context[$field] ?? null;
+            if (is_string($value) && preg_match('/[\x00-\x1F\x7F-\x{009F}\x{2028}\x{2029}\x{202A}-\x{202E}\x{2066}-\x{2069}]/u', $value) !== 0) {
+                $value = null;
+            }
             $filtered[$field] = is_scalar($value) ? $value : null;
+        }
+
+        $filtered['schema_version'] = 1;
+        if (! is_int($filtered['actor_id'])) {
+            $filtered['actor_id'] = null;
+        }
+        $timestamp = $filtered['occurred_at'];
+        $date = is_string($timestamp) && preg_match('/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z\z/', $timestamp)
+            ? DateTimeImmutable::createFromFormat('!Y-m-d\TH:i:s.u\Z', $timestamp, new DateTimeZone('UTC')) : false;
+        if ($date === false || $date->format('Y-m-d\TH:i:s.u\Z') !== $timestamp) {
+            $filtered['occurred_at'] = null;
         }
 
         foreach (['event', 'action', 'result', 'resource_type'] as $field) {

@@ -13,6 +13,7 @@ class ProtectSecurityAuditLog
     {
         $monolog = $logger->getLogger();
         $monolog->pushProcessor($this->integrity);
+        $monolog->pushProcessor(new SanitizeSecurityAuditLog());
         $collector = config('security_audit.collector_url');
         if (is_string($collector) && $collector !== '') {
             $monolog->setHandlers([...$monolog->getHandlers(), new AuditCollectorHandler($collector)]);
