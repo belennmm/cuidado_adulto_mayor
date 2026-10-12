@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AssignCorrelationId;
 use App\Http\Middleware\AuditAccountMedicationChanges;
+use App\Http\Middleware\AuditAdministrativeActions;
 use App\Http\Middleware\AuditAuthentication;
 use App\Http\Middleware\AuditSensitiveData;
 use App\Http\Middleware\EnforceRequestSize;
@@ -46,6 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(AuditAuthentication::class);
         $middleware->prepend(AuditSensitiveData::class);
         $middleware->prepend(AuditAccountMedicationChanges::class);
+        $middleware->prepend(AuditAdministrativeActions::class);
         $middleware->prepend(AssignCorrelationId::class);
         $middleware->append(SecurityHeaders::class);
 

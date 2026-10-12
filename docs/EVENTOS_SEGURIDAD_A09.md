@@ -118,3 +118,26 @@ Los ajustes de aumento y disminución usan la acción común `adjust_stock`.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/AccountMedicationAuditTest.php --testdox
 ```
+
+## SCRUM-962: acciones administrativas, exportaciones y eliminaciones
+
+`AuditAdministrativeActions` completa la cobertura de respuestas API exitosas:
+consultas y operaciones en `api/admin/*` generan `administrative.action` cuando
+no tienen ya un evento específico. Incluye creación y edición de turnos, revisión
+de solicitudes de cambio, vacaciones y consultas administrativas. Las eliminaciones
+sin un evento previo generan `resource.deleted`.
+
+La auditoría existente de usuarios, inventario y datos sensibles se conserva sin
+agregar un segundo evento genérico. Los turnos y vacaciones usan el tipo e ID de
+su recurso; las consultas generales usan la plantilla de ruta, sin query string.
+
+Las respuestas administrativas con `Content-Disposition: attachment` generan
+`administrative.export`. El backend actual no tiene endpoints de exportación:
+esta detección queda preparada y se verifica mediante una ruta exclusiva de prueba,
+que no se agrega a las rutas de producción. Registra la respuesta de descarga
+preparada por el servidor, no confirma que el cliente haya recibido todo el archivo.
+No guarda el nombre del archivo ni ejecuta o copia su contenido para auditarlo.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/AdministrativeAuditTest.php --testdox
+```
