@@ -475,3 +475,40 @@ rediseño no corrige credenciales ni sustituye la base de datos. Antes de probar
 backend local, recuperar el acceso y verificar login y rutas autenticadas; las pruebas
 automatizadas usan una base aislada. Mantener SSL habilitado en producción y no usar
 `migrate:fresh` para resolver problemas de conexión.
+
+## SCRUM-975: pruebas integrales de generación, protección y trazabilidad
+
+`SecurityAuditLifecycleTest` recorre endpoints reales con tokens de Sanctum y todos
+los componentes de auditoría activos, sin mocks del logger: login, creación de un
+adulto mayor, lecturas, cambio de IP/User-Agent, alerta de acceso masivo, actualización
+clínica, modificación administrativa de rol/estado, eliminación, logout y rechazo
+del token revocado. Cada grupo de eventos se relaciona con la cabecera de correlación
+de su respuesta HTTP. Verifica esquema, fecha UTC, severidad, JSON por línea, firma,
+privacidad y separación de logs operativos. También prueba manipulación de evidencia,
+actualizaciones rechazadas sin cambios en la base y saturación sin interrumpir lecturas,
+preservando el presupuesto para la alerta crítica.
+
+La prueba comprueba que no existen las columnas retiradas de contexto de sesión.
+Usa SQLite en memoria, caché aislada y archivos temporales de pruebas; no requiere
+la contraseña local de PostgreSQL, no ejecuta migraciones sobre esa base y no conecta
+al colector. Para ejecutar solo el flujo integral, desde `backend`:
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/SecurityAuditLifecycleTest.php --testdox
+```
+
+Para la regresión de A09 y sus controles relacionados (usar PHP directamente, no
+el wrapper `.bat`, para evitar que Windows interprete `|` como un comando):
+
+```powershell
+php vendor/phpunit/phpunit/phpunit --filter 'Audit|SecurityEvent|SecurityAlert|SecurityLogInjection|RequestCorrelation|SecurityControls|Authentication|ImmediateAccessInvalidation|LeastPrivilegeTokens|ProtectedFieldsAndCredentials' --testdox
+```
+
+### Alcance de cierre
+
+Las subtareas SCRUM-957 a SCRUM-975 tienen implementación y cobertura automatizada
+local. Esto no equivale a un despliegue verificado: siguen pendientes recuperar el
+acceso a PostgreSQL local para comprobar el backend, configurar secretos y permisos
+de producción, habilitar el scheduler, seleccionar caché compartida si hay varios
+hosts, desplegar y probar el colector TLS y realizar el ensayo humano de respuesta
+en staging. La detección de sesión usa caché y no requiere la migración retirada.
