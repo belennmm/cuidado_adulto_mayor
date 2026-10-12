@@ -54,7 +54,8 @@ return [
     'channels' => [
 
         'security_audit' => [
-            'driver' => 'single',
+            'driver' => 'daily',
+            'days' => env('SECURITY_AUDIT_RETENTION_DAYS', 90),
             'name' => 'security_audit',
             'path' => storage_path('logs/security-audit.log'),
             'level' => 'info',

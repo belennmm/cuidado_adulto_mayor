@@ -2,14 +2,17 @@
 
 use Illuminate\Foundation\Inspiring;
 use App\Support\AuditRecordIntegrity;
+use App\Services\AuditLogRetention;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
 Artisan::command('security:audit-verify {path?}', function (AuditRecordIntegrity $integrity) {
-    $path = $this->argument('path') ?: config('logging.channels.security_audit.path');
+    $path = $this->argument('path') ?: Log::channel('security_audit')->getLogger()->getHandlers()[0]->getUrl();
     if (! is_string($path) || ! is_file($path) || ! is_readable($path)) {
         $this->error('Archivo de auditoria no disponible.');
 
@@ -38,3 +41,13 @@ Artisan::command('security:audit-verify {path?}', function (AuditRecordIntegrity
 
     return $invalid === 0 ? 0 : 1;
 })->purpose('Verificar firmas de eventos de auditoria sin mostrar su contenido');
+
+Artisan::command('security:audit-prune {--dry-run}', function (AuditLogRetention $retention) {
+    $dryRun = (bool) $this->option('dry-run');
+    $count = $retention->prune($dryRun);
+    $this->info(($dryRun ? 'Archivos vencidos encontrados: ' : 'Archivos vencidos eliminados: ').$count.'.');
+
+    return 0;
+})->purpose('Limpiar exclusivamente archivos diarios de auditoria vencidos');
+
+Schedule::command('security:audit-prune')->dailyAt('02:00')->withoutOverlapping();

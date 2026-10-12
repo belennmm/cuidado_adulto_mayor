@@ -271,3 +271,32 @@ un servidor real en este entorno. Se debe desplegar el colector con cuenta y per
 independientes de la aplicación y almacenamiento de solo anexado o inmutable.
 Los archivos previos a este cambio no tienen firma y fallarán la verificación;
 conservarlos identificados como históricos sin firmar.
+
+## SCRUM-968: rotación y retención
+
+La auditoría rota diariamente a `storage/logs/security-audit-YYYY-MM-DD.log`.
+Conserva JSON, firmas, bloqueo de escritura y permisos restrictivos. El verificador
+sin argumento usa el archivo diario actual; para históricos se indica su ruta.
+El archivo anterior `security-audit.log` no se elimina automáticamente.
+
+`SECURITY_AUDIT_RETENTION_DAYS=90` admite enteros entre 1 y 365; una configuración
+inválida impide iniciar, en vez de desactivar el límite. Monolog limita la cantidad
+de archivos al rotar. Además, la limpieza por antigüedad conserva hoy y los N-1 días
+anteriores, incluso si hubo días sin actividad. No toca logs operativos, enlaces,
+directorios, fechas inválidas, archivos futuros ni archivos con otro nombre.
+
+Desde `backend`, revisar primero y ejecutar después:
+
+```powershell
+php artisan security:audit-prune --dry-run
+php artisan security:audit-prune
+php artisan security:audit-verify
+```
+
+La limpieza está programada a las 02:00 en la zona horaria de la aplicación y evita
+ejecuciones simultáneas. En producción es necesario habilitar el scheduler de
+Laravel (`php artisan schedule:run` cada minuto) con permisos sobre estos archivos;
+no se ha instalado una tarea del sistema en este entorno. Los procesos persistentes
+deben reiniciarse tras cambiar la configuración. La retención del colector remoto
+se configura por separado. Ajustar el plazo a la política institucional y preservar
+evidencias necesarias antes de su vencimiento.

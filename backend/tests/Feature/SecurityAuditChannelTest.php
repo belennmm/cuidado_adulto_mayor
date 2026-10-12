@@ -17,7 +17,8 @@ class SecurityAuditChannelTest extends TestCase
     {
         $audit = config('logging.channels.security_audit');
 
-        $this->assertSame('single', $audit['driver']);
+        $this->assertSame('daily', $audit['driver']);
+        $this->assertSame(90, $audit['days']);
         $this->assertSame(storage_path('logs/security-audit.log'), $audit['path']);
         $this->assertNotSame(config('logging.channels.single.path'), $audit['path']);
         $this->assertSame(JsonFormatter::class, $audit['formatter']);
@@ -47,6 +48,12 @@ class SecurityAuditChannelTest extends TestCase
             $request = Request::create('/api/example', 'GET', [], [], [], ['REMOTE_ADDR' => '192.0.2.123']);
             $request->attributes->set('correlation_id', '11111111-1111-4111-8111-111111111111');
             app(SecurityEventRecorder::class)->record($request, 'security.example', 'read', 'success', 42, 'older_adult', 10);
+
+            $basePath = $auditPath;
+            $auditPath = Log::channel('security_audit')->getLogger()->getHandlers()[0]->getUrl();
+            $this->assertNotSame($basePath, $auditPath);
+            $this->assertMatchesRegularExpression('/audit-\d{4}-\d{2}-\d{2}\.log$/', $auditPath);
+            $this->artisan('security:audit-verify')->assertExitCode(0);
 
             $this->assertFileExists($auditPath);
             $this->assertFileExists($operationalPath);
