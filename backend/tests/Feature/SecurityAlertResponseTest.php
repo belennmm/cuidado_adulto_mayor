@@ -97,6 +97,7 @@ class SecurityAlertResponseTest extends TestCase
         $response = $this->withServerVariables(['REMOTE_ADDR' => '198.51.100.20'])
             ->getJson('/api/admin/older-adults/'.$adult->id)->assertOk();
         $alert = $this->alert('mass_access');
+        $this->assertSame('CRITICAL', $alert['level_name']);
         $this->assertSame($admin->id, $alert['context']['actor_id']);
         $this->assertSame('198.51.100.0', $alert['context']['ip_address']);
         $this->assertSame($response->headers->get('X-Correlation-ID'), $alert['context']['correlation_id']);
@@ -129,8 +130,11 @@ class SecurityAlertResponseTest extends TestCase
             File::delete($operationalPath);
         }
         $records = $this->records();
-        $this->assertCount(1, $records);
+        $this->assertCount(2, $records);
         $this->assertSame('security.event', $records[0]['message']);
+        $this->assertSame('WARNING', $records[0]['level_name']);
+        $this->assertSame('security.alert.detection_unavailable', $records[1]['context']['event']);
+        $this->assertSame('ERROR', $records[1]['level_name']);
         $this->assertStringNotContainsString('private-cache-credentials', File::get($this->path));
     }
 
@@ -140,7 +144,7 @@ class SecurityAlertResponseTest extends TestCase
         $this->postJson('/api/login', ['email' => 'alert-test@example.com', 'password' => 'wrong'])
             ->assertUnauthorized();
         $alert = $this->alert('brute_force');
-        $alert['context']['actor_id'] = 999;
+        $alert['level_name'] = 'INFO';
         File::put($this->path, json_encode($alert, JSON_THROW_ON_ERROR)."\n");
         $this->artisan('security:audit-verify', ['path' => $this->path])->assertExitCode(1);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\SecurityEventSeverity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -54,6 +55,14 @@ class SecurityAlertService
             }
         } catch (Throwable) {
             error_log('security_alert_detection_unavailable');
+            $context['event'] = 'security.alert.detection_unavailable';
+            $context['action'] = 'detect';
+            $context['result'] = 'failure';
+            $context['resource_type'] = 'security_rule';
+            $context['resource_id'] = null;
+            Log::channel('security_audit')->log(
+                SecurityEventSeverity::level($context['event'], $context['result']), 'security.alert', $context,
+            );
 
             return;
         }
@@ -63,6 +72,8 @@ class SecurityAlertService
         $context['result'] = 'triggered';
         $context['resource_type'] = 'security_rule';
         $context['resource_id'] = null;
-        Log::channel('security_audit')->warning('security.alert', $context);
+        Log::channel('security_audit')->log(
+            SecurityEventSeverity::level($context['event'], $context['result']), 'security.alert', $context,
+        );
     }
 }

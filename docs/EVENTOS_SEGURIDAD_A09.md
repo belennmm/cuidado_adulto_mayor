@@ -343,3 +343,24 @@ El procedimiento manual y la matriz de ensayo están en
 preservación y verificación de evidencia, investigación, contención autorizada,
 recuperación y cierre. La entrega a un colector y la respuesta humana requieren
 un ensayo en staging; no se presentan como verificadas por estas pruebas locales.
+
+## SCRUM-971: severidad consistente
+
+`SecurityEventSeverity` centraliza la clasificación. La severidad se guarda en
+`level_name` de Monolog, ya protegido por la firma; no modifica el esquema de
+contexto ni se toma de campos enviados por el cliente.
+
+| Nivel | Criterio | Ejemplos |
+| --- | --- | --- |
+| `info` / informativo | Actividad normal, incluidos cambios autorizados. | Login válido, lecturas, actualización de perfil o rol autorizada. |
+| `warning` / advertencia | Resultado `denied`, `blocked` o `triggered`, salvo la regla crítica. | Acceso prohibido, bloqueo de login, alertas de fuerza bruta o múltiples denegaciones. |
+| `error` / error | Resultado `failure` o `error`. | Falla de caché que deja la detección degradada. |
+| `critical` / crítico | Alerta `security.alert.mass_access` con resultado `triggered`. | Umbral de lecturas sensibles alcanzado; posible exposición que requiere revisión prioritaria. |
+
+Una alerta crítica no confirma una filtración ni bloquea cuentas automáticamente.
+Los fallos operativos de detección conservan el aviso operativo seguro y ahora
+también generan un registro firmado `security.alert.detection_unavailable` de nivel
+`error`, sin recursión ni detalles de la excepción. Los eventos HTTP de error no
+auditados por los servicios actuales no se registran automáticamente por este cambio.
+El canal admite desde `info`, de modo que conserva los cuatro niveles. Ajustar la
+prioridad de monitoreo del colector sin descartar la evidencia de menor severidad.

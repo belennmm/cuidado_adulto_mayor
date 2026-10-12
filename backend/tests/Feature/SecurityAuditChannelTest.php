@@ -67,6 +67,7 @@ class SecurityAuditChannelTest extends TestCase
             $this->assertCount(1, $lines);
             $record = json_decode($lines[0], true, 512, JSON_THROW_ON_ERROR);
             $this->assertSame('security.event', $record['message']);
+            $this->assertSame('INFO', $record['level_name']);
             $this->assertSame('security_audit', $record['channel']);
             $this->assertSame('security.example', $record['context']['event']);
             $this->assertSame('192.0.2.0', $record['context']['ip_address']);

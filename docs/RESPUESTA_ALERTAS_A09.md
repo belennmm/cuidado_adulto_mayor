@@ -29,7 +29,7 @@ al colector. Los umbrales se reducen solo dentro de las pruebas.
 | Éxito público o login válido | No se considera un fallo de autenticación. |
 | Solicitudes repetidas durante la pausa | Los eventos base siguen registrándose, sin repetir la alerta. |
 | Vencimiento de ventana y pausa | El contador vence; una nueva secuencia puede generar otra alerta. |
-| Caché no disponible | El evento base firmado permanece y se emite el aviso operativo de detección degradada. |
+| Caché no disponible | El evento base firmado permanece, se emite un aviso operativo seguro y se registra un evento firmado de nivel `error`. |
 | Alteración de una alerta guardada | El verificador falla con código 1. |
 
 Esto valida la detección local, no la entrega a un colector real ni la reacción
@@ -39,6 +39,11 @@ de firmas, apertura del incidente y comunicación al suplente. Registrar fecha,
 participantes, correlación de prueba, resultado y correcciones pendientes.
 
 ## Respuesta paso a paso
+
+Priorizar `critical` (lecturas masivas) para revisar posible exposición y `error`
+(detección degradada) para restaurar la vigilancia. Investigar también `warning`
+(fuerza bruta y denegaciones). Los eventos `info` aportan contexto. Esta prioridad
+no sustituye la evaluación humana ni constituye confirmación de un incidente.
 
 1. **Recibir y registrar.** Abrir un incidente con identificador, regla, fecha UTC,
    actor si existe, correlación de la solicitud y responsable. No copiar datos

@@ -35,7 +35,8 @@ class SecurityEventRecorderTest extends TestCase
 
         $records = [];
         Log::shouldReceive('channel')->with('security_audit')->once()->andReturnSelf();
-        Log::shouldReceive('info')->once()->andReturnUsing(function (string $message, array $context) use (&$records) {
+        Log::shouldReceive('log')->once()->andReturnUsing(function (string $level, string $message, array $context) use (&$records, $result) {
+            $this->assertSame($result === 'success' ? 'info' : 'warning', $level);
             $this->assertSame('security.event', $message);
             $records[] = $context;
         });
@@ -98,7 +99,8 @@ class SecurityEventRecorderTest extends TestCase
 
         $records = [];
         Log::shouldReceive('channel')->with('security_audit')->once()->andReturnSelf();
-        Log::shouldReceive('info')->once()->andReturnUsing(function (string $message, array $context) use (&$records) {
+        Log::shouldReceive('log')->once()->andReturnUsing(function (string $level, string $message, array $context) use (&$records) {
+            $this->assertSame('info', $level);
             $records[] = $context;
         });
         app(SecurityEventRecorder::class)->record($request, 'security.example', 'create', 'success', 42, 'older_adult', 10);

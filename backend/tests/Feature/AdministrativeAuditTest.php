@@ -22,7 +22,8 @@ class AdministrativeAuditTest extends TestCase
     {
         parent::setUp();
         Log::shouldReceive('channel')->with('security_audit')->andReturnSelf();
-        Log::shouldReceive('info')->andReturnUsing(function (string $message, array $context) {
+        Log::shouldReceive('log')->andReturnUsing(function (string $level, string $message, array $context) {
+            $this->assertSame($context['result'] === 'success' ? 'info' : 'warning', $level);
             $this->assertSame('security.event', $message);
             $this->events[] = $context;
         });

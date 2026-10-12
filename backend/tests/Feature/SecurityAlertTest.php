@@ -18,8 +18,8 @@ class SecurityAlertTest extends TestCase
         config(['security_audit.alerts.'.$rule => 3]);
         $alerts = [];
         Log::shouldReceive('channel')->with('security_audit')->andReturnSelf();
-        Log::shouldReceive('info')->times(4);
-        Log::shouldReceive('warning')->once()->andReturnUsing(function ($message, $context) use (&$alerts) {
+        Log::shouldReceive('log')->with($result === 'success' ? 'info' : 'warning', 'security.event', \Mockery::type('array'))->times(4);
+        Log::shouldReceive('log')->with($rule === 'mass_access' ? 'critical' : 'warning', 'security.alert', \Mockery::type('array'))->once()->andReturnUsing(function ($level, $message, $context) use (&$alerts) {
             $this->assertSame('security.alert', $message);
             $alerts[] = $context;
         });
@@ -52,8 +52,8 @@ class SecurityAlertTest extends TestCase
         config(['security_audit.alerts.brute_force' => 2]);
         $alerts = 0;
         Log::shouldReceive('channel')->andReturnSelf();
-        Log::shouldReceive('info')->times(7);
-        Log::shouldReceive('warning')->twice()->andReturnUsing(function () use (&$alerts) { $alerts++; });
+        Log::shouldReceive('log')->with('warning', 'security.event', \Mockery::type('array'))->times(7);
+        Log::shouldReceive('log')->with('warning', 'security.alert', \Mockery::type('array'))->twice()->andReturnUsing(function () use (&$alerts) { $alerts++; });
         $record = fn () => app(SecurityEventRecorder::class)->record($this->request('192.0.2.10'), 'authentication.login', 'login', 'denied', null, 'route', 'api/login');
         try {
             $record();
@@ -79,8 +79,8 @@ class SecurityAlertTest extends TestCase
     {
         config(['security_audit.alerts.brute_force' => 2]);
         Log::shouldReceive('channel')->andReturnSelf();
-        Log::shouldReceive('info')->times(4);
-        Log::shouldReceive('warning')->once();
+        Log::shouldReceive('log')->with('warning', 'security.event', \Mockery::type('array'))->times(4);
+        Log::shouldReceive('log')->with('warning', 'security.alert', \Mockery::type('array'))->once();
         $request = $this->request('192.0.2.10');
         $recorder = app(SecurityEventRecorder::class);
         $recorder->record($request, 'authentication.login', 'login', 'denied', null, 'route', 'api/login');
@@ -93,8 +93,8 @@ class SecurityAlertTest extends TestCase
     {
         config(['security_audit.alerts.brute_force' => 1]);
         Log::shouldReceive('channel')->once()->andReturnSelf();
-        Log::shouldReceive('info')->once();
-        Log::shouldReceive('warning')->never();
+        Log::shouldReceive('log')->with('info', 'security.event', \Mockery::type('array'))->once();
+        Log::shouldReceive('log')->with(\Mockery::any(), 'security.alert', \Mockery::type('array'))->never();
         app(SecurityEventRecorder::class)->record($this->request('192.0.2.10'), 'authentication.login', 'login', 'success', 42, 'route', 'api/login');
     }
 

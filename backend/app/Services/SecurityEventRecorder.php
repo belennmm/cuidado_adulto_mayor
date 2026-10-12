@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Support\SecurityEvent;
 use App\Support\SecurityEventPrivacy;
+use App\Support\SecurityEventSeverity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -30,7 +31,7 @@ class SecurityEventRecorder
         );
 
         $context = SecurityEventPrivacy::filter($securityEvent->toArray());
-        Log::channel('security_audit')->info('security.event', $context);
+        Log::channel('security_audit')->log(SecurityEventSeverity::level($event, $result), 'security.event', $context);
         app(SecurityAlertService::class)->observe($request, $context);
     }
 }
