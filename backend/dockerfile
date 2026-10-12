@@ -19,7 +19,7 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-s
 COPY . .
 
 RUN cp .env.example .env \
-    && APP_ENV=testing composer dump-autoload --optimize \
+    && APP_ENV=testing APP_KEY="$(php -r 'echo "base64:".base64_encode(random_bytes(32));')" composer dump-autoload --optimize \
     && chmod +x docker/entrypoint.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 
@@ -33,7 +33,7 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 COPY . .
 
 RUN cp .env.example .env \
-    && APP_ENV=testing composer dump-autoload --optimize \
+    && APP_ENV=testing APP_KEY="$(php -r 'echo "base64:".base64_encode(random_bytes(32));')" composer dump-autoload --optimize \
     && chmod +x docker/entrypoint.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 

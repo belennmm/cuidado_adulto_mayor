@@ -504,6 +504,17 @@ el wrapper `.bat`, para evitar que Windows interprete `|` como un comando):
 php vendor/phpunit/phpunit/phpunit --filter 'Audit|SecurityEvent|SecurityAlert|SecurityLogInjection|RequestCorrelation|SecurityControls|Authentication|ImmediateAccessInvalidation|LeastPrivilegeTokens|ProtectedFieldsAndCredentials' --testdox
 ```
 
+### Clave temporal para CI y construcción de imágenes
+
+Los workflows del backend generan una `APP_KEY` aleatoria de 32 bytes antes de
+instalar dependencias. Se enmascara en GitHub y se conserva únicamente en el
+entorno del job: Composer ejecuta `artisan package:discover` antes de que PHPUnit
+cargue su configuración, por lo que necesita una clave válida desde ese momento.
+La construcción Docker también genera una clave temporal, limitada al comando
+`composer dump-autoload`; no se escribe en `.env` ni se configura como `ENV` de la
+imagen. Las claves temporales no sustituyen los secretos de producción: el arranque
+real sigue exigiendo `APP_KEY` y una `SECURITY_AUDIT_INTEGRITY_KEY` dedicada.
+
 ### Alcance de cierre
 
 Las subtareas SCRUM-957 a SCRUM-975 tienen implementación y cobertura automatizada

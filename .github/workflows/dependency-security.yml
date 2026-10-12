@@ -32,6 +32,9 @@ jobs:
         run: |
           cp .env.example .env
           find bootstrap/cache -maxdepth 1 -type f -name '*.php' -delete
+          test_key="$(php -r 'echo "base64:".base64_encode(random_bytes(32));')"
+          echo "::add-mask::$test_key"
+          echo "APP_KEY=$test_key" >> "$GITHUB_ENV"
       - name: Validate PHP dependency lockfile
         working-directory: backend
         run: |
