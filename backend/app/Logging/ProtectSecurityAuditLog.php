@@ -3,6 +3,7 @@
 namespace App\Logging;
 
 use App\Support\AuditRecordIntegrity;
+use App\Support\AuditLogLimits;
 use Illuminate\Log\Logger;
 
 class ProtectSecurityAuditLog
@@ -15,8 +16,10 @@ class ProtectSecurityAuditLog
         $monolog->pushProcessor($this->integrity);
         $monolog->pushProcessor(new SanitizeSecurityAuditLog());
         $collector = config('security_audit.collector_url');
-        if (is_string($collector) && $collector !== '') {
-            $monolog->setHandlers([...$monolog->getHandlers(), new AuditCollectorHandler($collector)]);
-        }
+        $remote = is_string($collector) && $collector !== '' ? new AuditCollectorHandler($collector) : null;
+        $monolog->setHandlers([new LimitSecurityAuditLog(
+            $monolog->getHandlers()[0], $remote,
+            config('logging.channels.security_audit.path'), AuditLogLimits::settings(),
+        )]);
     }
 }

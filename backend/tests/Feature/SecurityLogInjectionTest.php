@@ -65,6 +65,7 @@ class SecurityLogInjectionTest extends TestCase
             $logger->close();
             Log::forgetChannel('security_audit');
             File::delete($path);
+            File::delete($directory.'/audit.log.budget.lock');
             rmdir($directory);
         }
     }

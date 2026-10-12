@@ -83,6 +83,7 @@ class SecurityAuditChannelTest extends TestCase
                 Log::forgetChannel($channel);
             }
             File::delete([$auditPath, $operationalPath]);
+            File::delete($basePath.'.budget.lock');
             rmdir($directory);
         }
     }

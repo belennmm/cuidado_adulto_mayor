@@ -46,6 +46,7 @@ class SecurityAlertResponseTest extends TestCase
             Log::channel('security_audit')->getLogger()->close();
             Log::forgetChannel('security_audit');
             File::delete($this->path);
+            File::delete($this->directory.'/audit.log.budget.lock');
             rmdir($this->directory);
         } finally {
             parent::tearDown();

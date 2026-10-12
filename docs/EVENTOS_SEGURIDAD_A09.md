@@ -414,3 +414,45 @@ respaldo y cuenta de migraciones: `php artisan migrate --force`. Esta detección
 tokens persistentes de la API; no pretende cubrir sesiones web por cookie ni los
 tokens transitorios usados por `Sanctum::actingAs` en pruebas. Las huellas desaparecen
 al eliminar el token; incluir tokens expirados en la limpieza habitual de Sanctum.
+
+## SCRUM-974: límites contra saturación de auditoría
+
+El canal limita los registros ya saneados y firmados, incluidas escrituras directas
+y lotes: 500 eventos `info`/`warning` por minuto, 100 eventos `error`/`critical`
+adicionales por minuto, 8192 bytes por línea JSON y 50 MiB por archivo diario.
+Se reserva el último 10% del presupuesto diario para `error`/`critical`.
+Configurar `SECURITY_AUDIT_EVENTS_PER_MINUTE`, `SECURITY_AUDIT_URGENT_PER_MINUTE`,
+`SECURITY_AUDIT_RECORD_BYTES` y `SECURITY_AUDIT_DAILY_BYTES`. Los límites por minuto
+admiten 1–100000, por registro 1024–65536 bytes y por día 4096–1073741824 bytes;
+el presupuesto diario no puede ser menor que un registro. Valores inválidos impiden iniciar.
+
+El archivo fijo `security-audit.log.budget.lock` contiene solo contadores de minuto
+y un indicador de aviso, sin actores ni IPs. `flock` serializa la comprobación del
+tamaño real del archivo diario, la reserva de cupo y la escritura local entre
+procesos que usan el mismo volumen y este canal. No crea archivos por usuario/IP.
+El envío remoto ocurre después de liberar ese bloqueo y solo para eventos aceptados.
+Recrear el logger o reiniciar PHP no reinicia los contadores del archivo de control.
+
+Al exceder un límite se descarta el registro completo, sin truncar ni romper firmas,
+y se emite `security_audit_capacity_limited` como máximo una vez por minuto por
+archivo de control, sin generar otra auditoría recursiva. Se pierde evidencia durante
+la saturación: el responsable debe revisar tráfico, capacidad y umbrales. Si el
+presupuesto o almacenamiento falla, se descartan escrituras y se emite
+`security_audit_budget_unavailable` como máximo una vez por minuto por proceso.
+Estos avisos requieren monitoreo externo; no se deben confundir con funcionamiento normal.
+
+El límite no detiene peticiones HTTP ni garantiza espacio libre del disco. Combinar
+con retención, alertas de disco, cuotas del sistema, permisos y limitación de logs
+operativos/colector. Archivos históricos que ya exceden el presupuesto no se borran:
+no se agregan registros hasta el siguiente día. En varios hosts con discos separados,
+los presupuestos son por host; no se presenta como cuota global distribuida. Usar
+un volumen con bloqueos fiables y no escribir por fuera del canal protegido.
+
+### Pendiente fundamental antes de usar o desplegar
+
+Corregir las credenciales locales de PostgreSQL y aplicar las migraciones pendientes
+con `php backend/artisan migrate` desde la raíz. Luego comprobar login y rutas
+autenticadas. La migración de contexto de sesión aún no se aplicó a la base local
+por un error de contraseña; las pruebas usan una base aislada y no sustituyen ese
+paso. No ejecutar `migrate:fresh` para resolverlo. En producción usar la cuenta y
+el procedimiento autorizado de migraciones, manteniendo SSL habilitado.
