@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Support\SecurityEvent;
+use App\Support\SecurityEventPrivacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -28,6 +29,6 @@ class SecurityEventRecorder
             correlationId: $request->attributes->get('correlation_id'),
         );
 
-        Log::info('security.event', $securityEvent->toArray());
+        Log::info('security.event', SecurityEventPrivacy::filter($securityEvent->toArray()));
     }
 }

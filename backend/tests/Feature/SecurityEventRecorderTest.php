@@ -74,9 +74,38 @@ class SecurityEventRecorderTest extends TestCase
     public static function eventContexts(): array
     {
         return [
-            'authenticated IPv4 access' => [42, 'older_adult', 10, 'success', '192.0.2.10', 'server-request-1'],
-            'anonymous IPv6 denial' => [null, 'route', 'api/admin/users', 'denied', '2001:db8::10', 'server-request-2'],
+            'authenticated IPv4 access' => [42, 'older_adult', 10, 'success', '192.0.2.10', '11111111-1111-4111-8111-111111111111'],
+            'anonymous IPv6 denial' => [null, 'route', 'api/admin/users', 'denied', '2001:db8::10', '22222222-2222-4222-8222-222222222222'],
             'unknown context remains explicit' => [null, null, null, 'blocked', null, null],
         ];
+    }
+
+    public function test_request_secrets_and_clinical_data_never_enter_the_log(): void
+    {
+        $secrets = [
+            'password' => 'private-password', 'token' => 'private-token',
+            'medical_history' => 'private-diagnosis', 'notes' => 'private-note',
+        ];
+        $request = Request::create('/api/example?token=private-query-token', 'POST', $secrets,
+            ['session' => 'private-session-cookie'], [], [
+                'REMOTE_ADDR' => '192.0.2.10',
+                'HTTP_AUTHORIZATION' => 'Bearer private-bearer-token',
+                'HTTP_COOKIE' => 'session=private-header-cookie',
+            ]);
+        $request->attributes->set('correlation_id', '11111111-1111-4111-8111-111111111111');
+
+        $records = [];
+        Log::shouldReceive('info')->once()->andReturnUsing(function (string $message, array $context) use (&$records) {
+            $records[] = $context;
+        });
+        app(SecurityEventRecorder::class)->record($request, 'security.example', 'create', 'success', 42, 'older_adult', 10);
+
+        $this->assertCount(1, $records);
+        $encoded = json_encode($records, JSON_THROW_ON_ERROR);
+        foreach ([...array_values($secrets), 'private-query-token', 'private-session-cookie', 'private-bearer-token', 'private-header-cookie'] as $secret) {
+            $this->assertStringNotContainsString($secret, $encoded);
+        }
+        $this->assertSame(42, $records[0]['actor_id']);
+        $this->assertSame(10, $records[0]['resource_id']);
     }
 }

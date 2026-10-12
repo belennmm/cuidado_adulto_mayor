@@ -162,3 +162,26 @@ servicios verifican que la centralización conserva sus eventos y correlación.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/SecurityEventRecorderTest.php --testdox
 ```
+
+## SCRUM-964: exclusión de secretos y contenido médico
+
+Antes de escribir cualquier evento, `SecurityEventRecorder` aplica
+`SecurityEventPrivacy`. Esta política permite exclusivamente las diez claves del
+esquema. Descarta claves adicionales, incluyendo metadatos libres, contraseñas,
+tokens, cookies y cuerpos de solicitud/respuesta, aunque contengan objetos anidados.
+Los valores compuestos dentro de campos permitidos se sustituyen por `null`.
+
+Los nombres de eventos, acciones, resultados y tipos deben ser identificadores
+técnicos; los recursos solo admiten IDs numéricos o plantillas de rutas API.
+Las rutas con query string y los valores personales fuera de formato no se guardan.
+La IP debe ser válida y la correlación debe tener formato UUID. Se mantienen las
+claves con `null` cuando un valor no cumple el contrato.
+
+Esta política se aplica a los eventos de seguridad escritos por el recorder;
+no reemplaza el tratamiento de errores ni filtra logs ajenos a este flujo.
+Los identificadores técnicos son proporcionados por los servicios de auditoría,
+nunca deben construirse a partir de texto libre del usuario.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Unit/SecurityEventPrivacyTest.php tests/Feature/SecurityEventRecorderTest.php --testdox
+```
