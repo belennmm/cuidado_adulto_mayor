@@ -45,3 +45,29 @@ No se guarda como estado global, por lo que no se reutiliza entre solicitudes.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/RequestCorrelationIdTest.php --testdox
 ```
+
+## SCRUM-959: autenticación, bloqueos y autorización
+
+`AuthenticationAuditService` registra el resultado final de las respuestas API:
+
+| Evento | Situación | Resultado |
+| --- | --- | --- |
+| `authentication.login` | Login exitoso, credenciales rechazadas, cuenta pendiente o bloqueo. | `success`, `denied` o `blocked` |
+| `authentication.logout` | Cierre de sesión exitoso. | `success` |
+| `authentication.required` | Acceso rechazado con HTTP 401. | `denied` |
+| `authorization.denied` | Acceso rechazado con HTTP 403. | `denied` |
+| `security.rate_limit` | Otras solicitudes limitadas con HTTP 429. | `blocked` |
+
+Cada evento utiliza el formato común, el ID de correlación, la IP y la plantilla
+de ruta (sin valores de parámetros ni query string). El actor del login solo se
+asigna tras una autenticación exitosa. No se copian los cuerpos de solicitud o
+respuesta, contraseñas, correos ni tokens.
+
+El middleware y el manejador de excepciones comparten una marca por solicitud
+para registrar una sola vez el resultado. Por ahora se escribe `security.event`
+con nivel `info` en el canal predeterminado. La separación de canales y los niveles
+de severidad se incorporan en SCRUM-966 y SCRUM-971, respectivamente.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/AuthenticationAuditTest.php --testdox
+```

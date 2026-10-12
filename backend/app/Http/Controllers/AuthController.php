@@ -22,6 +22,7 @@ class AuthController extends Controller
             $data['password'],
             $request->ip() ?? 'unknown'
         );
+        request()->attributes->set('authenticated_actor_id', $authentication['user']->id);
 
         return response()->json([
             'message' => 'Login exitoso',

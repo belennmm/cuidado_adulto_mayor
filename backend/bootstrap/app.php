@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AssignCorrelationId;
+use App\Http\Middleware\AuditAuthentication;
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureApproved;
@@ -40,6 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trimStrings(except: ['new_password', 'new_password_confirmation']);
         $middleware->prepend(RejectDisallowedMethods::class);
         $middleware->prepend(EnforceRequestSize::class);
+        $middleware->prepend(AuditAuthentication::class);
         $middleware->prepend(AssignCorrelationId::class);
         $middleware->append(SecurityHeaders::class);
 
@@ -82,6 +84,8 @@ return Application::configure(basePath: dirname(__DIR__))
             if (is_string($correlationId)) {
                 $response->headers->set('X-Correlation-ID', $correlationId);
             }
+
+            app(App\Services\AuthenticationAuditService::class)->recordResponse(request(), $response);
 
             if (request()->is('api/*') && $response->getStatusCode() >= 500) {
                 $response->setContent(json_encode(['message' => 'Error interno del servidor.']));
