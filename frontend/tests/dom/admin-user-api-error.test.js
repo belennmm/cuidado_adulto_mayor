@@ -17,7 +17,7 @@ describe("error de API al crear usuarios", () => {
     `
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path, options = {}) => {
         if (options.method === "POST") return Promise.reject(new Error("No se pudo completar la solicitud."))
         return Promise.resolve({ users: [] })

@@ -24,7 +24,7 @@ class ProfileUpdatePersistenceTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $payload = [
+        $payload = ['current_password' => 'password',
             'name' => 'Ana López',
             'email' => 'ana.lopez@example.com',
             'phone' => '55559876',

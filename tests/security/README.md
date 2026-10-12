@@ -61,7 +61,7 @@ Modo activo, solamente contra el entorno local autorizado:
 .\tests\security\run-zap-authenticated.ps1 -Active
 ```
 
-El script prepara tres cuentas exclusivas mediante `SecurityScanSeeder`; no modifica las contrasenas de los usuarios normales ni utiliza datos reales. Las credenciales pueden reemplazarse con parametros del script cuando se use otra base aislada.
+El script prepara tres cuentas exclusivas mediante `SecurityScanSeeder`; no modifica las contrasenas de los usuarios normales ni utiliza datos reales. Los parametros AdminPassword, ProfessionalPassword y FamilyPassword son obligatorios; PowerShell los solicita si se omiten. Deben satisfacer la politica de contrasenas. Se transmiten al seeder del contenedor, incluso si hay cache de configuracion. No existen claves predeterminadas. El seeder solo funciona con APP_ENV local/testing.
 
 ## Evidencia que debe conservarse
 

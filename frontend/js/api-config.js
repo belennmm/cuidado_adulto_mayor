@@ -26,32 +26,34 @@
       || !(url.pathname === prefix || url.pathname.startsWith(`${prefix}/`))) {
       throw new Error("URL de API no permitida.")
     }
+    for (const key of url.searchParams.keys()) if (/password|token|secret|authorization|cookie|challenge|(?:^|_)code(?:s|$)/i.test(key)) throw new Error("No envies credenciales en la URL.")
     return candidate
   }
 
-  function getToken(expectedRoles = []) {
-    if (window.AuthSession?.getToken) {
-      return window.AuthSession.getToken(expectedRoles) || localStorage.getItem("token") || ""
-    }
-
-    return localStorage.getItem("token") || ""
+  function hasSession(expectedRoles = []) {
+    return window.AuthSession?.hasSession(expectedRoles) ?? true
   }
-
+  function csrfToken() {
+    const value = document.cookie.split("; ").find(cookie => cookie.startsWith("XSRF-TOKEN="))?.slice(11)
+    try { return value ? decodeURIComponent(value) : "" } catch { return "" }
+  }
   function getHeaders(options = {}) {
-    const token = options.token ?? getToken(options.expectedRoles || [])
-    const body = options.body
-    const headers = {
-      Accept: "application/json",
-      ...(body && !isFormData(body) ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    }
-
-    if (options.auth === false) {
-      delete headers.Authorization
-    }
-
-    return headers
+    const headers = new Headers(options.headers || {})
+    headers.delete("Authorization")
+    headers.delete("X-CSRF-TOKEN")
+    headers.delete("X-XSRF-TOKEN")
+    headers.set("Accept", "application/json")
+    headers.set("X-Cuidado-Session", "1")
+    if (options.body && !isFormData(options.body)) headers.set("Content-Type", "application/json")
+    if (csrfToken()) headers.set("X-XSRF-TOKEN", csrfToken())
+    return Object.fromEntries(headers.entries())
+  }
+  let csrfRequest = null
+  async function ensureCsrf(force = false) {
+    if (!force && csrfToken()) return
+    if (!csrfRequest) csrfRequest = fetchJson("/csrf-cookie", { method: "GET" }).finally(() => { csrfRequest = null })
+    await csrfRequest
+    if (!csrfToken()) throw new Error("No se pudo iniciar la proteccion CSRF. Verifica las cookies del navegador.")
   }
 
   function firstValidationMessage(errors) {
@@ -95,10 +97,17 @@
       ...fetchOptions
     } = options
 
-    const response = await fetch(buildUrl(path), {
+    const url = buildUrl(path)
+    const method = String(fetchOptions.method || "GET").toUpperCase()
+    if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+      const endpoint = new URL(url, window.location.href).pathname.slice(apiBase.pathname.replace(/\/$/, "").length)
+      await ensureCsrf(["/login", "/register", "/forgot-password", "/reset-password", "/mfa/verify"].includes(endpoint))
+    }
+    const response = await fetch(url, {
       cache: "no-store",
       ...fetchOptions,
       redirect: "error",
+      credentials: "include",
       headers: getHeaders({
         auth,
         body: fetchOptions.body,
@@ -110,6 +119,7 @@
     const data = await parseResponse(response)
 
     if (!response.ok) {
+      if (response.status === 401) window.AuthSession?.clearSession()
       throw createApiError(response, data, fallbackError)
     }
 
@@ -124,6 +134,6 @@
     fetchJson,
     getErrorMessage,
     getHeaders,
-    getToken,
+    hasSession,
   }
 })()

@@ -12,7 +12,7 @@ describe("renderizado del listado de adultos mayores", () => {
       <div id="olderAdultsTableBody"></div>
     `
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn().mockResolvedValue({
         older_adults: [{ id: 24, full_name: "José Pérez", age: 79, caregiver_family: "Marta López", room: "B-4", status: "Atención" }],
       }),

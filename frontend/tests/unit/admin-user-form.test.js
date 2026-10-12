@@ -49,7 +49,7 @@ describe("AdminUserForm", () => {
     expect(userForm.readPayload({ includePassword: true })).toMatchObject({
       name: "Ana",
       email: "ana@example.test",
-      password: "secreto",
+      password: " secreto ",
       role: "cuidador_profesional",
     })
   })

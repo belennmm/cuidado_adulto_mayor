@@ -50,9 +50,9 @@ async function loadUsers(page = usersPage) {
 }
 
 async function approveUser(userId) {
-  const token = window.CuidadoApi.getToken(["admin"])
+  const hasSession = window.CuidadoApi.hasSession(["admin"])
 
-  if (!token) {
+  if (!hasSession) {
     await showPopup("Inicia sesión para aprobar usuarios.", { variant: "error" })
     return
   }

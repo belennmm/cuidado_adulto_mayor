@@ -9,18 +9,20 @@ export const config = {
   credentials: {
     admin: {
       email: __ENV.ADMIN_EMAIL || "admin@performance.test",
-      password: __ENV.ADMIN_PASSWORD || "Performance123!",
+      password: __ENV.ADMIN_PASSWORD,
     },
     professional: {
       email: __ENV.PROFESSIONAL_EMAIL || "professional@performance.test",
-      password: __ENV.PROFESSIONAL_PASSWORD || "Performance123!",
+      password: __ENV.PROFESSIONAL_PASSWORD,
     },
     family: {
       email: __ENV.FAMILY_EMAIL || "family@performance.test",
-      password: __ENV.FAMILY_PASSWORD || "Performance123!",
+      password: __ENV.FAMILY_PASSWORD,
     },
   },
 }
+
+if (Object.values(config.credentials).some(account => !account.password)) throw new Error('Configure ADMIN_PASSWORD, PROFESSIONAL_PASSWORD y FAMILY_PASSWORD.');
 
 export const thresholds = {
   http_req_failed: ["rate<0.01"],

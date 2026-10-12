@@ -25,7 +25,7 @@ describe("creación y edición de usuarios", () => {
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.showAdminConfirm = vi.fn().mockResolvedValue(confirmed)
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path, options = {}) => Promise.resolve(options.method === "PUT"
         ? { message: "Actualizado" }
         : { user: { id: 12, name: "Luis", email: "luis@example.test", role: "cuidador_profesional", is_approved: true } })),
@@ -47,7 +47,7 @@ describe("creación y edición de usuarios", () => {
     document.body.insertAdjacentHTML("beforeend", '<div id="requestList"></div>')
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path, options = {}) => {
         if (options.method === "POST") return Promise.resolve({ message: "Usuario creado correctamente." })
         return Promise.resolve({ users: [] })
@@ -78,7 +78,7 @@ describe("creación y edición de usuarios", () => {
     window.navigateWithLoading = vi.fn()
     window.showAdminAlert = vi.fn().mockResolvedValue()
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path, options = {}) => {
         if (options.method === "PUT") return Promise.resolve({ message: "Usuario actualizado correctamente." })
         return Promise.resolve({ user: { id: 12, name: "Luis Díaz", email: "luis@example.test", role: "cuidador_profesional", is_approved: true } })

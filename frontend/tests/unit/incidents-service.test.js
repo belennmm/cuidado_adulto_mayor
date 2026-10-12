@@ -6,7 +6,7 @@ describe("IncidentsService", () => {
   })
 
   function createService({ pathname = "/pages/admin/incidents.html", role = "admin" } = {}) {
-    const api = { getToken: vi.fn(() => "token"), fetchJson: vi.fn() }
+    const api = { hasSession: vi.fn(() => "token"), fetchJson: vi.fn() }
     const authSession = { getUser: vi.fn(() => ({ role })) }
     const service = window.IncidentsService.create({ api, authSession, location: { pathname } })
     return { api, service }
@@ -43,7 +43,7 @@ describe("IncidentsService", () => {
   it("informa si existe una sesión válida", () => {
     const { api, service } = createService()
     expect(service.hasSession()).toBe(true)
-    api.getToken.mockReturnValue(null)
+    api.hasSession.mockReturnValue(null)
     expect(service.hasSession()).toBe(false)
   })
 })

@@ -11,6 +11,7 @@ use App\Models\OlderAdultMedication;
 use App\Models\RoutineNote;
 use App\Models\User;
 use App\Models\VacationRequest;
+use App\Support\SeedCredentials;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -18,9 +19,7 @@ class InitialDataSeeder extends Seeder
 {
     public function run(): void
     {
-        if (app()->environment('production')) {
-            throw new \LogicException('Los datos de demostracion no se pueden crear en produccion.');
-        }
+        SeedCredentials::guard();
         $users = $this->seedUsers();
         $olderAdults = $this->seedOlderAdults($users['admin'], $users);
         $this->assignProfessionalCaregivers($olderAdults, $users);
@@ -37,7 +36,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'belen@gmail.com'],
                 [
                     'name' => 'Belen Admin',
-                    'password' => 'belen123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'admin',
                     'is_approved' => true,
                     'location' => 'Guatemala',
@@ -49,7 +48,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'mon231497@uvg.edu.gt'],
                 [
                     'name' => 'Mon Admin',
-                    'password' => 'admin123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'admin',
                     'is_approved' => true,
                     'location' => 'Guatemala',
@@ -61,7 +60,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'her241424@uvg.edu.gt'],
                 [
                     'name' => 'wichandro',
-                    'password' => 'admin123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'admin',
                     'is_approved' => true,
                     'location' => 'guatemala',
@@ -73,7 +72,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'wicho123@gmail.com'],
                 [
                     'name' => 'Wicho Admin',
-                    'password' => 'wicho123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'admin',
                     'is_approved' => true,
                     'location' => 'Guatemala',
@@ -83,7 +82,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'maria.gonzalez@organizate.com'],
                 [
                     'name' => 'Maria Gonzalez',
-                    'password' => 'cuidador123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'profesional',
                     'is_approved' => true,
                     'location' => 'Zona 10',
@@ -95,7 +94,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'daniel.soto@organizate.com'],
                 [
                     'name' => 'Daniel Soto',
-                    'password' => 'cuidador123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'profesional',
                     'is_approved' => true,
                     'location' => 'Mixco',
@@ -107,7 +106,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'laura.rodriguez@familia.com'],
                 [
                     'name' => 'Laura Rodriguez',
-                    'password' => 'familiar123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'familiar',
                     'is_approved' => true,
                     'location' => 'Villa Nueva',
@@ -119,7 +118,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'jose.perez@familia.com'],
                 [
                     'name' => 'Jose Perez',
-                    'password' => 'familiar123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'familiar',
                     'is_approved' => false,
                     'location' => 'Antigua Guatemala',
@@ -131,7 +130,7 @@ class InitialDataSeeder extends Seeder
                 ['email' => 'ana.lopez@familia.com'],
                 [
                     'name' => 'Ana Lopez',
-                    'password' => 'familiar123',
+                    'password' => SeedCredentials::password('demo'),
                     'role' => 'familiar',
                     'is_approved' => true,
                     'location' => 'Santa Catarina Pinula',

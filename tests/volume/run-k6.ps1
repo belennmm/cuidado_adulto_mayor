@@ -1,7 +1,7 @@
 param(
     [string]$BaseUrl = "http://localhost:8080/api",
     [string]$Email = "zap.admin@example.test",
-    [string]$Password = "ZapAdmin-2026!",
+    [Parameter(Mandatory = $true)][string]$Password,
     [string]$ReportDirectory = "$PSScriptRoot\reports"
 )
 

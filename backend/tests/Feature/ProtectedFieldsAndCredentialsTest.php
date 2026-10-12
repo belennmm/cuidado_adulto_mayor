@@ -87,7 +87,7 @@ class ProtectedFieldsAndCredentialsTest extends TestCase
         $this->postJson('/api/register', [
             'name' => 'Registro seguro', 'email' => 'registro-seguro@example.com',
             'password' => 'Secure-Test!123', 'role' => 'familiar', 'privacy_consent' => true,
-        ])->assertCreated()->assertJsonPath('user.role', 'familiar')->assertJsonPath('user.is_approved', false);
+        ])->assertStatus(202)->assertJsonMissingPath('user');
 
         $user = User::query()->sole();
         $this->assertNotEquals(999999, $user->id);
@@ -124,7 +124,7 @@ class ProtectedFieldsAndCredentialsTest extends TestCase
 
         if (! $approved) {
             $this->app['auth']->forgetGuards();
-            $this->postJson('/api/login', ['email' => $target->email, 'password' => 'password'])->assertForbidden();
+            $this->postJson('/api/login', ['email' => $target->email, 'password' => 'password'])->assertUnauthorized();
             $this->app['auth']->forgetGuards();
             $this->patchJson("/api/admin/users/{$target->id}/approve", [], $adminHeaders)->assertOk();
             $this->app['auth']->forgetGuards();

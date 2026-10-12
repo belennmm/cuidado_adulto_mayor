@@ -33,3 +33,5 @@ docker compose up -d --build
 El script prepara las mismas cuentas aisladas usadas por OWASP ZAP. Los archivos JSON se generan en `tests/performance/reports` y se excluyen de Git porque corresponden a evidencia de cada ejecucion.
 
 No ejecute `load` o `stress` contra produccion sin autorizacion y monitoreo de infraestructura.
+
+Desde SCRUM-920 los parametros AdminPassword, ProfessionalPassword y FamilyPassword son obligatorios (PowerShell los solicita al omitirlos). Deben satisfacer la politica de contrasenas y se transmiten al seeder y a k6. No hay claves predeterminadas. Los seeders solo funcionan con APP_ENV local/testing; no guardar estos secretos en archivos versionados. Para ejecutar los scripts JavaScript directamente, proporcionar ADMIN_PASSWORD, PROFESSIONAL_PASSWORD y FAMILY_PASSWORD.

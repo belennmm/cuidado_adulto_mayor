@@ -100,8 +100,8 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create(['is_approved' => false]);
 
         $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
-            ->assertForbidden()
-            ->assertJsonPath('message', 'Tu cuenta esta pendiente de aprobacion por un administrador.');
+            ->assertUnauthorized()
+            ->assertJsonPath('message', 'Credenciales invalidas');
     }
 
     public function test_registration_creates_a_pending_user_and_normalizes_role(): void
@@ -116,10 +116,7 @@ class AuthenticationTest extends TestCase
         ];
 
         $this->postJson('/api/register', $payload)
-            ->assertCreated()
-            ->assertJsonPath('user.email', $payload['email'])
-            ->assertJsonPath('user.role', 'profesional')
-            ->assertJsonPath('user.is_approved', false);
+            ->assertStatus(202)->assertJsonMissingPath('user');
 
         $this->assertDatabaseHas('users', [
             'email' => $payload['email'],
@@ -161,7 +158,7 @@ class AuthenticationTest extends TestCase
             'email' => $existing->email,
             'password' => 'short',
             'role' => 'invalid-role',
-        ])->assertUnprocessable()->assertJsonValidationErrors(['name', 'email', 'password', 'role']);
+        ])->assertUnprocessable()->assertJsonValidationErrors(['name', 'password', 'role']);
     }
 
     public function test_authenticated_user_can_read_profile(): void

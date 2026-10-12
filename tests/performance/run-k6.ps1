@@ -1,4 +1,7 @@
 param(
+    [Parameter(Mandatory = $true)][string]$AdminPassword,
+    [Parameter(Mandatory = $true)][string]$ProfessionalPassword,
+    [Parameter(Mandatory = $true)][string]$FamilyPassword,
     [ValidateSet('smoke', 'load', 'stress', 'volume100')]
     [string]$Profile = 'smoke',
     [string]$ApiUrl = 'http://host.docker.internal:8080/api',
@@ -29,7 +32,7 @@ if (-not $apiReady) {
 }
 
 Write-Host 'Preparando cuentas locales exclusivas para la prueba...'
-docker exec cuidado_backend php artisan db:seed --class=SecurityScanSeeder --force
+docker exec --env "SECURITY_SCAN_ADMIN_PASSWORD=$AdminPassword" --env "SECURITY_SCAN_PROFESSIONAL_PASSWORD=$ProfessionalPassword" --env "SECURITY_SCAN_FAMILY_PASSWORD=$FamilyPassword" cuidado_backend php artisan db:seed --class=SecurityScanSeeder --force
 if ($LASTEXITCODE -ne 0) {
     throw 'No fue posible preparar las cuentas locales de rendimiento.'
 }
@@ -45,6 +48,9 @@ docker run --rm `
     --volume "${resolvedReportDirectory}:/reports:rw" `
     --env "API_URL=$ApiUrl" `
     --env "TEST_PROFILE=$Profile" `
+    --env "ADMIN_PASSWORD=$AdminPassword" `
+    --env "PROFESSIONAL_PASSWORD=$ProfessionalPassword" `
+    --env "FAMILY_PASSWORD=$FamilyPassword" `
     grafana/k6:latest run `
     --summary-export "/reports/$summaryName" `
     /scripts/volume-test.js

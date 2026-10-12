@@ -42,10 +42,11 @@
       if (includePassword) controls.password = fields.password
 
       const payload = forms.readPayload(controls)
+      if (includePassword) payload.password = fields.password?.value || ""
       payload.role = forms.normalizeRole(payload.role)
 
       if (!includePassword) {
-        const password = forms.readValue(fields.password)
+        const password = fields.password?.value || ""
         if (password) payload.password = password
       }
       if (includeApproval) payload.is_approved = fields.status?.value === "Activo"

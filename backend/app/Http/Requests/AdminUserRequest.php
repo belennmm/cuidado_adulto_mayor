@@ -4,8 +4,8 @@ namespace App\Http\Requests;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Support\PasswordPolicy;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 class AdminUserRequest extends StrictFormRequest
 {
@@ -20,7 +20,7 @@ class AdminUserRequest extends StrictFormRequest
         $updating = $this->route()?->getActionMethod() === 'update';
         $rules = [
             'name' => ['required', 'string', 'max:255'], 'email' => ['required', 'string', 'email', 'max:254', Rule::unique('users', 'email')->ignore($user instanceof User ? $user->id : null)],
-            'password' => [$updating ? 'nullable' : 'required', 'string', 'max:1024', Password::min(12)->mixedCase()->letters()->numbers()->symbols()],
+            'password' => [$updating ? 'nullable' : 'required', ...PasswordPolicy::rules($user instanceof User ? $user : null)],
             'role' => ['required', Rule::in(UserRole::acceptedValues())],
             'location' => ['nullable', 'string', 'max:255'], 'phone' => ['nullable', 'string', 'max:255'], 'birthdate' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:today', 'after_or_equal:1800-01-01'],
         ];

@@ -18,7 +18,7 @@
     }
 
     function hasSession() {
-      return Boolean(api.getToken(INCIDENT_ROLES))
+      return Boolean(api.hasSession(INCIDENT_ROLES))
     }
 
     async function loadOlderAdults(onLoaded = () => {}) {

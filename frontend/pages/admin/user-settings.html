@@ -152,7 +152,7 @@
                   <div class="form-group">
                     <label for="newPassword">Nueva contraseña</label>
                     <div class="password-input-wrap">
-                      <input type="password" id="newPassword" name="newPassword" placeholder="Ingrese nueva contraseña" />
+                      <input type="password" id="newPassword" name="newPassword" placeholder="Ingrese nueva contraseña"  minlength="15" maxlength="128" autocomplete="new-password" aria-describedby="passwordPolicyHint" />
                       <button type="button" class="toggle-password" data-target="newPassword">
                         <i class="bx bx-hide"></i>
                       </button>
@@ -176,9 +176,34 @@
               <p class="settings-message" id="accountSettingsMessage" aria-live="polite"></p>
               <button type="submit" class="primary-button">Guardar cambios</button>
             </div>
-          </form>
+          <p id="passwordPolicyHint">Usa de 15 a 128 caracteres, con mayusculas, minusculas, numeros y simbolos. Evita contrasenas comunes o filtradas.</p>
+</form>
         </section>
-      </main>
+      <section class="settings-card" aria-labelledby="sessionsTitle">
+  <h2 id="sessionsTitle">Sesiones de tu cuenta</h2>
+  <p>Cierra todas las sesiones, incluida esta, en todos tus dispositivos. Confirma con tu contraseña actual.</p>
+
+  <h3>Dispositivos conectados</h3>
+  <p>Si no reconoces un dispositivo, cierra su sesion. Los datos del dispositivo son orientativos.</p>
+  <button type="button" id="refreshAccountSessions">Actualizar sesiones</button>
+  <p id="accountSessionsMessage" role="status" aria-live="polite"></p>
+  <ul id="accountSessionsList"></ul>
+  <h3>Confirmar identidad</h3>
+  <p>Antes de guardar datos personales, confirma tu contraseña si han pasado cinco minutos desde tu autenticacion.</p>
+  <form id="reauthenticateForm">
+    <label for="reauthenticatePassword">Contraseña actual</label>
+    <input type="password" id="reauthenticatePassword" required maxlength="1024" autocomplete="current-password">
+    <button type="submit">Confirmar identidad</button>
+    <p id="reauthenticateMessage" role="status" aria-live="polite"></p>
+  </form>
+  <form id="revokeSessionsForm">
+    <div class="form-group"><label for="revokeSessionsPassword">Contraseña actual</label>
+      <input type="password" id="revokeSessionsPassword" required autocomplete="current-password" maxlength="1024" /></div>
+    <button type="submit" class="primary-button">Cerrar todas las sesiones</button>
+    <p id="revokeSessionsMessage" role="status" aria-live="polite"></p>
+  </form>
+</section>
+</main>
     </div>
 
     <div class="logout-modal-overlay" id="logoutModal">
@@ -213,5 +238,7 @@
   <script src="../../js/sidebar-a11y.js"></script>
 
     <script src="../../js/admin/user-settings.js"></script>
-  </body>
+  <script src="../../js/account-sessions.js"></script>
+<script src="../../js/account-mfa.js"></script>
+</body>
 </html>

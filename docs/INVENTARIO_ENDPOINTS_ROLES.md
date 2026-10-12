@@ -2,7 +2,7 @@
 
 Fecha: 2026-10-09. Historia SCRUM-779 (A01), sprint 9.
 
-Cobertura: **81 rutas HTTP**, incluidas **77 rutas API** (3 públicas y 74 privadas).
+Cobertura actualizada por A07 bloque final (2026-10-11): **94 rutas HTTP**, incluidas **90 rutas API** (7 públicas y 83 privadas).
 
 Inventario obtenido de `php artisan route:list --json`, contrastado con `routes/api.php`, `routes/web.php`, `bootstrap/app.php`, Requests, servicios y `RutinaPolicy`. Cada fila representa una combinación de ruta y métodos registrados; GET incluye HEAD. Las rutas API llevan el prefijo `/api`.
 
@@ -17,7 +17,7 @@ Inventario obtenido de `php artisan route:list --json`, contrastado con `routes/
 - Sin autenticación válida, las rutas privadas API responden 401. Un rol no permitido recibe 403 antes del enlace de modelos y de la validación del payload.
 - Dentro de un módulo permitido, consultar o modificar un recurso ajeno devuelve el mismo 404 y mensaje genérico que un identificador inexistente: `Recurso no encontrado.`
 - Cada solicitud privada recarga usuario y credencial vigente antes de comprobar roles. También exige el alcance de lectura/escritura del token y los permisos actuales del usuario; una capacidad del token no sustituye la Policy.
-- La API usa Bearer tokens vinculados al estado de seguridad de emisión. Cambiar rol, retirar aprobación o cambiar contraseña invalida los tokens anteriores con 401. Una sesión web no sustituye la credencial del login. Los tokens anteriores a la migración de huella requieren nuevo login.
+- El navegador usa sesiones del servidor con cookies HttpOnly y CSRF. Los clientes API conservan Bearer. Cambiar contraseña, rol o aprobación invalida las credenciales; cerrar todas las sesiones incrementa la versión de seguridad de la cuenta. Las credenciales emitidas antes de la nueva huella requieren nuevo login. Ver [A07 bloque final](SESIONES_AUTENTICACION_A07_BLOQUE2.md).
 
 ## Inventario completo
 
@@ -71,7 +71,9 @@ Las columnas muestran los controles efectivos después de SCRUM-795/796. `auth:s
 | GET / HEAD | `/api/family/routines` | F | `auth:sanctum + role + can:viewAny,Rutina` | `FamilyCareController@routine` |
 | GET / HEAD | `/api/incidents` | A, P, F | `auth:sanctum + role + can:viewAny,Incident` | `IncidentController@index` |
 | GET / HEAD | `/api/incidents/today` | A, P, F | `auth:sanctum + role + can:viewAny,Incident` | `IncidentController@today` |
+| GET / HEAD | `/api/csrf-cookie` | Público | `Sesión + cookie CSRF; sin datos privados` | `AuthController@csrfCookie` |
 | POST | `/api/login` | Público | `Validación + límite de intentos fallidos` | `AuthController@login` |
+| POST | `/api/logout-all` | A / P / F | `auth:sanctum + contrasena actual + CSRF navegador + rate limiting` | `AuthController@logoutAll` |
 | POST | `/api/logout` | Sesión | `auth:sanctum` | `AuthController@logout` |
 | GET / HEAD | `/api/me` | Sesión | `auth:sanctum` | `AuthController@me` |
 | PUT | `/api/me` | Sesión | `auth:sanctum` | `AuthController@updateMe` |
@@ -95,6 +97,8 @@ Las columnas muestran los controles efectivos después de SCRUM-795/796. `auth:s
 | GET / HEAD | `/api/professional/vacation-requests` | P | `auth:sanctum + role + can:viewAny,VacationRequest` | `VacationRequestController@index` |
 | POST | `/api/professional/vacation-requests` | P | `auth:sanctum + role + can:create,VacationRequest` | `VacationRequestController@store` |
 | POST | `/api/register` | Público | `throttle:registration + validación` | `AuthController@register` |
+| POST | `/api/forgot-password` | Público | `throttle:recovery + validación + CSRF navegador` | `AuthController@forgotPassword` |
+| POST | `/api/reset-password` | Público | `throttle:reset-password + validación + CSRF navegador` | `AuthController@resetPassword` |
 | GET / HEAD | `/api/rutinas` | A, P, F | `auth:sanctum + role + can:viewAny,Rutina` | `RutinaController@index` |
 | POST | `/api/rutinas` | A, P, F | `auth:sanctum + role + can:create,Rutina` | `RutinaController@store` |
 | PUT | `/api/rutinas/{rutina}` | A, P, F | `auth:sanctum + role + can:update,rutina` | `RutinaController@update` |
@@ -163,3 +167,9 @@ Validación SCRUM-787/788/789/790 del 2026-10-09: **30 pruebas en los dos archiv
 Validación SCRUM-791/792/793/794 del 2026-10-09: **48 casos adicionales**; suite completa de ese bloque: **302 pruebas, 3720 aserciones, sin fallos**. PHPUnit y Pint se ejecutaron fuera del aislamiento por las restricciones locales de Windows. No se ejecutaron acciones de Git.
 
 Validación final SCRUM-795/796 del 2026-10-09: **23 casos nuevos y 2464 aserciones**; suite completa de cierre: **325 pruebas, 6188 aserciones, sin fallos**. Pint verificó los 11 archivos PHP del bloque final. La implementación cubre SCRUM-781 a SCRUM-796; la migración de huella se aplicó únicamente en las bases efímeras de pruebas.
+
+Desde SCRUM-919 se agregan POST `/api/forgot-password` y POST `/api/reset-password`: públicas, con StrictFormRequest, CSRF para navegador y límites propios por correo/IP. Registro ahora responde 202 sin datos de cuenta, tanto para correos nuevos como existentes.
+
+Desde SCRUM-926/927: GET `/api/sessions`, DELETE `/api/sessions/{accountSession}` (UUID) y POST `/api/reauthenticate`, todas autenticadas y limitadas. Las dos primeras consultan/cierran sólo credenciales propias; la tercera exige la contraseña actual. PUT `/api/me` requiere autenticación reciente. Detalle: [bloque 4 de A07](SESIONES_AUTENTICACION_A07_BLOQUE4.md).
+
+SCRUM-928/933: se agrega POST `/api/mfa/verify`, publica pero condicionada a desafio de cinco minutos, CSRF/browser y segundo factor. GET `/api/mfa`, POST `/api/mfa/setup`, POST `/api/mfa/confirm`, DELETE `/api/mfa` y POST `/api/mfa/recovery-codes` son privadas con capacidades de cuenta; las escrituras requieren contrasena actual y limites de reautenticacion. Detalle: [cierre de A07](SESIONES_AUTENTICACION_A07_BLOQUE5.md).

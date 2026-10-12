@@ -55,7 +55,7 @@ function clearPasswordFields() {
 async function loadProfile() {
   try {
     setMessage("")
-    if (!window.CuidadoApi.getToken(["admin"])) {
+    if (!window.CuidadoApi.hasSession(["admin"])) {
       throw new Error("Inicia sesión para ver tu perfil.")
     }
 

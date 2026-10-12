@@ -22,7 +22,7 @@ describe("inventario individual de medicamentos", () => {
       getUser: vi.fn(() => ({ id: 1, role: "admin" })),
     }
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn((path) => {
         if (path === "/admin/older-adults") {
           return Promise.resolve({

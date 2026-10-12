@@ -9,7 +9,7 @@ final class AccountSecurityState
     public static function fingerprint(User $user): string
     {
         return hash('sha256', json_encode([
-            $user->getKey(), $user->role, (bool) $user->is_approved, $user->password,
+            $user->getKey(), $user->role, (bool) $user->is_approved, $user->password, (int) $user->session_version, $user->mfa_enabled_at?->timestamp, $user->mfa_secret,
         ], JSON_THROW_ON_ERROR));
     }
 }

@@ -70,7 +70,7 @@
   }
 
   async function fetchCalendarShifts() {
-    if (!window.CuidadoApi.getToken(["admin"])) {
+    if (!window.CuidadoApi.hasSession(["admin"])) {
       throw new Error("Inicia sesión como administrador para ver el calendario.")
     }
 
@@ -240,11 +240,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const token = window.CuidadoApi.getToken(["admin"])
-    const user = safeJsonParse(JSON.stringify(window.AuthSession?.getUser() || null))
-    const role = String(user?.role || "").trim().toLowerCase()
+    const hasSession = window.CuidadoApi.hasSession(["admin"])
 
-    if (!token || role !== "admin") {
+    if (!hasSession) {
       navigateToLogin()
       return
     }

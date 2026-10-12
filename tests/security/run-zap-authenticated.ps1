@@ -1,11 +1,11 @@
 param(
     [string]$ApiUrl = "http://localhost:8080/api",
     [string]$AdminEmail = "zap.admin@example.test",
-    [string]$AdminPassword = "ZapAdmin-2026!",
+    [Parameter(Mandatory = $true)][string]$AdminPassword,
     [string]$ProfessionalEmail = "zap.professional@example.test",
-    [string]$ProfessionalPassword = "ZapPro-2026!",
+    [Parameter(Mandatory = $true)][string]$ProfessionalPassword,
     [string]$FamilyEmail = "zap.family@example.test",
-    [string]$FamilyPassword = "ZapFamily-2026!",
+    [Parameter(Mandatory = $true)][string]$FamilyPassword,
     [string]$ReportDirectory = "$PSScriptRoot\reports\authenticated",
     [switch]$Active
 )
@@ -33,7 +33,7 @@ if (-not $apiReady) {
 }
 
 Write-Host "Preparando cuentas locales exclusivas para el escaneo..."
-docker exec cuidado_backend php artisan db:seed --class=SecurityScanSeeder --force
+docker exec --env "SECURITY_SCAN_ADMIN_PASSWORD=$AdminPassword" --env "SECURITY_SCAN_PROFESSIONAL_PASSWORD=$ProfessionalPassword" --env "SECURITY_SCAN_FAMILY_PASSWORD=$FamilyPassword" cuidado_backend php artisan db:seed --class=SecurityScanSeeder --force
 if ($LASTEXITCODE -ne 0) {
     throw "No fue posible preparar las cuentas locales de OWASP ZAP."
 }

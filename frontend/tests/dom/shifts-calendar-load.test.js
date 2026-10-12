@@ -20,7 +20,7 @@ describe("carga del calendario de turnos", () => {
     const date = todayKey()
     window.AuthSession = { getUser: vi.fn(() => ({ id: 1, role: "admin" })) }
     window.CuidadoApi = {
-      getToken: vi.fn(() => "admin-token"),
+      hasSession: vi.fn(() => "admin-token"),
       fetchJson: vi.fn().mockResolvedValue({
         shifts: [{ id: 4, caregiver_name: "Marta", older_adult_name: "Rosa", date, start_time: "08:00:00", end_time: "16:00:00", status: "assigned" }],
         events: [{ id: 2, type: "incident", title: "Revisión", person: "Rosa", date, status: "pending" }],
@@ -36,7 +36,7 @@ describe("carga del calendario de turnos", () => {
     await Promise.resolve()
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(window.CuidadoApi.getToken).toHaveBeenCalledWith(["admin"])
+    expect(window.CuidadoApi.hasSession).toHaveBeenCalledWith(["admin"])
     expect(window.CuidadoApi.fetchJson).toHaveBeenCalledWith(expect.stringMatching(/^\/admin\/schedules\/calendar\?/), expect.objectContaining({ expectedRoles: ["admin"] }))
     expect(document.getElementById("shiftsCalendarContainer").textContent).toContain("Marta")
     expect(document.getElementById("calendarEventsCount").textContent).toBe("1 evento")
