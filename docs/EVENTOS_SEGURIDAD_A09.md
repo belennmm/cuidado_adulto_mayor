@@ -30,3 +30,18 @@ Prueba desde `backend`:
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Unit/SecurityEventTest.php --testdox
 ```
+
+## SCRUM-958: correlación por solicitud
+
+El middleware global `AssignCorrelationId` genera un UUID antes de validar el
+tamaño y el método de la solicitud. El servidor genera un valor nuevo para cada
+solicitud e ignora cualquier `X-Correlation-ID` enviado por el cliente.
+
+El identificador está disponible en `$request->attributes->get('correlation_id')`
+para incorporarlo al campo homónimo de `SecurityEvent`. Se devuelve también en el
+header `X-Correlation-ID`, incluso en respuestas de error renderizadas por Laravel.
+No se guarda como estado global, por lo que no se reutiliza entre solicitudes.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/RequestCorrelationIdTest.php --testdox
+```

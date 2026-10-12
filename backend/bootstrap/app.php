@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AssignCorrelationId;
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureApproved;
@@ -39,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trimStrings(except: ['new_password', 'new_password_confirmation']);
         $middleware->prepend(RejectDisallowedMethods::class);
         $middleware->prepend(EnforceRequestSize::class);
+        $middleware->prepend(AssignCorrelationId::class);
         $middleware->append(SecurityHeaders::class);
 
         $middleware->api(prepend: [
@@ -76,6 +78,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         // Covers HttpResponseException and framework-rendered errors as well.
         $exceptions->respond(function (Response $response) {
+            $correlationId = request()->attributes->get('correlation_id');
+            if (is_string($correlationId)) {
+                $response->headers->set('X-Correlation-ID', $correlationId);
+            }
+
             if (request()->is('api/*') && $response->getStatusCode() >= 500) {
                 $response->setContent(json_encode(['message' => 'Error interno del servidor.']));
                 $response->headers->set('Content-Type', 'application/json');
