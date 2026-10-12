@@ -19,15 +19,11 @@ class AuditLogLimitsTest extends TestCase
 
     private string $path;
 
-    private string $previousErrorLog;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->directory = storage_path('framework/testing/audit-limits-'.Str::uuid());
         File::ensureDirectoryExists($this->directory);
-        $this->previousErrorLog = ini_get('error_log');
-        ini_set('error_log', $this->directory.'/operational.log');
         config([
             'logging.channels.security_audit.path' => $this->directory.'/audit.log',
             'security_audit.collector_url' => null,
@@ -43,7 +39,6 @@ class AuditLogLimitsTest extends TestCase
         try {
             Log::channel('security_audit')->getLogger()->close();
             Log::forgetChannel('security_audit');
-            ini_set('error_log', $this->previousErrorLog);
             File::delete([$this->path, $this->directory.'/audit.log.budget.lock', $this->directory.'/operational.log']);
             rmdir($this->directory);
         } finally {
@@ -53,11 +48,13 @@ class AuditLogLimitsTest extends TestCase
 
     public function test_normal_flood_preserves_a_separate_urgent_budget_and_reports_once(): void
     {
-        for ($attempt = 0; $attempt < 10; $attempt++) {
-            $this->write('info');
-        }
-        $this->write('critical');
-        $this->write('error');
+        $this->captureOperationalLog(function (): void {
+            for ($attempt = 0; $attempt < 10; $attempt++) {
+                $this->write('info');
+            }
+            $this->write('critical');
+            $this->write('error');
+        });
         $records = $this->records();
         $this->assertCount(3, $records);
         $this->assertSame(['INFO', 'INFO', 'CRITICAL'], array_column($records, 'level_name'));
@@ -145,9 +142,20 @@ class AuditLogLimitsTest extends TestCase
     public function test_corrupted_budget_drops_writes_instead_of_disabling_limits(): void
     {
         File::put($this->directory.'/audit.log.budget.lock', 'not-json');
-        $this->write('info');
+        $this->captureOperationalLog(fn () => $this->write('info'));
         $this->assertFileDoesNotExist($this->path);
         $this->assertStringContainsString('security_audit_budget_unavailable', File::get($this->directory.'/operational.log'));
+    }
+
+    private function captureOperationalLog(callable $operation): void
+    {
+        $previousErrorLog = ini_get('error_log');
+        $this->assertNotFalse(ini_set('error_log', $this->directory.'/operational.log'));
+        try {
+            $operation();
+        } finally {
+            ini_set('error_log', $previousErrorLog);
+        }
     }
 
     private function write(string $level): void
