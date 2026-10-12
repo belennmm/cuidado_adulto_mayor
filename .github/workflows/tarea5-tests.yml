@@ -44,6 +44,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Preparar clave temporal de pruebas
+        run: |
+          test_key="$(php -r 'echo "base64:".base64_encode(random_bytes(32));')"
+          echo "::add-mask::$test_key"
+          echo "APP_KEY=$test_key" >> "$GITHUB_ENV"
       - name: Instalar dependencias del backend
         working-directory: backend
         run: |

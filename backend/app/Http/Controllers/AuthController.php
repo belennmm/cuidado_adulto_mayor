@@ -32,10 +32,11 @@ class AuthController extends Controller
             $request->ip() ?? 'unknown',
             ! $request->attributes->get('browser_session', false)
         );
-
         if ($authentication['mfa_required'] ?? false) {
             return response()->json($authentication, 202);
         }
+
+        request()->attributes->set('authenticated_actor_id', $authentication['user']->id);
 
         return $this->finishLogin($request, $authentication);
     }
@@ -77,7 +78,10 @@ class AuthController extends Controller
 
     public function register(AuthRequest $request): JsonResponse
     {
-        $this->authService->register($request->validated());
+        $user = $this->authService->register($request->validated());
+        if ($user !== null) {
+            request()->attributes->set('registered_account_id', $user->id);
+        }
 
         return response()->json(['message' => 'Solicitud recibida. Si procede, tu cuenta quedara pendiente de aprobacion.'], 202);
     }

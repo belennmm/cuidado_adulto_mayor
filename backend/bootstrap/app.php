@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Middleware\AssignCorrelationId;
+use App\Http\Middleware\AuditAccountMedicationChanges;
+use App\Http\Middleware\AuditAdministrativeActions;
+use App\Http\Middleware\AuditAuthentication;
+use App\Http\Middleware\AuditSensitiveData;
 use App\Http\Middleware\BrowserSessions;
 use App\Http\Middleware\EnforceRequestSize;
 use App\Http\Middleware\EnsureAdmin;
@@ -42,6 +47,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trimStrings(except: ['new_password', 'new_password_confirmation']);
         $middleware->prepend(RejectDisallowedMethods::class);
         $middleware->prepend(EnforceRequestSize::class);
+        $middleware->prepend(AuditAuthentication::class);
+        $middleware->prepend(AuditSensitiveData::class);
+        $middleware->prepend(AuditAccountMedicationChanges::class);
+        $middleware->prepend(AuditAdministrativeActions::class);
+        $middleware->prepend(AssignCorrelationId::class);
         $middleware->append(SecurityHeaders::class);
 
         $middleware->api(prepend: [
@@ -89,6 +99,13 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         // Covers HttpResponseException and framework-rendered errors as well.
         $exceptions->respond(function (Response $response) {
+            $correlationId = request()->attributes->get('correlation_id');
+            if (is_string($correlationId)) {
+                $response->headers->set('X-Correlation-ID', $correlationId);
+            }
+
+            app(App\Services\AuthenticationAuditService::class)->recordResponse(request(), $response);
+
             if (request()->is('api/*') && $response->getStatusCode() >= 500) {
                 $response->setContent(json_encode(['message' => 'Error interno del servidor.']));
                 $response->headers->set('Content-Type', 'application/json');

@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Logging\AuditCollectorHandler;
+use App\Services\AuditLogRetention;
+use App\Services\SecurityAlertService;
+use App\Support\AuditRecordIntegrity;
+use App\Support\AuditLogLimits;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\MobilityExercise;
@@ -36,12 +41,23 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->singleton(AuditRecordIntegrity::class, fn () => new AuditRecordIntegrity(
+            (string) (config('security_audit.integrity_key') ?: ($this->app->environment('production') ? '' : config('app.key'))),
+            (string) config('security_audit.key_id', 'v1'),
+        ));
     }
 
     public function boot(): void
     {
         $this->validateProductionConfiguration();
+        config(['logging.channels.security_audit.days' => $this->app->make(AuditLogRetention::class)->days()]);
+        $this->app->make(SecurityAlertService::class)->settings();
+        AuditLogLimits::settings();
+        $this->app->make(AuditRecordIntegrity::class);
+        $collector = config('security_audit.collector_url');
+        if (is_string($collector) && $collector !== '') {
+            new AuditCollectorHandler($collector);
+        }
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         User::observe(UserObserver::class);
 

@@ -55,7 +55,12 @@ class AuthService
                 return app(MfaService::class)->begin($current, app('request'));
             }
 
-            return ['user' => $current, 'token' => $issueToken ? $current->createToken('API Token', TokenAbilities::forUser($current), now()->addMinutes((int) config('sanctum.expiration', 60)))->plainTextToken : null];
+            $issued = $issueToken ? $current->createToken('API Token', TokenAbilities::forUser($current), now()->addMinutes((int) config('sanctum.expiration', 60))) : null;
+            if ($issued !== null) {
+                app(SessionContextAuditService::class)->initialize($issued->accessToken, request());
+            }
+
+            return ['user' => $current, 'token' => $issued?->plainTextToken];
         });
     }
 

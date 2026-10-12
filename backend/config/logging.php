@@ -1,6 +1,7 @@
 <?php
 
 use App\Logging\RedactSecrets;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -52,6 +53,18 @@ $configuration = [
     */
 
     'channels' => [
+
+        'security_audit' => [
+            'driver' => 'daily',
+            'days' => env('SECURITY_AUDIT_RETENTION_DAYS', 90),
+            'name' => 'security_audit',
+            'path' => storage_path('logs/security-audit.log'),
+            'level' => 'info',
+            'locking' => true,
+            'permission' => 0600,
+            'tap' => [App\Logging\ProtectSecurityAuditLog::class],
+            'formatter' => JsonFormatter::class,
+        ],
 
         'stack' => [
             'driver' => 'stack',
