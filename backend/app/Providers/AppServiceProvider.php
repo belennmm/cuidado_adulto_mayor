@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Logging\AuditCollectorHandler;
 use App\Services\AuditLogRetention;
+use App\Services\SecurityAlertService;
 use App\Support\AuditRecordIntegrity;
 use App\Models\CaregiverSchedule;
 use App\Models\Incident;
@@ -49,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->validateProductionConfiguration();
         config(['logging.channels.security_audit.days' => $this->app->make(AuditLogRetention::class)->days()]);
+        $this->app->make(SecurityAlertService::class)->settings();
         $this->app->make(AuditRecordIntegrity::class);
         $collector = config('security_audit.collector_url');
         if (is_string($collector) && $collector !== '') {

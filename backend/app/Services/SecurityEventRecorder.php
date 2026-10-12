@@ -29,6 +29,8 @@ class SecurityEventRecorder
             correlationId: $request->attributes->get('correlation_id'),
         );
 
-        Log::channel('security_audit')->info('security.event', SecurityEventPrivacy::filter($securityEvent->toArray()));
+        $context = SecurityEventPrivacy::filter($securityEvent->toArray());
+        Log::channel('security_audit')->info('security.event', $context);
+        app(SecurityAlertService::class)->observe($request, $context);
     }
 }

@@ -300,3 +300,33 @@ no se ha instalado una tarea del sistema en este entorno. Los procesos persisten
 deben reiniciarse tras cambiar la configuración. La retención del colector remoto
 se configura por separado. Ajustar el plazo a la política institucional y preservar
 evidencias necesarias antes de su vencimiento.
+
+## SCRUM-969: alertas de actividad sospechosa
+
+Cada evento auditado alimenta contadores temporales: `security.alert.brute_force`
+para logins denegados o bloqueados por IP, `security.alert.denials` para accesos
+sin autenticación o autorización por usuario (por IP si no hay usuario), y
+`security.alert.mass_access` para lecturas exitosas de datos sensibles por usuario.
+Se cuenta una vez por regla y solicitud, no por registro devuelto. Una alerta indica
+un patrón que requiere revisión, no demuestra un ataque ni bloquea por sí misma.
+
+Valores iniciales: ventana de 60 segundos; umbrales de 10, 10 y 100 solicitudes,
+respectivamente; pausa entre alertas de 300 segundos por regla y origen. Ajustar
+`SECURITY_ALERT_WINDOW_SECONDS`, `SECURITY_ALERT_COOLDOWN_SECONDS`,
+`SECURITY_ALERT_BRUTE_FORCE`, `SECURITY_ALERT_DENIALS` y
+`SECURITY_ALERT_MASS_ACCESS` según el tráfico esperado. Se admiten enteros entre
+1 y 86400; valores inválidos impiden iniciar. Las ventanas empiezan con el primer
+evento y no son deslizantes. Un login exitoso no cuenta como fallo ni borra fallos.
+
+Los contadores usan el rate limiter de Laravel y la pausa usa la caché de la
+aplicación. En producción ambos deben usar almacenamiento compartido persistente
+con incrementos y `add` atómicos (por ejemplo Redis o base de datos); `array` solo
+sirve para pruebas y no coordina procesos. Las claves contienen HMAC del usuario/IP,
+nunca contraseñas, correos ni IP completa en claro. Los contadores expiran.
+
+Las alertas se escriben con nivel `warning` en el canal firmado `security_audit`,
+con actor, IP enmascarada y correlación de la solicitud que alcanzó el umbral.
+También llegan al colector si está configurado. No se han configurado correo,
+SMS ni un SIEM real: el responsable debe monitorizar ese canal. Si la caché falla,
+se conserva el evento base y se emite `security_alert_detection_unavailable` en
+el log operativo; la detección queda degradada y requiere intervención.
