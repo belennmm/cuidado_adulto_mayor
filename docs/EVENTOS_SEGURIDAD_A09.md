@@ -71,3 +71,26 @@ de severidad se incorporan en SCRUM-966 y SCRUM-971, respectivamente.
 ```powershell
 php vendor/phpunit/phpunit/phpunit tests/Feature/AuthenticationAuditTest.php --testdox
 ```
+
+## SCRUM-960: acceso y cambios en datos sensibles
+
+`AuditSensitiveData` registra respuestas API exitosas de los controladores de
+adultos mayores, rutinas, notas, incidentes, ejercicios de movilidad, recordatorios
+y administración de medicamentos. Incluye consultas de adultos, rutinas e
+incidentes desde las vistas familiar y profesional.
+
+Se emite `sensitive_data.access` para lecturas y `sensitive_data.change` para
+creaciones, actualizaciones y eliminaciones. Se conserva el actor, el tipo e ID
+del recurso, la fecha, IP y correlación. En creaciones se obtiene únicamente el ID
+del recurso devuelto; en colecciones el ID es `null`. Las consultas de incidentes
+de un adulto usan el tipo `older_adult_incidents` y el ID del adulto.
+
+No se registran nombres, diagnósticos, contenido de notas, valores anteriores o
+nuevos, términos de búsqueda ni listas de pacientes. Las respuestas fallidas no
+se registran como cambios exitosos; las denegaciones 401/403 y bloqueos 429 siguen
+cubiertos por SCRUM-959. Este registro refleja operaciones HTTP completadas, no
+modificaciones directas de base de datos fuera de la API.
+
+```powershell
+php vendor/phpunit/phpunit/phpunit tests/Feature/SensitiveDataAuditTest.php --testdox
+```
