@@ -86,6 +86,21 @@ class SensitiveRequestLimitsTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
+    public function test_performance_accounts_bypass_login_burst_limit_only_in_test_environment(): void
+    {
+        config(['abuse.login_per_minute' => 1]);
+        $user = User::factory()->approvedFamily()->create([
+            'email' => 'perf-family-001@performance.test',
+        ]);
+
+        $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+        $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
+
+        $ordinary = User::factory()->approvedFamily()->create();
+        $this->postJson('/api/login', ['email' => $ordinary->email, 'password' => 'password'])->assertOk();
+        $this->postJson('/api/login', ['email' => $ordinary->email, 'password' => 'password'])->assertStatus(429);
+    }
+
     private function admin(): User
     {
         return User::factory()->create(['role' => 'admin', 'is_approved' => true]);

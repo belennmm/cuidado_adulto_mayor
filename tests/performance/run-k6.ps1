@@ -32,7 +32,7 @@ if (-not $apiReady) {
 }
 
 Write-Host 'Preparando cuentas locales exclusivas para la prueba...'
-docker exec --env "SECURITY_SCAN_ADMIN_PASSWORD=$AdminPassword" --env "SECURITY_SCAN_PROFESSIONAL_PASSWORD=$ProfessionalPassword" --env "SECURITY_SCAN_FAMILY_PASSWORD=$FamilyPassword" cuidado_backend php artisan db:seed --class=SecurityScanSeeder --force
+docker exec --env "PASSWORD_CHECK_COMPROMISED=false" --env "PERFORMANCE_USERS_PER_ROLE=120" --env "PERFORMANCE_ADMIN_PASSWORD=$AdminPassword" --env "PERFORMANCE_PROFESSIONAL_PASSWORD=$ProfessionalPassword" --env "PERFORMANCE_FAMILY_PASSWORD=$FamilyPassword" cuidado_backend php artisan db:seed --class=PerformanceTestSeeder --force
 if ($LASTEXITCODE -ne 0) {
     throw 'No fue posible preparar las cuentas locales de rendimiento.'
 }

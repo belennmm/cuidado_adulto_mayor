@@ -38,7 +38,7 @@ class AuthService
 
         $dummy = Cache::rememberForever('login-dummy:'.hash('sha256', json_encode(config('hashing'))), fn () => Hash::make(Str::random(64)));
         $user = User::query()->whereRaw('LOWER(email) = ?', [Str::lower(trim($email))])->first();
-        $valid = Hash::check($password, $user?->password ?? $dummy);
+        $valid = $this->passwordMatches($password, $user?->password ?? $dummy);
         if (! $valid || ! $user || ! $this->canLogin($user)) {
             foreach ($limits as $key => $maximum) {
                 RateLimiter::hit($key, (int) config('abuse.login_lockout_seconds', 300));
@@ -50,7 +50,10 @@ class AuthService
 
         return DB::transaction(function () use ($user, $password, $issueToken) {
             $current = User::query()->whereKey($user->id)->lockForUpdate()->first();
-            abort_unless($current && $this->canLogin($current) && Hash::check($password, $current->password), 401);
+            abort_unless($current && $this->canLogin($current) && $this->passwordMatches($password, $current->password), 401);
+            if (Hash::needsRehash($current->password)) {
+                $current->forceFill(['password' => Hash::make($password)])->save();
+            }
             if ($current->mfa_enabled_at) {
                 return app(MfaService::class)->begin($current, app('request'));
             }
@@ -67,6 +70,17 @@ class AuthService
     private function loginRateLimitKey(string $email, string $ipAddress): string
     {
         return 'login:'.sha1(Str::lower(trim($email)).'|'.$ipAddress);
+    }
+
+    private function passwordMatches(string $plainText, string $hash): bool
+    {
+        // Allow the legacy bcrypt hashes already stored in production, then
+        // upgrade them to the configured Argon2id driver after a valid login.
+        if (str_starts_with($hash, '$2y$')) {
+            return password_verify($plainText, $hash);
+        }
+
+        return Hash::check($plainText, $hash);
     }
 
     public function register(array $data): ?User

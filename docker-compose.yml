@@ -79,7 +79,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-3000}:8080"
+      - "${FRONTEND_PORT:-3000}:8080"
     networks:
       - cuidado_network
     cap_drop: ["ALL"]

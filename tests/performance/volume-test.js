@@ -28,6 +28,7 @@ const scenario = (exec, role, startTime = '0s') => ({
 });
 
 export const options = {
+  setupTimeout: '3m',
   scenarios: {
     administrator: scenario('administratorTraffic', 'administrator'),
     professional: scenario('professionalTraffic', 'professional'),
@@ -40,22 +41,18 @@ export const options = {
   },
 };
 
-const accounts = {
-  administrator: {
-    email: __ENV.ADMIN_EMAIL || 'zap.admin@example.test',
-    password: __ENV.ADMIN_PASSWORD,
-  },
-  professional: {
-    email: __ENV.PROFESSIONAL_EMAIL || 'zap.professional@example.test',
-    password: __ENV.PROFESSIONAL_PASSWORD,
-  },
-  family: {
-    email: __ENV.FAMILY_EMAIL || 'zap.family@example.test',
-    password: __ENV.FAMILY_PASSWORD,
-  },
+const passwords = {
+  administrator: __ENV.ADMIN_PASSWORD,
+  professional: __ENV.PROFESSIONAL_PASSWORD,
+  family: __ENV.FAMILY_PASSWORD,
 };
 
-if (Object.values(accounts).some(account => !account.password)) throw new Error('Configure ADMIN_PASSWORD, PROFESSIONAL_PASSWORD y FAMILY_PASSWORD.');
+if (Object.values(passwords).some(password => !password)) throw new Error('Configure ADMIN_PASSWORD, PROFESSIONAL_PASSWORD y FAMILY_PASSWORD.');
+
+const account = (role, index) => ({
+  email: `perf-${role}-${String(index).padStart(3, '0')}@performance.test`,
+  password: passwords[role],
+});
 
 function login(account) {
   const response = http.post(`${apiUrl}/login`, JSON.stringify(account), {
@@ -63,24 +60,32 @@ function login(account) {
     tags: { endpoint: 'login' },
   });
 
+  const token = response.status === 200 ? response.json('token') : null;
   const valid = check(response, {
     'login responds 200': (res) => res.status === 200,
-    'login returns token': (res) => Boolean(res.json('token')),
+    'login returns token': () => Boolean(token),
   });
 
   if (!valid) {
     throw new Error(`No fue posible iniciar sesion para ${account.email}: HTTP ${response.status}`);
   }
 
-  return response.json('token');
+  return token;
 }
 
+const maximumGlobalVus = profile === 'volume100'
+  ? 100
+  : Math.max(...profiles[profile].stages.map((stage) => stage.target)) * 3;
+
 export function setup() {
-  return {
-    administrator: login(accounts.administrator),
-    professional: login(accounts.professional),
-    family: login(accounts.family),
-  };
+  return Object.fromEntries(Object.keys(passwords).map((role) => [
+    role,
+    Array.from({ length: maximumGlobalVus }, (_, index) => login(account(role, index + 1))),
+  ]));
+}
+
+function tokenFor(tokens) {
+  return tokens[__VU - 1];
 }
 
 function authenticatedGet(path, token, endpoint) {
@@ -96,22 +101,25 @@ function authenticatedGet(path, token, endpoint) {
 }
 
 export function administratorTraffic(data) {
-  authenticatedGet('/admin/dashboard-summary', data.administrator, 'admin_dashboard');
-  authenticatedGet('/admin/users', data.administrator, 'admin_users');
-  authenticatedGet('/admin/older-adults', data.administrator, 'admin_older_adults');
+  const token = tokenFor(data.administrator);
+  authenticatedGet('/admin/dashboard-summary', token, 'admin_dashboard');
+  authenticatedGet('/admin/users', token, 'admin_users');
+  authenticatedGet('/admin/older-adults', token, 'admin_older_adults');
   sleep(1);
 }
 
 export function professionalTraffic(data) {
-  authenticatedGet('/professional/overview', data.professional, 'professional_overview');
-  authenticatedGet('/professional/older-adults', data.professional, 'professional_older_adults');
-  authenticatedGet('/professional/reminders', data.professional, 'professional_reminders');
+  const token = tokenFor(data.professional);
+  authenticatedGet('/professional/overview', token, 'professional_overview');
+  authenticatedGet('/professional/older-adults', token, 'professional_older_adults');
+  authenticatedGet('/professional/reminders', token, 'professional_reminders');
   sleep(1);
 }
 
 export function familyTraffic(data) {
-  authenticatedGet('/family/overview', data.family, 'family_overview');
-  authenticatedGet('/family/older-adults', data.family, 'family_older_adults');
-  authenticatedGet('/family/incidents', data.family, 'family_incidents');
+  const token = tokenFor(data.family);
+  authenticatedGet('/family/overview', token, 'family_overview');
+  authenticatedGet('/family/older-adults', token, 'family_older_adults');
+  authenticatedGet('/family/incidents', token, 'family_incidents');
   sleep(1);
 }

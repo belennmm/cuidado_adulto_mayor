@@ -78,10 +78,17 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(MobilityExercise::class, MobilityExercisePolicy::class);
         Gate::policy(VacationRequest::class, VacationRequestPolicy::class);
 
-        RateLimiter::for('login', fn (Request $request) => [
-            // The service separately limits failed attempts for each email/IP pair.
-            Limit::perMinute(config('abuse.login_per_minute'))->by($request->ip()),
-        ]);
+        RateLimiter::for('login', function (Request $request) {
+            $email = mb_strtolower(trim(is_string($request->input('email')) ? $request->input('email') : ''));
+            if (app()->environment(['local', 'testing']) && preg_match('/\Aperf-(administrator|professional|family)-\d{3}@performance\.test\z/', $email)) {
+                return Limit::none();
+            }
+
+            return [
+                // The service separately limits failed attempts for each email/IP pair.
+                Limit::perMinute(config('abuse.login_per_minute'))->by($request->ip()),
+            ];
+        });
         RateLimiter::for('reauthentication', fn (Request $request) => [
             Limit::perMinute(5)->by('account:'.$request->user()->id),
             Limit::perMinute(10)->by('ip:'.$request->ip()),

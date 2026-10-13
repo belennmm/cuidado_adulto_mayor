@@ -16,7 +16,7 @@ final class SeedCredentials
     public static function password(string $key): string
     {
         self::guard();
-        $environment = ['demo' => 'DEMO_SEED_PASSWORD', 'scan_admin' => 'SECURITY_SCAN_ADMIN_PASSWORD', 'scan_professional' => 'SECURITY_SCAN_PROFESSIONAL_PASSWORD', 'scan_family' => 'SECURITY_SCAN_FAMILY_PASSWORD', 'performance' => 'PERFORMANCE_SEED_PASSWORD'];
+        $environment = ['demo' => 'DEMO_SEED_PASSWORD', 'scan_admin' => 'SECURITY_SCAN_ADMIN_PASSWORD', 'scan_professional' => 'SECURITY_SCAN_PROFESSIONAL_PASSWORD', 'scan_family' => 'SECURITY_SCAN_FAMILY_PASSWORD', 'performance' => 'PERFORMANCE_SEED_PASSWORD', 'performance_admin' => 'PERFORMANCE_ADMIN_PASSWORD', 'performance_professional' => 'PERFORMANCE_PROFESSIONAL_PASSWORD', 'performance_family' => 'PERFORMANCE_FAMILY_PASSWORD'];
         $password = getenv($environment[$key]) ?: config('seeding.passwords.'.$key) ?: Str::password(32);
         PasswordPolicy::validate($password);
 
