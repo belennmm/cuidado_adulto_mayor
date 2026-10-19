@@ -55,6 +55,37 @@
     })
   }
 
+  function normalizePath(pathname) {
+    return pathname.replace(/\/+$/, "")
+  }
+
+  function setActiveRoute(links) {
+    const currentPath = normalizePath(window.location.pathname)
+    const currentFile = currentPath.split("/").pop()
+    let matchedLink = null
+
+    for (const link of links) {
+      const href = link.getAttribute("href")
+      if (!href || href === "#") continue
+
+      try {
+        const url = new URL(href, window.location.href)
+        const linkFile = url.pathname.split("/").pop()
+
+        if (normalizePath(url.pathname) === currentPath || linkFile === currentFile) {
+          matchedLink = link
+          break
+        }
+      } catch {
+        // Ignore malformed links and preserve the active option from the markup.
+      }
+    }
+
+    if (!matchedLink) return
+
+    links.forEach((link) => link.classList.toggle("active", link === matchedLink))
+  }
+
   function setAriaCurrentActiveLinks() {
     const links = document.querySelectorAll("aside.sidebar a.nav-icon[href]")
     links.forEach((link) => {
@@ -128,6 +159,7 @@
     })
 
     enhanceLogoutTriggers()
+    setActiveRoute(links)
     setAriaCurrentActiveLinks()
     initializeSidebarHoverEvents()
   })
