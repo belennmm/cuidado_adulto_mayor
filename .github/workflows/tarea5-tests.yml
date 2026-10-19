@@ -63,7 +63,7 @@ jobs:
         run: node tests/automation/run.mjs full
       - name: Conservar evidencia incluso si hay fallos
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tarea5-backend-${{ github.run_id }}-${{ env.PHASE }}
           path: tests/automation/ci-reports/
@@ -94,7 +94,7 @@ jobs:
         run: npm test -- --reporter=default --reporter=junit --outputFile=../tests/automation/ci-reports/frontend.xml
       - name: Conservar reporte del frontend
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tarea5-frontend-${{ github.run_id }}
           path: tests/automation/ci-reports/frontend.xml
