@@ -1,0 +1,61 @@
+:root {
+  --sidebar-expanded-width: 240px;
+  --sidebar-motion-duration: 220ms;
+  --sidebar-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.sidebar {
+  overflow-x: hidden;
+  transition:
+    width var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    box-shadow var(--sidebar-motion-duration) var(--sidebar-motion-easing);
+  will-change: width;
+}
+
+.sidebar.is-expanded {
+  width: var(--sidebar-expanded-width);
+  box-shadow: 8px 0 24px rgba(15, 23, 42, 0.08);
+}
+
+.sidebar .nav-icon {
+  flex-shrink: 0;
+  gap: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    width var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    padding var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    background-color var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    color var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    box-shadow var(--sidebar-motion-duration) var(--sidebar-motion-easing);
+}
+
+.sidebar.is-expanded .nav-icon {
+  width: calc(100% - 24px);
+  padding: 0 14px;
+  justify-content: flex-start;
+}
+
+.sidebar.is-expanded .nav-icon > .sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 140ms ease 80ms;
+}
+
+.sidebar.is-collapsed .nav-icon > .sr-only {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar .nav-icon,
+  .sidebar.is-expanded .nav-icon > .sr-only {
+    transition-duration: 0.01ms;
+  }
+}
