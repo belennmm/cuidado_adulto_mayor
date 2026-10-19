@@ -66,6 +66,31 @@
     })
   }
 
+  function initializeSidebarHoverEvents() {
+    const sidebar = document.querySelector("aside.sidebar")
+    if (!sidebar || sidebar.dataset.hoverEventsInitialized === "true") return
+
+    sidebar.dataset.hoverEventsInitialized = "true"
+
+    sidebar.addEventListener("mouseenter", () => {
+      sidebar.dispatchEvent(
+        new CustomEvent("sidebar:expand-request", {
+          bubbles: true,
+          detail: { source: "mouse" },
+        }),
+      )
+    })
+
+    sidebar.addEventListener("mouseleave", () => {
+      sidebar.dispatchEvent(
+        new CustomEvent("sidebar:collapse-request", {
+          bubbles: true,
+          detail: { source: "mouse" },
+        }),
+      )
+    })
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const links = document.querySelectorAll("aside.sidebar a.nav-icon[href]")
 
@@ -77,6 +102,7 @@
 
     enhanceLogoutTriggers()
     setAriaCurrentActiveLinks()
+    initializeSidebarHoverEvents()
   })
 })()
 
