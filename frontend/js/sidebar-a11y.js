@@ -66,11 +66,38 @@
     })
   }
 
+  function setSidebarState(sidebar, state, source) {
+    const isExpanded = state === "expanded"
+    const previousState = sidebar.dataset.state
+
+    sidebar.dataset.state = state
+    sidebar.classList.toggle("is-expanded", isExpanded)
+    sidebar.classList.toggle("is-collapsed", !isExpanded)
+
+    if (previousState === state) return
+
+    sidebar.dispatchEvent(
+      new CustomEvent("sidebar:statechange", {
+        bubbles: true,
+        detail: { state, source },
+      }),
+    )
+  }
+
   function initializeSidebarHoverEvents() {
     const sidebar = document.querySelector("aside.sidebar")
     if (!sidebar || sidebar.dataset.hoverEventsInitialized === "true") return
 
     sidebar.dataset.hoverEventsInitialized = "true"
+    setSidebarState(sidebar, "collapsed", "initialization")
+
+    sidebar.addEventListener("sidebar:expand-request", (event) => {
+      setSidebarState(sidebar, "expanded", event.detail?.source || "unknown")
+    })
+
+    sidebar.addEventListener("sidebar:collapse-request", (event) => {
+      setSidebarState(sidebar, "collapsed", event.detail?.source || "unknown")
+    })
 
     sidebar.addEventListener("mouseenter", () => {
       sidebar.dispatchEvent(
