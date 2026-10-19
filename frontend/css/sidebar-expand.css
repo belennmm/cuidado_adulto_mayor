@@ -53,6 +53,13 @@
   background: rgba(29, 124, 242, 0.12);
 }
 
+.sidebar .nav-icon:focus-visible,
+.sidebar-toggle:focus-visible {
+  outline: 3px solid rgba(29, 124, 242, 0.55);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-background-card, #ffffff);
+}
+
 .sidebar + main {
   flex: 0 0 auto;
   min-width: 0;

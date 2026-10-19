@@ -38,6 +38,17 @@
     link.appendChild(span)
   }
 
+  function enhanceSidebarLandmarks(sidebar) {
+    if (!sidebar.getAttribute("aria-label")) {
+      sidebar.setAttribute("aria-label", "Navegación principal")
+    }
+
+    const navigation = sidebar.querySelector(".sidebar-nav")
+    if (navigation && !navigation.getAttribute("aria-label")) {
+      navigation.setAttribute("aria-label", "Menú principal")
+    }
+  }
+
   function enhanceLogoutTriggers() {
     document.querySelectorAll("a.logout-trigger").forEach((trigger) => {
       const label = getLabel(trigger) || "Cerrar sesión"
@@ -206,6 +217,57 @@
         }),
       )
     })
+
+    sidebar.addEventListener("focusin", () => {
+      sidebar.dispatchEvent(
+        new CustomEvent("sidebar:expand-request", {
+          bubbles: true,
+          detail: { source: "keyboard" },
+        }),
+      )
+    })
+
+    sidebar.addEventListener("focusout", (event) => {
+      if (manuallyExpanded || sidebar.contains(event.relatedTarget)) return
+
+      sidebar.dispatchEvent(
+        new CustomEvent("sidebar:collapse-request", {
+          bubbles: true,
+          detail: { source: "keyboard" },
+        }),
+      )
+    })
+
+    sidebar.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        manuallyExpanded = false
+        sidebar.dispatchEvent(
+          new CustomEvent("sidebar:collapse-request", {
+            bubbles: true,
+            detail: { source: "keyboard" },
+          }),
+        )
+        return
+      }
+
+      if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return
+
+      const currentLink = event.target.closest?.("a.nav-icon")
+      if (!currentLink) return
+
+      const links = Array.from(sidebar.querySelectorAll("a.nav-icon[href]"))
+      const currentIndex = links.indexOf(currentLink)
+      if (currentIndex === -1) return
+
+      event.preventDefault()
+
+      if (event.key === "Home") links[0]?.focus()
+      if (event.key === "End") links[links.length - 1]?.focus()
+      if (event.key === "ArrowDown") links[(currentIndex + 1) % links.length]?.focus()
+      if (event.key === "ArrowUp") {
+        links[(currentIndex - 1 + links.length) % links.length]?.focus()
+      }
+    })
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -215,8 +277,13 @@
       const label = getLabel(link)
       ensureLabel(link, label)
       ensureSrOnlyText(link, label)
+      link.querySelectorAll("i, svg").forEach((icon) => {
+        icon.setAttribute("aria-hidden", "true")
+      })
     })
 
+    const sidebar = document.querySelector("aside.sidebar")
+    if (sidebar) enhanceSidebarLandmarks(sidebar)
     enhanceLogoutTriggers()
     setActiveRoute(links)
     setAriaCurrentActiveLinks()
