@@ -97,6 +97,45 @@
     })
   }
 
+  function createSidebarToggle(sidebar) {
+    const sidebarTop = sidebar.querySelector(".sidebar-top")
+    if (!sidebarTop) return null
+
+    if (!sidebar.id) sidebar.id = "main-sidebar"
+
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "sidebar-toggle"
+    button.setAttribute("aria-controls", sidebar.id)
+
+    const icon = document.createElement("i")
+    icon.className = "bx bx-menu"
+    icon.setAttribute("aria-hidden", "true")
+
+    const label = document.createElement("span")
+    label.className = "sr-only"
+
+    button.append(icon, label)
+    sidebarTop.appendChild(button)
+    return button
+  }
+
+  function updateSidebarToggle(sidebar, isExpanded) {
+    const button = sidebar.querySelector(".sidebar-toggle")
+    if (!button) return
+
+    const label = isExpanded
+      ? "Contraer menú de navegación"
+      : "Expandir menú de navegación"
+
+    button.setAttribute("aria-expanded", String(isExpanded))
+    button.setAttribute("aria-label", label)
+    button.querySelector(".sr-only").textContent = label
+
+    const icon = button.querySelector("i")
+    icon.className = isExpanded ? "bx bx-chevron-left" : "bx bx-menu"
+  }
+
   function setSidebarState(sidebar, state, source) {
     const isExpanded = state === "expanded"
     const previousState = sidebar.dataset.state
@@ -104,6 +143,7 @@
     sidebar.dataset.state = state
     sidebar.classList.toggle("is-expanded", isExpanded)
     sidebar.classList.toggle("is-collapsed", !isExpanded)
+    updateSidebarToggle(sidebar, isExpanded)
 
     if (previousState === state) return
 
@@ -120,14 +160,31 @@
     if (!sidebar || sidebar.dataset.hoverEventsInitialized === "true") return
 
     sidebar.dataset.hoverEventsInitialized = "true"
+    const toggleButton = createSidebarToggle(sidebar)
+    let manuallyExpanded = false
     setSidebarState(sidebar, "collapsed", "initialization")
 
     sidebar.addEventListener("sidebar:expand-request", (event) => {
+      if (event.detail?.source === "manual") manuallyExpanded = true
       setSidebarState(sidebar, "expanded", event.detail?.source || "unknown")
     })
 
     sidebar.addEventListener("sidebar:collapse-request", (event) => {
+      if (event.detail?.source === "manual") manuallyExpanded = false
       setSidebarState(sidebar, "collapsed", event.detail?.source || "unknown")
+    })
+
+    toggleButton?.addEventListener("click", () => {
+      const shouldExpand = sidebar.dataset.state !== "expanded"
+      sidebar.dispatchEvent(
+        new CustomEvent(
+          shouldExpand ? "sidebar:expand-request" : "sidebar:collapse-request",
+          {
+            bubbles: true,
+            detail: { source: "manual" },
+          },
+        ),
+      )
     })
 
     sidebar.addEventListener("mouseenter", () => {
@@ -140,6 +197,8 @@
     })
 
     sidebar.addEventListener("mouseleave", () => {
+      if (manuallyExpanded) return
+
       sidebar.dispatchEvent(
         new CustomEvent("sidebar:collapse-request", {
           bubbles: true,
