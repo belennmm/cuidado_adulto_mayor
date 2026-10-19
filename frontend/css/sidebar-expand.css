@@ -1,4 +1,5 @@
 :root {
+  --sidebar-collapsed-width: 84px;
   --sidebar-expanded-width: 240px;
   --sidebar-motion-duration: 220ms;
   --sidebar-motion-easing: cubic-bezier(0.2, 0, 0, 1);
@@ -12,9 +13,24 @@
   will-change: width;
 }
 
+.sidebar.is-collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
 .sidebar.is-expanded {
   width: var(--sidebar-expanded-width);
   box-shadow: 8px 0 24px rgba(15, 23, 42, 0.08);
+}
+
+.sidebar + main {
+  flex: 0 0 auto;
+  min-width: 0;
+  width: calc(100% - var(--sidebar-collapsed-width));
+  transition: width var(--sidebar-motion-duration) var(--sidebar-motion-easing);
+}
+
+.sidebar.is-expanded + main {
+  width: calc(100% - var(--sidebar-expanded-width));
 }
 
 .sidebar .nav-icon {
@@ -52,8 +68,27 @@
   opacity: 0;
 }
 
+@media screen and (max-width: 1100px) {
+  :root {
+    --sidebar-collapsed-width: 76px;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  :root {
+    --sidebar-collapsed-width: 72px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :root {
+    --sidebar-collapsed-width: 64px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
+  .sidebar + main,
   .sidebar .nav-icon,
   .sidebar.is-expanded .nav-icon > .sr-only {
     transition-duration: 0.01ms;
