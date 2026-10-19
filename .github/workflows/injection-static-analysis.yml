@@ -22,7 +22,7 @@ jobs:
           coverage: none
       - name: Scan runtime PHP without executing it
         run: php tests/security/php-sast.php
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - name: Install Semgrep
