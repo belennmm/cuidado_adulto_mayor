@@ -6,7 +6,7 @@
 |---|---|---|
 | 1 | SCRUM-1014 Generar un respaldo; SCRUM-1015 Intentar consultar sus incidentes | Respaldo cifrado y consulta de referencia anterior a la restauración. |
 | 2 | SCRUM-1016 Restaurarlo en un ambiente de prueba; SCRUM-1017 Comparar cantidades de registros | Scripts de restauración local y comparación de todas las tablas; prueba PostgreSQL sintética. Ver evidencia y límites abajo. |
-| 3 | SCRUM-1019 Validar usuarios, medicamentos, rutinas, incidentes y sus relaciones | Comprobación funcional y de relaciones después de recuperar. Pendiente. |
+| 3 | SCRUM-1019 Validar usuarios, medicamentos, rutinas, incidentes y sus relaciones | Validador de contenido y relaciones PostgreSQL, más prueba de modelos/API Laravel sobre copia SQLite recuperada. Ver evidencia y límites abajo. |
 
 La historia tiene cinco subtareas: el último bloque contiene una. Los commits y todas las operaciones de Git quedan a cargo del usuario.
 
@@ -122,4 +122,47 @@ El esquema sintético tiene seis tablas: usuarios (2), adultos (2), medicamentos
 
 Resultado local del bloque 2: **14 comprobaciones aprobadas** con PostgreSQL 18.3. Las seis tablas conservaron sus cantidades después de restaurar el archivo custom. Los errores de archivo inválido/truncado no dejaron tablas en el destino. El clúster temporal terminó detenido y eliminado.
 
-Se ejecutó en modo `transport-stub-no-encryption` porque no están instalados `age`/`age-keygen`. Está verificada la restauración PostgreSQL y la comparación de cantidades con datos sintéticos; queda pendiente repetir el recorrido con cifrado age real y con el respaldo de la aplicación preparado para la historia. SCRUM-1019 permanece pendiente para validar valores y relaciones de usuarios, medicamentos, rutinas e incidentes.
+Se ejecutó en modo `transport-stub-no-encryption` porque no están instalados `age`/`age-keygen`. Está verificada la restauración PostgreSQL y la comparación de cantidades con datos sintéticos; queda pendiente repetir el recorrido con cifrado age real y con el respaldo de la aplicación preparado para la historia. La validación adicional de valores y relaciones se describe en el bloque 3.
+
+## Bloque 3: validar valores y relaciones (SCRUM-1019)
+
+Mensaje sugerido para el último commit: `SCRUM-1019: validar datos y relaciones después de recuperar el respaldo`.
+
+`tools/validate-recovered-data.ps1` valida las nueve tablas de cuidado de `public`: `users`, `older_adults`, `medications`, `older_adult_medications`, `rutinas`, `incidents`, `routine_notes`, `medication_administrations` y `medication_acquisitions`. Requiere todas ellas y las columnas de relación actuales; un esquema incompleto termina con error. Las demás tablas siguen cubiertas por la comparación de cantidades del bloque 2.
+
+El validador comprueba 17 relaciones explícitas contra sus registros padre, incluso si se perdió la constraint de PostgreSQL. Distingue relaciones obligatorias de referencias que admiten NULL según las migraciones: por ejemplo, inventario sin adulto asignado o incidentes históricos sin reportante. No modifica registros ni repara relaciones automáticamente.
+
+Para detectar alteraciones sin cambiar cantidades, calcula SHA256 sobre todas las columnas de cada fila, ordenadas de forma determinista, además de metadatos de columnas y constraints. Esto incluye roles, aprobación, hashes de contraseña, dosis, horarios, actividades, notas y referencias. Normaliza la sesión a UTF-8 y UTC. El proceso consume las filas como un stream y no las imprime ni las incluye en el manifiesto; PostgreSQL realiza la ordenación, por lo que hay que dimensionar el tiempo y espacio temporal para bases grandes. Captura todo en una transacción de sólo lectura con una instantánea consistente.
+
+El manifiesto contiene únicamente cantidades, huellas y resultados de relaciones. Custodiarlo en almacenamiento restringido junto con la referencia del ensayo, fuera de los commits: aunque no contiene registros, sus huellas se derivan de datos sensibles. La coincidencia demuestra igualdad frente a esa referencia, no que el contenido original fuera correcto. La referencia debe provenir de la misma base y ventana de respaldo, sin escrituras concurrentes, y no regenerarse desde la copia que se quiere verificar.
+
+```powershell
+# Antes de respaldar: capturar la referencia con las escrituras de prueba detenidas.
+./tools/validate-recovered-data.ps1 @connection `
+  -DatabaseName cuidado_backup_test -Output ./tmp/integridad-origen.json
+
+# Después de restaurar: comparar valores, esquema y relaciones.
+./tools/validate-recovered-data.ps1 @connection `
+  -DatabaseName cuidado_restore_test_ensayo `
+  -Reference ./tmp/integridad-origen.json -Output ./tmp/integridad-recuperada.json
+```
+
+Sin `-Reference` se captura una referencia válida y se comprueban relaciones; **no demuestra conservación del contenido**. Con `-Reference` cualquier diferencia de contenido/esquema termina con error. Un manifiesto con versión incorrecta, tablas/relaciones duplicadas o faltantes, cantidades inválidas, huellas mal formadas o relaciones inválidas también se rechaza. No se sobrescriben manifiestos ni se publica uno nuevo cuando falla la validación. La comparación presupone herramientas/esquema PostgreSQL compatibles; no sirve como comparación de representaciones entre motores o versiones con serialización distinta.
+
+### Pruebas del bloque 3
+
+```powershell
+# Desde la raíz: dump/restauración PostgreSQL reales y validación de contenido.
+./tests/backup/test-recovery.ps1 -ValidateCareData
+
+# Desde backend: migraciones, modelos y API reales sobre una copia SQLite.
+php vendor/phpunit/phpunit/phpunit --filter 'RecoveredCareDataTest|BackupIncidentBaselineTest'
+```
+
+La variante PostgreSQL utiliza el mismo clúster temporal y limpieza del bloque 2. Su fixture tiene las nueve tablas con nombres, referencias y valores sintéticos representativos; no sustituye al esquema completo Laravel. Verifica que después de restaurar coincidan contenido y esquema, acepta NULL permitidos y comprueba diez alteraciones independientes que mantienen las cantidades: contraseña, rol, medicamento, dosis, rutina, incidente, vínculo con otro adulto existente, nota, administración y adquisición. Además detecta huérfanos tras quitar una foreign key y relaciones obligatorias nulas tras quitar `NOT NULL`.
+
+`RecoveredCareDataTest` complementa esa prueba usando las migraciones completas de Laravel en SQLite. Genera datos sintéticos, obtiene una copia real mediante `VACUUM INTO`, cambia la fuente para comprobar que la copia es independiente y conecta los modelos/API a la base recuperada. Compara íntegramente las nueve tablas, ejecuta `foreign_key_check`, verifica el hash de contraseña y los vínculos entre cuidadores, adultos, medicamentos, rutinas, incidentes, notas, administraciones y adquisiciones. Comprueba consultas administrativas, filtrado de incidentes/rutinas del profesional y HTTP 404 para un expediente ajeno al familiar. Restablece la conexión original y elimina la copia temporal al terminar. Esta prueba SQLite no representa una restauración del archivo PostgreSQL.
+
+Evidencia local del bloque 3: **15 comprobaciones PostgreSQL aprobadas**; **4 pruebas PHPUnit y 55 aserciones aprobadas**, incluyendo la consulta de referencia del bloque 1. Se verificó texto con acentos y se fijó UTF-8 explícito en las consultas compartidas. Las pruebas se ejecutaron fuera del sandbox por las restricciones ya identificadas de procesos nativos y lectura PHP. No se ejecutaron operaciones de Git.
+
+Los tres bloques tienen implementación y pruebas sintéticas locales. Para cerrar operativamente la historia sigue pendiente ejecutar el recorrido con `age` real y el respaldo preparado de la aplicación: conservar las referencias antes de respaldar, restaurar en la instancia aislada, comparar cantidades y validar integridad. No se ha probado una recuperación de producción ni la recuperación de archivos/configuración externos a PostgreSQL.

@@ -1,5 +1,8 @@
 #requires -Version 7.4
-param([string]$PostgresBin = 'C:/Program Files/PostgreSQL/18/bin')
+param(
+    [string]$PostgresBin = 'C:/Program Files/PostgreSQL/18/bin',
+    [switch]$ValidateCareData
+)
 $ErrorActionPreference = 'Stop'
 $tools = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../tools'))
 . (Join-Path $tools 'recovery-common.ps1')
@@ -116,9 +119,19 @@ INSERT INTO incidents VALUES (1, 1), (2, 1), (3, 2), (4, 2);
 CREATE SCHEMA "Quoted schema";
 CREATE TABLE "Quoted schema"."Empty.Table" (id integer);
 '@
+    $expectedTableCount = 6
+    if ($ValidateCareData) {
+        $fixture = & (Join-Path $PSScriptRoot 'care-validation-fixture.ps1')
+        $expectedTableCount = 9
+    }
+    Write-Host 'Creando las tablas sintéticas de referencia...'
     [void](Invoke-RecoveryQuery @connection -DatabaseName cuidado_backup_fixture -Sql $fixture)
     $reference = Join-Path $testRoot 'reference.json'
     & (Join-Path $tools 'capture-record-counts.ps1') @connection -DatabaseName cuidado_backup_fixture -Output $reference
+    if ($ValidateCareData) {
+        $careReference = Join-Path $testRoot 'care-reference.json'
+        & (Join-Path $tools 'validate-recovered-data.ps1') @connection -DatabaseName cuidado_backup_fixture -Output $careReference
+    }
     $plain = Join-Path $testRoot 'synthetic.dump'
     [void](Invoke-TestNative 'pg_dump' @('--host', '127.0.0.1', '--port', "$port", '--username', 'recovery_test_owner', '--no-password', '--format=custom', '--no-owner', '--no-acl', '--file', $plain, 'cuidado_backup_fixture'))
     $backup = Join-Path $testRoot 'synthetic.age'
@@ -133,7 +146,11 @@ CREATE TABLE "Quoted schema"."Empty.Table" (id integer);
     $restored = Join-Path $testRoot 'restored.json'
     & (Join-Path $tools 'capture-record-counts.ps1') @connection -DatabaseName cuidado_restore_test_roundtrip -Output $restored
     $comparison = @(& (Join-Path $tools 'compare-record-counts.ps1') -Reference $reference -Restored $restored)
-    if ($comparison.Count -ne 6 -or @($comparison | Where-Object status -NE equal).Count -ne 0) { throw 'Conteos incorrectos.' }
+    if ($comparison.Count -ne $expectedTableCount -or @($comparison | Where-Object status -NE equal).Count -ne 0) { throw 'Conteos incorrectos.' }
+    if ($ValidateCareData) {
+        & (Join-Path $PSScriptRoot 'test-care-validation.ps1') -Connection $connection -TestRoot $testRoot -Reference $careReference -Tools $tools
+        return
+    }
     $checks.Add('restauración PostgreSQL y 6 tablas iguales, incluida tabla vacía con identificadores especiales')
     Assert-Rejected 'rechazo de base ocupada' { & (Join-Path $tools 'restore-test-backup.ps1') @restoreArgs -DatabaseName cuidado_restore_test_roundtrip } 'debe estar vacía'
     $badHash = $restoreArgs.Clone()

@@ -15,10 +15,14 @@ function Invoke-RecoveryQuery {
     param([string]$Server, [int]$Port, [string]$Username, [string]$DatabaseName, [string]$Sql)
     $process = New-RecoveryProcess 'psql' @(
         '--host', $Server, '--port', "$Port", '--username', $Username, '--dbname', $DatabaseName,
-        '--no-password', '--no-psqlrc', '--quiet', '--tuples-only', '--no-align', '--set', 'ON_ERROR_STOP=1'
+        '--no-password', '--no-psqlrc', '--quiet', '--tuples-only', '--no-align', '--set', 'ON_ERROR_STOP=1', '--set', 'VERBOSITY=sqlstate'
     )
     $process.StartInfo.RedirectStandardInput = $true
     $process.StartInfo.RedirectStandardOutput = $true
+    $process.StartInfo.StandardInputEncoding = [Text.UTF8Encoding]::new($false)
+    $process.StartInfo.StandardOutputEncoding = [Text.Encoding]::UTF8
+    $process.StartInfo.Environment['PGCLIENTENCODING'] = 'UTF8'
+    $sqlState = ''
     try {
         [void]$process.Start()
         $errors = $process.StandardError.ReadToEndAsync()
@@ -26,12 +30,15 @@ function Invoke-RecoveryQuery {
         $process.StandardInput.Write($Sql)
         $process.StandardInput.Close()
         $process.WaitForExit()
-        [void]$errors.GetAwaiter().GetResult()
+        $errorOutput = $errors.GetAwaiter().GetResult()
         $result = $output.GetAwaiter().GetResult()
-        if ($process.ExitCode -ne 0) { throw 'Consulta fallida.' }
+        if ($process.ExitCode -ne 0) {
+            if ($errorOutput -match '(?:ERROR|FATAL):\s+([0-9A-Z]{5})\b') { $sqlState = " SQLSTATE: $($Matches[1])." }
+            throw 'Consulta fallida.'
+        }
         return $result.Trim()
     } catch {
-        throw 'No se pudo consultar PostgreSQL; revisar conexión y permisos. No se muestran datos de la conexión.'
+        throw "No se pudo consultar PostgreSQL; revisar conexión y permisos.$sqlState No se muestran datos de la conexión."
     } finally {
         $process.Dispose()
     }
