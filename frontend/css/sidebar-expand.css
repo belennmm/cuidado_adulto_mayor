@@ -1,0 +1,140 @@
+:root {
+  --sidebar-collapsed-width: 84px;
+  --sidebar-expanded-width: 240px;
+  --sidebar-motion-duration: 220ms;
+  --sidebar-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.sidebar {
+  overflow-x: hidden;
+  transition:
+    width var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    box-shadow var(--sidebar-motion-duration) var(--sidebar-motion-easing);
+  will-change: width;
+}
+
+.sidebar.is-collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+.sidebar.is-expanded {
+  width: var(--sidebar-expanded-width);
+  box-shadow: 8px 0 24px rgba(15, 23, 42, 0.08);
+}
+
+.sidebar .sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 12px;
+}
+
+.sidebar.is-expanded .sidebar-top {
+  justify-content: flex-end;
+}
+
+.sidebar-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-primary-strong, #1d7cf2);
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.sidebar-toggle:active {
+  background: rgba(29, 124, 242, 0.12);
+}
+
+.sidebar .nav-icon:focus-visible,
+.sidebar-toggle:focus-visible {
+  outline: 3px solid rgba(29, 124, 242, 0.55);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-background-card, #ffffff);
+}
+
+.sidebar + main {
+  flex: 0 0 auto;
+  min-width: 0;
+  width: calc(100% - var(--sidebar-collapsed-width));
+  transition: width var(--sidebar-motion-duration) var(--sidebar-motion-easing);
+}
+
+.sidebar.is-expanded + main {
+  width: calc(100% - var(--sidebar-expanded-width));
+}
+
+.sidebar .nav-icon {
+  flex-shrink: 0;
+  gap: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    width var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    padding var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    background-color var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    color var(--sidebar-motion-duration) var(--sidebar-motion-easing),
+    box-shadow var(--sidebar-motion-duration) var(--sidebar-motion-easing);
+}
+
+.sidebar.is-expanded .nav-icon {
+  width: calc(100% - 24px);
+  padding: 0 14px;
+  justify-content: flex-start;
+}
+
+.sidebar.is-expanded .nav-icon > .sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 140ms ease 80ms;
+}
+
+.sidebar.is-collapsed .nav-icon > .sr-only {
+  opacity: 0;
+}
+
+@media screen and (max-width: 1100px) {
+  :root {
+    --sidebar-collapsed-width: 76px;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  :root {
+    --sidebar-collapsed-width: 72px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :root {
+    --sidebar-collapsed-width: 64px;
+  }
+}
+
+@media (hover: none), (any-pointer: coarse) {
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar + main,
+  .sidebar .nav-icon,
+  .sidebar.is-expanded .nav-icon > .sr-only {
+    transition-duration: 0.01ms;
+  }
+}
