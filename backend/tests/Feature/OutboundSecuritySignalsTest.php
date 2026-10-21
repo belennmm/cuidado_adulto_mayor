@@ -134,7 +134,10 @@ class OutboundSecuritySignalsTest extends TestCase
         Route::get('api/outbound-test-database-failure', function () {
             throw new \Illuminate\Database\QueryException('sqlite', 'SELECT private-clinical-data', ['private-password'], new \PDOException('private-db-host'));
         });
-        Log::shouldReceive('error')->once()->with('API request failed.', ['exception_type' => \Illuminate\Database\QueryException::class]);
+        Log::shouldReceive('error')->once()->with('API request failed.', \Mockery::on(fn (array $context) =>
+            count($context) === 2
+            && ($context['exception_type'] ?? null) === \Illuminate\Database\QueryException::class
+            && \Illuminate\Support\Str::isUuid($context['correlation_id'] ?? null)));
 
         $response = $this->getJson('/api/outbound-test-database-failure')->assertStatus(500);
 
@@ -150,7 +153,10 @@ class OutboundSecuritySignalsTest extends TestCase
         Route::get('api/outbound-test-storage-failure', function () {
             throw new \Illuminate\Contracts\Filesystem\FileNotFoundException('private-storage-path');
         });
-        Log::shouldReceive('error')->once()->with('API request failed.', ['exception_type' => \Illuminate\Contracts\Filesystem\FileNotFoundException::class]);
+        Log::shouldReceive('error')->once()->with('API request failed.', \Mockery::on(fn (array $context) =>
+            count($context) === 2
+            && ($context['exception_type'] ?? null) === \Illuminate\Contracts\Filesystem\FileNotFoundException::class
+            && \Illuminate\Support\Str::isUuid($context['correlation_id'] ?? null)));
 
         $response = $this->getJson('/api/outbound-test-storage-failure')->assertStatus(500);
 

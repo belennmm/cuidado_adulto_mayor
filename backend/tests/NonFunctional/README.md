@@ -43,3 +43,9 @@ configuraciones de debug y encabezados Accept. Incluye el endpoint real de
 incidentes con un servicio simulado que falla y comprueba que los datos previos
 se conserven. El procedimiento y el alcance están en
 [SCRUM-1020/1021](../../../docs/ERRORES_API_SCRUM_1018.md).
+
+`Security/ApiErrorLogPrivacyTest.php` completa SCRUM-1022/1023: inspecciona
+archivos temporales reales del log operativo y la auditoría firmada ante errores
+API. Comprueba correlación y ausencia de marcadores sintéticos de datos clínicos,
+credenciales, SQL y trazas en respuestas y registros. Los archivos de cada ensayo
+se eliminan al finalizar; no utiliza registros históricos de usuarios.

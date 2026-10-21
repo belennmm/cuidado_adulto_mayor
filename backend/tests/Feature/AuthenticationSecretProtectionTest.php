@@ -74,6 +74,9 @@ class AuthenticationSecretProtectionTest extends TestCase
         Log::spy();
         $response = $this->getJson('/api/security-secret-test')->assertStatus(500);
         $this->assertSame(['message' => 'Error interno del servidor.'], $response->json());
-        Log::shouldHaveReceived('error')->once()->with('API request failed.', ['exception_type' => \RuntimeException::class]);
+        Log::shouldHaveReceived('error')->once()->with('API request failed.', [
+            'exception_type' => \RuntimeException::class,
+            'correlation_id' => $response->headers->get('X-Correlation-ID'),
+        ]);
     }
 }
