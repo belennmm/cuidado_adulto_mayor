@@ -51,8 +51,9 @@ describe("CuidadoApi", () => {
 
   it("notifica la expiración de sesión desde el cliente HTTP", async () => {
     const expire = vi.fn()
+    const clearSession = vi.fn()
     const expired = vi.fn()
-    window.AuthSession = { expire }
+    window.AuthSession = { clearSession, expire }
     window.addEventListener("cuidado:session-expired", expired, { once: true })
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: false,
@@ -64,6 +65,7 @@ describe("CuidadoApi", () => {
 
     await expect(window.CuidadoApi.fetchJson("/me", { expectedRoles: ["admin"] })).rejects.toMatchObject({ status: 401 })
     expect(expire).toHaveBeenCalledOnce()
+    expect(clearSession).toHaveBeenCalledOnce()
     expect(expired).toHaveBeenCalledOnce()
   })
 
