@@ -146,6 +146,10 @@ Los seeders no se ejecutan por defecto. Con `RUN_SEEDERS=true`, el entrypoint ll
 
 ## Pruebas
 
+El procedimiento de respaldo y consulta previa a la recuperación está en
+[SCRUM-1013: recuperación mediante respaldo](docs/RECUPERACION_RESPALDO_SCRUM_1013.md),
+con requisitos, pruebas y estado de la evidencia de restauración.
+
 Los comandos de esta sección son para desarrollo/testing, no para la base de producción. No se necesita PostgreSQL para la suite configurada: `backend/phpunit.xml` fuerza SQLite en memoria y contiene suites `Unit`, `Feature` y `NonFunctional`.
 
 ### Backend en contenedor

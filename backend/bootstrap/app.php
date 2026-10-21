@@ -99,7 +99,14 @@ return Application::configure(basePath: dirname(__DIR__))
                     || $exception instanceof League\Flysystem\FilesystemException) {
                     app(App\Services\SecurityInfrastructureAudit::class)->record('storage');
                 }
-                Log::error('API request failed.', ['exception_type' => $exception::class]);
+                // Los nombres de clases anónimas incluyen archivo y línea internos.
+                $exceptionType = (new ReflectionClass($exception))->isAnonymous()
+                    ? get_parent_class($exception)
+                    : $exception::class;
+                Log::error('API request failed.', [
+                    'exception_type' => $exceptionType,
+                    'correlation_id' => request()->attributes->get('correlation_id'),
+                ]);
 
                 return false;
             }
