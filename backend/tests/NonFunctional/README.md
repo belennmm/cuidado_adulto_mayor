@@ -34,3 +34,12 @@ Las pruebas especializadas que necesitan herramientas externas se mantienen sepa
 - `Reliability`: reintentos, concurrencia, idempotencia y recuperacion ante fallos.
 - `Security`: aislamiento de datos, autorizacion y ausencia de informacion sensible.
 - `Accessibility`: navegacion por teclado, zoom y tecnologias de asistencia.
+
+## Errores del servidor (SCRUM-1018)
+
+`Reliability/ApiServerErrorResponseTest.php` provoca fallos controlados dentro de
+PHPUnit e inspecciona el contrato HTTP 500 con distintos tipos de error,
+configuraciones de debug y encabezados Accept. Incluye el endpoint real de
+incidentes con un servicio simulado que falla y comprueba que los datos previos
+se conserven. El procedimiento y el alcance están en
+[SCRUM-1020/1021](../../../docs/ERRORES_API_SCRUM_1018.md).
