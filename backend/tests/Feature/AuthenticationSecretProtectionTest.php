@@ -45,6 +45,32 @@ class AuthenticationSecretProtectionTest extends TestCase
         $this->assertConfiguredChannelsRedactSecrets();
     }
 
+    public function test_logging_processor_redacts_clinical_fields_at_any_depth(): void
+    {
+        $handler = new TestHandler;
+        $logger = new Logger(new Monolog('clinical-privacy', [$handler]));
+        (new RedactSecrets)($logger);
+        $clinicalValues = [
+            'diagnosis' => 'DIAGNOSIS_CANARY',
+            'medical_history' => 'HISTORY_CANARY',
+            'allergies' => 'ALLERGY_CANARY',
+            'medications' => [['name' => 'MEDICATION_CANARY', 'dosage' => 'DOSAGE_CANARY']],
+            'care' => ['notes' => 'NOTES_CANARY', 'observations' => 'OBSERVATION_CANARY'],
+        ];
+
+        $logger->info('Clinical operation completed.', ['patient_id' => 42, 'record' => $clinicalValues]);
+
+        $record = $handler->getRecords()[0];
+        $encoded = json_encode($record->context, JSON_THROW_ON_ERROR);
+        foreach (['DIAGNOSIS_CANARY', 'HISTORY_CANARY', 'ALLERGY_CANARY', 'MEDICATION_CANARY',
+            'DOSAGE_CANARY', 'NOTES_CANARY', 'OBSERVATION_CANARY'] as $value) {
+            $this->assertStringNotContainsString($value, $encoded);
+        }
+        $this->assertSame(42, $record->context['patient_id']);
+        $this->assertSame('[REDACTED]', $record->context['record']['diagnosis']);
+        $this->assertSame('[REDACTED]', $record->context['record']['medications']);
+    }
+
     public function test_framework_channels_without_taps_do_not_break_configured_channel_checks(): void
     {
         config(['logging.channels.framework-diagnostic' => [

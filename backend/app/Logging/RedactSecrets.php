@@ -7,9 +7,19 @@ use Monolog\LogRecord;
 
 final class RedactSecrets
 {
+    /**
+     * Credentials, request bodies and clinical fields must never reach a log
+     * handler. Keep the decision here so every configured channel applies the
+     * same policy, including channels added for production deployments.
+     */
     public static function sensitive(string $key): bool
     {
-        return (bool) preg_match('/password|token|secret|authorization|cookie|challenge|(?:^|_)code(?:s|$)|bindings|payload/i', $key);
+        return (bool) preg_match(
+            '/password|token|secret|authorization|cookie|challenge|(?:^|_)code(?:s|$)|bindings|payload|'.
+            'diagnos|clinical|medical_history|allerg|medication|medicine|dosage|prescription|'.
+            '(?:^|_)(?:notes?|observations?|symptoms?|conditions?|treatments?)(?:_|$)/i',
+            $key,
+        );
     }
 
     public static function text(string $text): string
