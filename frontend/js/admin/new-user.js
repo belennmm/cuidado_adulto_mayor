@@ -18,46 +18,19 @@ const userForm = window.AdminUserForm.create({
 let pendingRequests = []
 
 function navigateTo(url) {
-  if (window.navigateWithLoading) {
-    window.navigateWithLoading(url)
-    return
-  }
-
-  window.location.assign(url)
+  window.CuidadoUi.navigate(url)
 }
 
-async function showPopup(message, options = {}) {
-  if (window.showAdminAlert) {
-    await window.showAdminAlert(message, options)
-    return
-  }
-
-  console.warn(message)
-}
-
-async function confirmPopup(message, options = {}) {
-  if (window.showAdminConfirm) {
-    return window.showAdminConfirm(message, options)
-  }
-
-  console.warn(message, options)
-  return false
-}
+const showPopup = window.CuidadoUi.notify
+const confirmPopup = window.CuidadoUi.confirm
 
 const isApproved = window.CuidadoForms.isApproved
 
 const getRoleLabel = window.CuidadoUi.getRoleLabel
 
-const escapeHtml = window.CuidadoUi.escapeHtml
-
 function renderRequestState(message, className = "empty-requests") {
   if (!requestList) return
-
-  requestList.innerHTML = `
-    <div class="${className}">
-      ${escapeHtml(message)}
-    </div>
-  `
+  requestList.replaceChildren(window.CuidadoUi.element("div", className, message))
 }
 
 function setFormDisabled(disabled) {

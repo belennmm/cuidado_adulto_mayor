@@ -29,6 +29,11 @@
     sessionStorage.removeItem(userKey)
     resolved = true
   }
+  function expire() {
+    const hadSession = Boolean(getUser())
+    clearSession()
+    return hadSession
+  }
   function hasSession(expectedRoles = []) {
     // Pending identity is not an authorization decision: every operation still goes to the server.
     return !resolved || Boolean(getUser(expectedRoles))
@@ -45,5 +50,5 @@
     return pending
   }
   purgeLegacyCredentials()
-  window.AuthSession = { clearAllSessions: clearSession, clearSession, getRoleBucket, getSession, hasSession, getUser, saveSession: saveUser, saveUser, refresh }
+  window.AuthSession = { clearAllSessions: clearSession, clearSession, expire, getRoleBucket, getSession, hasSession, getUser, saveSession: saveUser, saveUser, refresh }
 })()

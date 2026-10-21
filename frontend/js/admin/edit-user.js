@@ -27,22 +27,10 @@ let originalUser = null
 let savingUser = false
 
 function navigateTo(url) {
-  if (window.navigateWithLoading) {
-    window.navigateWithLoading(url)
-    return
-  }
-
-  window.location.assign(url)
+  window.CuidadoUi.navigate(url)
 }
 
-async function showPopup(message, options = {}) {
-  if (window.showAdminAlert) {
-    await window.showAdminAlert(message, options)
-    return
-  }
-
-  console.warn(message)
-}
+const showPopup = window.CuidadoUi.notify
 
 function setFormDisabled(disabled) {
   userForm.setDisabled(disabled)
@@ -103,11 +91,9 @@ async function saveUser() {
     const originalRole = window.CuidadoUi.getRoleLabel(originalUser.role)
     const requestedRole = window.CuidadoUi.getRoleLabel(payload.role)
     if (originalRole !== requestedRole) {
-      const confirmed = window.showAdminConfirm
-        ? await window.showAdminConfirm(`¿Cambiar el rol de ${originalUser.name} de ${originalRole} a ${requestedRole}?`, {
-            title: "Cambiar permisos", confirmText: "Cambiar rol",
-          })
-        : false
+      const confirmed = await window.CuidadoUi.confirm(`¿Cambiar el rol de ${originalUser.name} de ${originalRole} a ${requestedRole}?`, {
+        title: "Cambiar permisos", confirmText: "Cambiar rol",
+      })
       if (!confirmed) return
     }
     const data = await window.CuidadoApi.fetchJson(`/admin/users/${encodeURIComponent(userId)}`, {

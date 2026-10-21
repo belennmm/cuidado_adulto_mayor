@@ -47,4 +47,10 @@ describe("AuthSession con cookie del servidor", () => {
     expect(window.AuthSession.hasSession()).toBe(false)
     expect(sessionStorage.length).toBe(0)
   })
+  it("expira la sesión mediante una operación compartida e idempotente", () => {
+    window.AuthSession.saveSession({ id: 1, role: "admin" })
+    expect(window.AuthSession.expire()).toBe(true)
+    expect(window.AuthSession.expire()).toBe(false)
+    expect(window.AuthSession.getUser()).toBeNull()
+  })
 })

@@ -119,7 +119,17 @@
     const data = await parseResponse(response)
 
     if (!response.ok) {
-      if (response.status === 401) window.AuthSession?.clearSession()
+      if (response.status === 401) {
+        const session = window.AuthSession
+        // clearSession is the stable public contract used by existing pages
+        // and integrations. expire adds transition information, but must not
+        // replace the cleanup call when both methods are available.
+        const newlyExpired = session?.expire?.()
+        session?.clearSession?.()
+        if (expectedRoles?.length && newlyExpired !== false) {
+          window.dispatchEvent(new CustomEvent("cuidado:session-expired"))
+        }
+      }
       throw createApiError(response, data, fallbackError)
     }
 
