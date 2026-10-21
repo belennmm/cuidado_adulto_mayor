@@ -42,19 +42,13 @@ async function loadOlderAdults(page = 1) {
 }
 
 function renderEmpty(message) {
-  olderAdultsTableBody.replaceChildren(window.CuidadoUi.element("div", "empty-state", message))
+  window.CuidadoUi.renderCollection(olderAdultsTableBody, [], () => null, message)
 }
 
 function renderOlderAdults(list) {
   const el = window.CuidadoUi.element
-  olderAdultsTableBody.replaceChildren()
-  if (!list.length) return renderEmpty("No se encontraron adultos mayores.")
-  list.forEach((adult) => {
-    const cell = (label, text, children = []) => {
-      const node = el("div", "older-adult-cell", text, children)
-      node.dataset.label = label
-      return node
-    }
+  const cell = (label, text, children = []) => window.CuidadoUi.cell(label, text, children, "older-adult-cell")
+  window.CuidadoUi.renderCollection(olderAdultsTableBody, list, (adult) => {
     const name = cell("Nombre", null, [el("div", "older-adult-avatar"), el("span", "", adult.full_name)])
     name.classList.add("older-adult-name")
     const actions = cell("Acción", null)
@@ -68,17 +62,16 @@ function renderOlderAdults(list) {
       button.dataset.id = String(adult.id ?? "")
       button.addEventListener("click", () => {
         const destination = `./${page}?${new URLSearchParams({ [parameter]: button.dataset.id })}`
-        if (window.navigateWithLoading) window.navigateWithLoading(destination)
-        else window.location.assign(destination)
+        window.CuidadoUi.navigate(destination)
       })
       actions.append(button)
     }
-    olderAdultsTableBody.append(el("article", "older-adult-row", null, [
+    return el("article", "older-adult-row", null, [
       name, cell("Edad", adult.age ?? "Sin edad"), cell("Encargado", adult.caregiver_family || "Sin encargado"),
       cell("Habitacion", adult.room || "Sin habitacion"),
       cell("Estado", null, [el("span", `status-badge ${getStatusClass(adult.status)}`, adult.status || "Estable")]), actions,
-    ]))
-  })
+    ])
+  }, "No se encontraron adultos mayores.")
 }
 
 function filterOlderAdults() {

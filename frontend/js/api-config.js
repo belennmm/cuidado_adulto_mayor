@@ -119,7 +119,10 @@
     const data = await parseResponse(response)
 
     if (!response.ok) {
-      if (response.status === 401) window.AuthSession?.clearSession()
+      if (response.status === 401 && expectedRoles?.length) {
+        const newlyExpired = window.AuthSession?.expire?.()
+        if (newlyExpired !== false) window.dispatchEvent(new CustomEvent("cuidado:session-expired"))
+      }
       throw createApiError(response, data, fallbackError)
     }
 

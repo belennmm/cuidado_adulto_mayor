@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 describe("CuidadoUi", () => {
   beforeEach(async () => {
@@ -56,5 +56,30 @@ describe("CuidadoUi", () => {
     })
     expect(message?.classList.contains("error")).toBe(false)
     expect(message?.classList.contains("success")).toBe(true)
+  })
+
+  it("crea celdas responsivas y colecciones con un estado vacío común", () => {
+    document.body.innerHTML = '<section id="list"></section>'
+    const target = document.getElementById("list")
+    const rows = [{ name: "Ana" }, { name: "Luis" }]
+
+    expect(window.CuidadoUi.renderCollection(target, rows, (row) =>
+      window.CuidadoUi.cell("Nombre", row.name, [], "shared-cell"), "Sin resultados")).toBe(true)
+    expect([...target.children].map((node) => node.textContent)).toEqual(["Ana", "Luis"])
+    expect(target.firstElementChild.dataset.label).toBe("Nombre")
+
+    expect(window.CuidadoUi.renderCollection(target, [], () => null, "Sin resultados")).toBe(false)
+    expect(target.textContent).toBe("Sin resultados")
+    expect(target.firstElementChild.className).toBe("empty-state")
+  })
+
+  it("centraliza alertas y confirmaciones", async () => {
+    window.showAppAlert = vi.fn().mockResolvedValue(true)
+    window.showAppConfirm = vi.fn().mockResolvedValue(true)
+
+    await expect(window.CuidadoUi.notify("Guardado", { variant: "success" })).resolves.toBe(true)
+    await expect(window.CuidadoUi.confirm("¿Continuar?")).resolves.toBe(true)
+    expect(window.showAppAlert).toHaveBeenCalledWith("Guardado", { variant: "success" })
+    expect(window.showAppConfirm).toHaveBeenCalledWith("¿Continuar?", {})
   })
 })

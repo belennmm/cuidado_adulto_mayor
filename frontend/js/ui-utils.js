@@ -116,6 +116,40 @@
     return element
   }
 
+  function cell(label, text = null, children = [], className = "") {
+    const node = element("div", className, text, children)
+    node.dataset.label = label
+    return node
+  }
+
+  function renderCollection(target, items, renderItem, emptyMessage, emptyClass = "empty-state") {
+    if (typeof target === "string") target = document.getElementById(target)
+    if (!target) return false
+    const rows = Array.isArray(items) ? items : []
+    target.replaceChildren(...(rows.length
+      ? rows.map(renderItem)
+      : [element("div", emptyClass, emptyMessage)]))
+    return rows.length > 0
+  }
+
+  function navigate(url) {
+    if (typeof window.navigateWithLoading === "function") window.navigateWithLoading(url)
+    else window.location.assign(url)
+  }
+
+  async function notify(message, options = {}) {
+    const show = window.showAppAlert || window.showAdminAlert
+    if (typeof show === "function") return show(message, options)
+    console.warn(message)
+  }
+
+  async function confirm(message, options = {}) {
+    const show = window.showAppConfirm || window.showAdminConfirm
+    if (typeof show === "function") return show(message, options)
+    console.warn(message)
+    return false
+  }
+
   function pagePath(path, page = 1, filters = {}) {
     const [base, query = ""] = path.split("?")
     const params = new URLSearchParams(query)
@@ -214,6 +248,8 @@
   }
   window.CuidadoUi = Object.freeze({
     allPages,
+    cell,
+    confirm,
     pagePath,
     pagination,
     pagedSelect,
@@ -225,8 +261,11 @@
     formatTime,
     getRoleLabel,
     normalizeText,
+    navigate,
     parseDateOnly,
     setMessage,
     setText,
+    notify,
+    renderCollection,
   })
 })()

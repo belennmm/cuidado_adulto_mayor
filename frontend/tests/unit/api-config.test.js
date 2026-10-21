@@ -49,6 +49,24 @@ describe("CuidadoApi", () => {
       .rejects.toMatchObject({ message: "El correo ya existe.", status: 422 })
   })
 
+  it("notifica la expiración de sesión desde el cliente HTTP", async () => {
+    const expire = vi.fn()
+    const expired = vi.fn()
+    window.AuthSession = { expire }
+    window.addEventListener("cuidado:session-expired", expired, { once: true })
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      headers: { get: () => "application/json" },
+      json: async () => ({ message: "Sesión expirada." }),
+    }))
+
+    await expect(window.CuidadoApi.fetchJson("/me", { expectedRoles: ["admin"] })).rejects.toMatchObject({ status: 401 })
+    expect(expire).toHaveBeenCalledOnce()
+    expect(expired).toHaveBeenCalledOnce()
+  })
+
   it("bloquea secretos en query antes de llamar al servidor", async () => {
     const fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)

@@ -5,14 +5,7 @@ let usersData = []
 let usersPage = 1
 let usersLoadSequence = 0
 
-async function showPopup(message, options = {}) {
-  if (window.showAdminAlert) {
-    await window.showAdminAlert(message, options)
-    return
-  }
-
-  console.warn(message)
-}
+const showPopup = window.CuidadoUi.notify
 
 const isApproved = window.CuidadoForms.isApproved
 
@@ -73,18 +66,9 @@ async function approveUser(userId) {
 
 function renderUsers(list) {
   const el = window.CuidadoUi.element
-  usersTableBody.replaceChildren()
-  if (!list.length) {
-    usersTableBody.append(el("div", "empty-state", "No se encontraron usuarios."))
-    return
-  }
-  list.forEach((user) => {
+  const cell = (label, text, children = []) => window.CuidadoUi.cell(label, text, children, "user-cell")
+  window.CuidadoUi.renderCollection(usersTableBody, list, (user) => {
     const status = getStatus(user)
-    const cell = (label, text, children = []) => {
-      const node = el("div", "user-cell", text, children)
-      node.dataset.label = label
-      return node
-    }
     const name = cell("Nombre", null, [el("div", "user-avatar"), el("span", "", user.name)])
     name.classList.add("user-name")
     const button = el("button", status === "Pendiente" ? "approve-button" : "edit-button", status === "Pendiente" ? "Aprobar" : "Editar")
@@ -93,14 +77,13 @@ function renderUsers(list) {
     button.addEventListener("click", () => {
       if (status === "Pendiente") return approveUser(button.dataset.id)
       const destination = `./edit-user.html?${new URLSearchParams({ id: button.dataset.id })}`
-      if (window.navigateWithLoading) window.navigateWithLoading(destination)
-      else window.location.assign(destination)
+      window.CuidadoUi.navigate(destination)
     })
-    usersTableBody.append(el("article", "user-row", null, [
+    return el("article", "user-row", null, [
       name, cell("Rol", getRoleLabel(user.role)), cell("Correo", user.email), cell("Teléfono", user.phone || "Sin teléfono"),
       cell("Estado", null, [el("span", `status-badge ${getStatusClass(status)}`, status)]), cell("Acción", null, [button]),
-    ]))
-  })
+    ])
+  }, "No se encontraron usuarios.")
 }
 
 function filterUsers() {
