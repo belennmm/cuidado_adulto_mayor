@@ -9,6 +9,8 @@ tmp/
 *.sql
 *.dump
 *.backup
+*.age
+*.age.partial
 *.bak
 backups/
 tests/performance/reports/
