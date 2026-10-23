@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Services\MedicationStatisticsService;
+use App\Validation\MedicationStatisticsFilter;
 use App\Support\ListPage;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +15,6 @@ class MedicationStatisticsRequest extends StrictFormRequest
 
     public function rules(): array
     {
-        return [...ListPage::rules(), 'filter' => ['nullable', 'string', Rule::in(MedicationStatisticsService::FILTERS)]];
+        return [...ListPage::rules(), 'filter' => ['nullable', 'string', Rule::in(MedicationStatisticsFilter::VALUES)]];
     }
 }

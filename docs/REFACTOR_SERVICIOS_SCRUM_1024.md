@@ -5,7 +5,7 @@ La captura de la historia titula el trabajo como reutilización de factories y h
 | Bloque | Subtareas | Alcance |
 |---|---|---|
 | 1 | SCRUM-1025 Identificar servicios con varias responsabilidades; SCRUM-1026 Extraer consultas complejas | Inventario de responsabilidades y extracción de consultas de estadísticas y calendario. |
-| 2 | SCRUM-1027 Separar validaciones y autorizaciones restantes; SCRUM-1034 Extraer la transformación de respuestas | Pendiente. |
+| 2 | SCRUM-1027 Separar validaciones y autorizaciones restantes; SCRUM-1034 Extraer la transformación de respuestas | Validación del filtro y acceso a incidentes separados; transformadores de estadísticas/calendario sin consultas propias. |
 
 Los commits y todas las operaciones de Git quedan a cargo del usuario. Mensaje sugerido para el bloque 1: `SCRUM-1025 SCRUM-1026: identificar responsabilidades y extraer consultas de servicios`.
 
@@ -53,4 +53,46 @@ php vendor/phpunit/phpunit/phpunit --filter 'ExtractedServiceQueriesTest|AdminMe
 
 Resultado: **74 pruebas y 852 aserciones aprobadas**. También pasó la revisión de sintaxis de las dos consultas, ambos servicios y la prueba nueva. Runtime local: PHP 8.2.12 / PHPUnit 11.5.55 con SQLite en memoria; el proyecto declara PHP ^8.3 y PHPUnit ^12, por lo que queda pendiente verificar con esas dependencias y con PostgreSQL en el entorno correspondiente. Las ejecuciones PHP requirieron salir del sandbox por las restricciones locales ya identificadas.
 
-No se ejecutaron operaciones de Git, migraciones sobre la base de la aplicación ni cambios de frontend. SCRUM-1027 y SCRUM-1034 permanecen pendientes para el siguiente bloque; las validaciones y transformaciones que aún aparecen en los servicios se conservan deliberadamente hasta entonces.
+No se ejecutaron operaciones de Git, migraciones sobre la base de la aplicación ni cambios de frontend. La separación posterior de validaciones y presentación se describe en el bloque 2.
+
+## Validación y autorización separadas (SCRUM-1027)
+
+Mensaje sugerido para el último commit: `SCRUM-1027 SCRUM-1034: separar validacion, autorizacion y transformacion de respuestas`.
+
+`Validation/MedicationStatisticsFilter` concentra los valores `day`, `month`, `year` y su rechazo fuera de esa lista. El FormRequest reutiliza la constante y el servicio valida antes de consultar. Se conserva el mensaje de error y la validación al invocar el servicio directamente. `MedicationStatisticsService::FILTERS` sigue disponible como alias de compatibilidad. La regla HTTP existente para valores nullable no se cambia.
+
+`Authorization/IncidentListingAccess` verifica rol reconocido y aprobación antes de cualquier lectura. Devuelve el rol normalizado, conserva los mensajes y HTTP 403 del acceso directo al servicio, incluidos administradores pendientes, y admite los alias históricos. Las policies y el middleware HTTP existentes siguen activos.
+
+`Queries/IncidentListingQuery` conserva la selección por asignaciones de familiares/profesionales, ausencia de resultados sin adultos asignados, fecha, relaciones precargadas y orden. `IncidentListingService` coordina autorización, consulta y paginación. La consulta recibe el rol ya comprobado por el servicio; es una dependencia interna, no una API de autorización para llamadores externos.
+
+Este bloque se limita a estadísticas, calendario y listado de incidentes dentro del alcance elegido. `OlderAdultService` y `CareDataService` continúan como candidatos del inventario; sus transacciones y reglas de negocio no forman parte de esta entrega.
+
+## Transformación de respuestas (SCRUM-1034)
+
+`Transformers/MedicationStatisticsTransformer` recibe adquisiciones ya cargadas, la página de inventario y el período. Agrupa cantidades y construye líder, etiquetas, gráficos, metadatos y filas de inventario, conservando nombres y tipos de campos. El cálculo del período y la ejecución de consultas permanecen en el servicio y las clases de consulta.
+
+`Transformers/ScheduleCalendarTransformer` recibe turnos, vacaciones e incidentes cargados. Transforma modelos en eventos, presenta turnos/horas y construye páginas independientes de turnos y eventos. La expansión de días y las reglas de estado/notas siguen en `ScheduleCalendarService`.
+
+Ambos transformadores reciben las relaciones necesarias ya precargadas. No contienen consultas Eloquent, autorización ni validación de entrada. Las pruebas comprueban que sus llamadas con datos cargados no generen SQL; no deben recibir modelos incompletos que disparen lazy loading.
+
+## Verificación del último bloque
+
+Referencia previa al cambio: **88 pruebas y 894 aserciones aprobadas**. `SeparatedServiceResponsibilitiesTest` agrega 13 casos con las factories y `CreatesCareTestData` existentes:
+
+- Filtros inválidos rechazados con el mismo error y sin consultas.
+- Roles desconocidos y cuentas pendientes rechazados antes de consultar.
+- Aislamiento para roles familiares/profesionales canónicos y heredados, con/sin paginación, otra fecha y cuidadores sin asignación.
+- Presentación de estadísticas sin SQL, conservando gráficos, inventario sin adulto, tipos y metadatos.
+- Presentación de calendario sin SQL, con alternativas para relaciones nulas y páginas independientes.
+
+Resultado específico: **13 pruebas y 60 aserciones aprobadas**. También pasó la revisión de sintaxis de los diez archivos PHP nuevos/modificados.
+
+Regresión final, desde `backend`:
+
+```powershell
+php vendor/phpunit/phpunit/phpunit --filter 'SeparatedServiceResponsibilitiesTest|ExtractedServiceQueriesTest|AdminMedicationStatisticsTest|CaregiverScheduleCalendarScrumTest|CaregiverScheduleEndpointsTest|BoundedSensitiveListsTest|AdminAuthorizationTest|ParameterizedQueriesTest|IncidentEndpointsTest|BackupIncidentBaselineTest|BackendAccessControlTest|FamilyCaregiverDataIsolationTest|ApiServerErrorResponseTest|RecoveredCareDataTest'
+```
+
+Resultado: **169 pruebas y 2401 aserciones aprobadas**. La selección incluye los servicios del bloque anterior, endpoints, permisos, errores 500 y datos recuperados que dependen de los constructores modificados. La suite emitió el aviso genérico `security_audit_capacity_limited` al alcanzar el presupuesto de eventos de auditoría; no hubo errores ni fallos de pruebas.
+
+Runtime local: PHP 8.2.12/PHPUnit 11.5.55 con SQLite en memoria. Queda pendiente repetir con PHP ^8.3/PHPUnit ^12 y PostgreSQL en el entorno correspondiente. No se ejecutaron operaciones de Git; todas siguen a cargo del usuario.
