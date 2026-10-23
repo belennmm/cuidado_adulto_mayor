@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\MedicationAcquisition;
 use App\Models\OlderAdultMedication;
+use App\Queries\MedicationStatisticsQuery;
 use App\Support\ListPage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -12,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 class MedicationStatisticsService
 {
     public const FILTERS = ['day', 'month', 'year'];
+
+    public function __construct(private readonly MedicationStatisticsQuery $query) {}
 
     public function statistics(string $filter, array $input = []): array
     {
@@ -22,11 +24,7 @@ class MedicationStatisticsService
         $today = Carbon::now((string) config('app.timezone'))->startOfDay();
         [$startDate, $endDate] = $this->periodRange($filter, $today);
 
-        $acquisitions = MedicationAcquisition::query()
-            ->with('medication:id,name')
-            ->whereBetween('acquired_at', [$startDate->toDateTimeString(), $endDate->toDateTimeString()])
-            ->orderBy('acquired_at')
-            ->get();
+        $acquisitions = $this->query->acquisitionsForPeriod($startDate, $endDate);
 
         $items = $acquisitions
             ->groupBy('medication_id')
@@ -144,11 +142,7 @@ class MedicationStatisticsService
 
     private function medicationInventory(array $input): array
     {
-        $query = OlderAdultMedication::query()
-            ->with(['medication:id,name', 'olderAdult:id,full_name'])
-            ->withCount('administrations')
-            ->orderBy('older_adult_id')
-            ->orderBy('medication_id')->orderBy('id');
+        $query = $this->query->inventory();
         $payload = ListPage::payload(ListPage::query($query, $input), 'inventory', function (OlderAdultMedication $inventoryItem) {
                 $status = $inventoryItem->inventoryStatus();
 

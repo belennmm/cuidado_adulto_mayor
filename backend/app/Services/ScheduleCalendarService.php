@@ -6,35 +6,23 @@ use App\Models\CaregiverSchedule;
 use App\Models\Incident;
 use App\Models\OlderAdult;
 use App\Models\VacationRequest;
+use App\Queries\ScheduleCalendarQuery;
 use App\Support\ListPage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class ScheduleCalendarService
 {
+    public function __construct(private readonly ScheduleCalendarQuery $query) {}
+
     public function build(Carbon $startDate, Carbon $endDate, array $input = []): array
     {
-        $schedules = CaregiverSchedule::query()
-            ->with('user:id,name,email,role,is_approved')
-            ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->get();
+        $schedules = $this->query->schedules();
 
         $caregiverIds = $schedules->pluck('user_id')->filter()->unique()->values();
-        $olderAdultsByCaregiver = OlderAdult::query()
-            ->select('id', 'full_name', 'room', 'status', 'professional_caregiver_id')
-            ->whereIn('professional_caregiver_id', $caregiverIds)
-            ->orderBy('full_name')
-            ->get()
-            ->groupBy('professional_caregiver_id');
+        $olderAdultsByCaregiver = $this->query->olderAdultsByCaregiver($caregiverIds);
 
-        $vacationsByCaregiver = VacationRequest::query()
-            ->where('status', 'approved')
-            ->whereIn('user_id', $caregiverIds)
-            ->whereDate('start_date', '<=', $endDate->toDateString())
-            ->whereDate('end_date', '>=', $startDate->toDateString())
-            ->get()
-            ->groupBy('user_id');
+        $vacationsByCaregiver = $this->query->approvedVacationsByCaregiver($caregiverIds, $startDate, $endDate);
 
         $shifts = $this->buildShifts(
             $schedules,
@@ -112,12 +100,7 @@ class ScheduleCalendarService
             'description' => trim(($shift['start_time'] ?? '').' - '.($shift['end_time'] ?? '')."\n".($shift['notes'] ?? '')),
         ]);
 
-        $vacationEvents = VacationRequest::query()
-            ->with('user:id,name,email')
-            ->whereDate('start_date', '<=', $endDate->toDateString())
-            ->whereDate('end_date', '>=', $startDate->toDateString())
-            ->orderBy('start_date')
-            ->get()
+        $vacationEvents = $this->query->vacationEvents($startDate, $endDate)
             ->map(fn (VacationRequest $request) => [
                 'id' => 'vacation-'.$request->id,
                 'type' => 'vacation',
@@ -129,14 +112,7 @@ class ScheduleCalendarService
                 'description' => trim(($request->reason ?: 'Sin motivo')."\n".$request->start_date?->toDateString().' - '.$request->end_date?->toDateString()),
             ]);
 
-        $incidentEvents = Incident::query()
-            ->with(['olderAdult:id,full_name,room', 'reporter:id,name'])
-            ->whereDate('incident_date', '>=', $startDate->toDateString())
-            ->whereDate('incident_date', '<=', $endDate->toDateString())
-            ->orderBy('incident_date')
-            ->orderByRaw('incident_time IS NULL')
-            ->orderBy('incident_time')
-            ->get()
+        $incidentEvents = $this->query->incidentEvents($startDate, $endDate)
             ->map(fn (Incident $incident) => [
                 'id' => 'incident-'.$incident->id,
                 'type' => 'incident',
