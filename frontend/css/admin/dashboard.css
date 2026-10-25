@@ -1,2 +1,12 @@
 @import url("./dashboard.parts/01-styles.css");
 @import url("./dashboard.parts/02-styles.css");
+
+.dashboard-shortcuts {
+  margin-bottom: 24px;
+}
+
+.dashboard-shortcut-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
