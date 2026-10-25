@@ -22,9 +22,6 @@ final class ApiErrorResponse
             : (is_string($payload['message'] ?? null) && $payload['message'] !== ''
                 ? $payload['message']
                 : self::defaultMessage($status));
-        if ($status === 422 && ! empty($payload['errors'])) {
-            $message = 'Los datos enviados no son válidos.';
-        }
         $code = $serverError
             ? ($status === 503 ? 'service_unavailable' : 'internal_server_error')
             : (is_string($payload['code'] ?? null) && preg_match('/^[a-z][a-z0-9_]{1,63}$/', $payload['code'])
@@ -32,11 +29,16 @@ final class ApiErrorResponse
                 : self::defaultCode($status));
         $errors = is_array($payload['errors'] ?? null) ? $payload['errors'] : (object) [];
 
-        $normalized = new JsonResponse([
+        $normalizedPayload = [
             'code' => $code,
             'message' => $message,
             'errors' => $errors,
-        ], $status, $response->headers->all());
+        ];
+        if ($status === 429 && is_numeric($payload['retry_after'] ?? null)) {
+            $normalizedPayload['retry_after'] = max(0, (int) $payload['retry_after']);
+        }
+
+        $normalized = new JsonResponse($normalizedPayload, $status, $response->headers->all());
         $normalized->headers->remove('Content-Length');
 
         return $normalized;
