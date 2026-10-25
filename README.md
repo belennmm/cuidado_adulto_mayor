@@ -195,7 +195,22 @@ npm run test:watch
 
 `npm ci` instala el lockfile; `npm test` ejecuta Vitest una vez; `test:watch` mantiene el modo interactivo. La configuración usa jsdom y `tests/setup.js`. La imagen Nginx no incluye Node/npm.
 
-### Seguridad y otras verificaciones
+### Comandos por categoría
+
+| Categoría | Desde `frontend` | Desde `backend` |
+|---|---|---|
+| Suite completa existente | `npm test` | `composer test` |
+| No funcionales, sin carga/rendimiento | `npm run test:non-functional` | `composer test:non-functional` |
+| Seguridad | `npm run test:security` | `composer test:security` |
+| Confiabilidad | `npm run test:reliability` | `composer test:reliability` |
+
+Los comandos npm ejecutan únicamente pruebas Vitest locales, sin Docker, PHP ni servicios. El agregado no funcional une seguridad y confiabilidad sin repetir archivos. Los comandos Composer requieren las dependencias de desarrollo y PHP del backend; seleccionan la suite `NonFunctional` o sus carpetas actuales con PHPUnit y SQLite en memoria. No incluyen todas las pruebas de seguridad de `Feature` ni los escáneres externos.
+
+Rendimiento conserva su ejecución independiente desde la raíz: `.\tests\performance\run-k6.ps1 -Profile smoke`. Requiere PowerShell, Docker, API local disponible y contraseñas de prueba; prepara cuentas mediante un seeder. No se ejecuta desde ninguno de los comandos anteriores.
+
+Selección exacta, requisitos y comandos manuales: [ejecución de pruebas por categorías](docs/EJECUCION_PRUEBAS_CATEGORIAS.md).
+
+### Análisis y auditorías independientes
 
 Desde la raíz, con PHP disponible, el análisis estático no ejecuta la aplicación:
 

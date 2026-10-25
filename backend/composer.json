@@ -45,6 +45,9 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "test:non-functional": "@php vendor/bin/phpunit --testsuite=NonFunctional",
+        "test:security": "@php vendor/bin/phpunit tests/NonFunctional/Security",
+        "test:reliability": "@php vendor/bin/phpunit tests/NonFunctional/Reliability",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
