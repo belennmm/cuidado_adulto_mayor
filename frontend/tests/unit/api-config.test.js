@@ -77,4 +77,74 @@ describe("CuidadoApi", () => {
     }
     expect(fetchMock).not.toHaveBeenCalled()
   })
+
+  it.each([
+    ["admin", "/admin/older-adults", "POST"],
+    ["profesional", "/professional/incidents", "POST"],
+    ["familiar", "/me", "PUT"],
+  ])("identifica el 401 de un formulario %s y ofrece volver al login", async (role, path, method) => {
+    document.body.innerHTML = '<form><input name="notes" value="Texto en edición"></form>'
+    window.navigateWithLoading = vi.fn()
+    window.AuthSession = { expire: vi.fn(() => true), clearSession: vi.fn() }
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false, status: 401, statusText: "Unauthorized",
+      headers: { get: () => "application/json" },
+      json: async () => ({ message: "Unauthenticated.", code: "internal_authentication_error" }),
+    })
+    vi.stubGlobal("fetch", fetchMock)
+
+    await expect(window.CuidadoApi.fetchJson(path, { method, body: "{}", expectedRoles: [role] }))
+      .rejects.toMatchObject({ status: 401, code: "session_expired", message: "Tu sesión ha expirado. Inicia sesión nuevamente para continuar." })
+
+    const notice = document.getElementById("sessionExpiredNotice")
+    expect(notice.getAttribute("role")).toBe("alert")
+    expect(notice.textContent).toContain("Tu sesión ha expirado")
+    expect(notice.textContent).not.toContain("Unauthenticated")
+    expect(notice.querySelector("a").textContent).toBe("Iniciar sesión")
+    expect(notice.querySelector("a").getAttribute("href")).toBe("../../index.html")
+    expect(document.querySelector("input").value).toBe("Texto en edición")
+    expect(window.navigateWithLoading).not.toHaveBeenCalled()
+    expect(window.AuthSession.clearSession).toHaveBeenCalledOnce()
+    expect(fetchMock).toHaveBeenCalledOnce()
+  })
+
+  it("muestra un solo aviso ante respuestas 401 concurrentes, incluso sin expectedRoles", async () => {
+    window.AuthSession = { expire: vi.fn(() => false), clearSession: vi.fn() }
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false, status: 401, headers: { get: () => "text/html" }, text: async () => "401 Unauthorized",
+    }))
+    await Promise.allSettled([
+      window.CuidadoApi.fetchJson("/me", { method: "PUT", body: "{}" }),
+      window.CuidadoApi.fetchJson("/me", { method: "PUT", body: "{}" }),
+    ])
+    expect(document.querySelectorAll("#sessionExpiredNotice")).toHaveLength(1)
+  })
+
+  it.each([403, 419, 422])("conserva el manejo normal del error %s sin indicar expiración", async (status) => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false, status, headers: { get: () => "application/json" }, json: async () => ({ message: "Revisa la solicitud." }),
+    }))
+    await expect(window.CuidadoApi.fetchJson("/me", { method: "PUT", body: "{}" }))
+      .rejects.toMatchObject({ status, message: "Revisa la solicitud.", code: "http_error" })
+    expect(document.getElementById("sessionExpiredNotice")).toBeNull()
+  })
+
+  it("no interpreta credenciales incorrectas de login como expiración", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(async (url) => ({
+      ok: url.endsWith("/csrf-cookie"), status: url.endsWith("/csrf-cookie") ? 200 : 401,
+      headers: { get: () => "application/json" }, json: async () => ({ message: "Credenciales inválidas" }),
+    })))
+    await expect(window.CuidadoApi.fetchJson("/login", { method: "POST", body: "{}", auth: false }))
+      .rejects.toMatchObject({ status: 401, message: "Credenciales inválidas", code: "http_error" })
+    expect(document.getElementById("sessionExpiredNotice")).toBeNull()
+  })
+
+  it("devuelve una escritura válida sin mostrar el aviso de expiración", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, status: 201, headers: { get: () => "application/json" }, json: async () => ({ id: 7 }),
+    }))
+    await expect(window.CuidadoApi.fetchJson("/admin/older-adults", { method: "POST", body: "{}", expectedRoles: ["admin"] }))
+      .resolves.toEqual({ id: 7 })
+    expect(document.getElementById("sessionExpiredNotice")).toBeNull()
+  })
 })

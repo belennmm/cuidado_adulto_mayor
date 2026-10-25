@@ -81,6 +81,23 @@
     return error
   }
 
+  const sessionExpiredMessage = "Tu sesión ha expirado. Inicia sesión nuevamente para continuar."
+
+  function showSessionExpiredNotice() {
+    if (document.getElementById("sessionExpiredNotice")) return
+    const notice = document.createElement("section")
+    notice.id = "sessionExpiredNotice"
+    notice.className = "session-expired-notice"
+    notice.setAttribute("role", "alert")
+    const message = document.createElement("p")
+    message.textContent = sessionExpiredMessage
+    const login = document.createElement("a")
+    login.href = "../../index.html"
+    login.textContent = "Iniciar sesión"
+    notice.append(message, login)
+    document.body.append(notice)
+  }
+
   async function parseResponse(response) {
     const contentType = response.headers.get("content-type") || ""
     if (contentType.includes("application/json")) {
@@ -103,9 +120,10 @@
 
     const url = buildUrl(path)
     const method = String(fetchOptions.method || "GET").toUpperCase()
+    const endpoint = new URL(url, window.location.href).pathname.slice(apiBase.pathname.replace(/\/$/, "").length)
+    const publicAuthentication = ["/login", "/register", "/forgot-password", "/reset-password", "/mfa/verify"].includes(endpoint)
     if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
-      const endpoint = new URL(url, window.location.href).pathname.slice(apiBase.pathname.replace(/\/$/, "").length)
-      await ensureCsrf(["/login", "/register", "/forgot-password", "/reset-password", "/mfa/verify"].includes(endpoint))
+      await ensureCsrf(publicAuthentication)
     }
     const response = await fetch(url, {
       cache: "no-store",
@@ -120,7 +138,7 @@
         token,
       }),
     })
-    const data = await parseResponse(response)
+    let data = await parseResponse(response)
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -132,6 +150,10 @@
         session?.clearSession?.()
         if (expectedRoles?.length && newlyExpired !== false) {
           window.dispatchEvent(new CustomEvent("cuidado:session-expired"))
+        }
+        if (auth !== false && !publicAuthentication && !["/csrf-cookie", "/ping"].includes(endpoint)) {
+          data = { message: sessionExpiredMessage, code: "session_expired" }
+          if (!["GET", "HEAD", "OPTIONS"].includes(method)) showSessionExpiredNotice()
         }
       }
       throw createApiError(response, data, fallbackError)
