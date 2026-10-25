@@ -67,7 +67,7 @@ class ApiErrorContractTest extends TestCase
 
         $this->getJson('/api/test-only/error-cookie')
             ->assertUnprocessable()
-            ->assertCookie('error-cookie', 'preserve-me');
+            ->assertCookie('error-cookie', 'preserve-me', false);
     }
 
     public function test_500_response_uses_a_safe_common_error_contract(): void
