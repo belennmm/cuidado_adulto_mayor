@@ -6,15 +6,16 @@ use App\Models\MedicationAdministration;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\Concerns\CreatesCareTestData;
+use Tests\Concerns\SimulatesDatabaseWriteFailure;
 use Tests\TestCase;
 
 class MedicationAdministrationIdempotencyTest extends TestCase
 {
     use RefreshDatabase;
     use CreatesCareTestData;
+    use SimulatesDatabaseWriteFailure;
 
     protected function tearDown(): void
     {
@@ -91,14 +92,10 @@ class MedicationAdministrationIdempotencyTest extends TestCase
         $assignment = $this->createMedicationAssignment($this->createAssignedOlderAdult($professional));
 
         Sanctum::actingAs($professional);
-        DB::statement('PRAGMA query_only = ON');
-
-        try {
+        $this->withDatabaseWritesDisabled(function () use ($assignment): void {
             $this->postJson("/api/medications/{$assignment->id}/taken")
                 ->assertServerError();
-        } finally {
-            DB::statement('PRAGMA query_only = OFF');
-        }
+        });
 
         $this->assertDatabaseCount('medication_administrations', 0);
     }
