@@ -57,7 +57,7 @@ class IdorAndPrivilegeEscalationTest extends TestCase
             foreach ([$foreignId, 999999] as $id) {
                 $body = $bodyKey ? [...$payload, $bodyKey => $id] : $payload;
                 $this->json($method, str_replace('{id}', (string) $id, $path), $body, $headers)
-                    ->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+                    ->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
             }
         }
 
@@ -215,7 +215,7 @@ class IdorAndPrivilegeEscalationTest extends TestCase
         $this->putJson("/api/admin/older-adults/{$own['adult']->id}", [
             'full_name' => 'Cambio que debe revertirse',
             'medications' => [['id' => $foreign['assignment']->id, 'name' => 'Medicamento inyectado', 'dosage' => '999']],
-        ], $headers)->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+        ], $headers)->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
 
         $this->assertDatabaseHas('older_adults', ['id' => $own['adult']->id, 'full_name' => 'Adulto privado']);
         $this->assertDatabaseHas('older_adult_medications', ['id' => $own['assignment']->id, 'older_adult_id' => $own['adult']->id, 'quantity' => 5]);

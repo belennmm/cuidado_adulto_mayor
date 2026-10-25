@@ -35,7 +35,7 @@ Un caso adicional hace dos solicitudes fallidas con el mismo `X-Correlation-ID` 
 Las respuestas se inspeccionan a través del kernel HTTP real de Laravel, con su manejo de excepciones y middleware habilitados. El contrato comprobado es:
 
 - Estado HTTP 500, conservado aunque el cliente solicite HTML o no envíe `Accept`.
-- Cuerpo JSON exacto: `{"message":"Error interno del servidor."}`.
+- Cuerpo JSON conforme al contrato común: `code=internal_server_error`, el mensaje `Error interno del servidor.` y `errors={}`. El contrato completo, incluidos los errores 4xx, está en `CONTRATO_ERRORES_API_SPRINT10.md`.
 - `Content-Type: application/json` y `X-Content-Type-Options: nosniff`.
 - `Cache-Control: no-store, private`.
 - `X-Correlation-ID` con UUID generado por el servidor.
@@ -81,7 +81,7 @@ Se corrigió el reporte operativo de `bootstrap/app.php`: ahora incluye el UUID 
 
 El ensayo envía exclusivamente marcadores ficticios distinguibles: nombre de paciente, diagnóstico, token Bearer, contraseña, SQL, indicador SQLSTATE, ruta interna, traza y una línea que pretende simular otro evento. Coloca esos marcadores en el cuerpo/cabeceras de la solicitud y en mensajes de excepción, bindings SQL o cuerpos de respuestas fallidas.
 
-Se prueban siete variantes: aplicación, consulta, almacenamiento, excepción anónima, HTTP 503, `HttpResponseException` y respuesta directa. Cada una se ejecuta con debug activado/desactivado y Accept JSON/HTML: **28 casos**. Para cada caso se inspeccionan conjuntamente cuerpo y cabeceras de respuesta, archivo operativo y archivo de auditoría. Ningún marcador puede sobrevivir en esas superficies; tampoco se permiten `@anonymous` ni el nombre del archivo de prueba como ruta interna. El cuerpo debe seguir siendo el JSON genérico y el UUID enviado por el cliente debe reemplazarse por uno generado por el servidor.
+Se prueban siete variantes: aplicación, consulta, almacenamiento, excepción anónima, HTTP 503, `HttpResponseException` y respuesta directa. Cada una se ejecuta con debug activado/desactivado y Accept JSON/HTML: **28 casos**. Para cada caso se inspeccionan conjuntamente cuerpo y cabeceras de respuesta, archivo operativo y archivo de auditoría. Ningún marcador puede sobrevivir en esas superficies; tampoco se permiten `@anonymous` ni el nombre del archivo de prueba como ruta interna. El cuerpo debe seguir siendo un error genérico con la estructura común y el UUID enviado por el cliente debe reemplazarse por uno generado por el servidor.
 
 La validación se centra en los caminos de error API probados. No demuestra que todo mensaje arbitrario de cualquier biblioteca, endpoint no ensayado o registro histórico carezca de información sensible. Los archivos históricos de la aplicación y los registros de una instalación desplegada no se leyeron, modificaron ni depuraron en este bloque.
 

@@ -35,7 +35,9 @@ class InjectionAndErrorDisclosureTest extends TestCase
             'http' => 503, 'forbidden' => 403, 'direct' => 502, default => 500
         };
         $this->getJson('/api/disclosure-test')->assertStatus($status)->assertExactJson([
+            'code' => match ($status) { 403 => 'forbidden', 503 => 'service_unavailable', default => 'internal_server_error' },
             'message' => $status === 403 ? 'No tienes permiso para realizar esta accion.' : 'Error interno del servidor.',
+            'errors' => [],
         ]);
     }
 
@@ -84,6 +86,6 @@ class InjectionAndErrorDisclosureTest extends TestCase
     public function test_reflected_attack_in_route_is_not_included_in_the_error(): void
     {
         $this->getJson('/api/'.rawurlencode('<svg onload=alert(1)>'))
-            ->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+            ->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
     }
 }

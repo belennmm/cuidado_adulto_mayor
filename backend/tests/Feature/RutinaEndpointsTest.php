@@ -465,7 +465,7 @@ class RutinaEndpointsTest extends TestCase
             'adulto_mayor_id' => 999,
         ])
             ->assertNotFound()
-            ->assertExactJson(['message' => 'Recurso no encontrado.']);
+            ->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
 
         $this->assertDatabaseCount('rutinas', 0);
     }

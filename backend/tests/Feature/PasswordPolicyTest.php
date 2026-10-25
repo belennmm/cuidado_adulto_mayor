@@ -84,7 +84,9 @@ class PasswordPolicyTest extends TestCase
         config(['passwords.check_compromised' => true]);
         Http::fake(['*' => Http::response($body, $status)]);
         $this->postJson('/api/register', ['name' => 'Example', 'email' => 'new@example.test', 'password' => 'Unique-Secret!2048', 'privacy_consent' => true])
-            ->assertStatus(503)->assertExactJson(['message' => 'Error interno del servidor.']);
+            ->assertStatus(503)->assertExactJson([
+                'code' => 'service_unavailable', 'message' => 'Error interno del servidor.', 'errors' => [],
+            ]);
         $this->assertDatabaseCount('users', 0);
     }
 

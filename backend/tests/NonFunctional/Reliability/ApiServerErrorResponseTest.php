@@ -113,7 +113,11 @@ class ApiServerErrorResponseTest extends TestCase
     private function assertSafeServerResponse(TestResponse $response): void
     {
         $response->assertStatus(500)
-            ->assertExactJson(['message' => 'Error interno del servidor.'])
+            ->assertExactJson([
+                'code' => 'internal_server_error',
+                'message' => 'Error interno del servidor.',
+                'errors' => [],
+            ])
             ->assertHeader('Content-Type', 'application/json')
             ->assertHeader('X-Content-Type-Options', 'nosniff')
             ->assertHeader('Cache-Control', 'no-store, private');

@@ -65,7 +65,10 @@ class ApiErrorLogPrivacyTest extends TestCase
                 'Accept' => $accept, 'Authorization' => 'Bearer '.$markers[2],
                 'X-Correlation-ID' => '11111111-1111-4111-8111-111111111111',
             ])->assertStatus($failure === 'http' ? 503 : 500)
-                ->assertExactJson(['message' => 'Error interno del servidor.'])
+                ->assertExactJson([
+                    'code' => $failure === 'http' ? 'service_unavailable' : 'internal_server_error',
+                    'message' => 'Error interno del servidor.', 'errors' => [],
+                ])
                 ->assertHeader('Content-Type', 'application/json');
             $correlationId = $response->headers->get('X-Correlation-ID');
             $this->assertTrue(Str::isUuid($correlationId));

@@ -1,0 +1,15 @@
+:where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid #075fc8;
+  outline-offset: 3px;
+  scroll-margin-block: 1rem;
+}
+
+:where(input, select, textarea):focus-visible {
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline-color: Highlight;
+  }
+}

@@ -93,7 +93,11 @@ class PasswordRecoveryTest extends TestCase
         if (in_array($case, ['expired', 'boundary'], true)) {
             $this->travel($case === 'expired' ? 16 : 15)->minutes();
         }
-        $this->postJson('/api/reset-password', $payload)->assertUnprocessable()->assertExactJson(['message' => 'El enlace no es valido o ha expirado. Solicita uno nuevo.']);
+        $this->postJson('/api/reset-password', $payload)->assertUnprocessable()->assertExactJson([
+            'code' => 'validation_failed',
+            'message' => 'El enlace no es valido o ha expirado. Solicita uno nuevo.',
+            'errors' => [],
+        ]);
         $this->assertSame($old, $user->fresh()->password);
     }
 

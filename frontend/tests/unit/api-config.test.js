@@ -42,11 +42,11 @@ describe("CuidadoApi", () => {
       status: 422,
       statusText: "Unprocessable Content",
       headers: { get: () => "application/json" },
-      json: async () => ({ errors: { email: ["El correo ya existe."] } }),
+      json: async () => ({ code: "validation_failed", message: "Los datos enviados no son válidos.", errors: { email: ["El correo ya existe."] } }),
     }))
 
     await expect(window.CuidadoApi.fetchJson("/me", { method: "PUT" }))
-      .rejects.toMatchObject({ message: "El correo ya existe.", status: 422 })
+      .rejects.toMatchObject({ message: "El correo ya existe.", status: 422, code: "validation_failed", errors: { email: ["El correo ya existe."] } })
   })
 
   it("notifica la expiración de sesión desde el cliente HTTP", async () => {
