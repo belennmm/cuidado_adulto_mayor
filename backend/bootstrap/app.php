@@ -11,6 +11,7 @@ use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureApproved;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTokenScope;
+use App\Http\Middleware\NormalizeApiErrors;
 use App\Http\Middleware\RejectDisallowedMethods;
 use App\Http\Middleware\RejectSecretsInUrl;
 use App\Http\Middleware\RequireAccessRule;
@@ -53,6 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(AuditAdministrativeActions::class);
         $middleware->prepend(App\Http\Middleware\AuditSecuritySignals::class);
         $middleware->prepend(AssignCorrelationId::class);
+        $middleware->prepend(NormalizeApiErrors::class);
         $middleware->append(SecurityHeaders::class);
 
         $middleware->api(prepend: [
@@ -121,10 +123,8 @@ return Application::configure(basePath: dirname(__DIR__))
             app(App\Services\AuthenticationAuditService::class)->recordResponse(request(), $response);
             app(App\Services\SecuritySignalAuditService::class)->recordResponse(request(), $response);
 
-            if (request()->is('api/*') && $response->getStatusCode() >= 500) {
-                $response->setContent(json_encode(['message' => 'Error interno del servidor.']));
-                $response->headers->set('Content-Type', 'application/json');
-                $response->headers->remove('Content-Length');
+            if (request()->is('api/*')) {
+                return App\Support\ApiErrorResponse::normalize($response);
             }
 
             return $response;

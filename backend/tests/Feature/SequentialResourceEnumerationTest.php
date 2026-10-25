@@ -31,11 +31,11 @@ class SequentialResourceEnumerationTest extends TestCase
 
         foreach ([$adults[0]->id, $adults[2]->id, $adults[2]->id + 1, $adults[2]->id + 2] as $id) {
             foreach (["/api/{$module}/older-adults/{$id}", "/api/{$module}/routines?older_adult_id={$id}", "/api/rutinas?older_adult_id={$id}"] as $path) {
-                $this->getJson($path, $headers)->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+                $this->getJson($path, $headers)->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
             }
             $this->postJson('/api/rutinas', [
                 'older_adult_id' => $id, 'nombre' => 'Inyectada', 'horario' => '08:00', 'actividades' => ['Caminar'],
-            ], $headers)->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+            ], $headers)->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
         }
         $this->getJson("/api/{$module}/older-adults/{$adults[1]->id}", $headers)->assertOk();
         $this->assertDatabaseCount('rutinas', 0);
@@ -60,7 +60,7 @@ class SequentialResourceEnumerationTest extends TestCase
         foreach ([$assignment->id, $assignment->id + 1, $assignment->id + 2] as $id) {
             $this->putJson('/api/admin/older-adults/'.$own->id, [
                 'full_name' => 'No debe persistir', 'medications' => [['id' => $id, 'name' => 'No debe crearse']],
-            ], $headers)->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+            ], $headers)->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
         }
         $this->assertDatabaseHas('older_adults', ['id' => $own->id, 'full_name' => 'Original']);
         $this->assertDatabaseCount('medications', 1);

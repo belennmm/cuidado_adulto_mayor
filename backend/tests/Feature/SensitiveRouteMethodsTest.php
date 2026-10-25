@@ -84,7 +84,9 @@ class SensitiveRouteMethodsTest extends TestCase
         $adult = OlderAdult::create(['full_name' => 'Protegido', 'created_by' => $admin->id]);
         foreach ($this->privatePaths() as $path => $methods) {
             foreach (['TRACE', 'CONNECT', 'PROPFIND'] as $method) {
-                $this->call($method, $path)->assertStatus(405)->assertExactJson(['message' => 'Metodo HTTP no permitido.']);
+                $this->call($method, $path)->assertStatus(405)->assertExactJson([
+                    'code' => 'method_not_allowed', 'message' => 'Metodo HTTP no permitido.', 'errors' => [],
+                ]);
             }
             $this->call('OPTIONS', $path, [], [], [], ['HTTP_ORIGIN' => 'http://localhost:3000', 'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'DELETE'])
                 ->assertNoContent()->assertHeader('Access-Control-Allow-Origin', 'http://localhost:3000');

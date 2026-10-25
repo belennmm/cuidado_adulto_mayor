@@ -64,6 +64,9 @@
   }
 
   function getErrorMessage(data, fallback = "No se pudo completar la solicitud.") {
+    if (data?.code === "validation_failed") {
+      return firstValidationMessage(data?.errors) || data?.message || fallback
+    }
     return data?.message || firstValidationMessage(data?.errors) || fallback
   }
 
@@ -72,6 +75,7 @@
     const error = new Error(getErrorMessage(data, fallback))
     error.status = response.status
     error.statusText = response.status >= 500 ? "Internal Server Error" : response.statusText
+    error.code = typeof data?.code === "string" ? data.code : "http_error"
     error.data = data
     error.errors = data?.errors || {}
     return error

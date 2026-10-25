@@ -54,7 +54,7 @@ class CaregiverScheduleUnauthorizedModificationTest extends TestCase
 
         $updateResponse
             ->assertNotFound()
-            ->assertExactJson(['message' => 'Recurso no encontrado.']);
+            ->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
 
         $deleteResponse
             ->assertForbidden()

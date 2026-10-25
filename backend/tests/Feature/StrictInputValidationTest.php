@@ -221,7 +221,7 @@ class StrictInputValidationTest extends TestCase
         $this->getJson('/api/admin/older-adults/'.$adult->id, $headers)->assertOk();
         foreach (['0', '-1', '01', '1.0', '1e0', $adult->id.'abc', '1 OR 1=1', str_repeat('9', 20)] as $id) {
             $this->getJson('/api/admin/older-adults/'.rawurlencode($id), $headers)->assertNotFound()
-                ->assertExactJson(['message' => 'Recurso no encontrado.']);
+                ->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
         }
         $this->assertDatabaseCount('older_adults', 1);
     }

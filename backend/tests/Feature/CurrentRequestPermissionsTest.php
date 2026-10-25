@@ -60,7 +60,7 @@ class CurrentRequestPermissionsTest extends TestCase
         $this->getJson($path, $headers)->assertOk();
 
         DB::table('older_adults')->where('id', $adult->id)->update(['professional_caregiver_id' => $second->id]);
-        $this->getJson($path, $headers)->assertNotFound()->assertExactJson(['message' => 'Recurso no encontrado.']);
+        $this->getJson($path, $headers)->assertNotFound()->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
         $this->getJson('/api/professional/older-adults', $headers)->assertJsonCount(0, 'older_adults');
         $this->getJson($path, $this->headersFor($second))->assertOk();
     }

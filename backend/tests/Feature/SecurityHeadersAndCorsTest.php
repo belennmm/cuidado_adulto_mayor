@@ -58,7 +58,7 @@ class SecurityHeadersAndCorsTest extends TestCase
     {
         $response = $this->getJson('/api/does-not-exist')
             ->assertNotFound()
-            ->assertExactJson(['message' => 'Recurso no encontrado.']);
+            ->assertExactJson(['code' => 'not_found', 'message' => 'Recurso no encontrado.', 'errors' => []]);
 
         $this->assertStringNotContainsString('trace', strtolower($response->getContent()));
     }
@@ -77,6 +77,6 @@ class SecurityHeadersAndCorsTest extends TestCase
         $this->withServerVariables(['CONTENT_LENGTH' => 11])
             ->postJson('/api/login', ['email' => 'a@example.com'])
             ->assertStatus(413)
-            ->assertExactJson(['message' => 'La solicitud excede el tamano permitido.']);
+            ->assertExactJson(['code' => 'payload_too_large', 'message' => 'La solicitud excede el tamano permitido.', 'errors' => []]);
     }
 }
