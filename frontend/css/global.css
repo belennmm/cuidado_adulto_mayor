@@ -5,3 +5,30 @@
 @import url("./global.parts/03-styles.css");
 @import url("./sidebar-expand.css");
 @import url("./accessibility.css");
+
+.session-expired-notice {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  width: min(560px, calc(100% - 32px));
+  box-sizing: border-box;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--color-background, #ffffff);
+  color: var(--color-text-base, #0a112f);
+  box-shadow: var(--shadow-card, 0 4px 20px #0003);
+}
+
+.session-expired-notice p {
+  margin: 0 0 12px;
+}
+
+.session-expired-notice a {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: var(--color-primary, #5b9aea);
+  color: var(--color-text-inverse, #ffffff);
+}

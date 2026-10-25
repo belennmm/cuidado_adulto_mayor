@@ -8,7 +8,10 @@
   },
   "scripts": {
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:non-functional": "node scripts/run-test-category.mjs non-functional",
+    "test:security": "node scripts/run-test-category.mjs security",
+    "test:reliability": "node scripts/run-test-category.mjs reliability"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.2",
