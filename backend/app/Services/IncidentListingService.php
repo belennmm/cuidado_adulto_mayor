@@ -2,81 +2,25 @@
 
 namespace App\Services;
 
-use App\Enums\UserRole;
+use App\Authorization\IncidentListingAccess;
+use App\Models\User;
+use App\Queries\IncidentListingQuery;
 use App\Support\ListPage;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Incident;
-use App\Models\OlderAdult;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class IncidentListingService
 {
+    public function __construct(
+        private readonly IncidentListingAccess $access,
+        private readonly IncidentListingQuery $query,
+    ) {}
+
     public function forDate(User $user, string $date, ?array $input = null): Collection|LengthAwarePaginator
     {
-        $query = Incident::query()->with([
-            'reporter:id,name,email',
-            'olderAdult.familyCaregiver:id,name,email',
-            'olderAdult.professionalCaregiver:id,name,email',
-        ]);
-
-        $this->scopeForUser($query, $user);
-
-        $query
-            ->whereDate('incident_date', $date)
-            ->orderByRaw('incident_time IS NULL')
-            ->orderBy('incident_time')
-            ->orderByDesc('created_at')->orderByDesc('id');
+        $role = $this->access->assertAllowed($user);
+        $query = $this->query->forDate($user, $role, $date);
 
         return $input === null ? $query->get() : ListPage::query($query, $input);
-    }
-
-    private function scopeForUser(Builder $query, User $user): void
-    {
-        $role = $user->roleEnum();
-
-        if (! in_array($role, UserRole::cases(), true)) {
-            abort(response()->json([
-                'message' => 'No tienes acceso para consultar incidentes.',
-            ], 403));
-        }
-
-        if (in_array($role, UserRole::cases(), true)
-            && ! $user->is_approved) {
-            abort(response()->json([
-                'message' => 'Tu cuenta debe estar aprobada para consultar incidentes.',
-            ], 403));
-        }
-
-        if ($role === UserRole::FAMILY) {
-            $olderAdults = OlderAdult::query()
-                ->where('family_caregiver_id', $user->id)
-                ->get(['id', 'full_name']);
-
-            $this->scopeToOlderAdults($query, $olderAdults);
-
-            return;
-        }
-
-        if ($role === UserRole::PROFESSIONAL) {
-            $olderAdults = OlderAdult::query()
-                ->where('professional_caregiver_id', $user->id)
-                ->get(['id', 'full_name']);
-
-            $this->scopeToOlderAdults($query, $olderAdults);
-        }
-    }
-
-    private function scopeToOlderAdults(Builder $query, Collection $olderAdults): void
-    {
-        $adultIds = $olderAdults->pluck('id')->filter()->values();
-        if ($adultIds->isEmpty()) {
-            $query->whereRaw('1 = 0');
-
-            return;
-        }
-
-        $query->whereIn('older_adult_id', $adultIds);
     }
 }
