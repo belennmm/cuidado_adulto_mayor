@@ -58,6 +58,18 @@ class ApiErrorContractTest extends TestCase
             ->assertJsonPath('retry_after', 60);
     }
 
+    public function test_normalizing_an_error_preserves_response_cookies(): void
+    {
+        Route::get('/api/test-only/error-cookie', fn () => response()->json([
+            'message' => 'Solicitud inválida.',
+            'errors' => [],
+        ], 422)->withCookie(cookie('error-cookie', 'preserve-me')));
+
+        $this->getJson('/api/test-only/error-cookie')
+            ->assertUnprocessable()
+            ->assertCookie('error-cookie', 'preserve-me');
+    }
+
     public function test_500_response_uses_a_safe_common_error_contract(): void
     {
         Route::get('/api/test-only/server-error', fn () => throw new RuntimeException('secret internal detail'));

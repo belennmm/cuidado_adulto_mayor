@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ApiErrorResponse
@@ -38,10 +37,14 @@ final class ApiErrorResponse
             $normalizedPayload['retry_after'] = max(0, (int) $payload['retry_after']);
         }
 
-        $normalized = new JsonResponse($normalizedPayload, $status, $response->headers->all());
-        $normalized->headers->remove('Content-Length');
+        $response->setContent(json_encode(
+            $normalizedPayload,
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
+        ));
+        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->remove('Content-Length');
 
-        return $normalized;
+        return $response;
     }
 
     private static function defaultCode(int $status): string
