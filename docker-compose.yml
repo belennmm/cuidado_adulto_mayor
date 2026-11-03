@@ -115,7 +115,7 @@ services:
     cpus: 1.0
 
   pgadmin:
-    image: dpage/pgadmin4:9.18
+    image: dpage/pgadmin4:9.19
     container_name: cuidado_pgadmin
     restart: unless-stopped
     depends_on:
