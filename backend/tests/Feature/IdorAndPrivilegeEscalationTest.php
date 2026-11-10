@@ -159,12 +159,14 @@ class IdorAndPrivilegeEscalationTest extends TestCase
             'change_request_status' => 'approved', 'change_request_message' => 'Inyectado',
         ], $headers)->assertUnprocessable()->assertJsonValidationErrors('change_request_status');
         $this->putJson("/api/schedules/{$own['schedule']->id}", ['day_of_week' => 1, 'start_time' => '09:00', 'end_time' => '17:00'], $headers)->assertOk();
+        $vacationStart = now()->addDay()->toDateString();
+        $vacationEnd = now()->addDays(2)->toDateString();
         $this->postJson('/api/professional/vacation-requests', [
-            ...$injected, 'start_date' => '2026-11-01', 'end_date' => '2026-11-02', 'reason' => 'Descanso',
+            ...$injected, 'start_date' => $vacationStart, 'end_date' => $vacationEnd, 'reason' => 'Descanso',
             'status' => 'approved', 'reviewed_at' => now()->toISOString(),
         ], $headers)->assertUnprocessable()->assertJsonValidationErrors('status');
         $this->postJson('/api/professional/vacation-requests', [
-            'start_date' => '2026-11-01', 'end_date' => '2026-11-02', 'reason' => 'Descanso',
+            'start_date' => $vacationStart, 'end_date' => $vacationEnd, 'reason' => 'Descanso',
         ], $headers)->assertCreated();
         $this->postJson("/api/medications/{$own['assignment']->id}/taken", [
             ...$injected, 'older_adult_id' => $foreign['adult']->id, 'administration_type' => 'extra', 'notes' => 'Toma permitida',
